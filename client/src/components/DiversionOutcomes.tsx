@@ -172,6 +172,11 @@ export default function DiversionOutcomes() {
 
   return (
     <div className="h-full overflow-auto p-4 space-y-4">
+      {/* Main Emergency Header */}
+      <div className="bg-red-600 text-white px-4 py-2 rounded-lg text-center font-bold text-lg border border-red-400">
+        ⚠ {headerText}
+      </div>
+      
       {/* Emergency Configuration */}
       <Card className="border-orange-500 bg-orange-900/20">
         <CardHeader className="pb-3">
@@ -198,23 +203,43 @@ export default function DiversionOutcomes() {
                 onChange={(e) => setEmergencyType(e.target.value as any)}
                 className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
               >
-                <option value="cardiac">Cardiac Event</option>
-                <option value="stroke">Stroke</option>
-                <option value="trauma">Trauma/Injury</option>
-                <option value="breathing">Breathing Difficulty</option>
-                <option value="allergic">Allergic Reaction</option>
+                <optgroup label="Medical Emergencies">
+                  <option value="cardiac">Cardiac Event</option>
+                  <option value="stroke">Stroke</option>
+                  <option value="trauma">Trauma/Injury</option>
+                  <option value="breathing">Breathing Difficulty</option>
+                  <option value="allergic">Allergic Reaction</option>
+                </optgroup>
+                <optgroup label="Technical Failures">
+                  <option value="engine_failure">Engine Failure</option>
+                  <option value="depressurization">Rapid Depressurization</option>
+                  <option value="hydraulic_failure">Hydraulic System Failure</option>
+                  <option value="electrical_failure">Electrical System Failure</option>
+                </optgroup>
               </select>
             </div>
             <div>
-              <label className="text-orange-300 text-sm mb-2 block">Patient Condition</label>
+              <label className="text-orange-300 text-sm mb-2 block">
+                {isTechnicalFailure ? 'System Severity' : 'Patient Condition'}
+              </label>
               <select
                 value={patientCondition}
                 onChange={(e) => setPatientCondition(e.target.value as any)}
                 className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
               >
-                <option value="critical">Critical - Immediate Action Required</option>
-                <option value="serious">Serious - Urgent Care Needed</option>
-                <option value="stable">Stable - Medical Attention Required</option>
+                {isTechnicalFailure ? (
+                  <>
+                    <option value="critical">Critical - Immediate Landing Required</option>
+                    <option value="serious">Serious - Urgent Diversion Needed</option>
+                    <option value="stable">Stable - Monitoring Required</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="critical">Critical - Immediate Action Required</option>
+                    <option value="serious">Serious - Urgent Care Needed</option>
+                    <option value="stable">Stable - Medical Attention Required</option>
+                  </>
+                )}
               </select>
             </div>
           </div>

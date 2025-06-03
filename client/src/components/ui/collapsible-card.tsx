@@ -1,6 +1,6 @@
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Move } from 'lucide-react';
 
 interface CollapsibleCardProps {
   title: string;
@@ -8,6 +8,8 @@ interface CollapsibleCardProps {
   children: ReactNode;
   className?: string;
   defaultCollapsed?: boolean;
+  draggable?: boolean;
+  initialPosition?: { x: number; y: number };
 }
 
 export default function CollapsibleCard({ 
@@ -15,20 +17,98 @@ export default function CollapsibleCard({
   icon, 
   children, 
   className = "", 
-  defaultCollapsed = false 
+  defaultCollapsed = false,
+  draggable = false,
+  initialPosition = { x: 0, y: 0 }
 }: CollapsibleCardProps) {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(defaultCollapsed);
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState(initialPosition);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!draggable) return;
+    
+    const target = e.target as HTMLElement;
+    if (!target.classList.contains('drag-handle')) return;
+    
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging) return;
+
+    const newPosition = {
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    };
+
+    // Constrain to viewport
+    const card = cardRef.current;
+    if (card) {
+      const rect = card.getBoundingClientRect();
+      const maxX = window.innerWidth - rect.width;
+      const maxY = window.innerHeight - rect.height;
+      
+      newPosition.x = Math.max(0, Math.min(maxX, newPosition.x));
+      newPosition.y = Math.max(0, Math.min(maxY, newPosition.y));
+    }
+
+    setPosition(newPosition);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'grabbing';
+      document.body.style.userSelect = 'none';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isDragging, dragStart]);
+
+  const cardStyle = draggable ? {
+    position: 'fixed' as const,
+    transform: `translate(${position.x}px, ${position.y}px)`,
+    transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+    zIndex: isDragging ? 1000 : 50
+  } : {};
 
   return (
-    <Card className={className}>
+    <Card 
+      ref={cardRef}
+      className={className} 
+      style={cardStyle}
+      onMouseDown={handleMouseDown}
+    >
       <CardHeader 
-        className="pb-3 cursor-pointer select-none hover:bg-gray-800/50 transition-colors"
-        onClick={() => setIsCollapsed(!isCollapsed)}
+        className={`pb-3 select-none hover:bg-gray-800/50 transition-colors ${draggable ? 'cursor-move' : 'cursor-pointer'}`}
+        onClick={() => !isDragging && setIsCollapsed(!isCollapsed)}
       >
         <CardTitle className="text-white flex items-center justify-between">
           <div className="flex items-center gap-2">
             {icon}
             {title}
+            {draggable && (
+              <Move className="h-4 w-4 text-gray-400 drag-handle cursor-move" />
+            )}
           </div>
           {isCollapsed ? (
             <ChevronDown className="h-4 w-4 text-gray-400" />
