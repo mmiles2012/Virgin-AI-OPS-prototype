@@ -1,59 +1,180 @@
-import { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useRef, useEffect, useState } from 'react';
+import { useFrame, useLoader } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { useFlightState } from '../lib/stores/useFlightState';
 import { useScenario } from '../lib/stores/useScenario';
 
+// Major airports with real coordinates
+const MAJOR_AIRPORTS = [
+  { code: 'LAX', name: 'Los Angeles International', lat: 33.9425, lon: -118.4081, x: -500, z: 200 },
+  { code: 'JFK', name: 'John F. Kennedy International', lat: 40.6413, lon: -73.7781, x: 800, z: -100 },
+  { code: 'ORD', name: 'Chicago O\'Hare International', lat: 41.9742, lon: -87.9073, x: 200, z: 0 },
+  { code: 'DFW', name: 'Dallas/Fort Worth International', lat: 32.8998, lon: -97.0403, x: -100, z: 300 },
+  { code: 'DEN', name: 'Denver International', lat: 39.8561, lon: -104.6737, x: -200, z: 100 },
+  { code: 'ATL', name: 'Hartsfield-Jackson Atlanta International', lat: 33.6407, lon: -84.4277, x: 600, z: 200 },
+  { code: 'SEA', name: 'Seattle-Tacoma International', lat: 47.4502, lon: -122.3088, x: -600, z: -200 },
+  { code: 'LAS', name: 'McCarran International', lat: 36.0840, lon: -115.1537, x: -400, z: 250 },
+  { code: 'PHX', name: 'Phoenix Sky Harbor International', lat: 33.4484, lon: -112.0740, x: -350, z: 280 },
+  { code: 'MIA', name: 'Miami International', lat: 25.7959, lon: -80.2870, x: 750, z: 400 }
+];
+
+function SatelliteTerrain() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    // Create a procedural satellite-style texture
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 1024;
+    const ctx = canvas.getContext('2d')!;
+
+    // Base terrain color (brownish-green like satellite imagery)
+    const gradient = ctx.createRadialGradient(512, 512, 0, 512, 512, 512);
+    gradient.addColorStop(0, '#4a5d3a');
+    gradient.addColorStop(0.3, '#3d4f2a');
+    gradient.addColorStop(0.6, '#2d3a1a');
+    gradient.addColorStop(1, '#1a2010');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1024, 1024);
+
+    // Add terrain features
+    for (let i = 0; i < 200; i++) {
+      const x = Math.random() * 1024;
+      const y = Math.random() * 1024;
+      const size = Math.random() * 20 + 5;
+      
+      ctx.fillStyle = Math.random() > 0.5 ? '#2a3d1a' : '#5a6d4a';
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Add water bodies (darker areas)
+    for (let i = 0; i < 50; i++) {
+      const x = Math.random() * 1024;
+      const y = Math.random() * 1024;
+      const size = Math.random() * 40 + 10;
+      
+      ctx.fillStyle = '#1a2d3d';
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Add road networks
+    ctx.strokeStyle = '#3a3a3a';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 30; i++) {
+      ctx.beginPath();
+      ctx.moveTo(Math.random() * 1024, Math.random() * 1024);
+      ctx.lineTo(Math.random() * 1024, Math.random() * 1024);
+      ctx.stroke();
+    }
+
+    const canvasTexture = new THREE.CanvasTexture(canvas);
+    canvasTexture.wrapS = THREE.RepeatWrapping;
+    canvasTexture.wrapT = THREE.RepeatWrapping;
+    canvasTexture.repeat.set(4, 4);
+    
+    setTexture(canvasTexture);
+  }, []);
+
+  return (
+    <mesh ref={meshRef} position={[0, -1, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
+      <planeGeometry args={[2000, 2000]} />
+      <meshStandardMaterial 
+        map={texture}
+        color="#6b7c5a"
+        transparent 
+        opacity={0.9}
+      />
+    </mesh>
+  );
+}
+
+function AirportMarker({ airport, isDestination = false, isOrigin = false }: { 
+  airport: typeof MAJOR_AIRPORTS[0], 
+  isDestination?: boolean,
+  isOrigin?: boolean 
+}) {
+  const meshRef = useRef<THREE.Group>(null);
+  
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 2) * 0.1;
+    }
+  });
+
+  const color = isOrigin ? "#22c55e" : isDestination ? "#3b82f6" : "#f59e0b";
+  const emissiveColor = isOrigin ? "#22c55e" : isDestination ? "#3b82f6" : "#f59e0b";
+
+  return (
+    <group ref={meshRef} position={[airport.x, 2, airport.z]}>
+      {/* Airport runway representation */}
+      <mesh position={[0, -1.5, 0]}>
+        <boxGeometry args={[20, 0.5, 4]} />
+        <meshStandardMaterial color="#2a2a2a" />
+      </mesh>
+      <mesh position={[0, -1.5, 8]}>
+        <boxGeometry args={[20, 0.5, 4]} />
+        <meshStandardMaterial color="#2a2a2a" />
+      </mesh>
+      
+      {/* Airport beacon */}
+      <mesh>
+        <cylinderGeometry args={[5, 5, 3]} />
+        <meshStandardMaterial color={color} emissive={emissiveColor} emissiveIntensity={0.4} />
+      </mesh>
+      
+      {/* Airport code label */}
+      <Text
+        position={[0, 15, 0]}
+        fontSize={8}
+        color={color}
+        anchorX="center"
+        anchorY="middle"
+      >
+        {airport.code}
+      </Text>
+      
+      {/* Airport name label */}
+      <Text
+        position={[0, 8, 0]}
+        fontSize={4}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+      >
+        {airport.name}
+      </Text>
+    </group>
+  );
+}
+
 export default function FlightMap() {
-  const groundRef = useRef<THREE.Mesh>(null);
   const { position } = useFlightState();
   const { nearestAirports } = useScenario();
 
   return (
     <group>
-      {/* Ground/Ocean representation */}
-      <mesh ref={groundRef} position={[0, -1, 0]} receiveShadow>
-        <planeGeometry args={[2000, 2000]} />
-        <meshStandardMaterial color="#1e3a8a" transparent opacity={0.3} />
-      </mesh>
+      {/* Satellite terrain background */}
+      <SatelliteTerrain />
+      
+      {/* Major airports */}
+      {MAJOR_AIRPORTS.map((airport) => (
+        <AirportMarker
+          key={airport.code}
+          airport={airport}
+          isOrigin={airport.code === 'LAX'}
+          isDestination={airport.code === 'JFK'}
+        />
+      ))}
 
       {/* Flight path visualization */}
-      <group position={[position[0], 0, position[2]]}>
-        {/* Origin marker (LAX) */}
-        <group position={[-500, 2, 200]}>
-          <mesh>
-            <cylinderGeometry args={[5, 5, 2]} />
-            <meshStandardMaterial color="#22c55e" emissive="#22c55e" emissiveIntensity={0.3} />
-          </mesh>
-          <Text
-            position={[0, 15, 0]}
-            fontSize={8}
-            color="#22c55e"
-            anchorX="center"
-            anchorY="middle"
-          >
-            LAX
-          </Text>
-        </group>
-
-        {/* Destination marker (JFK) */}
-        <group position={[800, 2, -100]}>
-          <mesh>
-            <cylinderGeometry args={[5, 5, 2]} />
-            <meshStandardMaterial color="#3b82f6" emissive="#3b82f6" emissiveIntensity={0.3} />
-          </mesh>
-          <Text
-            position={[0, 15, 0]}
-            fontSize={8}
-            color="#3b82f6"
-            anchorX="center"
-            anchorY="middle"
-          >
-            JFK
-          </Text>
-        </group>
-
+      <group position={[position[0] || 0, 0, position[2] || 0]}>
         {/* Flight path line */}
         <line>
           <bufferGeometry>
@@ -67,24 +188,34 @@ export default function FlightMap() {
               itemSize={3}
             />
           </bufferGeometry>
-          <lineBasicMaterial color="#60a5fa" linewidth={2} />
+          <lineBasicMaterial color="#60a5fa" />
         </line>
 
         {/* Current aircraft position marker */}
-        <mesh position={[0, 2, 0]}>
-          <sphereGeometry args={[3]} />
+        <mesh position={[0, 5, 0]}>
+          <sphereGeometry args={[4]} />
           <meshStandardMaterial 
             color="#fbbf24" 
             emissive="#fbbf24" 
-            emissiveIntensity={0.5}
+            emissiveIntensity={0.6}
           />
         </mesh>
+        
+        {/* Aircraft trail */}
+        <Text
+          position={[0, 12, 0]}
+          fontSize={6}
+          color="#fbbf24"
+          anchorX="center"
+          anchorY="middle"
+        >
+          B787
+        </Text>
 
         {/* Nearest airports for emergency diversion */}
         {nearestAirports.map((airport, index) => {
-          // Position airports in a realistic spread around the flight path
           const angle = (index * Math.PI * 2) / nearestAirports.length;
-          const distance = 100 + airport.distance * 0.5; // Scale distance for visibility
+          const distance = 120 + airport.distance * 0.3;
           const x = Math.cos(angle) * distance;
           const z = Math.sin(angle) * distance;
           
@@ -145,10 +276,10 @@ export default function FlightMap() {
 
         {/* Navigation waypoints */}
         {[
-          { name: "BAVPA", pos: [-300, 2, 100] },
-          { name: "HITME", pos: [-100, 2, 50] },
-          { name: "DOSXX", pos: [200, 2, -20] },
-          { name: "ROBUC", pos: [500, 2, -60] }
+          { name: "BAVPA", pos: [-300, 2, 100] as [number, number, number] },
+          { name: "HITME", pos: [-100, 2, 50] as [number, number, number] },
+          { name: "DOSXX", pos: [200, 2, -20] as [number, number, number] },
+          { name: "ROBUC", pos: [500, 2, -60] as [number, number, number] }
         ].map((waypoint) => (
           <group key={waypoint.name} position={waypoint.pos}>
             <mesh>
@@ -191,8 +322,7 @@ export default function FlightMap() {
         </group>
       </group>
 
-      {/* Grid reference */}
-      <gridHelper args={[1000, 50, "#1e3a8a", "#1e3a8a"]} position={[0, -1, 0]} />
+
     </group>
   );
 }
