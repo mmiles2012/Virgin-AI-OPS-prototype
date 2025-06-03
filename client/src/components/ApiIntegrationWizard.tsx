@@ -76,17 +76,21 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
   ];
 
   const testApiConnection = async (service: ApiService) => {
+    console.log('Testing API connection for:', service.name);
     setApiServices(prev => prev.map(s => 
       s.id === service.id ? { ...s, status: 'testing' } : s
     ));
 
     try {
+      console.log('Fetching:', service.testEndpoint);
       const response = await fetch(service.testEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
 
+      console.log('Response status:', response.status);
       const result = await response.json();
+      console.log('API test result:', result);
       
       const testResult: TestResult = {
         service: service.name,
@@ -189,22 +193,24 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
                           ))}
                         </div>
                       </div>
-                      <Button
-                        onClick={() => testApiConnection(service)}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          console.log('Test Connection button clicked for:', service.name);
+                          testApiConnection(service);
+                        }}
                         disabled={service.status === 'testing'}
-                        variant="outline"
-                        size="sm"
-                        className="w-full"
+                        className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {service.status === 'testing' ? (
                           <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin inline" />
                             Testing Connection...
                           </>
                         ) : (
                           'Test Connection'
                         )}
-                      </Button>
+                      </button>
                     </div>
                   </CardContent>
                 </Card>
@@ -225,20 +231,24 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
             </div>
 
             <div className="flex justify-center mb-6">
-              <Button
-                onClick={testAllConnections}
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('Test All Connections button clicked');
+                  testAllConnections();
+                }}
                 disabled={isTestingAll}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isTestingAll ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin inline" />
                     Testing All Services...
                   </>
                 ) : (
                   'Test All Connections'
                 )}
-              </Button>
+              </button>
             </div>
 
             <div className="space-y-4">
@@ -360,9 +370,16 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
               <CardTitle className="text-2xl text-white">API Integration Wizard</CardTitle>
               <p className="text-gray-400 mt-1">{steps[currentStep].description}</p>
             </div>
-            <Button onClick={onClose} variant="ghost" size="sm">
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                console.log('Close (X) button clicked');
+                onClose();
+              }}
+              className="text-gray-400 hover:text-white p-1"
+            >
               ✕
-            </Button>
+            </button>
           </div>
           
           {/* Progress indicator */}
@@ -395,28 +412,40 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
         </CardContent>
 
         <div className="border-t border-gray-700 p-6 flex justify-between">
-          <Button
-            onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              console.log('Previous button clicked, currentStep:', currentStep);
+              setCurrentStep(Math.max(0, currentStep - 1));
+            }}
             disabled={currentStep === 0}
-            variant="outline"
+            className="px-4 py-2 border border-gray-600 text-gray-300 rounded hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
-          </Button>
+          </button>
           
           {currentStep < steps.length - 1 ? (
-            <Button
-              onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
-              className="bg-blue-600 hover:bg-blue-700"
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                console.log('Next button clicked, currentStep:', currentStep);
+                setCurrentStep(Math.min(steps.length - 1, currentStep + 1));
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
               Next
-            </Button>
+            </button>
           ) : (
-            <Button
-              onClick={onClose}
-              className="bg-green-600 hover:bg-green-700"
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                console.log('Complete Integration button clicked');
+                onClose();
+              }}
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
             >
               Complete Integration
-            </Button>
+            </button>
           )}
         </div>
       </Card>
