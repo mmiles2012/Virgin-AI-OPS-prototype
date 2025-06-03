@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { FlightSimulationEngine } from "./flightSimulation";
 import { ScenarioEngine } from "./scenarioEngine";
+import { DecisionEngine } from "./decisionEngine";
 import { boeing787Specs, FlightEnvelope } from "../client/src/lib/boeing787Specs";
 import { scenarios, medicalEmergencies } from "../client/src/lib/medicalProtocols";
 import { airports, findNearestAirports } from "../client/src/lib/airportData";
@@ -10,9 +11,10 @@ import { airports, findNearestAirports } from "../client/src/lib/airportData";
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
   
-  // Initialize simulation engines without WebSocket server to avoid conflicts
+  // Initialize simulation engines and decision engine
   const flightSim = new FlightSimulationEngine();
   const scenarioEngine = new ScenarioEngine();
+  const decisionEngine = new DecisionEngine(flightSim, scenarioEngine);
 
   function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const R = 3440.065; // Earth's radius in nautical miles
@@ -25,10 +27,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return R * c;
   }
 
-  // Update simulation engines periodically
+  // Update simulation engines and decision engine periodically
   setInterval(() => {
     flightSim.update();
     scenarioEngine.update();
+    
+    // Generate new decision context when needed
+    decisionEngine.generateDecisionContext();
   }, 2000);
 
   // Flight simulation endpoints
@@ -320,6 +325,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return Math.max(0, score);
   }
 
+  // Decision Engine endpoints
+  app.get("/api/decisions/context", (req, res) => {
+    const context = decisionEngine.getCurrentContext();
+    if (!context) {
+      return res.json({ 
+        available: false, 
+        message: "No active decision context" 
+      });
+    }
+    res.json({
+      available: true,
+      context,
+      aiRecommendation: decisionEngine.makeAIRecommendation(context)
+    });
+  });
+
+  app.post("/api/decisions/make", (req, res) => {
+    const { optionId, decisionMaker, responseTime } = req.body;
+    const context = decisionEngine.getCurrentContext();
+    
+    if (!context) {
+      return res.status(400).json({ error: "No active decision context" });
+    }
+
+    const selectedOption = context.availableOptions.find(opt => opt.id === optionId);
+    if (!selectedOption) {
+      return res.status(400).json({ error: "Invalid option selected" });
+    }
+
+    const outcome = decisionEngine.recordDecision(selectedOption, decisionMaker, responseTime);
+    
+    // Apply decision to simulation
+    if (selectedOption.id.startsWith('divert_')) {
+      const airportCode = selectedOption.id.replace('divert_', '');
+      flightSim.declareEmergency('medical');
+      // Note: In real implementation, would trigger diversion logic
+    }
+
+    res.json({
+      success: true,
+      outcome,
+      nextSteps: generateNextSteps(selectedOption)
+    });
+  });
+
+  app.get("/api/decisions/history", (req, res) => {
+    res.json({
+      decisions: decisionEngine.getDecisionHistory(),
+      metrics: decisionEngine.getPerformanceMetrics()
+    });
+  });
+
+  app.get("/api/decisions/analysis", (req, res) => {
+    const flightState = flightSim.getFlightState();
+    const scenarioState = scenarioEngine.getScenarioState();
+    
+    res.json({
+      currentSituation: {
+        flightWarnings: analyzeFlightWarnings(flightState),
+        riskAssessment: calculateRiskLevel(flightState, scenarioState),
+        criticalFactors: identifyCriticalFactors(flightState, scenarioState),
+        timeConstraints: calculateTimeConstraints(flightState, scenarioState)
+      },
+      recommendations: {
+        immediate: getImmediateRecommendations(flightState, scenarioState),
+        strategic: getStrategicRecommendations(flightState, scenarioState)
+      },
+      stakeholderImpact: analyzeStakeholderImpact(flightState, scenarioState)
+    });
+  });
+
   // Health check endpoint
   app.get("/api/health", (req, res) => {
     res.json({
@@ -331,9 +407,176 @@ export async function registerRoutes(app: Express): Promise<Server> {
         active: scenarioEngine.isActive(),
         current: scenarioEngine.getCurrentScenario()?.id || null
       },
+      decisions: {
+        contextAvailable: decisionEngine.getCurrentContext() !== null,
+        totalDecisions: decisionEngine.getDecisionHistory().length,
+        metrics: decisionEngine.getPerformanceMetrics()
+      },
       timestamp: new Date().toISOString()
     });
   });
+
+  // Helper functions for decision analysis
+  function generateNextSteps(option: any) {
+    const steps = [];
+    
+    if (option.id.startsWith('divert_')) {
+      steps.push('Contact ATC for diversion clearance');
+      steps.push('Notify passengers of route change');
+      steps.push('Coordinate ground medical team');
+      steps.push('Calculate new fuel requirements');
+    } else if (option.id === 'continue_destination') {
+      steps.push('Monitor patient condition closely');
+      steps.push('Prepare cabin crew for medical assistance');
+      steps.push('Alert destination medical team');
+    } else if (option.id === 'hold_assess') {
+      steps.push('Request holding clearance from ATC');
+      steps.push('Conduct detailed medical assessment');
+      steps.push('Calculate fuel consumption rate');
+    }
+    
+    return steps;
+  }
+
+  function analyzeFlightWarnings(flightState: any) {
+    const warnings = [];
+    
+    if (flightState.fuelRemaining < 50000) {
+      warnings.push({
+        type: 'FUEL',
+        severity: 'HIGH',
+        message: 'Low fuel - diversion required',
+        timeToAction: Math.floor((flightState.fuelRemaining - 30000) / 3000) * 60 // minutes
+      });
+    }
+    
+    if (flightState.airspeed > 550) {
+      warnings.push({
+        type: 'SPEED',
+        severity: 'MEDIUM',
+        message: 'Exceeding maximum operating speed',
+        timeToAction: 5
+      });
+    }
+    
+    if (flightState.position.altitude > 43000) {
+      warnings.push({
+        type: 'ALTITUDE',
+        severity: 'MEDIUM', 
+        message: 'Above certified ceiling',
+        timeToAction: 10
+      });
+    }
+    
+    return warnings;
+  }
+
+  function calculateRiskLevel(flightState: any, scenarioState: any) {
+    let riskScore = 0;
+    
+    if (flightState.emergency.declared) riskScore += 40;
+    if (flightState.fuelRemaining < 80000) riskScore += 30;
+    if (scenarioState.currentScenario?.severity === 'high') riskScore += 30;
+    if (flightState.airspeed > 520) riskScore += 20;
+    
+    if (riskScore >= 70) return { level: 'CRITICAL', score: riskScore };
+    if (riskScore >= 40) return { level: 'HIGH', score: riskScore };
+    if (riskScore >= 20) return { level: 'MEDIUM', score: riskScore };
+    return { level: 'LOW', score: riskScore };
+  }
+
+  function identifyCriticalFactors(flightState: any, scenarioState: any) {
+    const factors = [];
+    
+    if (flightState.fuelRemaining < 100000) {
+      factors.push({
+        factor: 'FUEL_RESERVES',
+        impact: 'HIGH',
+        description: 'Limited fuel affects diversion options'
+      });
+    }
+    
+    if (scenarioState.currentScenario?.type === 'medical') {
+      factors.push({
+        factor: 'MEDICAL_URGENCY', 
+        impact: 'CRITICAL',
+        description: 'Patient condition requires immediate attention'
+      });
+    }
+    
+    return factors;
+  }
+
+  function calculateTimeConstraints(flightState: any, scenarioState: any) {
+    const constraints = [];
+    
+    if (scenarioState.currentScenario?.severity === 'high') {
+      constraints.push({
+        constraint: 'MEDICAL_DECISION',
+        timeLimit: 300, // 5 minutes
+        description: 'Critical medical situation requires immediate decision'
+      });
+    }
+    
+    if (flightState.fuelRemaining < 60000) {
+      constraints.push({
+        constraint: 'FUEL_DECISION',
+        timeLimit: 900, // 15 minutes
+        description: 'Fuel levels require diversion decision soon'
+      });
+    }
+    
+    return constraints;
+  }
+
+  function getImmediateRecommendations(flightState: any, scenarioState: any) {
+    const recommendations = [];
+    
+    if (scenarioState.currentScenario?.type === 'medical') {
+      recommendations.push('Assess passenger medical condition');
+      recommendations.push('Consult with ground medical support');
+    }
+    
+    if (flightState.fuelRemaining < 80000) {
+      recommendations.push('Review nearest suitable airports');
+      recommendations.push('Calculate fuel reserves for diversions');
+    }
+    
+    return recommendations;
+  }
+
+  function getStrategicRecommendations(flightState: any, scenarioState: any) {
+    const recommendations = [];
+    
+    recommendations.push('Maintain communication with operations center');
+    recommendations.push('Document all decisions for post-flight analysis');
+    recommendations.push('Consider passenger communication strategy');
+    
+    return recommendations;
+  }
+
+  function analyzeStakeholderImpact(flightState: any, scenarioState: any) {
+    return {
+      passengers: {
+        affected: 280,
+        impact: scenarioState.active ? 'HIGH' : 'LOW',
+        concerns: ['Schedule delays', 'Medical emergency response', 'Communication']
+      },
+      crew: {
+        affected: 15,
+        impact: 'HIGH',
+        concerns: ['Decision pressure', 'Safety protocols', 'Passenger management']
+      },
+      airline: {
+        impact: 'MEDIUM',
+        concerns: ['Operational costs', 'Schedule disruption', 'Regulatory compliance']
+      },
+      airports: {
+        impact: scenarioState.active ? 'MEDIUM' : 'LOW',
+        concerns: ['Emergency response', 'Ground handling', 'Medical facilities']
+      }
+    };
+  }
 
   return httpServer;
 }
