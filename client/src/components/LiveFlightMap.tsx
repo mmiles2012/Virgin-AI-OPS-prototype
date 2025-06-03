@@ -36,11 +36,11 @@ const MAJOR_AIRPORTS = [
   { code: 'MIA', name: 'Miami Intl', lat: 25.7959, lon: -80.2870 }
 ];
 
-// Convert lat/lon to 3D coordinates for display
+// Convert lat/lon to 3D coordinates for global display
 function latLonTo3D(lat: number, lon: number, scale: number = 10) {
-  // Simple projection for continental US
-  const x = (lon + 100) * scale; // Offset longitude for US centering
-  const z = -(lat - 35) * scale;  // Offset latitude and invert Z for correct orientation
+  // Global projection: convert lat/lon to flat map coordinates
+  const x = (lon / 180) * scale * 3; // -scale*3 to +scale*3 for longitude -180 to +180
+  const z = -(lat / 90) * scale * 2; // -scale*2 to +scale*2 for latitude -90 to +90 (inverted Z)
   return { x, y: 0.1, z };
 }
 
@@ -72,36 +72,36 @@ function FlightMarker({ flight, scale = 10 }: { flight: LiveFlight, scale?: numb
   const position = latLonTo3D(flight.latitude, flight.longitude, scale);
   
   return (
-    <group position={[position.x, position.y + 1, position.z]}>
-      {/* Flight aircraft marker - larger and more visible */}
+    <group position={[position.x, position.y + 2, position.z]}>
+      {/* Large bright aircraft marker */}
       <mesh rotation={[0, flight.heading * Math.PI / 180, 0]}>
-        <coneGeometry args={[0.6, 1.8, 6]} />
-        <meshStandardMaterial color="#ef4444" emissive="#660000" />
+        <coneGeometry args={[1.5, 3, 8]} />
+        <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={0.5} />
       </mesh>
-      {/* Glow effect */}
+      {/* Large glow effect */}
       <mesh>
-        <sphereGeometry args={[0.8]} />
-        <meshBasicMaterial color="#ef4444" transparent opacity={0.3} />
+        <sphereGeometry args={[2]} />
+        <meshBasicMaterial color="#ff4444" transparent opacity={0.4} />
       </mesh>
-      {/* Flight callsign label */}
+      {/* Bright flight callsign label */}
       <Text
-        position={[0, 2.5, 0]}
-        fontSize={0.8}
-        color="#fbbf24"
+        position={[0, 4, 0]}
+        fontSize={1.2}
+        color="#ffff00"
         anchorX="center"
         anchorY="middle"
       >
         {flight.callsign}
       </Text>
-      {/* Aircraft type and altitude */}
+      {/* Aircraft type */}
       <Text
-        position={[0, 1.8, 0]}
-        fontSize={0.4}
-        color="#94a3b8"
+        position={[0, 3, 0]}
+        fontSize={0.8}
+        color="#ffffff"
         anchorX="center"
         anchorY="middle"
       >
-        {flight.aircraft} - {Math.round(flight.altitude)}ft
+        {flight.aircraft}
       </Text>
     </group>
   );
@@ -262,9 +262,11 @@ export default function LiveFlightMap() {
           ))}
           
           {/* Live Flights */}
-          {flightData?.flights?.map((flight, index) => (
-            <FlightMarker key={index} flight={flight} scale={mapScale} />
-          ))}
+          {flightData?.flights?.map((flight, index) => {
+            const pos = latLonTo3D(flight.latitude, flight.longitude, mapScale);
+            console.log(`Flight ${flight.callsign} at lat:${flight.latitude}, lon:${flight.longitude} -> x:${pos.x}, z:${pos.z}`);
+            return <FlightMarker key={index} flight={flight} scale={mapScale} />;
+          })}
           
           <OrbitControls 
             enablePan={true}
