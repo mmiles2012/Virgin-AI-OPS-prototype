@@ -201,15 +201,15 @@ function App() {
               </div>
             )}
 
-            {/* Compact scenario manager and metrics - hide when minimized */}
+            {/* Draggable scenario manager and metrics - hide when minimized */}
             {!isInterfaceMinimized && (
               <div className="absolute bottom-4 left-4 right-4 z-40 pointer-events-auto">
                 <div className="flex gap-4">
-                  <div className="max-w-sm">
-                    <ScenarioManager onEmergencyActivate={setIsEmergencyActive} />
+                  <div className="max-w-sm relative">
+                    <ScenarioManager onEmergencyActivate={setIsEmergencyActive} draggable={true} />
                   </div>
-                  <div className="max-w-sm">
-                    <MetricsDisplay />
+                  <div className="max-w-sm relative">
+                    <MetricsDisplay draggable={true} />
                   </div>
                 </div>
               </div>

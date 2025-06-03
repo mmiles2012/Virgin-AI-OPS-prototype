@@ -5,7 +5,11 @@ import { useFlightState } from '../lib/stores/useFlightState';
 import { useScenario } from '../lib/stores/useScenario';
 import { TrendingUp, Clock, DollarSign, Target } from 'lucide-react';
 
-export default function MetricsDisplay() {
+interface MetricsDisplayProps {
+  draggable?: boolean;
+}
+
+export default function MetricsDisplay({ draggable = false }: MetricsDisplayProps) {
   const { fuelRemaining, airspeed, altitude } = useFlightState();
   const { 
     decisionsMade, 
@@ -26,6 +30,8 @@ export default function MetricsDisplay() {
       title="Performance Metrics"
       icon={<TrendingUp className="h-5 w-5" />}
       className="aviation-panel h-full"
+      draggable={draggable}
+      initialPosition={{ x: 300, y: window.innerHeight - 400 }}
     >
       <div className="space-y-4">
         {/* Flight Performance */}

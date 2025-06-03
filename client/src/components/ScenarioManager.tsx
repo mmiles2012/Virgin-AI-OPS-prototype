@@ -10,9 +10,10 @@ import { Play, Square, RotateCcw, AlertTriangle } from 'lucide-react';
 
 interface ScenarioManagerProps {
   onEmergencyActivate: (active: boolean) => void;
+  draggable?: boolean;
 }
 
-export default function ScenarioManager({ onEmergencyActivate }: ScenarioManagerProps) {
+export default function ScenarioManager({ onEmergencyActivate, draggable = false }: ScenarioManagerProps) {
   const { 
     currentScenario, 
     isActive, 
@@ -54,6 +55,8 @@ export default function ScenarioManager({ onEmergencyActivate }: ScenarioManager
       title="Select Non Normal Operations"
       icon={<AlertTriangle className="h-5 w-5" />}
       className="aviation-panel"
+      draggable={draggable}
+      initialPosition={{ x: 20, y: window.innerHeight - 400 }}
     >
       <div className="space-y-4">
         <div className="space-y-2">
