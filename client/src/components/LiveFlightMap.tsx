@@ -72,31 +72,36 @@ function FlightMarker({ flight, scale = 10 }: { flight: LiveFlight, scale?: numb
   const position = latLonTo3D(flight.latitude, flight.longitude, scale);
   
   return (
-    <group position={[position.x, position.y + 0.5, position.z]}>
-      {/* Flight aircraft marker */}
+    <group position={[position.x, position.y + 1, position.z]}>
+      {/* Flight aircraft marker - larger and more visible */}
       <mesh rotation={[0, flight.heading * Math.PI / 180, 0]}>
-        <coneGeometry args={[0.4, 1.2, 4]} />
-        <meshBasicMaterial color="#ef4444" />
+        <coneGeometry args={[0.6, 1.8, 6]} />
+        <meshStandardMaterial color="#ef4444" emissive="#660000" />
+      </mesh>
+      {/* Glow effect */}
+      <mesh>
+        <sphereGeometry args={[0.8]} />
+        <meshBasicMaterial color="#ef4444" transparent opacity={0.3} />
       </mesh>
       {/* Flight callsign label */}
       <Text
-        position={[0, 2, 0]}
-        fontSize={0.5}
+        position={[0, 2.5, 0]}
+        fontSize={0.8}
         color="#fbbf24"
         anchorX="center"
         anchorY="middle"
       >
         {flight.callsign}
       </Text>
-      {/* Aircraft type label */}
+      {/* Aircraft type and altitude */}
       <Text
-        position={[0, 1.3, 0]}
-        fontSize={0.3}
+        position={[0, 1.8, 0]}
+        fontSize={0.4}
         color="#94a3b8"
         anchorX="center"
         anchorY="middle"
       >
-        {flight.aircraft}
+        {flight.aircraft} - {Math.round(flight.altitude)}ft
       </Text>
     </group>
   );
@@ -244,7 +249,7 @@ export default function LiveFlightMap() {
 
       {/* 3D Map */}
       <div className="bg-black/50 rounded-lg border border-gray-600" style={{ height: 'calc(100% - 120px)' }}>
-        <Canvas camera={{ position: [0, 15, 20], fov: 60 }}>
+        <Canvas camera={{ position: [0, 25, 25], fov: 75 }}>
           <ambientLight intensity={0.4} />
           <directionalLight position={[10, 10, 5]} intensity={0.6} />
           
