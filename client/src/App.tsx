@@ -13,6 +13,7 @@ import ScenarioManager from "./components/ScenarioManager";
 import MetricsDisplay from "./components/MetricsDisplay";
 import InlineApiTest from "./components/InlineApiTest";
 import LiveFlightTracker from "./components/LiveFlightTracker";
+import LiveFlightMap from "./components/LiveFlightMap";
 
 // Flight control mappings
 enum FlightControls {
@@ -50,7 +51,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview';
+type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');

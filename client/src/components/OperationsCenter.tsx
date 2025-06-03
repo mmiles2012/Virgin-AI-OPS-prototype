@@ -47,7 +47,12 @@ export default function OperationsCenter() {
 
   return (
     <div className="absolute inset-4 pointer-events-auto">
-      <div className="h-full grid grid-cols-4 gap-4">
+      <div className="h-full grid grid-cols-3 gap-4">
+        {/* Live Flight Tracker */}
+        <div className="col-span-2">
+          <LiveFlightTracker />
+        </div>
+
         {/* Flight Status Overview */}
         <Card className="aviation-panel">
           <CardHeader className="pb-3">
