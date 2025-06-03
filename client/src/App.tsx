@@ -201,17 +201,36 @@ function App() {
               </div>
             )}
 
-            {/* Always visible scenario manager and metrics */}
-            <div className="absolute bottom-4 left-4 right-4 z-40 pointer-events-auto">
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <ScenarioManager onEmergencyActivate={setIsEmergencyActive} />
-                </div>
-                <div className="w-96">
-                  <MetricsDisplay />
+            {/* Compact scenario manager and metrics - hide when minimized */}
+            {!isInterfaceMinimized && (
+              <div className="absolute bottom-4 left-4 right-4 z-40 pointer-events-auto">
+                <div className="flex gap-4">
+                  <div className="max-w-sm">
+                    <ScenarioManager onEmergencyActivate={setIsEmergencyActive} />
+                  </div>
+                  <div className="max-w-sm">
+                    <MetricsDisplay />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Minimized status bar */}
+            {isInterfaceMinimized && (
+              <div className="absolute bottom-4 left-4 right-4 z-40 pointer-events-auto">
+                <div className="bg-black/60 backdrop-blur-sm rounded-lg border border-gray-600/50 px-4 py-2">
+                  <div className="flex justify-between items-center text-white text-sm">
+                    <span className="text-blue-300">Boeing 787 Digital Twin</span>
+                    <div className="flex gap-6 text-xs text-gray-300">
+                      <span>Fuel: 75,234kg</span>
+                      <span>Alt: 35,000ft</span>
+                      <span>Speed: 450kts</span>
+                      <span className="text-orange-400">Warnings: 2</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Flight controls help overlay */}
             <div className="absolute top-1/2 right-4 transform -translate-y-1/2 z-30 pointer-events-auto">

@@ -111,72 +111,44 @@ export default function ScenarioManager({ onEmergencyActivate }: ScenarioManager
           </Button>
         </div>
 
-        {/* Current Scenario Status */}
+        {/* Compact Current Scenario Status */}
         {currentScenario && (
-          <div className="border border-blue-500 rounded p-3 bg-blue-900/20">
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <h4 className="text-blue-300 font-medium">{currentScenario.title}</h4>
-                <p className="text-blue-200 text-sm">{currentScenario.description}</p>
+          <div className="border border-blue-500 rounded p-2 bg-blue-900/20">
+            <div className="flex justify-between items-center mb-1">
+              <div className="flex-1 min-w-0">
+                <h4 className="text-blue-300 font-medium text-sm truncate">{currentScenario.title}</h4>
               </div>
-              <Badge variant={isActive ? "default" : "secondary"}>
+              <Badge variant={isActive ? "default" : "secondary"} className="text-xs ml-2">
                 {isActive ? "ACTIVE" : "INACTIVE"}
               </Badge>
             </div>
 
             {isActive && (
-              <div className="space-y-2 mt-3">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-blue-300">Scenario Progress</span>
-                    <span className="text-blue-200">{scenarioProgress}%</span>
-                  </div>
-                  <Progress value={scenarioProgress} className="h-2" />
+              <div className="space-y-1">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-blue-300">Progress: {scenarioProgress}%</span>
+                  <span className="text-blue-200">Score: {score}/100</span>
                 </div>
-
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-blue-300">Decisions Made</span>
-                    <div className="text-white font-mono">{decisionsMade}</div>
-                  </div>
-                  <div>
-                    <span className="text-blue-300">Current Score</span>
-                    <div className="text-white font-mono">{score}/100</div>
-                  </div>
-                </div>
-
-                {/* Learning Objectives */}
-                <div className="border-t border-blue-500 pt-2">
-                  <div className="text-blue-300 text-sm mb-1">Learning Objectives</div>
-                  <ul className="text-blue-200 text-xs space-y-1">
-                    {currentScenario.learningObjectives.map((objective, index) => (
-                      <li key={index} className="flex items-start gap-1">
-                        <span className="text-blue-400">•</span>
-                        {objective}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <Progress value={scenarioProgress} className="h-1" />
               </div>
             )}
           </div>
         )}
 
-        {/* Quick scenario info */}
+        {/* Compact scenario info */}
         {selectedScenarioId && !currentScenario && (
-          <div className="border border-gray-600 rounded p-3 bg-gray-900/20">
+          <div className="border border-gray-600 rounded p-2 bg-gray-900/20">
             {(() => {
               const scenario = scenarios.find(s => s.id === selectedScenarioId);
               return scenario ? (
                 <div>
-                  <h4 className="text-gray-300 font-medium mb-1">{scenario.title}</h4>
-                  <p className="text-gray-400 text-sm mb-2">{scenario.description}</p>
+                  <h4 className="text-gray-300 font-medium text-sm mb-1">{scenario.title}</h4>
                   <div className="flex gap-2 text-xs">
-                    <Badge variant="outline" className="text-gray-400">
-                      Duration: {scenario.estimatedDuration}
+                    <Badge variant="outline" className="text-gray-400 text-xs">
+                      {scenario.estimatedDuration}
                     </Badge>
-                    <Badge variant="outline" className="text-gray-400">
-                      Severity: {scenario.severity}
+                    <Badge variant="outline" className="text-gray-400 text-xs">
+                      {scenario.severity}
                     </Badge>
                   </div>
                 </div>
@@ -184,17 +156,6 @@ export default function ScenarioManager({ onEmergencyActivate }: ScenarioManager
             })()}
           </div>
         )}
-
-        {/* Training Tips */}
-        <div className="bg-yellow-900/20 border border-yellow-500 rounded p-3">
-          <h4 className="text-yellow-300 font-medium text-sm mb-1">Training Tips</h4>
-          <ul className="text-yellow-200 text-xs space-y-1">
-            <li>• Communication between crew and operations is key</li>
-            <li>• Consider all factors: medical urgency, fuel, weather</li>
-            <li>• Practice decision-making under time pressure</li>
-            <li>• Review post-scenario analysis for improvement</li>
-          </ul>
-        </div>
       </div>
     </CollapsibleCard>
   );
