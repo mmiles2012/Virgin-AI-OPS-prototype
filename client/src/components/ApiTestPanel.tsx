@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 export default function ApiTestPanel({ onClose }: { onClose: () => void }) {
+  console.log('ApiTestPanel mounted');
   const [testResults, setTestResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -53,12 +54,19 @@ export default function ApiTestPanel({ onClose }: { onClose: () => void }) {
 
         <div className="space-y-4 mb-6">
           <button
-            onClick={() => {
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              console.log('AviationStack button mousedown');
+            }}
+            onMouseUp={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
               console.log('Testing AviationStack button clicked');
               testApi('/api/aviation/test-aviationstack', 'AviationStack');
             }}
             disabled={loading}
-            className="w-full px-4 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            className="w-full px-4 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 transition-colors cursor-pointer"
+            style={{ pointerEvents: 'auto' }}
           >
             {loading ? 'Testing...' : 'Test AviationStack API'}
           </button>

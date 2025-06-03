@@ -11,7 +11,7 @@ import DecisionCenter from "./components/DecisionCenter";
 import FlightMap from "./components/FlightMap";
 import ScenarioManager from "./components/ScenarioManager";
 import MetricsDisplay from "./components/MetricsDisplay";
-import ApiTestPanel from "./components/ApiTestPanel";
+import DirectApiTest from "./components/DirectApiTest";
 import LiveFlightTracker from "./components/LiveFlightTracker";
 
 // Flight control mappings
@@ -245,7 +245,7 @@ function App() {
 
             {/* API Integration Wizard */}
             {showApiWizard && (
-              <ApiTestPanel onClose={() => setShowApiWizard(false)} />
+              <DirectApiTest onClose={() => setShowApiWizard(false)} />
             )}
 
           </div>
