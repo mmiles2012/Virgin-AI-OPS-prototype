@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useFlightState } from '../lib/stores/useFlightState';
 import { useScenario } from '../lib/stores/useScenario';
 import { AlertTriangle, Plane, MapPin, Clock } from 'lucide-react';
+import LiveFlightTracker from './LiveFlightTracker';
 
 export default function OperationsCenter() {
   const { 

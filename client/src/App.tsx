@@ -12,6 +12,7 @@ import FlightMap from "./components/FlightMap";
 import ScenarioManager from "./components/ScenarioManager";
 import MetricsDisplay from "./components/MetricsDisplay";
 import SimpleApiWizard from "./components/SimpleApiWizard";
+import LiveFlightTracker from "./components/LiveFlightTracker";
 
 // Flight control mappings
 enum FlightControls {
