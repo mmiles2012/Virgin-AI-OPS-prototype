@@ -55,6 +55,7 @@ function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
   const [isEmergencyActive, setIsEmergencyActive] = useState(false);
   const [isInterfaceMinimized, setIsInterfaceMinimized] = useState(false);
+  const [showApiWizard, setShowApiWizard] = useState(false);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -155,6 +156,13 @@ function App() {
                   >
                     Overview
                   </button>
+                  <button
+                    onClick={() => setShowApiWizard(true)}
+                    className="px-4 py-2 rounded transition-colors bg-green-600 text-white hover:bg-green-700"
+                    title="Configure Aviation APIs"
+                  >
+                    API Setup
+                  </button>
                 </div>
               </div>
             </div>
@@ -231,6 +239,10 @@ function App() {
               </div>
             )}
 
+            {/* API Integration Wizard */}
+            {showApiWizard && (
+              <ApiIntegrationWizard onClose={() => setShowApiWizard(false)} />
+            )}
 
           </div>
         </KeyboardControls>
