@@ -325,8 +325,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({
       status: "operational",
       simulation: {
-        active: flightSim.isActive(),
-        clients: clients.size
+        active: flightSim.isActive()
       },
       scenario: {
         active: scenarioEngine.isActive(),
