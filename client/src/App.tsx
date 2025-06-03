@@ -13,7 +13,7 @@ import ScenarioManager from "./components/ScenarioManager";
 import MetricsDisplay from "./components/MetricsDisplay";
 import InlineApiTest from "./components/InlineApiTest";
 import LiveFlightTracker from "./components/LiveFlightTracker";
-import LiveFlightMap from "./components/LiveFlightMap";
+import SimpleFlightMap from "./components/SimpleFlightMap";
 
 // Flight control mappings
 enum FlightControls {
@@ -212,7 +212,7 @@ function App() {
             
             {viewMode === 'map' && !isInterfaceMinimized && (
               <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto">
-                <LiveFlightMap />
+                <SimpleFlightMap />
               </div>
             )}
 
