@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useScenario } from '../lib/stores/useScenario';
 import { scenarios } from '../lib/medicalProtocols';
-import { Play, Square, RotateCcw, AlertTriangle } from 'lucide-react';
+import { Play, Square, RotateCcw, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ScenarioManagerProps {
   onEmergencyActivate: (active: boolean) => void;
@@ -25,6 +25,7 @@ export default function ScenarioManager({ onEmergencyActivate }: ScenarioManager
   } = useScenario();
 
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('');
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
   const handleStartScenario = () => {
     if (selectedScenarioId) {
@@ -51,14 +52,25 @@ export default function ScenarioManager({ onEmergencyActivate }: ScenarioManager
 
   return (
     <Card className="aviation-panel">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-white flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5" />
-          Training Scenarios
+      <CardHeader 
+        className="pb-3 cursor-pointer select-none hover:bg-gray-800/50 transition-colors"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        <CardTitle className="text-white flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            Select Training Scenario
+          </div>
+          {isCollapsed ? (
+            <ChevronDown className="h-4 w-4 text-gray-400" />
+          ) : (
+            <ChevronUp className="h-4 w-4 text-gray-400" />
+          )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Scenario Selection */}
+      {!isCollapsed && (
+        <CardContent className="space-y-4">
+          {/* Scenario Selection */}
         <div className="space-y-2">
           <label className="text-blue-300 text-sm">Select Training Scenario</label>
           <Select value={selectedScenarioId} onValueChange={setSelectedScenarioId}>
@@ -198,7 +210,8 @@ export default function ScenarioManager({ onEmergencyActivate }: ScenarioManager
             <li>• Review post-scenario analysis for improvement</li>
           </ul>
         </div>
-      </CardContent>
+        </CardContent>
+      )}
     </Card>
   );
 }
