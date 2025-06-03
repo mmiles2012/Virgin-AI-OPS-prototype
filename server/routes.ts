@@ -7,6 +7,7 @@ import { DecisionEngine } from "./decisionEngine";
 import { boeing787Specs, FlightEnvelope } from "../client/src/lib/boeing787Specs";
 import { scenarios, medicalEmergencies } from "../client/src/lib/medicalProtocols";
 import { airports, findNearestAirports } from "../client/src/lib/airportData";
+import { aviationApiService } from "./aviationApiService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -607,6 +608,116 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Aviation API Testing Routes
+  app.post("/api/aviation/test-aviationstack", async (req, res) => {
+    try {
+      const result = await aviationApiService.testAviationStack();
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `AviationStack test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
+  app.post("/api/aviation/test-opensky", async (req, res) => {
+    try {
+      const result = await aviationApiService.testOpenSky();
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `OpenSky test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
+  app.post("/api/aviation/test-mapbox", async (req, res) => {
+    try {
+      const result = await aviationApiService.testMapbox();
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Mapbox test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
+  // Real-time Flight Data Routes
+  app.get("/api/aviation/virgin-atlantic-flights", async (req, res) => {
+    try {
+      const flights = await aviationApiService.getVirginAtlanticFlights();
+      res.json({
+        success: true,
+        flights,
+        count: flights.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Failed to fetch Virgin Atlantic flights: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
+  app.get("/api/aviation/live-aircraft", async (req, res) => {
+    try {
+      const { latMin, latMax, lonMin, lonMax } = req.query;
+      
+      let bounds;
+      if (latMin && latMax && lonMin && lonMax) {
+        bounds = {
+          latMin: parseFloat(latMin as string),
+          latMax: parseFloat(latMax as string),
+          lonMin: parseFloat(lonMin as string),
+          lonMax: parseFloat(lonMax as string)
+        };
+      }
+
+      const aircraft = await aviationApiService.getLiveAircraftPositions(bounds);
+      res.json({
+        success: true,
+        aircraft,
+        count: aircraft.length,
+        bounds,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Failed to fetch live aircraft: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
+  app.get("/api/aviation/airport/:icao", async (req, res) => {
+    try {
+      const { icao } = req.params;
+      const airport = await aviationApiService.getAirportInformation(icao);
+      
+      if (airport) {
+        res.json({
+          success: true,
+          airport,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: `Airport ${icao} not found`
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Failed to fetch airport information: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
   // Health check endpoint
   app.get("/api/health", (req, res) => {
     res.json({
@@ -622,6 +733,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         contextAvailable: decisionEngine.getCurrentContext() !== null,
         totalDecisions: decisionEngine.getDecisionHistory().length,
         metrics: decisionEngine.getPerformanceMetrics()
+      },
+      aviation_apis: {
+        aviationstack_configured: !!process.env.AVIATIONSTACK_API_KEY,
+        opensky_configured: !!(process.env.OPENSKY_USERNAME && process.env.OPENSKY_PASSWORD),
+        mapbox_configured: !!process.env.MAPBOX_API_KEY
       },
       timestamp: new Date().toISOString()
     });
