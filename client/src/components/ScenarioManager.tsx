@@ -51,13 +51,13 @@ export default function ScenarioManager({ onEmergencyActivate }: ScenarioManager
 
   return (
     <CollapsibleCard 
-      title="Select Training Scenario"
+      title="Select Non Normal Operations"
       icon={<AlertTriangle className="h-5 w-5" />}
       className="aviation-panel"
     >
       <div className="space-y-4">
         <div className="space-y-2">
-          <label className="text-blue-300 text-sm">Select Training Scenario</label>
+          <label className="text-blue-300 text-sm">Select Non Normal Operation</label>
           <Select value={selectedScenarioId} onValueChange={setSelectedScenarioId}>
             <SelectTrigger className="bg-gray-800 border-gray-600">
               <SelectValue placeholder="Choose a scenario..." />
