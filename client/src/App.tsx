@@ -157,7 +157,10 @@ function App() {
                     Overview
                   </button>
                   <button
-                    onClick={() => setShowApiWizard(true)}
+                    onClick={() => {
+                      console.log('API Setup button clicked');
+                      setShowApiWizard(true);
+                    }}
                     className="px-4 py-2 rounded transition-colors bg-green-600 text-white hover:bg-green-700"
                     title="Configure Aviation APIs"
                   >

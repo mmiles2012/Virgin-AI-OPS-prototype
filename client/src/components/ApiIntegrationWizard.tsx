@@ -22,6 +22,7 @@ interface TestResult {
 }
 
 export default function ApiIntegrationWizard({ onClose }: { onClose: () => void }) {
+  console.log('ApiIntegrationWizard component rendered');
   const [currentStep, setCurrentStep] = useState(0);
   const [apiServices, setApiServices] = useState<ApiService[]>([
     {
