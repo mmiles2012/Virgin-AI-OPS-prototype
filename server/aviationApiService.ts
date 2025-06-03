@@ -34,7 +34,7 @@ export class AviationApiService {
   private mapboxKey: string;
 
   constructor() {
-    this.aviationStackKey = process.env.AVIATIONSTACK_API_KEY || '';
+    this.aviationStackKey = process.env.AVIATIONSTACK_API_KEY || '454bb19ed534574d0d562d4785d7a1eb';
     this.openskyUsername = process.env.OPENSKY_USERNAME || '';
     this.openskyPassword = process.env.OPENSKY_PASSWORD || '';
     this.mapboxKey = process.env.MAPBOX_API_KEY || '';
