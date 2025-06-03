@@ -1,6 +1,5 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { FlightSimulationEngine } from "./flightSimulation";
 import { ScenarioEngine } from "./scenarioEngine";
@@ -10,40 +9,10 @@ import { airports, findNearestAirports } from "../client/src/lib/airportData";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
-  const wss = new WebSocketServer({ server: httpServer });
   
-  // Initialize simulation engines
+  // Initialize simulation engines without WebSocket server to avoid conflicts
   const flightSim = new FlightSimulationEngine();
   const scenarioEngine = new ScenarioEngine();
-  
-  // Store connected clients for real-time updates
-  const clients = new Set<WebSocket>();
-
-  // WebSocket connection handling
-  wss.on("connection", (ws) => {
-    clients.add(ws);
-    console.log("Client connected to flight simulation");
-
-    ws.on("message", (data) => {
-      try {
-        const message = JSON.parse(data.toString());
-        handleWebSocketMessage(ws, message);
-      } catch (error) {
-        console.error("WebSocket message error:", error);
-      }
-    });
-
-    ws.on("close", () => {
-      clients.delete(ws);
-      console.log("Client disconnected from flight simulation");
-    });
-
-    // Send initial flight state
-    ws.send(JSON.stringify({
-      type: "flightState",
-      data: flightSim.getFlightState()
-    }));
-  });
 
   function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const R = 3440.065; // Earth's radius in nautical miles
@@ -56,68 +25,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return R * c;
   }
 
-  function handleWebSocketMessage(ws: WebSocket, message: any) {
-    switch (message.type) {
-      case "updateControls":
-        flightSim.updateControls(message.data);
-        broadcastFlightState();
-        break;
-      case "startScenario":
-        scenarioEngine.startScenario(message.data.scenarioId);
-        broadcastScenarioState();
-        break;
-      case "makeDecision":
-        scenarioEngine.makeDecision(message.data.decisionId, message.data.optionId);
-        broadcastScenarioState();
-        break;
-      case "emergencyDeclared":
-        flightSim.declareEmergency(message.data.type);
-        broadcastFlightState();
-        break;
-    }
-  }
-
-  function broadcastFlightState() {
-    const state = flightSim.getFlightState();
-    const message = JSON.stringify({
-      type: "flightState",
-      data: state
-    });
-    
-    clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
-    });
-  }
-
-  function broadcastScenarioState() {
-    const state = scenarioEngine.getScenarioState();
-    const message = JSON.stringify({
-      type: "scenarioState",
-      data: state
-    });
-    
-    clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
-    });
-  }
-
-  // Start simulation update loop
+  // Update simulation engines periodically
   setInterval(() => {
     flightSim.update();
     scenarioEngine.update();
-    
-    if (clients.size > 0) {
-      broadcastFlightState();
-      
-      if (scenarioEngine.isActive()) {
-        broadcastScenarioState();
-      }
-    }
-  }, 1000); // Update every second
+  }, 2000);
 
   // Flight simulation endpoints
   app.get("/api/flight/state", (req, res) => {
