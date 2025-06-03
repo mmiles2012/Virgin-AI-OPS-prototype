@@ -159,17 +159,21 @@ function App() {
               </div>
             )}
 
-            {/* Mode-specific Interfaces */}
+            {/* Mode-specific Interfaces - Compact Overlay */}
             {viewMode === 'cockpit' && (
-              <CockpitInterface onEmergencyToggle={setIsEmergencyActive} />
+              <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+                <CockpitInterface onEmergencyToggle={setIsEmergencyActive} />
+              </div>
             )}
             
             {viewMode === 'operations' && (
-              <OperationsCenter />
+              <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+                <OperationsCenter />
+              </div>
             )}
             
             {viewMode === 'decisions' && (
-              <div className="absolute inset-4 pointer-events-auto">
+              <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <DecisionCenter />
               </div>
             )}

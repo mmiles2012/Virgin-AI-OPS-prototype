@@ -49,8 +49,7 @@ export default function CockpitInterface({ onEmergencyToggle }: CockpitInterface
   };
 
   return (
-    <div className="absolute inset-4 pointer-events-auto">
-      <div className="h-full grid grid-cols-3 gap-4">
+    <div className="h-full grid grid-cols-3 gap-4">
         {/* Left Panel - Primary Flight Display */}
         <Card className="cockpit-display">
           <CardContent className="p-4 h-full">
@@ -277,6 +276,5 @@ export default function CockpitInterface({ onEmergencyToggle }: CockpitInterface
           </CardContent>
         </Card>
       </div>
-    </div>
   );
 }
