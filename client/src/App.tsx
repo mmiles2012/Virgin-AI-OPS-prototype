@@ -54,6 +54,7 @@ type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview';
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
   const [isEmergencyActive, setIsEmergencyActive] = useState(false);
+  const [isInterfaceMinimized, setIsInterfaceMinimized] = useState(false);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -106,6 +107,15 @@ function App() {
                 </div>
                 
                 <div className="flex gap-2">
+                  {viewMode !== 'overview' && (
+                    <button
+                      onClick={() => setIsInterfaceMinimized(!isInterfaceMinimized)}
+                      className="px-3 py-2 rounded transition-colors bg-gray-600 text-white hover:bg-gray-500"
+                      title={isInterfaceMinimized ? "Maximize Interface" : "Minimize Interface"}
+                    >
+                      {isInterfaceMinimized ? '□' : '_'}
+                    </button>
+                  )}
                   <button
                     onClick={() => setViewMode('cockpit')}
                     className={`px-4 py-2 rounded transition-colors ${
@@ -159,22 +169,35 @@ function App() {
               </div>
             )}
 
-            {/* Mode-specific Interfaces - Compact Overlay */}
-            {viewMode === 'cockpit' && (
+            {/* Mode-specific Interfaces - Dynamic and Minimizable */}
+            {viewMode === 'cockpit' && !isInterfaceMinimized && (
               <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <CockpitInterface onEmergencyToggle={setIsEmergencyActive} />
               </div>
             )}
             
-            {viewMode === 'operations' && (
+            {viewMode === 'operations' && !isInterfaceMinimized && (
               <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <OperationsCenter />
               </div>
             )}
             
-            {viewMode === 'decisions' && (
+            {viewMode === 'decisions' && !isInterfaceMinimized && (
               <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <DecisionCenter />
+              </div>
+            )}
+
+            {/* Minimized Mode Indicator */}
+            {isInterfaceMinimized && viewMode !== 'overview' && (
+              <div className="absolute top-20 left-4 pointer-events-auto">
+                <div className="bg-black/70 backdrop-blur-sm rounded-lg border border-gray-600 p-2">
+                  <div className="text-white text-sm">
+                    {viewMode === 'cockpit' && '✈️ Cockpit View (Minimized)'}
+                    {viewMode === 'operations' && '🏢 Operations Center (Minimized)'}
+                    {viewMode === 'decisions' && '🧠 Decision Engine (Minimized)'}
+                  </div>
+                </div>
               </div>
             )}
 
