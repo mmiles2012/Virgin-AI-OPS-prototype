@@ -11,7 +11,7 @@ import DecisionCenter from "./components/DecisionCenter";
 import FlightMap from "./components/FlightMap";
 import ScenarioManager from "./components/ScenarioManager";
 import MetricsDisplay from "./components/MetricsDisplay";
-import ApiIntegrationWizard from "./components/ApiIntegrationWizard";
+import SimpleApiWizard from "./components/SimpleApiWizard";
 
 // Flight control mappings
 enum FlightControls {
@@ -244,7 +244,7 @@ function App() {
 
             {/* API Integration Wizard */}
             {showApiWizard && (
-              <ApiIntegrationWizard onClose={() => setShowApiWizard(false)} />
+              <SimpleApiWizard onClose={() => setShowApiWizard(false)} />
             )}
 
           </div>
