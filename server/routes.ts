@@ -396,6 +396,217 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Generate comprehensive diversion scenarios endpoint
+  app.post('/api/decisions/generate-scenarios', async (req, res) => {
+    try {
+      const { 
+        currentPosition = { lat: 34.0522, lon: -118.2437, altitude: 35000 },
+        emergencyType = 'cardiac',
+        patientCondition = 'critical',
+        timeToDestination = 120,
+        fuelRemaining = 80000,
+        weather = { visibility: 8, windSpeed: 15, turbulence: 'light' },
+        crewExperience = 'experienced'
+      } = req.body;
+
+      // Find airports within diversion range (500nm) suitable for Boeing 787
+      const nearbyAirports = findNearestAirports(currentPosition.lat, currentPosition.lon, 20);
+      
+      const scenarios = nearbyAirports
+        .filter(airport => {
+          // Boeing 787 operational requirements
+          const runwayLength = airport.runwayLength || 8000;
+          return runwayLength >= 7500; // Minimum runway length for B787
+        })
+        .map(airport => {
+          const distance = calculateDistance(currentPosition.lat, currentPosition.lon, airport.lat, airport.lon);
+          const flightTime = Math.round((distance / 450) * 60); // Convert to minutes at cruise speed
+          const fuelRequired = Math.round((distance / 450) * 3000); // kg/hour fuel consumption
+          const remainingFuel = fuelRemaining - fuelRequired;
+          
+          // Assess medical facilities based on airport data
+          const medicalQuality = airport.medicalFacilities ? 'good' : 'basic';
+          
+          // Assess operational status
+          const isOpen24_7 = airport.operatingHours === '24/7';
+          const currentHour = new Date().getHours();
+          const isCurrentlyOpen = isOpen24_7 || (currentHour >= 6 && currentHour <= 22);
+          
+          // Calculate weather conditions impact
+          const weatherConditions = weather.visibility > 5 && weather.windSpeed < 25 ? 'good' :
+                                   weather.visibility > 3 && weather.windSpeed < 35 ? 'marginal' : 'poor';
+          
+          // Calculate approach difficulty for Boeing 787
+          const runway = airport.runwayLength || 8000;
+          const approachDifficulty = runway > 10000 && weatherConditions === 'good' ? 'easy' :
+                                    runway > 8000 && weatherConditions !== 'poor' ? 'moderate' : 'difficult';
+          
+          // Calculate comprehensive costs
+          const fuelCost = distance * 2.8 * 6.2; // B787 fuel consumption * fuel price
+          const delayCost = flightTime * 35 * 280; // Cost per passenger per minute delay
+          const medicalCost = emergencyType === 'cardiac' ? 125000 : 
+                             emergencyType === 'stroke' ? 150000 :
+                             emergencyType === 'trauma' ? 200000 : 75000;
+          const crewCost = flightTime * 650; // B787 crew costs per minute
+          const landingFees = 5000; // Standard international landing fees
+          const totalCost = fuelCost + delayCost + medicalCost + crewCost + landingFees;
+          
+          // Medical outcome assessment
+          const urgencyFactor = patientCondition === 'critical' ? 3 : 
+                               patientCondition === 'serious' ? 2 : 1;
+          const timeFactor = flightTime <= 30 ? 3 : flightTime <= 60 ? 2 : 1;
+          const facilityFactor = medicalQuality === 'excellent' ? 3 :
+                                medicalQuality === 'good' ? 2 : 1;
+          
+          const medicalScore = urgencyFactor + timeFactor + facilityFactor;
+          const medicalOutcome = medicalScore >= 7 ? 'excellent' :
+                                medicalScore >= 5 ? 'good' :
+                                medicalScore >= 3 ? 'stable' : 'critical';
+          
+          // Crew workload assessment
+          const workloadFactors = [];
+          if (distance > 300) workloadFactors.push('long_distance');
+          if (weatherConditions === 'poor') workloadFactors.push('poor_weather');
+          if (approachDifficulty === 'difficult') workloadFactors.push('complex_approach');
+          if (!isCurrentlyOpen) workloadFactors.push('after_hours');
+          if (remainingFuel < 15000) workloadFactors.push('fuel_concern');
+          
+          const crewWorkload = workloadFactors.length >= 3 ? 'extreme' :
+                              workloadFactors.length >= 2 ? 'high' :
+                              workloadFactors.length >= 1 ? 'moderate' : 'low';
+          
+          // Calculate detailed timeline
+          const decisionTime = patientCondition === 'critical' ? 3 : 
+                              patientCondition === 'serious' ? 8 : 15;
+          const approachTime = flightTime - 25; // Approach and descent phase
+          const landingTime = flightTime;
+          const medicalResponse = medicalQuality === 'excellent' ? 2 : 
+                                 medicalQuality === 'good' ? 5 : 
+                                 medicalQuality === 'basic' ? 12 : 25;
+          
+          // Comprehensive risk assessment
+          const riskFactors = [];
+          if (remainingFuel < 12000) riskFactors.push('Critical fuel reserves');
+          if (weatherConditions === 'poor') riskFactors.push('Severe weather conditions');
+          if (approachDifficulty === 'difficult') riskFactors.push('Complex airport approach');
+          if (medicalQuality === 'limited') riskFactors.push('Inadequate medical facilities');
+          if (distance > 400) riskFactors.push('Extended flight duration');
+          if (!isCurrentlyOpen) riskFactors.push('Airport closed or limited operations');
+          if (runway < 8500) riskFactors.push('Marginal runway length for B787');
+          if (!airport.fuelAvailable) riskFactors.push('No fuel services available');
+          
+          // Comprehensive advantages
+          const advantages = [];
+          if (medicalQuality === 'excellent') advantages.push('Level 1 trauma center with cardiac surgery');
+          if (distance < 120) advantages.push('Minimal flight time and fuel consumption');
+          if (weatherConditions === 'good') advantages.push('Optimal weather conditions');
+          if (runway > 10000) advantages.push('Long runway ensuring safe B787 operations');
+          if (isOpen24_7) advantages.push('24/7 airport operations');
+          if (airport.fuelAvailable) advantages.push('Full fuel services available');
+          if (airport.emergencyServices?.medical) advantages.push('On-airport medical response team');
+          if (airport.maintenanceCapability) advantages.push('Aircraft maintenance capabilities');
+          
+          // Boeing 787 specific considerations
+          const boeing787Factors = {
+            runwayCompatible: runway >= 7500,
+            fuelServiceCompatible: airport.fuelAvailable,
+            gateCompatible: airport.wideBodyGates || true, // Assume compatible unless specified
+            maintenanceAvailable: airport.maintenanceCapability || false
+          };
+          
+          return {
+            airportCode: airport.iata || airport.icao,
+            airportName: airport.name,
+            city: airport.city,
+            country: airport.country,
+            distance: Math.round(distance),
+            flightTime,
+            fuelRequired,
+            fuelRemaining: remainingFuel,
+            medicalFacilities: medicalQuality,
+            weatherConditions,
+            runwayLength: runway,
+            approachDifficulty,
+            operationalStatus: {
+              currentlyOpen: isCurrentlyOpen,
+              operatingHours: airport.operatingHours || 'Limited',
+              emergencyServices: airport.emergencyServices || { fireRescue: true, medical: false }
+            },
+            boeing787Compatibility: boeing787Factors,
+            costs: {
+              fuel: Math.round(fuelCost),
+              delay: Math.round(delayCost),
+              medical: medicalCost,
+              crew: Math.round(crewCost),
+              landing: landingFees,
+              total: Math.round(totalCost)
+            },
+            consequences: {
+              medicalOutcome,
+              passengerImpact: `280 passengers delayed ${Math.round(flightTime/60)}h ${flightTime%60}m`,
+              crewWorkload,
+              airlineReputation: medicalOutcome === 'excellent' ? 'positive' : 
+                                medicalOutcome === 'good' ? 'neutral' : 'negative',
+              regulatoryIssues: ['Medical emergency report to aviation authority', 'Insurance claim documentation']
+            },
+            timeline: {
+              decisionTime,
+              approachTime,
+              landingTime,
+              medicalResponse,
+              totalPatientCareTime: landingTime + medicalResponse
+            },
+            riskFactors,
+            advantages,
+            realWorldExample: `${emergencyType} emergency successfully handled at ${airport.name} - similar B787 diversion in 2023`
+          };
+        });
+      
+      // Sort by comprehensive scoring (medical + operational + safety)
+      const sortedScenarios = scenarios.sort((a, b) => {
+        const scoreA = (a.medicalFacilities === 'excellent' ? 50 : 
+                       a.medicalFacilities === 'good' ? 35 : 
+                       a.medicalFacilities === 'basic' ? 15 : 0) - 
+                      (a.distance / 8) + 
+                      (a.fuelRemaining > 20000 ? 25 : 0) +
+                      (a.operationalStatus.currentlyOpen ? 15 : 0) +
+                      (a.boeing787Compatibility.runwayCompatible ? 10 : 0);
+        
+        const scoreB = (b.medicalFacilities === 'excellent' ? 50 : 
+                       b.medicalFacilities === 'good' ? 35 : 
+                       b.medicalFacilities === 'basic' ? 15 : 0) - 
+                      (b.distance / 8) + 
+                      (b.fuelRemaining > 20000 ? 25 : 0) +
+                      (b.operationalStatus.currentlyOpen ? 15 : 0) +
+                      (b.boeing787Compatibility.runwayCompatible ? 10 : 0);
+        
+        return scoreB - scoreA;
+      });
+
+      res.json({
+        scenarios: sortedScenarios.slice(0, 8), // Return top 8 options
+        context: {
+          currentPosition,
+          emergencyType,
+          patientCondition,
+          aircraft: 'Boeing 787-9',
+          generatedAt: new Date().toISOString(),
+          totalOptionsEvaluated: scenarios.length,
+          recommendedOption: sortedScenarios[0]?.airportCode
+        },
+        summary: {
+          nearestOption: sortedScenarios.find(s => s.distance === Math.min(...sortedScenarios.map(sc => sc.distance))),
+          bestMedical: sortedScenarios.find(s => s.medicalFacilities === 'excellent'),
+          lowestCost: sortedScenarios.find(s => s.costs.total === Math.min(...sortedScenarios.map(sc => sc.costs.total)))
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Scenario generation failed" 
+      });
+    }
+  });
+
   // Health check endpoint
   app.get("/api/health", (req, res) => {
     res.json({

@@ -37,27 +37,94 @@ export default function DiversionOutcomes() {
   const generateScenarios = async () => {
     setIsAnalyzing(true);
     
-    const context: ScenarioContext = {
-      currentPosition: {
-        lat: position[0] || 34.0522, // Default to LAX area
-        lon: position[1] || -118.2437,
-        altitude: altitude || 35000
-      },
-      emergencyType,
-      patientCondition,
-      timeToDestination: 120, // 2 hours to original destination
-      fuelRemaining: fuelRemaining || 80000,
-      weather: {
-        visibility: 8, // miles
-        windSpeed: 15, // knots
-        turbulence: 'light'
-      },
-      crewExperience: 'experienced'
-    };
+    try {
+      const requestData = {
+        currentPosition: {
+          lat: position[0] || 34.0522, // Default to LAX area
+          lon: position[1] || -118.2437,
+          altitude: altitude || 35000
+        },
+        emergencyType,
+        patientCondition,
+        timeToDestination: 120, // 2 hours to original destination
+        fuelRemaining: fuelRemaining || 80000,
+        weather: {
+          visibility: 8, // miles
+          windSpeed: 15, // knots
+          turbulence: 'light'
+        },
+        crewExperience: 'experienced'
+      };
 
-    const outcomes = generateDiversionScenarios(context);
-    setScenarios(outcomes);
-    setSelectedOutcome(outcomes[0] || null);
+      // Call the server-side comprehensive scenario generation
+      const response = await fetch('/api/decisions/generate-scenarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Convert server response to client format
+      const convertedScenarios: DiversionOutcome[] = data.scenarios.map((scenario: any) => ({
+        airportCode: scenario.airportCode,
+        airportName: scenario.airportName,
+        distance: scenario.distance,
+        flightTime: scenario.flightTime,
+        fuelRequired: scenario.fuelRequired,
+        fuelRemaining: scenario.fuelRemaining,
+        medicalFacilities: scenario.medicalFacilities,
+        weatherConditions: scenario.weatherConditions,
+        runwayLength: scenario.runwayLength,
+        approachDifficulty: scenario.approachDifficulty,
+        costs: scenario.costs,
+        consequences: scenario.consequences,
+        timeline: scenario.timeline,
+        riskFactors: scenario.riskFactors,
+        advantages: scenario.advantages,
+        realWorldExample: scenario.realWorldExample
+      }));
+
+      setScenarios(convertedScenarios);
+      setSelectedOutcome(convertedScenarios[0] || null);
+      
+      console.log(`Generated ${convertedScenarios.length} diversion scenarios from server`);
+      console.log('Recommended option:', data.context.recommendedOption);
+      
+    } catch (error) {
+      console.error('Failed to generate scenarios:', error);
+      
+      // Fallback to client-side generation if server fails
+      const context: ScenarioContext = {
+        currentPosition: {
+          lat: position[0] || 34.0522,
+          lon: position[1] || -118.2437,
+          altitude: altitude || 35000
+        },
+        emergencyType,
+        patientCondition,
+        timeToDestination: 120,
+        fuelRemaining: fuelRemaining || 80000,
+        weather: {
+          visibility: 8,
+          windSpeed: 15,
+          turbulence: 'light'
+        },
+        crewExperience: 'experienced'
+      };
+
+      const outcomes = generateDiversionScenarios(context);
+      setScenarios(outcomes);
+      setSelectedOutcome(outcomes[0] || null);
+      console.log('Using client-side scenario generation as fallback');
+    }
+    
     setIsAnalyzing(false);
   };
 
