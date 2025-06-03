@@ -1,7 +1,7 @@
 import { useKeyboardControls } from '@react-three/drei';
 import { Badge } from '@/components/ui/badge';
 
-enum FlightControls {
+enum FlightControlKeys {
   pitchUp = 'pitchUp',
   pitchDown = 'pitchDown',
   rollLeft = 'rollLeft',
@@ -15,19 +15,19 @@ enum FlightControls {
 }
 
 export default function FlightControls() {
-  const [subscribe, getKeys] = useKeyboardControls<FlightControls>();
+  const [subscribe, getKeys] = useKeyboardControls();
 
   const controls = [
-    { name: 'Pitch Up', key: 'S', control: FlightControls.pitchUp },
-    { name: 'Pitch Down', key: 'W', control: FlightControls.pitchDown },
-    { name: 'Roll Left', key: 'A', control: FlightControls.rollLeft },
-    { name: 'Roll Right', key: 'D', control: FlightControls.rollRight },
-    { name: 'Yaw Left', key: 'Q', control: FlightControls.yawLeft },
-    { name: 'Yaw Right', key: 'E', control: FlightControls.yawRight },
-    { name: 'Throttle Up', key: 'R', control: FlightControls.throttleUp },
-    { name: 'Throttle Down', key: 'F', control: FlightControls.throttleDown },
-    { name: 'Autopilot', key: 'T', control: FlightControls.autopilot },
-    { name: 'Emergency', key: 'Space', control: FlightControls.emergency }
+    { name: 'Pitch Up', key: 'S', control: FlightControlKeys.pitchUp },
+    { name: 'Pitch Down', key: 'W', control: FlightControlKeys.pitchDown },
+    { name: 'Roll Left', key: 'A', control: FlightControlKeys.rollLeft },
+    { name: 'Roll Right', key: 'D', control: FlightControlKeys.rollRight },
+    { name: 'Yaw Left', key: 'Q', control: FlightControlKeys.yawLeft },
+    { name: 'Yaw Right', key: 'E', control: FlightControlKeys.yawRight },
+    { name: 'Throttle Up', key: 'R', control: FlightControlKeys.throttleUp },
+    { name: 'Throttle Down', key: 'F', control: FlightControlKeys.throttleDown },
+    { name: 'Autopilot', key: 'T', control: FlightControlKeys.autopilot },
+    { name: 'Emergency', key: 'Space', control: FlightControlKeys.emergency }
   ];
 
   return (
@@ -35,7 +35,8 @@ export default function FlightControls() {
       <h4 className="text-blue-300 font-medium text-sm">Active Controls</h4>
       <div className="space-y-1">
         {controls.map(({ name, key, control }) => {
-          const isPressed = getKeys()[control];
+          const keys = getKeys();
+          const isPressed = keys[control as keyof typeof keys] || false;
           return (
             <div key={control} className="flex items-center justify-between text-xs">
               <span className="text-blue-200">{name}</span>

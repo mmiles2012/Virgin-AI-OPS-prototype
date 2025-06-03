@@ -158,7 +158,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/flight/performance", (req, res) => {
     const state = flightSim.getFlightState();
-    const { altitude, weight } = state;
+    const { weight } = state;
+    const altitude = state.position.altitude;
     
     const performance = {
       vSpeeds: FlightEnvelope.getVSpeeds(weight),
@@ -321,7 +322,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Calculate diversion costs and times
       const diversionOptions = suitableAirports.map(airport => {
-        const distance = airport.distance;
+        // Calculate distance using Haversine formula
+        const distance = calculateDistance(currentPosition.lat, currentPosition.lon, airport.lat, airport.lon);
         const flightTime = distance / (boeing787Specs.performance.typicalCruiseSpeed * 661.47); // Convert Mach to nm/h
         const fuelRequired = FlightEnvelope.calculateFuelConsumption(35000, 0.85, weight || 200000, 'cruise') * flightTime;
         

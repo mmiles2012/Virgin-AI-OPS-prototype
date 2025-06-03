@@ -41,7 +41,7 @@ export const useFlightState = create<FlightState>()(
     
     altitude: 35000,
     airspeed: 485, // Typical cruising speed for 787
-    heading: 090, // East
+    heading: 90, // East
     throttle: 75,
     fuelRemaining: 180000, // pounds
     
