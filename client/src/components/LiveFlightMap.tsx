@@ -5,23 +5,21 @@ import * as THREE from 'three';
 import { Plane, MapPin, Navigation, Wifi } from 'lucide-react';
 
 interface LiveFlight {
-  flight_number: string;
+  callsign: string;
   aircraft: string;
-  departure: string;
-  arrival: string;
-  status: string;
-  latitude?: number;
-  longitude?: number;
-  altitude?: number;
-  speed?: number;
-  heading?: number;
+  origin: string;
+  destination: string;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  velocity: number;
+  heading: number;
 }
 
 interface FlightData {
-  flights_found: number;
-  sample_flight: LiveFlight;
-  all_flights?: LiveFlight[];
-  api_credits_used: number;
+  flights: LiveFlight[];
+  count: number;
+  timestamp: string;
 }
 
 // Major airports with real coordinates
@@ -71,26 +69,34 @@ function Airport({ airport, scale = 10 }: { airport: typeof MAJOR_AIRPORTS[0], s
 }
 
 function FlightMarker({ flight, scale = 10 }: { flight: LiveFlight, scale?: number }) {
-  if (!flight.latitude || !flight.longitude) return null;
-  
   const position = latLonTo3D(flight.latitude, flight.longitude, scale);
   
   return (
     <group position={[position.x, position.y + 0.5, position.z]}>
       {/* Flight aircraft marker */}
-      <mesh rotation={[0, (flight.heading || 0) * Math.PI / 180, 0]}>
-        <coneGeometry args={[0.3, 1, 4]} />
+      <mesh rotation={[0, flight.heading * Math.PI / 180, 0]}>
+        <coneGeometry args={[0.4, 1.2, 4]} />
         <meshBasicMaterial color="#ef4444" />
       </mesh>
-      {/* Flight number label */}
+      {/* Flight callsign label */}
       <Text
-        position={[0, 1.5, 0]}
-        fontSize={0.6}
+        position={[0, 2, 0]}
+        fontSize={0.5}
         color="#fbbf24"
         anchorX="center"
         anchorY="middle"
       >
-        {flight.flight_number}
+        {flight.callsign}
+      </Text>
+      {/* Aircraft type label */}
+      <Text
+        position={[0, 1.3, 0]}
+        fontSize={0.3}
+        color="#94a3b8"
+        anchorX="center"
+        anchorY="middle"
+      >
+        {flight.aircraft}
       </Text>
     </group>
   );
@@ -224,7 +230,7 @@ export default function LiveFlightMap() {
       {/* Status Bar */}
       <div className="flex items-center justify-between mb-4 text-sm">
         <div className="flex items-center gap-4 text-gray-400">
-          <span>Flights: {flightData?.flights_found || 0}</span>
+          <span>Flights: {flightData?.count || 0}</span>
           <span>Scale: 1:{mapScale}</span>
           {lastUpdate && <span>Updated: {formatTime(lastUpdate)}</span>}
         </div>
@@ -251,12 +257,7 @@ export default function LiveFlightMap() {
           ))}
           
           {/* Live Flights */}
-          {flightData?.sample_flight && (
-            <FlightMarker flight={flightData.sample_flight} scale={mapScale} />
-          )}
-          
-          {/* Additional flights if available */}
-          {flightData?.all_flights?.map((flight, index) => (
+          {flightData?.flights?.map((flight, index) => (
             <FlightMarker key={index} flight={flight} scale={mapScale} />
           ))}
           
@@ -270,30 +271,34 @@ export default function LiveFlightMap() {
         </Canvas>
       </div>
 
-      {/* Flight Info Panel */}
-      {flightData?.sample_flight && (
-        <div className="mt-4 bg-gray-800/50 rounded border border-gray-600 p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Plane className="h-4 w-4 text-blue-400" />
-              <span className="text-white font-medium">
-                {flightData.sample_flight.flight_number}
-              </span>
-              <span className="text-gray-400">•</span>
-              <span className="text-gray-300">{flightData.sample_flight.aircraft}</span>
-            </div>
-            <div className="text-sm text-gray-400">
-              {flightData.sample_flight.departure} → {flightData.sample_flight.arrival}
-            </div>
+      {/* All Flights Panel */}
+      {flightData?.flights && flightData.flights.length > 0 && (
+        <div className="mt-4 bg-gray-800/50 rounded border border-gray-600 p-3 max-h-80 overflow-y-auto">
+          <div className="flex items-center gap-2 mb-3">
+            <Plane className="h-4 w-4 text-blue-400" />
+            <span className="text-white font-medium">Live Virgin Atlantic Flights ({flightData.count})</span>
           </div>
-          {flightData.sample_flight.latitude && (
-            <div className="mt-2 grid grid-cols-4 gap-4 text-xs text-gray-400">
-              <div>Lat: {flightData.sample_flight.latitude.toFixed(4)}°</div>
-              <div>Lon: {flightData.sample_flight.longitude?.toFixed(4)}°</div>
-              <div>Alt: {flightData.sample_flight.altitude?.toLocaleString() || 'N/A'} ft</div>
-              <div>Speed: {flightData.sample_flight.speed || 'N/A'} kts</div>
+          
+          {flightData.flights.map((flight, index) => (
+            <div key={index} className="mb-3 pb-3 border-b border-gray-700 last:border-b-0">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-white font-medium">{flight.callsign}</span>
+                  <span className="text-gray-400">•</span>
+                  <span className="text-gray-300">{flight.aircraft}</span>
+                </div>
+                <div className="text-sm text-gray-400">
+                  {flight.origin} → {flight.destination}
+                </div>
+              </div>
+              <div className="mt-2 grid grid-cols-4 gap-4 text-xs text-gray-400">
+                <div>Lat: {flight.latitude.toFixed(4)}°</div>
+                <div>Lon: {flight.longitude.toFixed(4)}°</div>
+                <div>Alt: {Math.round(flight.altitude).toLocaleString()} ft</div>
+                <div>Speed: {Math.round(flight.velocity)} kts</div>
+              </div>
             </div>
-          )}
+          ))}
         </div>
       )}
     </div>
