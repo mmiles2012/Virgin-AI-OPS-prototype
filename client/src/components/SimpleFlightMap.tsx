@@ -113,8 +113,30 @@ export default function SimpleFlightMap() {
 
       {/* World Map */}
       <div className="bg-gradient-to-b from-blue-900 to-blue-800 rounded-lg border border-gray-600 relative overflow-hidden" style={{ height: '400px', width: '800px' }}>
-        {/* Grid lines */}
+        {/* World Map Background with Continents */}
         <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
+          {/* Ocean background */}
+          <rect width="800" height="400" fill="#1e40af" />
+          
+          {/* North America */}
+          <path d="M100,120 L200,100 L250,130 L280,160 L250,200 L180,220 L120,180 Z" fill="#065f46" opacity="0.7" />
+          
+          {/* South America */}
+          <path d="M200,220 L250,240 L280,300 L260,350 L220,340 L200,280 Z" fill="#065f46" opacity="0.7" />
+          
+          {/* Europe */}
+          <path d="M380,80 L420,90 L450,110 L430,140 L390,130 Z" fill="#065f46" opacity="0.7" />
+          
+          {/* Africa */}
+          <path d="M380,140 L420,150 L450,200 L430,280 L400,290 L380,250 Z" fill="#065f46" opacity="0.7" />
+          
+          {/* Asia */}
+          <path d="M450,80 L600,90 L650,120 L680,140 L650,180 L500,170 L450,130 Z" fill="#065f46" opacity="0.7" />
+          
+          {/* Australia */}
+          <path d="M580,280 L650,290 L670,320 L640,340 L590,330 Z" fill="#065f46" opacity="0.7" />
+          
+          {/* Grid lines */}
           {/* Longitude lines */}
           {Array.from({ length: 13 }, (_, i) => (
             <line
@@ -125,7 +147,7 @@ export default function SimpleFlightMap() {
               y2={400}
               stroke="#374151"
               strokeWidth="1"
-              opacity="0.3"
+              opacity="0.4"
             />
           ))}
           {/* Latitude lines */}
@@ -138,9 +160,15 @@ export default function SimpleFlightMap() {
               y2={(i * 400) / 8}
               stroke="#374151"
               strokeWidth="1"
-              opacity="0.3"
+              opacity="0.4"
             />
           ))}
+          
+          {/* Equator line */}
+          <line x1="0" y1="200" x2="800" y2="200" stroke="#fbbf24" strokeWidth="2" opacity="0.6" />
+          
+          {/* Prime Meridian */}
+          <line x1="400" y1="0" x2="400" y2="400" stroke="#fbbf24" strokeWidth="2" opacity="0.6" />
         </svg>
 
         {/* Flight Markers */}
