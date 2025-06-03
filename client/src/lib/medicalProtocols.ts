@@ -10,15 +10,28 @@ export interface MedicalEmergency {
   doctorRequired: boolean;
 }
 
+export interface TechnicalFailure {
+  type: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  systems: string[];
+  immediateActions: string[];
+  diversionRequired: boolean;
+  timeToDecision: number; // minutes
+  alternateSystemsAvailable: boolean;
+  performanceLimitations: string[];
+  landingRequirements: string[];
+}
+
 export interface TrainingScenario {
   id: string;
   title: string;
   description: string;
-  type: 'medical' | 'weather' | 'mechanical' | 'security';
+  type: 'medical' | 'weather' | 'mechanical' | 'security' | 'technical';
   severity: 'low' | 'medium' | 'high';
   estimatedDuration: string;
   learningObjectives: string[];
   emergencyDetails?: MedicalEmergency;
+  technicalDetails?: TechnicalFailure;
   decisionPoints: DecisionPoint[];
   successCriteria: string[];
 }
@@ -514,6 +527,318 @@ export const scenarios: TrainingScenario[] = [
       "Resources managed effectively",
       "Passenger safety and comfort maintained",
       "Crew health protected"
+    ]
+  },
+  // Technical Failure Scenarios
+  {
+    id: "technical-engine-01",
+    title: "Engine Failure During Cruise",
+    description: "Boeing 787 experiences sudden engine failure at FL370. Crew must assess systems, declare emergency, and execute diversion procedures.",
+    type: "technical",
+    severity: "high",
+    estimatedDuration: "40 minutes",
+    learningObjectives: [
+      "Execute engine failure memory items",
+      "Assess single-engine performance limitations",
+      "Calculate diversion options with reduced thrust",
+      "Coordinate emergency descent procedures",
+      "Manage fuel planning with one engine"
+    ],
+    technicalDetails: {
+      type: "Engine Failure",
+      severity: "high",
+      systems: ["Engine 2", "Thrust Management", "Electrical Generation"],
+      immediateActions: [
+        "Autothrottle disconnect",
+        "Engine fire switch if fire indicated",
+        "Assess engine parameters",
+        "Single engine checklist"
+      ],
+      diversionRequired: true,
+      timeToDecision: 10,
+      alternateSystemsAvailable: true,
+      performanceLimitations: [
+        "Reduced climb capability",
+        "Lower maximum altitude",
+        "Increased fuel consumption",
+        "Single engine approach required"
+      ],
+      landingRequirements: [
+        "Runway length minimum 8000ft",
+        "Enhanced fire rescue services",
+        "Maintenance facilities available"
+      ]
+    },
+    decisionPoints: [
+      {
+        id: "immediate-response",
+        time: 30,
+        description: "Right engine failure indicated. Multiple warning messages displayed.",
+        options: [
+          {
+            id: "memory-items",
+            text: "Execute engine failure memory items immediately",
+            consequences: ["Proper emergency response", "Systems secured", "Performance assessed"],
+            scoreImpact: 20,
+            followUpActions: ["Thrust lever idle", "Engine fire switch", "Complete checklist"]
+          },
+          {
+            id: "assess-first",
+            text: "Assess situation before taking action",
+            consequences: ["Potential system damage", "Delayed response", "Incomplete procedures"],
+            scoreImpact: -15,
+            followUpActions: ["Review indications", "Consult checklist", "Execute procedures"]
+          }
+        ],
+        timeLimit: 45,
+        criticalFactor: true
+      },
+      {
+        id: "diversion-planning",
+        time: 300,
+        description: "Engine secured. Single engine performance limiting altitude and range.",
+        options: [
+          {
+            id: "nearest-suitable",
+            text: "Divert to nearest suitable airport (90nm, adequate runway)",
+            consequences: ["Shortest flight time", "Reduced risk exposure", "Limited maintenance"],
+            scoreImpact: 15,
+            followUpActions: ["Calculate single-engine approach", "Coordinate emergency services"]
+          },
+          {
+            id: "maintenance-base",
+            text: "Continue to maintenance base (180nm, full facilities)",
+            consequences: ["Better repair capabilities", "Extended single-engine flight", "Higher risk"],
+            scoreImpact: 8,
+            followUpActions: ["Monitor engine parameters", "Plan fuel requirements"]
+          }
+        ],
+        timeLimit: 180,
+        criticalFactor: true
+      }
+    ],
+    successCriteria: [
+      "Memory items executed within 30 seconds",
+      "Emergency declared appropriately",
+      "Single engine performance calculated",
+      "Suitable diversion airport selected",
+      "Safe single-engine approach completed"
+    ]
+  },
+  {
+    id: "technical-depressurization-02",
+    title: "Rapid Depressurization at Altitude",
+    description: "Boeing 787 experiences rapid cabin depressurization at FL410. Emergency descent and diversion required.",
+    type: "technical",
+    severity: "high",
+    estimatedDuration: "30 minutes",
+    learningObjectives: [
+      "Execute emergency descent procedures",
+      "Manage oxygen systems effectively",
+      "Coordinate with ATC for emergency descent",
+      "Assess pressurization system failures",
+      "Plan diversion with altitude restrictions"
+    ],
+    technicalDetails: {
+      type: "Cabin Depressurization",
+      severity: "critical",
+      systems: ["Cabin Pressure", "Oxygen Systems", "Environmental Control"],
+      immediateActions: [
+        "Don oxygen masks",
+        "Emergency descent",
+        "Transponder 7700",
+        "Mayday call"
+      ],
+      diversionRequired: true,
+      timeToDecision: 2,
+      alternateSystemsAvailable: false,
+      performanceLimitations: [
+        "Maximum altitude 10,000ft",
+        "Increased fuel consumption",
+        "Passenger oxygen time limited"
+      ],
+      landingRequirements: [
+        "Immediate diversion",
+        "Medical services standby",
+        "Pressurization system inspection required"
+      ]
+    },
+    decisionPoints: [
+      {
+        id: "immediate-descent",
+        time: 15,
+        description: "Cabin altitude climbing rapidly. Passenger oxygen masks deployed.",
+        options: [
+          {
+            id: "emergency-descent",
+            text: "Initiate immediate emergency descent",
+            consequences: ["Rapid altitude loss", "Passenger safety", "ATC coordination"],
+            scoreImpact: 25,
+            followUpActions: ["Don oxygen masks", "Mayday call", "Descent checklist"]
+          },
+          {
+            id: "controlled-descent",
+            text: "Request expedited descent through ATC",
+            consequences: ["Slower response", "Potential hypoxia risk", "ATC delays"],
+            scoreImpact: -20,
+            followUpActions: ["Monitor cabin altitude", "Prepare for emergency descent"]
+          }
+        ],
+        timeLimit: 20,
+        criticalFactor: true
+      }
+    ],
+    successCriteria: [
+      "Emergency descent initiated within 15 seconds",
+      "Oxygen masks donned immediately",
+      "ATC notified of emergency",
+      "Cabin altitude controlled below 14,000ft",
+      "Successful diversion completed"
+    ]
+  },
+  {
+    id: "technical-hydraulic-03",
+    title: "Multiple Hydraulic System Failure",
+    description: "Boeing 787 loses two of three hydraulic systems. Manual reversion required for flight controls.",
+    type: "technical",
+    severity: "high",
+    estimatedDuration: "50 minutes",
+    learningObjectives: [
+      "Manage multiple hydraulic system failures",
+      "Execute manual reversion procedures",
+      "Calculate landing performance changes",
+      "Coordinate extended emergency approach",
+      "Assess backup system capabilities"
+    ],
+    technicalDetails: {
+      type: "Hydraulic System Failure",
+      severity: "high",
+      systems: ["Left Hydraulic", "Center Hydraulic", "Flight Controls"],
+      immediateActions: [
+        "Assess remaining hydraulic systems",
+        "Manual reversion procedures",
+        "Backup system activation",
+        "Performance calculations"
+      ],
+      diversionRequired: true,
+      timeToDecision: 15,
+      alternateSystemsAvailable: true,
+      performanceLimitations: [
+        "Manual flight control reversion",
+        "Increased control forces",
+        "Extended landing distance",
+        "No autoland capability"
+      ],
+      landingRequirements: [
+        "Long runway required (10,000ft+)",
+        "Manual landing only",
+        "Enhanced emergency services",
+        "Potential overweight landing"
+      ]
+    },
+    decisionPoints: [
+      {
+        id: "system-assessment",
+        time: 120,
+        description: "Left and center hydraulic systems failed. Right system operational.",
+        options: [
+          {
+            id: "immediate-landing",
+            text: "Declare emergency and land immediately",
+            consequences: ["Overweight landing", "Potential brake issues", "Immediate assistance"],
+            scoreImpact: 15,
+            followUpActions: ["Calculate landing performance", "Brief manual approach"]
+          },
+          {
+            id: "fuel-dump",
+            text: "Dump fuel to reduce landing weight",
+            consequences: ["Normal landing weight", "Time over water", "Fuel cost"],
+            scoreImpact: 10,
+            followUpActions: ["Coordinate fuel dumping area", "Monitor remaining systems"]
+          }
+        ],
+        timeLimit: 240,
+        criticalFactor: true
+      }
+    ],
+    successCriteria: [
+      "Hydraulic failure properly assessed",
+      "Manual reversion executed correctly",
+      "Landing performance calculated",
+      "Emergency services coordinated",
+      "Safe manual landing completed"
+    ]
+  },
+  {
+    id: "technical-electrical-04",
+    title: "Major Electrical System Failure",
+    description: "Boeing 787 experiences failure of main electrical bus. Multiple systems affected including navigation and communication.",
+    type: "technical",
+    severity: "medium",
+    estimatedDuration: "35 minutes",
+    learningObjectives: [
+      "Manage electrical system failures",
+      "Prioritize essential systems",
+      "Navigate with backup instruments",
+      "Coordinate with limited communication",
+      "Execute battery-powered approach"
+    ],
+    technicalDetails: {
+      type: "Electrical System Failure",
+      severity: "medium",
+      systems: ["Main Electrical Bus", "Navigation Systems", "Communication"],
+      immediateActions: [
+        "Assess remaining electrical power",
+        "Battery power management",
+        "Essential systems priority",
+        "Backup navigation activation"
+      ],
+      diversionRequired: true,
+      timeToDecision: 20,
+      alternateSystemsAvailable: true,
+      performanceLimitations: [
+        "Limited navigation capability",
+        "Reduced communication",
+        "Battery power time limited",
+        "Manual backup systems only"
+      ],
+      landingRequirements: [
+        "Visual approach capability",
+        "Ground communication via radio backup",
+        "Emergency electrical inspection"
+      ]
+    },
+    decisionPoints: [
+      {
+        id: "power-management",
+        time: 180,
+        description: "Main electrical bus offline. Battery power available for 45 minutes.",
+        options: [
+          {
+            id: "nearest-airport",
+            text: "Divert to nearest airport within battery range",
+            consequences: ["Limited time pressure", "Basic facilities", "Battery power sufficient"],
+            scoreImpact: 18,
+            followUpActions: ["Calculate battery time", "Prepare visual approach"]
+          },
+          {
+            id: "attempt-restoration",
+            text: "Attempt electrical system restoration",
+            consequences: ["Potential power recovery", "Battery time consumed", "Risk of total loss"],
+            scoreImpact: 5,
+            followUpActions: ["Run restoration checklist", "Monitor battery status"]
+          }
+        ],
+        timeLimit: 300,
+        criticalFactor: true
+      }
+    ],
+    successCriteria: [
+      "Electrical failure properly diagnosed",
+      "Battery power managed effectively",
+      "Essential systems prioritized",
+      "Visual approach executed",
+      "Safe landing with backup systems"
     ]
   }
 ];
