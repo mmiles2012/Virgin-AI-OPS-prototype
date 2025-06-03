@@ -24,60 +24,91 @@ function SatelliteTerrain() {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
 
   useEffect(() => {
-    // Create a procedural satellite-style texture
+    // Create a more realistic satellite-style texture
     const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = 1024;
+    canvas.width = 512;
+    canvas.height = 512;
     const ctx = canvas.getContext('2d')!;
 
-    // Base terrain color (brownish-green like satellite imagery)
-    const gradient = ctx.createRadialGradient(512, 512, 0, 512, 512, 512);
-    gradient.addColorStop(0, '#4a5d3a');
-    gradient.addColorStop(0.3, '#3d4f2a');
-    gradient.addColorStop(0.6, '#2d3a1a');
-    gradient.addColorStop(1, '#1a2010');
-    
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 1024, 1024);
+    // Create realistic terrain base with varied colors
+    const imageData = ctx.createImageData(512, 512);
+    const data = imageData.data;
 
-    // Add terrain features
-    for (let i = 0; i < 200; i++) {
-      const x = Math.random() * 1024;
-      const y = Math.random() * 1024;
-      const size = Math.random() * 20 + 5;
+    for (let i = 0; i < data.length; i += 4) {
+      const x = (i / 4) % 512;
+      const y = Math.floor((i / 4) / 512);
       
-      ctx.fillStyle = Math.random() > 0.5 ? '#2a3d1a' : '#5a6d4a';
-      ctx.beginPath();
-      ctx.arc(x, y, size, 0, Math.PI * 2);
-      ctx.fill();
+      // Generate varied terrain using noise-like patterns
+      const noise1 = Math.sin(x * 0.02) * Math.cos(y * 0.02);
+      const noise2 = Math.sin(x * 0.005) * Math.cos(y * 0.005);
+      const combined = (noise1 + noise2) * 0.5;
+      
+      // Create different terrain types based on noise
+      if (combined > 0.3) {
+        // Mountains/hills - brown/gray
+        data[i] = 101 + Math.random() * 30;     // R
+        data[i + 1] = 67 + Math.random() * 20;  // G
+        data[i + 2] = 33 + Math.random() * 15;  // B
+      } else if (combined > 0.1) {
+        // Forest/vegetation - green
+        data[i] = 34 + Math.random() * 30;      // R
+        data[i + 1] = 89 + Math.random() * 40;  // G
+        data[i + 2] = 32 + Math.random() * 20;  // B
+      } else if (combined > -0.1) {
+        // Plains/farmland - light brown/yellow
+        data[i] = 139 + Math.random() * 40;     // R
+        data[i + 1] = 115 + Math.random() * 30; // G
+        data[i + 2] = 85 + Math.random() * 25;  // B
+      } else {
+        // Water bodies - blue
+        data[i] = 25 + Math.random() * 15;      // R
+        data[i + 1] = 51 + Math.random() * 20;  // G
+        data[i + 2] = 102 + Math.random() * 30; // B
+      }
+      data[i + 3] = 255; // Alpha
     }
 
-    // Add water bodies (darker areas)
-    for (let i = 0; i < 50; i++) {
-      const x = Math.random() * 1024;
-      const y = Math.random() * 1024;
-      const size = Math.random() * 40 + 10;
-      
-      ctx.fillStyle = '#1a2d3d';
+    ctx.putImageData(imageData, 0, 0);
+
+    // Add urban areas (darker patches)
+    ctx.fillStyle = '#2a2a2a';
+    for (let i = 0; i < 15; i++) {
+      const x = Math.random() * 512;
+      const y = Math.random() * 512;
+      const size = Math.random() * 20 + 5;
       ctx.beginPath();
       ctx.arc(x, y, size, 0, Math.PI * 2);
       ctx.fill();
     }
 
     // Add road networks
-    ctx.strokeStyle = '#3a3a3a';
-    ctx.lineWidth = 2;
-    for (let i = 0; i < 30; i++) {
+    ctx.strokeStyle = '#4a4a4a';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 25; i++) {
       ctx.beginPath();
-      ctx.moveTo(Math.random() * 1024, Math.random() * 1024);
-      ctx.lineTo(Math.random() * 1024, Math.random() * 1024);
+      ctx.moveTo(Math.random() * 512, Math.random() * 512);
+      ctx.lineTo(Math.random() * 512, Math.random() * 512);
+      ctx.stroke();
+    }
+
+    // Add coastlines
+    ctx.strokeStyle = '#1e40af';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 8; i++) {
+      ctx.beginPath();
+      ctx.moveTo(Math.random() * 512, Math.random() * 512);
+      ctx.quadraticCurveTo(
+        Math.random() * 512, Math.random() * 512,
+        Math.random() * 512, Math.random() * 512
+      );
       ctx.stroke();
     }
 
     const canvasTexture = new THREE.CanvasTexture(canvas);
     canvasTexture.wrapS = THREE.RepeatWrapping;
     canvasTexture.wrapT = THREE.RepeatWrapping;
-    canvasTexture.repeat.set(4, 4);
+    canvasTexture.repeat.set(3, 3);
+    canvasTexture.needsUpdate = true;
     
     setTexture(canvasTexture);
   }, []);
@@ -87,9 +118,8 @@ function SatelliteTerrain() {
       <planeGeometry args={[2000, 2000]} />
       <meshStandardMaterial 
         map={texture}
-        color="#6b7c5a"
-        transparent 
-        opacity={0.9}
+        transparent={false}
+        opacity={1.0}
       />
     </mesh>
   );
