@@ -102,8 +102,8 @@ function App() {
             <div className="absolute top-4 left-4 right-4 z-50 pointer-events-auto">
               <div className="flex justify-between items-center">
                 <div className="aviation-panel p-3 rounded-lg">
-                  <h1 className="text-white font-bold text-lg">Boeing 787 Digital Twin</h1>
-                  <p className="text-blue-300 text-sm">Flight Training Simulator</p>
+                  <h1 className="text-white font-bold text-lg">AINO</h1>
+                  <p className="text-blue-300 text-sm">Augmented Intelligent Network Operations</p>
                 </div>
                 
                 <div className="flex gap-2">
@@ -220,7 +220,7 @@ function App() {
               <div className="absolute bottom-4 left-4 right-4 z-40 pointer-events-auto">
                 <div className="bg-black/60 backdrop-blur-sm rounded-lg border border-gray-600/50 px-4 py-2">
                   <div className="flex justify-between items-center text-white text-sm">
-                    <span className="text-blue-300">Boeing 787 Digital Twin</span>
+                    <span className="text-blue-300">AINO - Augmented Intelligent Network Operations</span>
                     <div className="flex gap-6 text-xs text-gray-300">
                       <span>Fuel: 75,234kg</span>
                       <span>Alt: 35,000ft</span>
@@ -232,20 +232,7 @@ function App() {
               </div>
             )}
 
-            {/* Flight controls help overlay */}
-            <div className="absolute top-1/2 right-4 transform -translate-y-1/2 z-30 pointer-events-auto">
-              <div className="aviation-panel p-4 rounded-lg">
-                <h3 className="text-white font-semibold mb-2">Flight Controls</h3>
-                <div className="text-blue-300 text-sm space-y-1">
-                  <div>W/S: Pitch</div>
-                  <div>A/D: Roll</div>
-                  <div>Q/E: Yaw</div>
-                  <div>R/F: Throttle</div>
-                  <div>T: Autopilot</div>
-                  <div>Space: Emergency</div>
-                </div>
-              </div>
-            </div>
+
           </div>
         </KeyboardControls>
       </div>
