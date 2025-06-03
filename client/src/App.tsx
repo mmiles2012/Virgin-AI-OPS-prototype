@@ -7,6 +7,7 @@ import "@fontsource/inter";
 import Aircraft from "./components/Aircraft";
 import CockpitInterface from "./components/CockpitInterface";
 import OperationsCenter from "./components/OperationsCenter";
+import DecisionCenter from "./components/DecisionCenter";
 import FlightMap from "./components/FlightMap";
 import ScenarioManager from "./components/ScenarioManager";
 import MetricsDisplay from "./components/MetricsDisplay";
@@ -48,7 +49,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'cockpit' | 'operations' | 'overview';
+type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -126,6 +127,16 @@ function App() {
                     Operations Center
                   </button>
                   <button
+                    onClick={() => setViewMode('decisions')}
+                    className={`px-4 py-2 rounded transition-colors ${
+                      viewMode === 'decisions' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Decision Engine
+                  </button>
+                  <button
                     onClick={() => setViewMode('overview')}
                     className={`px-4 py-2 rounded transition-colors ${
                       viewMode === 'overview' 
@@ -155,6 +166,12 @@ function App() {
             
             {viewMode === 'operations' && (
               <OperationsCenter />
+            )}
+            
+            {viewMode === 'decisions' && (
+              <div className="absolute inset-4 pointer-events-auto">
+                <DecisionCenter />
+              </div>
             )}
 
             {/* Always visible scenario manager and metrics */}
