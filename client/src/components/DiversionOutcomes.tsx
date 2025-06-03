@@ -30,7 +30,7 @@ export default function DiversionOutcomes() {
   const { position, fuelRemaining, altitude } = useFlightState();
   const [scenarios, setScenarios] = useState<DiversionOutcome[]>([]);
   const [selectedOutcome, setSelectedOutcome] = useState<DiversionOutcome | null>(null);
-  const [emergencyType, setEmergencyType] = useState<'cardiac' | 'stroke' | 'trauma' | 'breathing' | 'allergic'>('cardiac');
+  const [emergencyType, setEmergencyType] = useState<'cardiac' | 'stroke' | 'trauma' | 'breathing' | 'allergic' | 'engine_failure' | 'depressurization' | 'hydraulic_failure' | 'electrical_failure'>('cardiac');
   const [patientCondition, setPatientCondition] = useState<'critical' | 'serious' | 'stable'>('critical');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
@@ -44,7 +44,7 @@ export default function DiversionOutcomes() {
           lon: position[1] || -118.2437,
           altitude: altitude || 35000
         },
-        emergencyType,
+        emergencyType: isTechnicalFailure ? 'technical' : emergencyType,
         patientCondition,
         timeToDestination: 120, // 2 hours to original destination
         fuelRemaining: fuelRemaining || 80000,
@@ -107,7 +107,7 @@ export default function DiversionOutcomes() {
           lon: position[1] || -118.2437,
           altitude: altitude || 35000
         },
-        emergencyType,
+        emergencyType: isTechnicalFailure ? 'technical' : emergencyType,
         patientCondition,
         timeToDestination: 120,
         fuelRemaining: fuelRemaining || 80000,
@@ -167,14 +167,26 @@ export default function DiversionOutcomes() {
     }).format(amount);
   };
 
+  const isTechnicalFailure = ['engine_failure', 'depressurization', 'hydraulic_failure', 'electrical_failure'].includes(emergencyType);
+  const headerText = isTechnicalFailure ? 'AIRCRAFT NON NORMAL OPERATIONS' : 'MEDICAL EMERGENCY - DIVERSION REQUIRED';
+
   return (
     <div className="h-full overflow-auto p-4 space-y-4">
       {/* Emergency Configuration */}
       <Card className="border-orange-500 bg-orange-900/20">
         <CardHeader className="pb-3">
           <CardTitle className="text-orange-300 flex items-center gap-2">
-            <Stethoscope className="h-5 w-5" />
-            Medical Emergency Configuration
+            {isTechnicalFailure ? (
+              <>
+                <AlertTriangle className="h-5 w-5" />
+                Aircraft System Configuration
+              </>
+            ) : (
+              <>
+                <Stethoscope className="h-5 w-5" />
+                Medical Emergency Configuration
+              </>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
