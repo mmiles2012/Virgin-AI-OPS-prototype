@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import CollapsibleCard from '@/components/ui/collapsible-card';
 import { useFlightState } from '../lib/stores/useFlightState';
 import { useScenario } from '../lib/stores/useScenario';
 import { TrendingUp, Clock, DollarSign, Target } from 'lucide-react';
@@ -14,6 +14,7 @@ export default function MetricsDisplay() {
     currentScenario,
     costAnalysis 
   } = useScenario();
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
   // Calculate performance metrics
   const fuelEfficiency = Math.max(0, 100 - (fuelRemaining / 200000) * 100);
@@ -22,14 +23,25 @@ export default function MetricsDisplay() {
 
   return (
     <Card className="aviation-panel h-full">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-white flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
-          Performance Metrics
+      <CardHeader 
+        className="pb-3 cursor-pointer select-none hover:bg-gray-800/50 transition-colors"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        <CardTitle className="text-white flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Performance Metrics
+          </div>
+          {isCollapsed ? (
+            <ChevronDown className="h-4 w-4 text-gray-400" />
+          ) : (
+            <ChevronUp className="h-4 w-4 text-gray-400" />
+          )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Flight Performance */}
+      {!isCollapsed && (
+        <CardContent className="space-y-4">
+          {/* Flight Performance */}
         <div className="space-y-3">
           <h4 className="text-blue-300 font-medium text-sm">Flight Performance</h4>
           
@@ -169,7 +181,8 @@ export default function MetricsDisplay() {
             </div>
           </div>
         </div>
-      </CardContent>
+        </CardContent>
+      )}
     </Card>
   );
 }
