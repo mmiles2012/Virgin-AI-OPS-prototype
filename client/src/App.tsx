@@ -159,6 +159,16 @@ function App() {
                     Overview
                   </button>
                   <button
+                    onClick={() => setViewMode('map')}
+                    className={`px-4 py-2 rounded transition-colors ${
+                      viewMode === 'map' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Live Map
+                  </button>
+                  <button
                     onClick={() => {
                       console.log('API Setup button clicked');
                       setShowApiWizard(true);
@@ -199,6 +209,12 @@ function App() {
                 <DecisionCenter />
               </div>
             )}
+            
+            {viewMode === 'map' && !isInterfaceMinimized && (
+              <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto">
+                <LiveFlightMap />
+              </div>
+            )}
 
             {/* Minimized Mode Indicator */}
             {isInterfaceMinimized && viewMode !== 'overview' && (
@@ -208,6 +224,7 @@ function App() {
                     {viewMode === 'cockpit' && '✈️ Cockpit View (Minimized)'}
                     {viewMode === 'operations' && '🏢 Operations Center (Minimized)'}
                     {viewMode === 'decisions' && '🧠 Decision Engine (Minimized)'}
+                    {viewMode === 'map' && '🗺️ Live Flight Map (Minimized)'}
                   </div>
                 </div>
               </div>
