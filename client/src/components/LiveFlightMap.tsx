@@ -249,31 +249,55 @@ export default function LiveFlightMap() {
 
       {/* 3D Map */}
       <div className="bg-black/50 rounded-lg border border-gray-600" style={{ height: 'calc(100% - 120px)' }}>
-        <Canvas camera={{ position: [0, 25, 25], fov: 75 }}>
-          <ambientLight intensity={0.4} />
-          <directionalLight position={[10, 10, 5]} intensity={0.6} />
+        <Canvas camera={{ position: [0, 40, 0], fov: 90 }}>
+          <ambientLight intensity={0.8} />
+          <directionalLight position={[0, 50, 0]} intensity={1.2} />
           
-          {/* Terrain */}
-          <MapTerrain scale={mapScale} />
+          {/* Large World Map Base */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -5, 0]}>
+            <planeGeometry args={[80, 60]} />
+            <meshStandardMaterial color="#1e3a8a" />
+          </mesh>
           
-          {/* Airports */}
-          {MAJOR_AIRPORTS.map((airport) => (
-            <Airport key={airport.code} airport={airport} scale={mapScale} />
-          ))}
+          {/* Grid for world coordinates */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -4.8, 0]}>
+            <planeGeometry args={[80, 60, 16, 12]} />
+            <meshBasicMaterial color="#374151" wireframe transparent opacity={0.5} />
+          </mesh>
           
-          {/* Live Flights */}
+          {/* Live Flights - Much Larger and Brighter */}
           {flightData?.flights?.map((flight, index) => {
-            const pos = latLonTo3D(flight.latitude, flight.longitude, mapScale);
-            console.log(`Flight ${flight.callsign} at lat:${flight.latitude}, lon:${flight.longitude} -> x:${pos.x}, z:${pos.z}`);
-            return <FlightMarker key={index} flight={flight} scale={mapScale} />;
+            const x = (flight.longitude / 180) * 40; // Scale to map width
+            const z = -(flight.latitude / 90) * 30;  // Scale to map height
+            console.log(`Flight ${flight.callsign}: lat=${flight.latitude}, lon=${flight.longitude} -> x=${x}, z=${z}`);
+            
+            return (
+              <group key={index} position={[x, 5, z]}>
+                {/* Massive bright red marker */}
+                <mesh>
+                  <sphereGeometry args={[3]} />
+                  <meshBasicMaterial color="#ff0000" />
+                </mesh>
+                {/* Large text label */}
+                <Text
+                  position={[0, 8, 0]}
+                  fontSize={3}
+                  color="#ffff00"
+                  anchorX="center"
+                  anchorY="middle"
+                >
+                  {flight.callsign}
+                </Text>
+              </group>
+            );
           })}
           
           <OrbitControls 
             enablePan={true}
             enableZoom={true}
             enableRotate={true}
-            minDistance={5}
-            maxDistance={50}
+            minDistance={20}
+            maxDistance={100}
           />
         </Canvas>
       </div>
