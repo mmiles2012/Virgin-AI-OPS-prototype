@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import DiversionOutcomes from './DiversionOutcomes';
 import { 
   Brain, 
   Clock, 
@@ -251,8 +252,9 @@ export default function DecisionCenter() {
   return (
     <div className="h-full overflow-auto">
       <Tabs defaultValue="active" className="h-full">
-        <TabsList className="grid w-full grid-cols-4 mb-4">
+        <TabsList className="grid w-full grid-cols-5 mb-4">
           <TabsTrigger value="active">Active Decisions</TabsTrigger>
+          <TabsTrigger value="scenarios">Diversion Scenarios</TabsTrigger>
           <TabsTrigger value="analysis">Situation Analysis</TabsTrigger>
           <TabsTrigger value="stakeholders">Stakeholder Impact</TabsTrigger>
           <TabsTrigger value="history">Decision History</TabsTrigger>
@@ -415,6 +417,11 @@ export default function DecisionCenter() {
               No active decision context available
             </div>
           )}
+        </TabsContent>
+
+        {/* Diversion Scenarios Tab */}
+        <TabsContent value="scenarios" className="space-y-4">
+          <DiversionOutcomes />
         </TabsContent>
 
         {/* Situation Analysis Tab */}
