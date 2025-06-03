@@ -133,8 +133,8 @@ export default function DirectApiTest({ onClose }: { onClose: () => void }) {
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" ref={containerRef}>
-      <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4" style={{ zIndex: 9999, pointerEvents: 'auto' }} ref={containerRef}>
+      <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto" style={{ pointerEvents: 'auto' }}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-white">API Connection Test (Direct DOM)</h2>
           <button 
