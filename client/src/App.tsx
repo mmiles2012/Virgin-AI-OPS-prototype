@@ -11,7 +11,6 @@ import DecisionCenter from "./components/DecisionCenter";
 import FlightMap from "./components/FlightMap";
 import ScenarioManager from "./components/ScenarioManager";
 import MetricsDisplay from "./components/MetricsDisplay";
-import WeatherSystem from "./components/WeatherSystem";
 
 // Flight control mappings
 enum FlightControls {
@@ -90,7 +89,6 @@ function App() {
 
               <Suspense fallback={null}>
                 <Aircraft />
-                <WeatherSystem />
                 <FlightMap />
               </Suspense>
             </Canvas>
