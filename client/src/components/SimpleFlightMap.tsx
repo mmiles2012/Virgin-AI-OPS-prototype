@@ -102,14 +102,22 @@ export default function SimpleFlightMap() {
       {/* Status Bar */}
       <div className="flex items-center justify-between mb-4 text-sm">
         <div className="flex items-center gap-4 text-gray-400">
-          <span>Flights: {flightData?.count || 0}</span>
-          {lastUpdate && <span>Updated: {formatTime(lastUpdate)}</span>}
+          <span className="text-white">Active Flights: <span className="text-green-400 font-bold">{flightData?.count || 0}</span></span>
+          {lastUpdate && <span>Last Update: {formatTime(lastUpdate)}</span>}
+          {loading && <span className="text-blue-400">Refreshing...</span>}
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-          <span className="text-red-500 text-xs">Virgin Atlantic Aircraft</span>
+          <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+          <span className="text-red-400 text-sm font-medium">Virgin Atlantic Live Tracking</span>
         </div>
       </div>
+
+      {/* Data Debug Info */}
+      {flightData && (
+        <div className="mb-2 text-xs text-gray-500">
+          API Response: {flightData.flights.length} flights at {new Date(flightData.timestamp).toLocaleTimeString()}
+        </div>
+      )}
 
       {/* World Map */}
       <div className="bg-gradient-to-b from-blue-900 to-blue-800 rounded-lg border border-gray-600 relative overflow-hidden" style={{ height: '400px', width: '800px' }}>
@@ -174,6 +182,7 @@ export default function SimpleFlightMap() {
         {/* Flight Markers */}
         {flightData?.flights?.map((flight, index) => {
           const pos = getMapPosition(flight.latitude, flight.longitude);
+          console.log(`Displaying flight ${flight.callsign} at position x:${pos.x}, y:${pos.y} (lat:${flight.latitude}, lon:${flight.longitude})`);
           
           return (
             <div
@@ -185,13 +194,14 @@ export default function SimpleFlightMap() {
                 zIndex: 10
               }}
             >
-              {/* Flight marker */}
+              {/* Flight marker - larger and more visible */}
               <div className="relative">
-                <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
+                <div className="w-6 h-6 bg-red-500 rounded-full border-4 border-yellow-400 shadow-lg animate-pulse"></div>
+                <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black/90 text-white px-3 py-2 rounded text-sm whitespace-nowrap border border-yellow-400">
                   <div className="font-bold text-yellow-400">{flight.callsign}</div>
                   <div className="text-gray-300">{flight.aircraft}</div>
                   <div className="text-gray-400 text-xs">{Math.round(flight.altitude)}ft</div>
+                  <div className="text-gray-400 text-xs">{Math.round(flight.velocity)}kts</div>
                 </div>
               </div>
             </div>
