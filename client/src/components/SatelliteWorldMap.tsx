@@ -120,17 +120,30 @@ export default function SatelliteWorldMap() {
   useEffect(() => {
     const fetchFlightData = async () => {
       try {
+        // First try Virgin Atlantic flights
         const response = await fetch('/api/aviation/virgin-atlantic-flights');
         const data = await response.json();
         
-        if (data.success && data.flights) {
+        if (data.success && data.flights && data.flights.length > 0) {
           setFlightData(data.flights);
           
           // Center map on first flight if available
-          if (data.flights.length > 0) {
+          setMapCenter({
+            lat: data.flights[0].latitude,
+            lon: data.flights[0].longitude
+          });
+        } else {
+          // If Virgin Atlantic API fails, try live aircraft data
+          const liveResponse = await fetch('/api/aviation/live-aircraft?latMin=25&latMax=70&lonMin=-180&lonMax=30&limit=20');
+          const liveData = await liveResponse.json();
+          
+          if (liveData.success && liveData.aircraft && liveData.aircraft.length > 0) {
+            setFlightData(liveData.aircraft);
+            
+            // Center map on first aircraft
             setMapCenter({
-              lat: data.flights[0].latitude,
-              lon: data.flights[0].longitude
+              lat: liveData.aircraft[0].latitude,
+              lon: liveData.aircraft[0].longitude
             });
           }
         }
