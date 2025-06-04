@@ -182,37 +182,39 @@ export default function SatelliteWorldMap() {
 
   return (
     <div className="relative w-full h-full bg-gray-900 rounded-lg overflow-hidden border border-gray-600">
-      {/* Map Header */}
-      <div className="absolute top-0 left-0 right-0 bg-black/80 backdrop-blur-sm p-3 z-20 border-b border-gray-600">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Satellite className="h-5 w-5 text-blue-400" />
-            <h3 className="text-white font-medium">Global Flight Operations View</h3>
-            <div className="text-sm text-gray-400">
-              {flightData.length} active flights
-            </div>
+      {/* AINO Header - Top Center */}
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 backdrop-blur-sm rounded-lg border border-gray-600 p-3 z-20">
+        <div className="flex items-center gap-3">
+          <Satellite className="h-5 w-5 text-blue-400" />
+          <h3 className="text-white font-medium">AINO - Global Flight Operations</h3>
+          <div className="text-sm text-gray-400">
+            {flightData.length} active flights
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <span>Zoom: {zoomLevel}</span>
-            <button
-              onClick={() => setZoomLevel(Math.max(1, zoomLevel - 1))}
-              className="px-3 py-1 bg-gray-700 text-white rounded text-sm hover:bg-gray-600 transition-colors"
-            >
-              -
-            </button>
-            <button
-              onClick={() => setZoomLevel(Math.min(8, zoomLevel + 1))}
-              className="px-3 py-1 bg-gray-700 text-white rounded text-sm hover:bg-gray-600 transition-colors"
-            >
-              +
-            </button>
-            <button
-              onClick={() => setMapCenter({ lat: 40, lon: 0 })}
-              className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors ml-2"
-            >
-              Reset
-            </button>
-          </div>
+        </div>
+      </div>
+
+      {/* Zoom Controls - Top Left */}
+      <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg border border-gray-600 p-3 z-20">
+        <div className="flex items-center gap-2 text-sm text-gray-400">
+          <span className="text-white">Zoom: {zoomLevel}</span>
+          <button
+            onClick={() => setZoomLevel(Math.max(1, zoomLevel - 1))}
+            className="px-3 py-1 bg-gray-700 text-white rounded text-sm hover:bg-gray-600 transition-colors"
+          >
+            -
+          </button>
+          <button
+            onClick={() => setZoomLevel(Math.min(8, zoomLevel + 1))}
+            className="px-3 py-1 bg-gray-700 text-white rounded text-sm hover:bg-gray-600 transition-colors"
+          >
+            +
+          </button>
+          <button
+            onClick={() => setMapCenter({ lat: 40, lon: 0 })}
+            className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors ml-2"
+          >
+            Reset
+          </button>
         </div>
       </div>
 
@@ -363,16 +365,13 @@ export default function SatelliteWorldMap() {
         </div>
       </div>
 
-      {/* Map Controls */}
+      {/* Map Coordinates - Bottom Left */}
       <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg p-3 text-xs text-gray-300 border border-gray-600">
-        <div className="mb-2 font-medium text-white">Navigation Controls</div>
+        <div className="mb-2 font-medium text-white">Current Position</div>
         <div>Lat: {mapCenter.lat.toFixed(4)}°</div>
         <div>Lon: {mapCenter.lon.toFixed(4)}°</div>
-        <div className="mt-2 text-gray-400 space-y-1">
-          <div>• Drag to pan</div>
-          <div>• Scroll to zoom</div>
-          <div>• Arrow keys to navigate</div>
-          <div>• +/- keys to zoom</div>
+        <div className="mt-2 text-gray-400 text-xs">
+          Drag • Scroll • Arrow keys
         </div>
       </div>
 
