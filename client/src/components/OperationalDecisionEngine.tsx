@@ -44,6 +44,7 @@ export default function OperationalDecisionEngine() {
   const [flightData, setFlightData] = useState<FlightOperationalData | null>(null);
   const [weatherAlerts, setWeatherAlerts] = useState<WeatherAlert[]>([]);
   const [systemStatus, setSystemStatus] = useState('analyzing');
+  const [manualScenario, setManualScenario] = useState<string | null>(null);
 
   // Fetch live flight data
   useEffect(() => {
@@ -83,17 +84,127 @@ export default function OperationalDecisionEngine() {
 
   const generateOperationalDecisions = (flight: any) => {
     const decisions: OperationalDecision[] = [];
+    const lat = Math.abs(flight.latitude);
+    const lon = Math.abs(flight.longitude);
+    const currentTime = new Date().getHours();
     
-    // Fuel monitoring decision
-    if (flight.altitude > 11000) {
+    // Simulate non-normal scenarios based on flight parameters
+    const scenarios = detectNonNormalScenarios(flight, lat, lon, currentTime);
+    
+    // Medical emergency scenario (simulated based on flight characteristics)
+    if (scenarios.medical) {
+      decisions.push({
+        id: 'medical-diversion',
+        type: 'medical',
+        priority: 'critical',
+        title: 'Medical Emergency - Diversion Required',
+        description: `${flight.callsign} reports medical emergency. Immediate diversion to nearest suitable airport.`,
+        impact: {
+          cost: 45000,
+          delay: 180,
+          fuel: 2800,
+          passengers: 280
+        },
+        recommendations: [
+          'Identify nearest airport with medical facilities',
+          'Coordinate with emergency medical services',
+          'Prepare passenger rebooking options',
+          'Notify insurance and legal teams',
+          'Brief crew on emergency procedures'
+        ],
+        timeline: 'IMMEDIATE - 15 minutes to decision',
+        approval_required: ['Captain', 'Dispatch', 'Medical']
+      });
+    }
+
+    // Technical malfunction scenario
+    if (scenarios.technical) {
+      decisions.push({
+        id: 'technical-assessment',
+        type: 'technical',
+        priority: 'high',
+        title: 'Engine Parameter Monitoring',
+        description: `${flight.callsign} reports engine parameter anomaly. Assess continuation vs. precautionary landing.`,
+        impact: {
+          cost: 25000,
+          delay: 120,
+          fuel: 1500,
+          passengers: 280
+        },
+        recommendations: [
+          'Contact maintenance control for technical assessment',
+          'Review MEL procedures for continued flight',
+          'Identify alternate airports along route',
+          'Prepare for possible precautionary landing',
+          'Monitor engine parameters continuously'
+        ],
+        timeline: 'Next 30 minutes',
+        approval_required: ['Captain', 'Maintenance', 'Dispatch']
+      });
+    }
+
+    // Severe weather scenario
+    if (scenarios.weather) {
+      decisions.push({
+        id: 'weather-diversion',
+        type: 'weather',
+        priority: 'high',
+        title: 'Severe Weather Avoidance',
+        description: `Thunderstorms reported at destination. Consider alternate airports or delay.`,
+        impact: {
+          cost: 18000,
+          delay: 90,
+          fuel: 1200,
+          passengers: 280
+        },
+        recommendations: [
+          'Monitor destination weather radar',
+          'Calculate fuel for holding patterns',
+          'Prepare alternate airport options',
+          'Coordinate with ATC for routing around weather',
+          'Brief passengers on potential delays'
+        ],
+        timeline: 'Next 45 minutes',
+        approval_required: ['Captain', 'Dispatch', 'ATC']
+      });
+    }
+
+    // Security scenario
+    if (scenarios.security) {
+      decisions.push({
+        id: 'security-assessment',
+        type: 'medical', // Using medical type for security
+        priority: 'critical',
+        title: 'Security Incident Assessment',
+        description: `${flight.callsign} reports disruptive passenger. Assess threat level and response.`,
+        impact: {
+          cost: 35000,
+          delay: 150,
+          fuel: 2000,
+          passengers: 280
+        },
+        recommendations: [
+          'Assess passenger threat level with cabin crew',
+          'Consider restraint procedures if necessary',
+          'Prepare for possible diversion to nearest airport',
+          'Coordinate with law enforcement at destination',
+          'Document incident for regulatory reporting'
+        ],
+        timeline: 'IMMEDIATE - Ongoing assessment',
+        approval_required: ['Captain', 'Cabin Crew', 'Security']
+      });
+    }
+
+    // Normal operations - fuel optimization
+    if (scenarios.normal && flight.altitude > 11000) {
       decisions.push({
         id: 'fuel-optimization',
         type: 'fuel',
         priority: 'medium',
         title: 'Fuel Optimization Opportunity',
-        description: `${flight.callsign} is at optimal cruise altitude. Consider step climb for fuel efficiency.`,
+        description: `${flight.callsign} at cruise altitude. Monitor for fuel efficiency improvements.`,
         impact: {
-          cost: -1200, // Negative = savings
+          cost: -1200,
           delay: 0,
           fuel: -350,
           passengers: 0
@@ -108,57 +219,95 @@ export default function OperationalDecisionEngine() {
       });
     }
 
-    // Weather contingency
-    decisions.push({
-      id: 'weather-routing',
-      type: 'weather',
-      priority: 'low',
-      title: 'Weather Monitoring Active',
-      description: 'Current conditions are favorable. Continue monitoring destination weather.',
-      impact: {
-        cost: 0,
-        delay: 0,
-        fuel: 0,
-        passengers: 0
-      },
-      recommendations: [
-        'Monitor destination METAR/TAF updates',
-        'Prepare alternate airport fuel calculations',
-        'Brief crew on potential weather changes'
-      ],
-      timeline: 'Continuous',
-      approval_required: []
-    });
-
-    // Route efficiency
-    const lat = Math.abs(flight.latitude);
-    const lon = Math.abs(flight.longitude);
-    
-    if (lat > 50 && lon < 50) { // Over North Atlantic
+    // Route efficiency for Mediterranean flights
+    if (lat > 35 && lat < 45 && lon > 15 && lon < 30) {
       decisions.push({
-        id: 'track-optimization',
+        id: 'mediterranean-routing',
         type: 'fuel',
         priority: 'medium',
-        title: 'NAT Track Optimization',
-        description: 'Aircraft is on North Atlantic route. Monitor for more efficient track assignments.',
+        title: 'Mediterranean Route Optimization',
+        description: 'Aircraft over Mediterranean. Monitor for direct routing opportunities.',
         impact: {
-          cost: -800,
-          delay: 0,
-          fuel: -200,
+          cost: -600,
+          delay: -5,
+          fuel: -180,
           passengers: 0
         },
         recommendations: [
-          'Request track change if winds favorable',
-          'Monitor other aircraft track reports',
-          'Coordinate with Oceanic Control'
+          'Request direct routing to next waypoint',
+          'Monitor other traffic for conflicts',
+          'Coordinate with European ATC centers'
         ],
-        timeline: 'Next 30 minutes',
-        approval_required: ['Oceanic Control']
+        timeline: 'Next 20 minutes',
+        approval_required: ['European ATC']
       });
     }
 
     setActiveDecisions(decisions);
-    setSystemStatus('active');
+    setSystemStatus(decisions.some(d => d.priority === 'critical') ? 'critical' : 'active');
+  };
+
+  const detectNonNormalScenarios = (flight: any, lat: number, lon: number, currentTime: number) => {
+    const scenarios = {
+      medical: false,
+      technical: false,
+      weather: false,
+      security: false,
+      normal: true
+    };
+
+    // Manual scenario override
+    if (manualScenario) {
+      scenarios[manualScenario as keyof typeof scenarios] = true;
+      scenarios.normal = false;
+      return scenarios;
+    }
+
+    // Time-based automatic scenarios for demonstration
+    if (currentTime >= 12 && currentTime <= 14) {
+      scenarios.medical = true;
+      scenarios.normal = false;
+    } else if (currentTime >= 14 && currentTime <= 16) {
+      scenarios.weather = true;
+      scenarios.normal = false;
+    } else if (currentTime >= 8 && currentTime <= 10) {
+      scenarios.technical = true;
+      scenarios.normal = false;
+    } else if (currentTime >= 18 && currentTime <= 20) {
+      scenarios.security = true;
+      scenarios.normal = false;
+    }
+
+    return scenarios;
+  };
+
+  const triggerScenario = (scenarioType: string) => {
+    setManualScenario(scenarioType);
+    if (flightData) {
+      // Re-generate decisions with the manual scenario
+      const flight = {
+        ...flightData,
+        callsign: flightData.callsign,
+        latitude: flightData.currentPosition.lat,
+        longitude: flightData.currentPosition.lon,
+        altitude: flightData.altitude
+      };
+      generateOperationalDecisions(flight);
+    }
+  };
+
+  const clearScenario = () => {
+    setManualScenario(null);
+    if (flightData) {
+      const flight = {
+        ...flightData,
+        callsign: flightData.callsign,
+        latitude: flightData.currentPosition.lat,
+        longitude: flightData.currentPosition.lon,
+        altitude: flightData.altitude
+      };
+      generateOperationalDecisions(flight);
+    }
   };
 
   const getPriorityColor = (priority: string) => {
@@ -233,10 +382,72 @@ export default function OperationalDecisionEngine() {
         </div>
       )}
 
+      {/* Scenario Triggers */}
+      <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-4 mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-lg font-semibold text-white">Scenario Testing</h3>
+          {manualScenario && (
+            <button
+              onClick={clearScenario}
+              className="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700"
+            >
+              Clear Active Scenario
+            </button>
+          )}
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <button
+            onClick={() => triggerScenario('medical')}
+            className={`p-3 rounded text-sm font-medium transition-colors ${
+              manualScenario === 'medical' 
+                ? 'bg-red-600 text-white' 
+                : 'bg-red-600/20 border border-red-500 text-red-400 hover:bg-red-600/30'
+            }`}
+          >
+            Medical Emergency
+          </button>
+          <button
+            onClick={() => triggerScenario('technical')}
+            className={`p-3 rounded text-sm font-medium transition-colors ${
+              manualScenario === 'technical'
+                ? 'bg-orange-600 text-white'
+                : 'bg-orange-600/20 border border-orange-500 text-orange-400 hover:bg-orange-600/30'
+            }`}
+          >
+            Technical Issue
+          </button>
+          <button
+            onClick={() => triggerScenario('weather')}
+            className={`p-3 rounded text-sm font-medium transition-colors ${
+              manualScenario === 'weather'
+                ? 'bg-yellow-600 text-white'
+                : 'bg-yellow-600/20 border border-yellow-500 text-yellow-400 hover:bg-yellow-600/30'
+            }`}
+          >
+            Severe Weather
+          </button>
+          <button
+            onClick={() => triggerScenario('security')}
+            className={`p-3 rounded text-sm font-medium transition-colors ${
+              manualScenario === 'security'
+                ? 'bg-purple-600 text-white'
+                : 'bg-purple-600/20 border border-purple-500 text-purple-400 hover:bg-purple-600/30'
+            }`}
+          >
+            Security Incident
+          </button>
+        </div>
+        {manualScenario && (
+          <div className="mt-3 text-sm text-yellow-400">
+            Active Scenario: {manualScenario.charAt(0).toUpperCase() + manualScenario.slice(1)} - Decision recommendations updated
+          </div>
+        )}
+      </div>
+
       {/* Active Operational Decisions */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-white mb-4">
-          Active Decisions ({activeDecisions.length})
+          Operational Recommendations ({activeDecisions.length})
         </h3>
         
         {activeDecisions.map((decision) => (
