@@ -67,12 +67,15 @@ export default function SatelliteWorldMap() {
     return () => clearInterval(interval);
   }, []);
 
-  // Convert lat/lon to pixel coordinates for the map container
+  // Convert lat/lon to pixel coordinates for the map container with proper world coverage
   const latLonToPixel = (lat: number, lon: number, containerWidth: number, containerHeight: number) => {
-    // Simple equirectangular projection
+    // Mercator-style projection with full world coverage
     const x = ((lon + 180) / 360) * containerWidth;
-    const y = ((90 - lat) / 180) * containerHeight;
-    return { x, y };
+    // Use proper mercator projection for latitude to avoid polar distortion
+    const latRad = (lat * Math.PI) / 180;
+    const mercatorY = Math.log(Math.tan(Math.PI / 4 + latRad / 2));
+    const y = containerHeight / 2 - (mercatorY * containerHeight) / (2 * Math.PI);
+    return { x: Math.max(0, Math.min(containerWidth, x)), y: Math.max(0, Math.min(containerHeight, y)) };
   };
 
   // Mouse drag handlers
@@ -93,10 +96,10 @@ export default function SatelliteWorldMap() {
     const newLon = mapCenter.lon - deltaX * sensitivity;
     const newLat = mapCenter.lat + deltaY * sensitivity;
     
-    // Clamp coordinates to valid ranges
+    // Allow full global navigation with proper wrapping
     setMapCenter({
       lat: Math.max(-85, Math.min(85, newLat)),
-      lon: Math.max(-180, Math.min(180, newLon))
+      lon: newLon > 180 ? newLon - 360 : newLon < -180 ? newLon + 360 : newLon
     });
     
     setDragStart({ x: event.clientX, y: event.clientY });
@@ -135,7 +138,7 @@ export default function SatelliteWorldMap() {
     
     setMapCenter({
       lat: Math.max(-85, Math.min(85, newLat)),
-      lon: Math.max(-180, Math.min(180, newLon))
+      lon: newLon > 180 ? newLon - 360 : newLon < -180 ? newLon + 360 : newLon
     });
     
     setDragStart({ x: event.touches[0].clientX, y: event.touches[0].clientY });
@@ -158,10 +161,16 @@ export default function SatelliteWorldMap() {
           setMapCenter(prev => ({ ...prev, lat: Math.max(-85, prev.lat - moveAmount) }));
           break;
         case 'ArrowLeft':
-          setMapCenter(prev => ({ ...prev, lon: Math.max(-180, prev.lon - moveAmount) }));
+          setMapCenter(prev => ({ 
+            ...prev, 
+            lon: prev.lon - moveAmount < -180 ? prev.lon - moveAmount + 360 : prev.lon - moveAmount
+          }));
           break;
         case 'ArrowRight':
-          setMapCenter(prev => ({ ...prev, lon: Math.min(180, prev.lon + moveAmount) }));
+          setMapCenter(prev => ({ 
+            ...prev, 
+            lon: prev.lon + moveAmount > 180 ? prev.lon + moveAmount - 360 : prev.lon + moveAmount
+          }));
           break;
         case '+':
         case '=':
@@ -212,31 +221,38 @@ export default function SatelliteWorldMap() {
           backgroundColor: '#0f172a'
         }}
       >
-        {/* Mapbox Satellite Tiles Grid */}
+        {/* Mapbox Satellite Tiles with Global Coverage */}
         {mapboxToken && (
           <div 
-            className="absolute inset-0"
+            className="absolute inset-0 overflow-hidden"
             style={{
-              transform: `scale(${1 + (zoomLevel - 3) * 0.3}) translate(${(50 - mapCenter.lon) * 4}px, ${(mapCenter.lat - 40) * 4}px)`,
+              transform: `scale(${Math.pow(1.5, zoomLevel - 3)})`,
               transformOrigin: 'center center'
             }}
           >
-            {/* Create a grid of satellite tiles for global coverage */}
-            {Array.from({ length: Math.pow(2, Math.min(zoomLevel, 6)) }, (_, tileX) =>
-              Array.from({ length: Math.pow(2, Math.min(zoomLevel, 6)) }, (_, tileY) => {
+            {/* Dynamic tile grid based on map center and zoom */}
+            {Array.from({ length: 8 }, (_, tileX) =>
+              Array.from({ length: 4 }, (_, tileY) => {
                 const tileSize = 512;
-                const tilesPerRow = Math.pow(2, Math.min(zoomLevel, 6));
+                const centerTileX = Math.floor((mapCenter.lon + 180) / 360 * Math.pow(2, Math.min(zoomLevel, 4)));
+                const centerTileY = Math.floor((90 - mapCenter.lat) / 180 * Math.pow(2, Math.min(zoomLevel, 4)));
+                
+                const currentTileX = (centerTileX + tileX - 4 + Math.pow(2, Math.min(zoomLevel, 4))) % Math.pow(2, Math.min(zoomLevel, 4));
+                const currentTileY = Math.max(0, Math.min(Math.pow(2, Math.min(zoomLevel, 4)) - 1, centerTileY + tileY - 2));
+                
+                const offsetX = (tileX - 4) * tileSize;
+                const offsetY = (tileY - 2) * tileSize;
                 
                 return (
                   <div
-                    key={`${tileX}-${tileY}`}
+                    key={`${currentTileX}-${currentTileY}`}
                     className="absolute"
                     style={{
-                      left: `${(tileX * tileSize) - (tilesPerRow * tileSize) / 2}px`,
-                      top: `${(tileY * tileSize) - (tilesPerRow * tileSize) / 2}px`,
+                      left: `calc(50% + ${offsetX}px)`,
+                      top: `calc(50% + ${offsetY}px)`,
                       width: `${tileSize}px`,
                       height: `${tileSize}px`,
-                      backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/512/${Math.min(zoomLevel, 6)}/${tileX}/${tileY}@2x?access_token=${mapboxToken}")`,
+                      backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/512/${Math.min(zoomLevel, 4)}/${currentTileX}/${currentTileY}@2x?access_token=${mapboxToken}")`,
                       backgroundSize: 'cover',
                       backgroundRepeat: 'no-repeat'
                     }}
