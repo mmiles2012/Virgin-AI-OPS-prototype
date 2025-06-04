@@ -223,16 +223,36 @@ export default function SatelliteWorldMap() {
           backgroundColor: '#0f172a'
         }}
       >
-        {/* Reliable Satellite Background */}
+        {/* Satellite Background with Error Handling */}
         {mapboxToken && (
-          <div 
-            className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${mapCenter.lon},${mapCenter.lat},${Math.max(0, Math.min(zoomLevel, 8))}/1200x800@2x?access_token=${mapboxToken}")`,
-              transform: `scale(${Math.pow(1.5, zoomLevel - 3)})`,
-              transformOrigin: 'center center'
-            }}
-          />
+          <div className="absolute inset-0 w-full h-full">
+            <img 
+              src={`https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${mapCenter.lon.toFixed(4)},${mapCenter.lat.toFixed(4)},${Math.max(1, Math.min(zoomLevel, 8))}/1200x800@2x?access_token=${mapboxToken}`}
+              alt="Satellite Map"
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{
+                transform: `scale(${Math.pow(1.4, zoomLevel - 3)})`,
+                transformOrigin: 'center center'
+              }}
+              onError={(e) => {
+                console.error('Satellite image failed to load:', e.currentTarget.src);
+                e.currentTarget.style.display = 'none';
+              }}
+              onLoad={() => {
+                console.log('Satellite image loaded successfully');
+              }}
+            />
+            
+            {/* Backup satellite layer */}
+            <div 
+              className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat opacity-70"
+              style={{
+                backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${mapCenter.lon.toFixed(4)},${mapCenter.lat.toFixed(4)},${Math.max(1, Math.min(zoomLevel - 1, 7))}/800x600?access_token=${mapboxToken}")`,
+                transform: `scale(${Math.pow(1.2, zoomLevel - 3)})`,
+                transformOrigin: 'center center'
+              }}
+            />
+          </div>
         )}
         
         {/* Fallback gradient if no Mapbox token */}
