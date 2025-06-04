@@ -22,6 +22,62 @@ export default function SatelliteWorldMap() {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  
+  // Optimized satellite imagery state
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [currentImageUrl, setCurrentImageUrl] = useState<string>('');
+  const imageCache = useRef(new Map<string, HTMLImageElement>());
+  const debounceTimer = useRef<NodeJS.Timeout>();
+
+  // Generate optimized image URL with coordinate rounding and caching
+  const generateImageUrl = (lat: number, lon: number, zoom: number, token: string) => {
+    const roundedLat = Math.round(lat * 100) / 100; // Round to 2 decimal places
+    const roundedLon = Math.round(lon * 100) / 100;
+    const clampedZoom = Math.max(1, Math.min(zoom, 10));
+    
+    return `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${roundedLon},${roundedLat},${clampedZoom}/1200x800@2x?access_token=${token}`;
+  };
+
+  // Debounced image loading function
+  const loadSatelliteImage = (lat: number, lon: number, zoom: number, token: string) => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      const imageUrl = generateImageUrl(lat, lon, zoom, token);
+      
+      // Check cache first
+      if (imageCache.current.has(imageUrl)) {
+        setCurrentImageUrl(imageUrl);
+        setImageLoading(false);
+        setImageError(false);
+        return;
+      }
+
+      setImageLoading(true);
+      setImageError(false);
+
+      // Preload image
+      const img = new Image();
+      img.onload = () => {
+        imageCache.current.set(imageUrl, img);
+        setCurrentImageUrl(imageUrl);
+        setImageLoading(false);
+        setImageError(false);
+        console.log('Satellite image loaded successfully');
+      };
+      
+      img.onerror = () => {
+        console.error('Satellite image failed to load:', imageUrl);
+        setImageLoading(false);
+        setImageError(true);
+      };
+      
+      img.src = imageUrl;
+    }, 300); // 300ms debounce
+  };
 
   // Fetch Mapbox token from environment
   useEffect(() => {
@@ -38,6 +94,23 @@ export default function SatelliteWorldMap() {
     };
     
     fetchMapboxToken();
+  }, []);
+
+  // Load satellite imagery when mapCenter, zoomLevel, or token changes
+  useEffect(() => {
+    if (mapboxToken) {
+      loadSatelliteImage(mapCenter.lat, mapCenter.lon, zoomLevel, mapboxToken);
+    }
+  }, [mapCenter.lat, mapCenter.lon, zoomLevel, mapboxToken]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+      imageCache.current.clear();
+    };
   }, []);
 
   useEffect(() => {
@@ -223,35 +296,41 @@ export default function SatelliteWorldMap() {
           backgroundColor: '#0f172a'
         }}
       >
-        {/* Satellite Background with Error Handling */}
+        {/* Optimized Satellite Background */}
         {mapboxToken && (
           <div className="absolute inset-0 w-full h-full">
-            <img 
-              src={`https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${mapCenter.lon.toFixed(4)},${mapCenter.lat.toFixed(4)},${Math.max(1, Math.min(zoomLevel, 8))}/1200x800@2x?access_token=${mapboxToken}`}
-              alt="Satellite Map"
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{
-                transform: `scale(${Math.pow(1.4, zoomLevel - 3)})`,
-                transformOrigin: 'center center'
-              }}
-              onError={(e) => {
-                console.error('Satellite image failed to load:', e.currentTarget.src);
-                e.currentTarget.style.display = 'none';
-              }}
-              onLoad={() => {
-                console.log('Satellite image loaded successfully');
-              }}
-            />
+            {/* Loading state */}
+            {imageLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80">
+                <div className="text-white text-center">
+                  <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+                  <div className="text-sm">Loading satellite imagery...</div>
+                </div>
+              </div>
+            )}
             
-            {/* Backup satellite layer */}
-            <div 
-              className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat opacity-70"
-              style={{
-                backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${mapCenter.lon.toFixed(4)},${mapCenter.lat.toFixed(4)},${Math.max(1, Math.min(zoomLevel - 1, 7))}/800x600?access_token=${mapboxToken}")`,
-                transform: `scale(${Math.pow(1.2, zoomLevel - 3)})`,
-                transformOrigin: 'center center'
-              }}
-            />
+            {/* Error state */}
+            {imageError && !imageLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                <div className="text-white text-center">
+                  <div className="text-red-400 text-lg mb-2">⚠</div>
+                  <div className="text-sm">Satellite imagery unavailable</div>
+                </div>
+              </div>
+            )}
+            
+            {/* Main satellite image */}
+            {currentImageUrl && !imageError && (
+              <div 
+                className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat transition-opacity duration-500"
+                style={{
+                  backgroundImage: `url("${currentImageUrl}")`,
+                  transform: `scale(${Math.pow(1.3, zoomLevel - 3)})`,
+                  transformOrigin: 'center center',
+                  opacity: imageLoading ? 0.3 : 1
+                }}
+              />
+            )}
           </div>
         )}
         
