@@ -17,6 +17,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const scenarioEngine = new ScenarioEngine();
   const decisionEngine = new DecisionEngine(flightSim, scenarioEngine);
 
+  // Mapbox configuration endpoint
+  app.get('/api/config/mapbox', (req, res) => {
+    try {
+      const token = process.env.MAPBOX_ACCESS_TOKEN;
+      if (!token) {
+        return res.status(404).json({ error: 'Mapbox token not configured' });
+      }
+      res.json({ token });
+    } catch (error) {
+      console.error('Error providing Mapbox token:', error);
+      res.status(500).json({ error: 'Failed to get Mapbox configuration' });
+    }
+  });
+
   function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const R = 3440.065; // Earth's radius in nautical miles
     const dLat = (lat2 - lat1) * Math.PI / 180;

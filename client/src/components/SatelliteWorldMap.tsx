@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Satellite, Plane } from 'lucide-react';
 
 interface FlightPosition {
@@ -13,6 +13,25 @@ export default function SatelliteWorldMap() {
   const [flightData, setFlightData] = useState<FlightPosition[]>([]);
   const [mapCenter, setMapCenter] = useState({ lat: 40, lon: 0 }); // Center on Europe/Atlantic
   const [zoomLevel, setZoomLevel] = useState(3);
+  const [mapboxToken, setMapboxToken] = useState<string | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+
+  // Fetch Mapbox token from environment
+  useEffect(() => {
+    const fetchMapboxToken = async () => {
+      try {
+        const response = await fetch('/api/config/mapbox');
+        if (response.ok) {
+          const data = await response.json();
+          setMapboxToken(data.token);
+        }
+      } catch (error) {
+        console.error('Error fetching Mapbox token:', error);
+      }
+    };
+    
+    fetchMapboxToken();
+  }, []);
 
   useEffect(() => {
     const fetchFlightData = async () => {
@@ -91,60 +110,99 @@ export default function SatelliteWorldMap() {
         </div>
       </div>
 
-      {/* Satellite Map Background */}
+      {/* Real Satellite Map Background */}
       <div 
-        className="w-full h-full relative cursor-crosshair"
+        ref={mapContainerRef}
+        className="w-full h-full relative cursor-crosshair overflow-hidden"
         onClick={handleMapClick}
         style={{
-          backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(`
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500">
-              <defs>
-                <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
-                  <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#374151" stroke-width="0.5" opacity="0.3"/>
-                </pattern>
-                <radialGradient id="earth" cx="50%" cy="30%">
-                  <stop offset="0%" style="stop-color:#4ade80"/>
-                  <stop offset="30%" style="stop-color:#22c55e"/>
-                  <stop offset="70%" style="stop-color:#16a34a"/>
-                  <stop offset="100%" style="stop-color:#166534"/>
-                </radialGradient>
-              </defs>
-              
-              <!-- Ocean background -->
-              <rect width="1000" height="500" fill="#1e40af"/>
-              
-              <!-- Continental masses (simplified satellite view) -->
-              <!-- North America -->
-              <path d="M 100 120 L 250 100 L 300 140 L 320 180 L 280 220 L 200 240 L 120 200 Z" fill="url(#earth)" opacity="0.8"/>
-              
-              <!-- South America -->
-              <path d="M 220 260 L 280 280 L 320 380 L 300 450 L 250 440 L 220 360 Z" fill="url(#earth)" opacity="0.8"/>
-              
-              <!-- Europe -->
-              <path d="M 480 100 L 520 110 L 540 140 L 520 170 L 490 160 Z" fill="url(#earth)" opacity="0.8"/>
-              
-              <!-- Africa -->
-              <path d="M 480 170 L 520 180 L 550 250 L 540 350 L 510 360 L 480 320 Z" fill="url(#earth)" opacity="0.8"/>
-              
-              <!-- Asia -->
-              <path d="M 540 100 L 750 110 L 800 150 L 820 180 L 780 220 L 600 210 L 540 160 Z" fill="url(#earth)" opacity="0.8"/>
-              
-              <!-- Australia -->
-              <path d="M 720 320 L 800 330 L 820 360 L 790 380 L 730 370 Z" fill="url(#earth)" opacity="0.8"/>
-              
-              <!-- Grid overlay -->
-              <rect width="1000" height="500" fill="url(#grid)"/>
-              
-              <!-- Coordinate lines -->
-              <line x1="0" y1="250" x2="1000" y2="250" stroke="#fbbf24" stroke-width="1" opacity="0.6"/>
-              <line x1="500" y1="0" x2="500" y2="500" stroke="#fbbf24" stroke-width="1" opacity="0.6"/>
-            </svg>
-          `)}")`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          transform: `scale(${1 + (zoomLevel - 3) * 0.2}) translate(${(50 - mapCenter.lon) * 2}px, ${(mapCenter.lat - 40) * 3}px)`
+          backgroundColor: '#0f172a'
         }}
       >
+        {/* Mapbox Satellite Tiles Grid */}
+        {mapboxToken && (
+          <div 
+            className="absolute inset-0"
+            style={{
+              transform: `scale(${1 + (zoomLevel - 3) * 0.3}) translate(${(50 - mapCenter.lon) * 4}px, ${(mapCenter.lat - 40) * 4}px)`,
+              transformOrigin: 'center center'
+            }}
+          >
+            {/* Create a grid of satellite tiles for global coverage */}
+            {Array.from({ length: Math.pow(2, Math.min(zoomLevel, 6)) }, (_, tileX) =>
+              Array.from({ length: Math.pow(2, Math.min(zoomLevel, 6)) }, (_, tileY) => {
+                const tileSize = 512;
+                const tilesPerRow = Math.pow(2, Math.min(zoomLevel, 6));
+                
+                return (
+                  <div
+                    key={`${tileX}-${tileY}`}
+                    className="absolute"
+                    style={{
+                      left: `${(tileX * tileSize) - (tilesPerRow * tileSize) / 2}px`,
+                      top: `${(tileY * tileSize) - (tilesPerRow * tileSize) / 2}px`,
+                      width: `${tileSize}px`,
+                      height: `${tileSize}px`,
+                      backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/512/${Math.min(zoomLevel, 6)}/${tileX}/${tileY}@2x?access_token=${mapboxToken}")`,
+                      backgroundSize: 'cover',
+                      backgroundRepeat: 'no-repeat'
+                    }}
+                  />
+                );
+              })
+            ).flat()}
+          </div>
+        )}
+        
+        {/* Fallback gradient if no Mapbox token */}
+        {!mapboxToken && (
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #0f172a 100%)'
+            }}
+          >
+            <div className="absolute inset-0 opacity-20">
+              <div className="w-full h-full bg-gradient-to-r from-green-900/30 via-transparent to-green-900/30"></div>
+            </div>
+          </div>
+        )}
+
+        {/* Coordinate Grid Overlay */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 5 }}>
+          {/* Longitude lines */}
+          {Array.from({ length: 13 }, (_, i) => (
+            <line
+              key={`lon-${i}`}
+              x1={`${(i * 100) / 12}%`}
+              y1="0%"
+              x2={`${(i * 100) / 12}%`}
+              y2="100%"
+              stroke="#374151"
+              strokeWidth="1"
+              opacity="0.3"
+            />
+          ))}
+          {/* Latitude lines */}
+          {Array.from({ length: 9 }, (_, i) => (
+            <line
+              key={`lat-${i}`}
+              x1="0%"
+              y1={`${(i * 100) / 8}%`}
+              x2="100%"
+              y2={`${(i * 100) / 8}%`}
+              stroke="#374151"
+              strokeWidth="1"
+              opacity="0.3"
+            />
+          ))}
+          
+          {/* Equator line */}
+          <line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#fbbf24" strokeWidth="2" opacity="0.6" />
+          
+          {/* Prime Meridian */}
+          <line x1="50%" y1="0%" x2="50%" y2="100%" stroke="#fbbf24" strokeWidth="2" opacity="0.6" />
+        </svg>
         {/* Flight Markers */}
         {flightData.map((flight, index) => {
           const position = latLonToPixel(flight.latitude, flight.longitude, 1000, 500);
