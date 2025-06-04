@@ -238,7 +238,7 @@ function App() {
                     <ScenarioManager onEmergencyActivate={setIsEmergencyActive} draggable={false} />
                   </div>
                   <div className="max-w-sm">
-                    <MetricsDisplay draggable={false} />
+
                   </div>
                 </div>
               </div>
