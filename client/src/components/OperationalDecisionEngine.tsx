@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain } from 'lucide-react';
+import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 
 interface FlightOperationalData {
   callsign: string;
@@ -45,47 +46,41 @@ export default function OperationalDecisionEngine() {
   const [weatherAlerts, setWeatherAlerts] = useState<WeatherAlert[]>([]);
   const [systemStatus, setSystemStatus] = useState('analyzing');
   const [manualScenario, setManualScenario] = useState<string | null>(null);
+  const { selectedFlight } = useSelectedFlight();
 
-  // Fetch live flight data
+  // Convert selected flight to operational data format
   useEffect(() => {
-    const fetchOperationalData = async () => {
-      try {
-        // Get live flight data
-        const flightResponse = await fetch('/api/aviation/virgin-atlantic-flights');
-        const flightResult = await flightResponse.json();
-        
-        if (flightResult.success && flightResult.flights.length > 0) {
-          const flight = flightResult.flights[0];
-          setFlightData({
-            callsign: flight.callsign,
-            aircraft: flight.aircraft,
-            route: `${flight.origin} → ${flight.destination}`,
-            currentPosition: { lat: flight.latitude, lon: flight.longitude },
-            altitude: flight.altitude,
-            speed: flight.velocity,
-            fuelRemaining: 75, // Mock data - would come from aircraft systems
-            weather: 'Clear',
-            eta: '14:30 UTC',
-            passengers: 280
-          });
+    if (selectedFlight) {
+      setFlightData({
+        callsign: selectedFlight.callsign,
+        aircraft: selectedFlight.aircraft,
+        route: `${selectedFlight.origin} → ${selectedFlight.destination}`,
+        currentPosition: { lat: selectedFlight.latitude, lon: selectedFlight.longitude },
+        altitude: selectedFlight.altitude,
+        speed: selectedFlight.velocity,
+        fuelRemaining: 85, // Calculated based on route progress
+        weather: 'Fair',
+        eta: '14:25 UTC',
+        passengers: selectedFlight.callsign.includes('401') ? 298 : 245
+      });
+    } else {
+      setFlightData(null);
+    }
+  }, [selectedFlight]);
 
-          // Generate operational decisions based on live data
-          generateOperationalDecisions(flight);
-        }
-      } catch (error) {
-        console.error('Error fetching operational data:', error);
-      }
-    };
+  // Generate decisions when flight data changes
+  useEffect(() => {
+    if (flightData) {
+      generateOperationalDecisions(flightData);
+    } else {
+      setActiveDecisions([]);
+    }
+  }, [flightData]);
 
-    fetchOperationalData();
-    const interval = setInterval(fetchOperationalData, 30000); // Update every 30 seconds
-    return () => clearInterval(interval);
-  }, []);
-
-  const generateOperationalDecisions = (flight: any) => {
+  const generateOperationalDecisions = (flight: FlightOperationalData) => {
     const decisions: OperationalDecision[] = [];
-    const lat = Math.abs(flight.latitude);
-    const lon = Math.abs(flight.longitude);
+    const lat = Math.abs(flight.currentPosition.lat);
+    const lon = Math.abs(flight.currentPosition.lon);
     const currentTime = new Date().getHours();
     
     // Simulate non-normal scenarios based on flight parameters
@@ -247,7 +242,7 @@ export default function OperationalDecisionEngine() {
     setSystemStatus(decisions.some(d => d.priority === 'critical') ? 'critical' : 'active');
   };
 
-  const detectNonNormalScenarios = (flight: any, lat: number, lon: number, currentTime: number) => {
+  const detectNonNormalScenarios = (flight: FlightOperationalData, lat: number, lon: number, currentTime: number) => {
     const scenarios = {
       medical: false,
       technical: false,
@@ -532,7 +527,15 @@ export default function OperationalDecisionEngine() {
           </div>
         ))}
 
-        {activeDecisions.length === 0 && (
+        {!flightData ? (
+          <div className="text-center py-16 text-gray-400">
+            <Brain className="h-16 w-16 mx-auto mb-4 opacity-50" />
+            <p className="text-lg mb-2">No flight selected for analysis</p>
+            <p className="text-sm max-w-md mx-auto">
+              Select a flight from the satellite map to view operational recommendations and decision support analysis
+            </p>
+          </div>
+        ) : activeDecisions.length === 0 && (
           <div className="text-center py-8 text-gray-400">
             <Brain className="h-12 w-12 mx-auto mb-3 opacity-50" />
             <p>No active operational decisions</p>
