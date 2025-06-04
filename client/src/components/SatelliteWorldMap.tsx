@@ -6,7 +6,11 @@ interface FlightPosition {
   latitude: number;
   longitude: number;
   altitude: number;
+  velocity: number;
+  heading: number;
   aircraft: string;
+  origin?: string;
+  destination?: string;
 }
 
 export default function SatelliteWorldMap() {
@@ -293,33 +297,95 @@ export default function SatelliteWorldMap() {
           <line x1="50%" y1="0%" x2="50%" y2="100%" stroke="#fbbf24" strokeWidth="2" opacity="0.6" />
         </svg>
         {/* Flight Markers */}
+        {/* Real-time Virgin Atlantic Flight Tracking */}
         {flightData.map((flight, index) => {
           const position = latLonToPixel(flight.latitude, flight.longitude, 1000, 500);
+          const headingRotation = flight.heading || 0;
           
           return (
             <div
-              key={index}
+              key={flight.callsign || index}
               className="absolute transform -translate-x-1/2 -translate-y-1/2 z-10"
               style={{
                 left: `${(position.x / 1000) * 100}%`,
                 top: `${(position.y / 500) * 100}%`,
               }}
             >
-              {/* Aircraft marker */}
+              {/* Virgin Atlantic Aircraft marker with heading */}
               <div className="relative group">
-                <div className="w-3 h-3 bg-red-500 rounded-full border-2 border-yellow-400 animate-pulse shadow-lg"></div>
+                {/* Flight path trail */}
+                <div 
+                  className="absolute w-16 h-0.5 bg-red-400/40"
+                  style={{
+                    left: '50%',
+                    top: '50%',
+                    transform: `translate(-50%, -50%) rotate(${headingRotation}deg)`,
+                    transformOrigin: 'left center'
+                  }}
+                />
                 
-                {/* Flight info tooltip */}
-                <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-black/90 text-white px-3 py-2 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity border border-yellow-400 z-20">
-                  <div className="font-bold text-yellow-400">{flight.callsign}</div>
-                  <div className="text-gray-300">{flight.aircraft}</div>
-                  <div className="text-gray-400">{Math.round(flight.altitude)} ft</div>
-                  <div className="text-gray-500 text-xs">
-                    {flight.latitude.toFixed(2)}°, {flight.longitude.toFixed(2)}°
+                {/* Aircraft icon with Virgin Atlantic styling */}
+                <div 
+                  className="w-5 h-5 bg-red-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center animate-pulse transition-transform duration-300"
+                  style={{
+                    transform: `rotate(${headingRotation}deg)`
+                  }}
+                >
+                  <Plane className="w-3 h-3 text-white" />
+                </div>
+                
+                {/* Enhanced flight info tooltip */}
+                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-red-900/95 backdrop-blur-sm text-white px-4 py-3 rounded-lg text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity border border-red-600/50 shadow-xl z-30 min-w-72">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+                    <div className="font-bold text-red-300 text-sm">{flight.callsign}</div>
+                    <div className="text-red-400 text-xs font-medium">VIRGIN ATLANTIC</div>
                   </div>
                   
-                  {/* Arrow pointing to marker */}
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-yellow-400"></div>
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <div className="text-red-300 font-medium mb-1">Aircraft</div>
+                      <div className="text-white">{flight.aircraft}</div>
+                    </div>
+                    <div>
+                      <div className="text-red-300 font-medium mb-1">Altitude</div>
+                      <div className="text-white">{flight.altitude?.toLocaleString() || 'N/A'} ft</div>
+                    </div>
+                    <div>
+                      <div className="text-red-300 font-medium mb-1">Ground Speed</div>
+                      <div className="text-white">{flight.velocity?.toFixed(0) || 'N/A'} kt</div>
+                    </div>
+                    <div>
+                      <div className="text-red-300 font-medium mb-1">Heading</div>
+                      <div className="text-white">{flight.heading?.toFixed(0) || 'N/A'}°</div>
+                    </div>
+                  </div>
+                  
+                  {(flight.origin || flight.destination) && (
+                    <div className="mt-3 pt-2 border-t border-red-700/50">
+                      {flight.origin && (
+                        <div className="text-xs mb-1">
+                          <span className="text-red-300 font-medium">Origin:</span> 
+                          <span className="text-white ml-1">{flight.origin}</span>
+                        </div>
+                      )}
+                      {flight.destination && (
+                        <div className="text-xs">
+                          <span className="text-red-300 font-medium">Destination:</span> 
+                          <span className="text-white ml-1">{flight.destination}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div className="mt-2 pt-2 border-t border-red-700/50 text-xs text-red-400">
+                    Position: {flight.latitude.toFixed(4)}°N, {flight.longitude.toFixed(4)}°E
+                  </div>
+                  
+                  {/* Tooltip arrow */}
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2">
+                    <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-red-900/95"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -350,17 +416,30 @@ export default function SatelliteWorldMap() {
         </div>
       </div>
 
-      {/* Flight Legend */}
+      {/* Real-time Flight Legend */}
       <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-sm rounded-lg p-3 text-xs text-gray-300 border border-gray-600">
         <div className="mb-2 font-medium text-white flex items-center gap-2">
-          <Plane className="h-4 w-4" />
-          Active Flights
+          <Plane className="h-4 w-4 text-red-500" />
+          Live Flight Tracking
         </div>
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-          <span>Virgin Atlantic</span>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
+              <Plane className="w-2 h-2 text-white" />
+            </div>
+            <span>Virgin Atlantic Aircraft</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-0.5 bg-red-400/40"></div>
+            <span>Flight Path</span>
+          </div>
+          <div className="text-red-400 text-xs font-medium">
+            {flightData.length} active flight{flightData.length !== 1 ? 's' : ''}
+          </div>
+          <div className="text-gray-400 text-xs">
+            Real-time data • Hover for details
+          </div>
         </div>
-        <div className="text-gray-400">Hover for details</div>
       </div>
     </div>
   );
