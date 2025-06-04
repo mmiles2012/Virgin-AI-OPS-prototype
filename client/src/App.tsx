@@ -7,7 +7,7 @@ import "@fontsource/inter";
 import Aircraft from "./components/Aircraft";
 import CockpitInterface from "./components/CockpitInterface";
 import OperationsCenter from "./components/OperationsCenter";
-import DecisionCenter from "./components/DecisionCenter";
+import OperationalDecisionEngine from "./components/OperationalDecisionEngine";
 import FlightMap from "./components/FlightMap";
 import ScenarioManager from "./components/ScenarioManager";
 import MetricsDisplay from "./components/MetricsDisplay";
@@ -206,7 +206,7 @@ function App() {
             
             {viewMode === 'decisions' && !isInterfaceMinimized && (
               <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
-                <DecisionCenter />
+                <OperationalDecisionEngine />
               </div>
             )}
             
