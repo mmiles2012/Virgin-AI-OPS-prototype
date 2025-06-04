@@ -268,8 +268,16 @@ export class AviationApiService {
 
       return flights;
     } catch (error: any) {
-      if (error.response?.data?.error?.code === 'usage_limit_reached') {
-        console.warn('AviationStack API quota exceeded, using fallback data');
+      console.warn('AviationStack API error:', error.response?.status, error.message);
+      // Handle authentication errors, quota limits, and other API issues
+      if (error.response?.status === 401 || 
+          error.response?.status === 403 ||
+          error.response?.status === 429 ||
+          error.response?.data?.error?.code === 'usage_limit_reached' ||
+          error.message?.includes('quota') ||
+          error.message?.includes('limit') ||
+          error.message?.includes('401')) {
+        console.warn('AviationStack API authentication/quota issue, using fallback data');
         return this.getFallbackVirginAtlanticFlights();
       }
       throw new Error(`Failed to fetch Virgin Atlantic flights: ${error.message}`);
