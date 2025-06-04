@@ -223,46 +223,23 @@ export default function SatelliteWorldMap() {
           backgroundColor: '#0f172a'
         }}
       >
-        {/* Mapbox Satellite Tiles with Global Coverage */}
+        {/* Simplified Satellite Background */}
         {mapboxToken && (
           <div 
-            className="absolute inset-0 overflow-hidden"
+            className="absolute inset-0 transition-transform duration-200 ease-out"
             style={{
-              transform: `scale(${Math.pow(1.5, zoomLevel - 3)})`,
-              transformOrigin: 'center center'
+              transform: `translate(${(mapCenter.lon * -2)}px, ${(mapCenter.lat * 2)}px) scale(${Math.pow(1.2, zoomLevel - 3)})`,
+              transformOrigin: 'center center',
+              backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${mapCenter.lon},${mapCenter.lat},${Math.min(zoomLevel, 8)}/1200x800@2x?access_token=${mapboxToken}")`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              width: '150%',
+              height: '150%',
+              left: '-25%',
+              top: '-25%'
             }}
-          >
-            {/* Dynamic tile grid based on map center and zoom */}
-            {Array.from({ length: 8 }, (_, tileX) =>
-              Array.from({ length: 4 }, (_, tileY) => {
-                const tileSize = 512;
-                const centerTileX = Math.floor((mapCenter.lon + 180) / 360 * Math.pow(2, Math.min(zoomLevel, 4)));
-                const centerTileY = Math.floor((90 - mapCenter.lat) / 180 * Math.pow(2, Math.min(zoomLevel, 4)));
-                
-                const currentTileX = (centerTileX + tileX - 4 + Math.pow(2, Math.min(zoomLevel, 4))) % Math.pow(2, Math.min(zoomLevel, 4));
-                const currentTileY = Math.max(0, Math.min(Math.pow(2, Math.min(zoomLevel, 4)) - 1, centerTileY + tileY - 2));
-                
-                const offsetX = (tileX - 4) * tileSize;
-                const offsetY = (tileY - 2) * tileSize;
-                
-                return (
-                  <div
-                    key={`${currentTileX}-${currentTileY}`}
-                    className="absolute"
-                    style={{
-                      left: `calc(50% + ${offsetX}px)`,
-                      top: `calc(50% + ${offsetY}px)`,
-                      width: `${tileSize}px`,
-                      height: `${tileSize}px`,
-                      backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/512/${Math.min(zoomLevel, 4)}/${currentTileX}/${currentTileY}@2x?access_token=${mapboxToken}")`,
-                      backgroundSize: 'cover',
-                      backgroundRepeat: 'no-repeat'
-                    }}
-                  />
-                );
-              })
-            ).flat()}
-          </div>
+          />
         )}
         
         {/* Fallback gradient if no Mapbox token */}
