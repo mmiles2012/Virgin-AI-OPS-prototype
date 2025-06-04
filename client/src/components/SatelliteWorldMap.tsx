@@ -223,43 +223,18 @@ export default function SatelliteWorldMap() {
           backgroundColor: '#0f172a'
         }}
       >
-        {/* Dynamic Satellite Tiles */}
+        {/* Single Seamless Satellite Background */}
         {mapboxToken && (
           <div 
-            className="absolute inset-0"
+            className="absolute inset-0 w-full h-full"
             style={{
-              transform: `scale(${Math.pow(1.4, zoomLevel - 3)})`,
-              transformOrigin: 'center center'
+              backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${mapCenter.lon},${mapCenter.lat},${Math.min(zoomLevel, 6)}/1400x900@2x?access_token=${mapboxToken}")`,
+              backgroundSize: `${100 * Math.pow(1.5, zoomLevel - 3)}%`,
+              backgroundPosition: 'center center',
+              backgroundRepeat: 'no-repeat',
+              transition: 'background-image 0.3s ease-out'
             }}
-          >
-            {/* Create overlapping tiles for smooth coverage */}
-            {Array.from({ length: 3 }, (_, x) =>
-              Array.from({ length: 3 }, (_, y) => {
-                const tileSize = 600;
-                const offsetX = (x - 1) * tileSize;
-                const offsetY = (y - 1) * tileSize;
-                const adjustedLon = mapCenter.lon + (offsetX / 6);
-                const adjustedLat = mapCenter.lat - (offsetY / 6);
-                
-                return (
-                  <div
-                    key={`${x}-${y}`}
-                    className="absolute"
-                    style={{
-                      left: `calc(50% + ${offsetX}px)`,
-                      top: `calc(50% + ${offsetY}px)`,
-                      width: `${tileSize}px`,
-                      height: `${tileSize}px`,
-                      backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${adjustedLon},${adjustedLat},${Math.min(zoomLevel + 1, 10)}/${tileSize}x${tileSize}@2x?access_token=${mapboxToken}")`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      backgroundRepeat: 'no-repeat'
-                    }}
-                  />
-                );
-              })
-            ).flat()}
-          </div>
+          />
         )}
         
         {/* Fallback gradient if no Mapbox token */}
