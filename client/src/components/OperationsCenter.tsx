@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useFlightState } from '../lib/stores/useFlightState';
 import { useScenario } from '../lib/stores/useScenario';
+import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { AlertTriangle, Plane, MapPin, Clock } from 'lucide-react';
 import LiveFlightTracker from './LiveFlightTracker';
 
@@ -17,6 +18,8 @@ export default function OperationsCenter() {
     fuelRemaining,
     engineTemps 
   } = useFlightState();
+  
+  const { selectedFlight } = useSelectedFlight();
   
   const { 
     currentScenario, 
@@ -58,35 +61,49 @@ export default function OperationsCenter() {
           <CardHeader className="pb-3">
             <CardTitle className="text-white flex items-center gap-2">
               <Plane className="h-5 w-5" />
-              Flight BA2847
+              {selectedFlight ? `Flight ${selectedFlight.callsign}` : 'No Flight Selected'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <div className="text-blue-300">Route</div>
-                <div className="text-white font-mono">LAX→JFK</div>
-              </div>
-              <div>
-                <div className="text-blue-300">Aircraft</div>
-                <div className="text-white font-mono">B787-9</div>
-              </div>
-              <div>
-                <div className="text-blue-300">Altitude</div>
-                <div className="text-white font-mono">{altitude.toFixed(0)} ft</div>
-              </div>
-              <div>
-                <div className="text-blue-300">Speed</div>
-                <div className="text-white font-mono">{airspeed.toFixed(0)} kts</div>
-              </div>
-            </div>
+            {selectedFlight ? (
+              <>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-blue-300">Route</div>
+                    <div className="text-white font-mono">
+                      {selectedFlight.origin}→{selectedFlight.destination}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-blue-300">Aircraft</div>
+                    <div className="text-white font-mono">{selectedFlight.aircraft}</div>
+                  </div>
+                  <div>
+                    <div className="text-blue-300">Altitude</div>
+                    <div className="text-white font-mono">{selectedFlight.altitude.toLocaleString()} ft</div>
+                  </div>
+                  <div>
+                    <div className="text-blue-300">Speed</div>
+                    <div className="text-white font-mono">{selectedFlight.velocity.toFixed(0)} kts</div>
+                  </div>
+                </div>
 
-            <div className="border-t border-blue-500 pt-3">
-              <div className="text-blue-300 text-sm mb-2">Current Position</div>
-              <div className="text-white font-mono text-xs">
-                {position[0].toFixed(2)}°, {position[2].toFixed(2)}°
+                <div className="border-t border-blue-500 pt-3">
+                  <div className="text-blue-300 text-sm mb-2">Current Position</div>
+                  <div className="text-white font-mono text-xs">
+                    {selectedFlight.latitude.toFixed(4)}°, {selectedFlight.longitude.toFixed(4)}°
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <Plane className="h-12 w-12 text-gray-600 mb-3" />
+                <div className="text-gray-400 text-sm">No flight data available</div>
+                <div className="text-gray-500 text-xs mt-1">
+                  Click on a flight marker in the satellite map to select it for tracking
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="space-y-2">
               <Badge variant={fuelRemaining > 50000 ? "default" : "destructive"} className="w-full justify-center">

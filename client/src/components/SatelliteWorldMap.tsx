@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Satellite, Plane } from 'lucide-react';
+import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 
 interface FlightPosition {
   callsign: string;
@@ -29,6 +30,9 @@ export default function SatelliteWorldMap() {
   const [currentImageUrl, setCurrentImageUrl] = useState<string>('');
   const imageCache = useRef(new Map<string, HTMLImageElement>());
   const debounceTimer = useRef<NodeJS.Timeout>();
+  
+  // Flight selection state
+  const { selectFlight, selectedFlight } = useSelectedFlight();
 
   // Generate optimized image URL with coordinate rounding and caching
   const generateImageUrl = (lat: number, lon: number, zoom: number, token: string) => {
@@ -399,7 +403,14 @@ export default function SatelliteWorldMap() {
               }}
             >
               {/* Virgin Atlantic Aircraft marker with heading */}
-              <div className="relative group">
+              <div 
+                className="relative group cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  selectFlight(flight);
+                  console.log('Selected flight for operations center:', flight.callsign);
+                }}
+              >
                 {/* Flight path trail */}
                 <div 
                   className="absolute w-16 h-0.5 bg-red-400/40"
@@ -413,9 +424,13 @@ export default function SatelliteWorldMap() {
                 
                 {/* Aircraft icon with Virgin Atlantic styling */}
                 <div 
-                  className="w-5 h-5 bg-red-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center animate-pulse transition-transform duration-300"
+                  className={`w-5 h-5 rounded-full border-2 shadow-lg flex items-center justify-center transition-all duration-300 ${
+                    selectedFlight?.callsign === flight.callsign 
+                      ? 'bg-yellow-500 border-yellow-300 scale-125 animate-pulse' 
+                      : 'bg-red-600 border-white hover:bg-red-500 hover:scale-110'
+                  }`}
                   style={{
-                    transform: `rotate(${headingRotation}deg)`
+                    transform: `rotate(${headingRotation}deg) ${selectedFlight?.callsign === flight.callsign ? 'scale(1.25)' : ''}`
                   }}
                 >
                   <Plane className="w-3 h-3 text-white" />

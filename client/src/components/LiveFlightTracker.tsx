@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plane, MapPin, Clock, Navigation, Fuel, AlertTriangle } from 'lucide-react';
+import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 
 interface LiveFlight {
   flight_number: string;
