@@ -196,7 +196,7 @@ export default function SatelliteWorldMap() {
   }, []);
 
   return (
-    <div className="relative w-full h-full bg-gray-900 rounded-lg overflow-hidden border border-gray-600">
+    <div className="relative w-full h-full overflow-hidden">
       {/* AINO Header - Top Center */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 backdrop-blur-sm rounded-lg border border-gray-600 p-3 z-20">
         <div className="flex items-center gap-3">
@@ -223,23 +223,43 @@ export default function SatelliteWorldMap() {
           backgroundColor: '#0f172a'
         }}
       >
-        {/* Simplified Satellite Background */}
+        {/* Dynamic Satellite Tiles */}
         {mapboxToken && (
           <div 
-            className="absolute inset-0 transition-transform duration-200 ease-out"
+            className="absolute inset-0"
             style={{
-              transform: `translate(${(mapCenter.lon * -2)}px, ${(mapCenter.lat * 2)}px) scale(${Math.pow(1.2, zoomLevel - 3)})`,
-              transformOrigin: 'center center',
-              backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${mapCenter.lon},${mapCenter.lat},${Math.min(zoomLevel, 8)}/1200x800@2x?access_token=${mapboxToken}")`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              width: '150%',
-              height: '150%',
-              left: '-25%',
-              top: '-25%'
+              transform: `scale(${Math.pow(1.4, zoomLevel - 3)})`,
+              transformOrigin: 'center center'
             }}
-          />
+          >
+            {/* Create overlapping tiles for smooth coverage */}
+            {Array.from({ length: 3 }, (_, x) =>
+              Array.from({ length: 3 }, (_, y) => {
+                const tileSize = 600;
+                const offsetX = (x - 1) * tileSize;
+                const offsetY = (y - 1) * tileSize;
+                const adjustedLon = mapCenter.lon + (offsetX / 6);
+                const adjustedLat = mapCenter.lat - (offsetY / 6);
+                
+                return (
+                  <div
+                    key={`${x}-${y}`}
+                    className="absolute"
+                    style={{
+                      left: `calc(50% + ${offsetX}px)`,
+                      top: `calc(50% + ${offsetY}px)`,
+                      width: `${tileSize}px`,
+                      height: `${tileSize}px`,
+                      backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${adjustedLon},${adjustedLat},${Math.min(zoomLevel + 1, 10)}/${tileSize}x${tileSize}@2x?access_token=${mapboxToken}")`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat'
+                    }}
+                  />
+                );
+              })
+            ).flat()}
+          </div>
         )}
         
         {/* Fallback gradient if no Mapbox token */}

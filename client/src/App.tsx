@@ -224,9 +224,9 @@ function App() {
               </div>
             )}
 
-            {/* Global Operations Satellite Map - Overview Mode */}
+            {/* Full-Screen Global Operations Satellite Map - Overview Mode */}
             {viewMode === 'overview' && !isInterfaceMinimized && (
-              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto">
+              <div className="absolute inset-0 pointer-events-auto">
                 <SatelliteWorldMap />
               </div>
             )}
