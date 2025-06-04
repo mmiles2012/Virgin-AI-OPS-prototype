@@ -91,8 +91,8 @@ export default function SatelliteWorldMap() {
     const deltaX = event.clientX - dragStart.x;
     const deltaY = event.clientY - dragStart.y;
     
-    // Convert pixel movement to lat/lon changes based on zoom level
-    const sensitivity = 0.1 / Math.pow(2, zoomLevel - 3);
+    // Smoother sensitivity based on zoom level
+    const sensitivity = 0.05 / Math.pow(1.5, zoomLevel - 3);
     const newLon = mapCenter.lon - deltaX * sensitivity;
     const newLat = mapCenter.lat + deltaY * sensitivity;
     
@@ -132,7 +132,7 @@ export default function SatelliteWorldMap() {
     const deltaX = event.touches[0].clientX - dragStart.x;
     const deltaY = event.touches[0].clientY - dragStart.y;
     
-    const sensitivity = 0.1 / Math.pow(2, zoomLevel - 3);
+    const sensitivity = 0.05 / Math.pow(1.5, zoomLevel - 3);
     const newLon = mapCenter.lon - deltaX * sensitivity;
     const newLat = mapCenter.lat + deltaY * sensitivity;
     
@@ -148,10 +148,10 @@ export default function SatelliteWorldMap() {
     setIsDragging(false);
   };
 
-  // Keyboard navigation
+  // Smooth keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const moveAmount = 5 / Math.pow(2, zoomLevel - 3);
+      const moveAmount = 2 / Math.pow(1.5, zoomLevel - 3);
       
       switch (event.key) {
         case 'ArrowUp':
@@ -174,9 +174,11 @@ export default function SatelliteWorldMap() {
           break;
         case '+':
         case '=':
+          event.preventDefault();
           setZoomLevel(prev => Math.min(8, prev + 1));
           break;
         case '-':
+          event.preventDefault();
           setZoomLevel(prev => Math.max(1, prev - 1));
           break;
       }
@@ -209,7 +211,7 @@ export default function SatelliteWorldMap() {
       {/* Real Satellite Map Background */}
       <div 
         ref={mapContainerRef}
-        className={`w-full h-full relative overflow-hidden select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        className={`w-full h-full relative overflow-hidden select-none transition-transform duration-150 ease-out ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
