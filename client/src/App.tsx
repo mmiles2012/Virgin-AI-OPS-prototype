@@ -14,6 +14,7 @@ import MetricsDisplay from "./components/MetricsDisplay";
 import InlineApiTest from "./components/InlineApiTest";
 import LiveFlightTracker from "./components/LiveFlightTracker";
 import SimpleFlightMap from "./components/SimpleFlightMap";
+import SatelliteWorldMap from "./components/SatelliteWorldMap";
 
 // Flight control mappings
 enum FlightControls {
@@ -230,15 +231,19 @@ function App() {
               </div>
             )}
 
-            {/* Scenario manager and metrics - bottom positioned interface */}
-            {!isInterfaceMinimized && (
+            {/* Global Operations Satellite Map - Overview Mode */}
+            {viewMode === 'overview' && !isInterfaceMinimized && (
+              <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto">
+                <SatelliteWorldMap />
+              </div>
+            )}
+
+            {/* Scenario manager - bottom positioned interface */}
+            {!isInterfaceMinimized && viewMode !== 'overview' && (
               <div className="absolute bottom-4 left-4 right-4 z-40 pointer-events-auto">
                 <div className="flex gap-4">
                   <div className="max-w-sm">
                     <ScenarioManager onEmergencyActivate={setIsEmergencyActive} draggable={false} />
-                  </div>
-                  <div className="max-w-sm">
-
                   </div>
                 </div>
               </div>
