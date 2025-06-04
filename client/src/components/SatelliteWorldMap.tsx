@@ -15,6 +15,9 @@ export default function SatelliteWorldMap() {
   const [zoomLevel, setZoomLevel] = useState(3);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   // Fetch Mapbox token from environment
   useEffect(() => {
@@ -68,17 +71,114 @@ export default function SatelliteWorldMap() {
     return { x, y };
   };
 
-  const handleMapClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    
-    // Convert pixel coordinates back to lat/lon
-    const lon = (x / rect.width) * 360 - 180;
-    const lat = 90 - (y / rect.height) * 180;
-    
-    setMapCenter({ lat, lon });
+  // Mouse drag handlers
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    setDragStart({ x: event.clientX, y: event.clientY });
+    event.preventDefault();
   };
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    
+    const deltaX = event.clientX - dragStart.x;
+    const deltaY = event.clientY - dragStart.y;
+    
+    // Convert pixel movement to lat/lon changes based on zoom level
+    const sensitivity = 0.1 / Math.pow(2, zoomLevel - 3);
+    const newLon = mapCenter.lon - deltaX * sensitivity;
+    const newLat = mapCenter.lat + deltaY * sensitivity;
+    
+    // Clamp coordinates to valid ranges
+    setMapCenter({
+      lat: Math.max(-85, Math.min(85, newLat)),
+      lon: Math.max(-180, Math.min(180, newLon))
+    });
+    
+    setDragStart({ x: event.clientX, y: event.clientY });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Mouse wheel zoom handler
+  const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const delta = event.deltaY > 0 ? -1 : 1;
+    const newZoom = Math.max(1, Math.min(8, zoomLevel + delta));
+    setZoomLevel(newZoom);
+  };
+
+  // Touch handlers for mobile
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (event.touches.length === 1) {
+      setIsDragging(true);
+      setDragStart({ x: event.touches[0].clientX, y: event.touches[0].clientY });
+    }
+    event.preventDefault();
+  };
+
+  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!isDragging || event.touches.length !== 1) return;
+    
+    const deltaX = event.touches[0].clientX - dragStart.x;
+    const deltaY = event.touches[0].clientY - dragStart.y;
+    
+    const sensitivity = 0.1 / Math.pow(2, zoomLevel - 3);
+    const newLon = mapCenter.lon - deltaX * sensitivity;
+    const newLat = mapCenter.lat + deltaY * sensitivity;
+    
+    setMapCenter({
+      lat: Math.max(-85, Math.min(85, newLat)),
+      lon: Math.max(-180, Math.min(180, newLon))
+    });
+    
+    setDragStart({ x: event.touches[0].clientX, y: event.touches[0].clientY });
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const moveAmount = 5 / Math.pow(2, zoomLevel - 3);
+      
+      switch (event.key) {
+        case 'ArrowUp':
+          setMapCenter(prev => ({ ...prev, lat: Math.min(85, prev.lat + moveAmount) }));
+          break;
+        case 'ArrowDown':
+          setMapCenter(prev => ({ ...prev, lat: Math.max(-85, prev.lat - moveAmount) }));
+          break;
+        case 'ArrowLeft':
+          setMapCenter(prev => ({ ...prev, lon: Math.max(-180, prev.lon - moveAmount) }));
+          break;
+        case 'ArrowRight':
+          setMapCenter(prev => ({ ...prev, lon: Math.min(180, prev.lon + moveAmount) }));
+          break;
+        case '+':
+        case '=':
+          setZoomLevel(prev => Math.min(8, prev + 1));
+          break;
+        case '-':
+          setZoomLevel(prev => Math.max(1, prev - 1));
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [zoomLevel]);
+
+  // Global mouse up handler for drag operations
+  useEffect(() => {
+    const handleGlobalMouseUp = () => setIsDragging(false);
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+  }, []);
 
   return (
     <div className="relative w-full h-full bg-gray-900 rounded-lg overflow-hidden border border-gray-600">
@@ -96,15 +196,21 @@ export default function SatelliteWorldMap() {
             <span>Zoom: {zoomLevel}</span>
             <button
               onClick={() => setZoomLevel(Math.max(1, zoomLevel - 1))}
-              className="px-2 py-1 bg-gray-700 text-white rounded text-xs hover:bg-gray-600"
+              className="px-3 py-1 bg-gray-700 text-white rounded text-sm hover:bg-gray-600 transition-colors"
             >
               -
             </button>
             <button
               onClick={() => setZoomLevel(Math.min(8, zoomLevel + 1))}
-              className="px-2 py-1 bg-gray-700 text-white rounded text-xs hover:bg-gray-600"
+              className="px-3 py-1 bg-gray-700 text-white rounded text-sm hover:bg-gray-600 transition-colors"
             >
               +
+            </button>
+            <button
+              onClick={() => setMapCenter({ lat: 40, lon: 0 })}
+              className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors ml-2"
+            >
+              Reset
             </button>
           </div>
         </div>
@@ -113,8 +219,14 @@ export default function SatelliteWorldMap() {
       {/* Real Satellite Map Background */}
       <div 
         ref={mapContainerRef}
-        className="w-full h-full relative cursor-crosshair overflow-hidden"
-        onClick={handleMapClick}
+        className={`w-full h-full relative overflow-hidden select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onWheel={handleWheel}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         style={{
           backgroundColor: '#0f172a'
         }}
@@ -253,10 +365,15 @@ export default function SatelliteWorldMap() {
 
       {/* Map Controls */}
       <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg p-3 text-xs text-gray-300 border border-gray-600">
-        <div className="mb-2 font-medium text-white">Map Center</div>
+        <div className="mb-2 font-medium text-white">Navigation Controls</div>
         <div>Lat: {mapCenter.lat.toFixed(4)}°</div>
         <div>Lon: {mapCenter.lon.toFixed(4)}°</div>
-        <div className="mt-2 text-gray-400">Click to recenter</div>
+        <div className="mt-2 text-gray-400 space-y-1">
+          <div>• Drag to pan</div>
+          <div>• Scroll to zoom</div>
+          <div>• Arrow keys to navigate</div>
+          <div>• +/- keys to zoom</div>
+        </div>
       </div>
 
       {/* Flight Legend */}
