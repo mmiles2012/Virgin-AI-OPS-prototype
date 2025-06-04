@@ -223,16 +223,14 @@ export default function SatelliteWorldMap() {
           backgroundColor: '#0f172a'
         }}
       >
-        {/* Single Seamless Satellite Background */}
+        {/* Reliable Satellite Background */}
         {mapboxToken && (
           <div 
-            className="absolute inset-0 w-full h-full"
+            className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
             style={{
-              backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${mapCenter.lon},${mapCenter.lat},${Math.min(zoomLevel, 6)}/1400x900@2x?access_token=${mapboxToken}")`,
-              backgroundSize: `${100 * Math.pow(1.5, zoomLevel - 3)}%`,
-              backgroundPosition: 'center center',
-              backgroundRepeat: 'no-repeat',
-              transition: 'background-image 0.3s ease-out'
+              backgroundImage: `url("https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${mapCenter.lon},${mapCenter.lat},${Math.max(0, Math.min(zoomLevel, 8))}/1200x800@2x?access_token=${mapboxToken}")`,
+              transform: `scale(${Math.pow(1.5, zoomLevel - 3)})`,
+              transformOrigin: 'center center'
             }}
           />
         )}
