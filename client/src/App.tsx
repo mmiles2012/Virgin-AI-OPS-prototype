@@ -101,27 +101,28 @@ function App() {
 
           {/* UI Overlay */}
           <div className="absolute inset-0 pointer-events-none">
-            {/* Top Navigation */}
-            <div className="absolute top-4 left-4 right-4 z-50 pointer-events-auto">
-              <div className="flex justify-between items-center">
-                <div className="aviation-panel p-3 rounded-lg">
+            {/* Right Sidebar Navigation */}
+            <div className="absolute top-4 right-4 z-50 pointer-events-auto">
+              <div className="aviation-panel p-4 rounded-lg space-y-3 w-48">
+                <div className="text-center mb-4">
                   <h1 className="text-white font-bold text-lg">AINO</h1>
-                  <p className="text-blue-300 text-sm">Augmented Intelligent Network Operations</p>
+                  <p className="text-blue-300 text-xs">Augmented Intelligent Network Operations</p>
                 </div>
                 
-                <div className="flex gap-2">
+                <div className="space-y-2">
                   {viewMode !== 'overview' && (
                     <button
                       onClick={() => setIsInterfaceMinimized(!isInterfaceMinimized)}
-                      className="px-3 py-2 rounded transition-colors bg-gray-600 text-white hover:bg-gray-500"
+                      className="w-full px-3 py-2 rounded transition-colors bg-gray-600 text-white hover:bg-gray-500 text-sm"
                       title={isInterfaceMinimized ? "Maximize Interface" : "Minimize Interface"}
                     >
-                      {isInterfaceMinimized ? '□' : '_'}
+                      {isInterfaceMinimized ? 'Maximize' : 'Minimize'}
                     </button>
                   )}
+                  
                   <button
                     onClick={() => setViewMode('cockpit')}
-                    className={`px-4 py-2 rounded transition-colors ${
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'cockpit' 
                         ? 'bg-blue-600 text-white' 
                         : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -129,9 +130,10 @@ function App() {
                   >
                     Cockpit View
                   </button>
+                  
                   <button
                     onClick={() => setViewMode('operations')}
-                    className={`px-4 py-2 rounded transition-colors ${
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'operations' 
                         ? 'bg-blue-600 text-white' 
                         : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -139,9 +141,10 @@ function App() {
                   >
                     Operations Center
                   </button>
+                  
                   <button
                     onClick={() => setViewMode('decisions')}
-                    className={`px-4 py-2 rounded transition-colors ${
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'decisions' 
                         ? 'bg-blue-600 text-white' 
                         : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -149,9 +152,10 @@ function App() {
                   >
                     Decision Engine
                   </button>
+                  
                   <button
                     onClick={() => setViewMode('overview')}
-                    className={`px-4 py-2 rounded transition-colors ${
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'overview' 
                         ? 'bg-blue-600 text-white' 
                         : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -159,9 +163,10 @@ function App() {
                   >
                     Overview
                   </button>
+                  
                   <button
                     onClick={() => setViewMode('map')}
-                    className={`px-4 py-2 rounded transition-colors ${
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'map' 
                         ? 'bg-blue-600 text-white' 
                         : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -169,12 +174,13 @@ function App() {
                   >
                     Live Map
                   </button>
+                  
                   <button
                     onClick={() => {
                       console.log('API Setup button clicked');
                       setShowApiWizard(true);
                     }}
-                    className="px-4 py-2 rounded transition-colors bg-green-600 text-white hover:bg-green-700"
+                    className="w-full px-4 py-2 rounded transition-colors bg-green-600 text-white hover:bg-green-700 text-sm"
                     title="Configure Aviation APIs"
                   >
                     API Setup
@@ -192,27 +198,27 @@ function App() {
               </div>
             )}
 
-            {/* Mode-specific Interfaces - Dynamic and Minimizable */}
+            {/* Mode-specific Interfaces - Adjusted for right sidebar */}
             {viewMode === 'cockpit' && !isInterfaceMinimized && (
-              <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <CockpitInterface onEmergencyToggle={setIsEmergencyActive} />
               </div>
             )}
             
             {viewMode === 'operations' && !isInterfaceMinimized && (
-              <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <OperationsCenter />
               </div>
             )}
             
             {viewMode === 'decisions' && !isInterfaceMinimized && (
-              <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <OperationalDecisionEngine />
               </div>
             )}
             
             {viewMode === 'map' && !isInterfaceMinimized && (
-              <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto">
+              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto">
                 <SimpleFlightMap />
               </div>
             )}
@@ -233,7 +239,7 @@ function App() {
 
             {/* Global Operations Satellite Map - Overview Mode */}
             {viewMode === 'overview' && !isInterfaceMinimized && (
-              <div className="absolute top-16 left-4 right-4 bottom-32 pointer-events-auto">
+              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto">
                 <SatelliteWorldMap />
               </div>
             )}
