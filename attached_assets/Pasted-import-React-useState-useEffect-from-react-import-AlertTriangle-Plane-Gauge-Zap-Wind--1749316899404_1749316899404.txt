@@ -1,0 +1,401 @@
+import React, { useState, useEffect } from 'react';
+import { AlertTriangle, Plane, Gauge, Zap, Wind, Settings, Wrench } from 'lucide-react';
+
+const AirbusA330NeoEmergencySimulator = () => {
+  const [scenario, setScenario] = useState('normal');
+  const [flightData, setFlightData] = useState({
+    altitude: 41000,
+    speed: 470, // knots
+    fuelRemaining: 42000, // kg
+    fuelBurnRate: 2650, // kg/hr normal cruise
+    range: 7200, // nautical miles
+    timeRemaining: 15.8, // hours
+    emergencyStatus: 'Normal Operations'
+  });
+
+  // Airbus A330-900neo baseline specifications
+  const aircraft = {
+    maxFuel: 139090, // kg
+    normalCruiseBurn: 2650, // kg/hr (more efficient than A330ceo)
+    normalCruiseSpeed: 470, // knots
+    normalCruiseAltitude: 41000, // ft
+    maxRange: 7200, // nautical miles
+    serviceCeiling: 41450, // ft
+    engines: 'Rolls-Royce Trent 7000',
+    variant: 'A330-900neo'
+  };
+
+  const scenarios = {
+    normal: {
+      name: 'Normal Operations',
+      fuelBurnMultiplier: 1.0,
+      speedReduction: 0,
+      altitudeRestriction: null,
+      description: 'Normal cruise flight operations with Trent 7000 engines and neo efficiency'
+    },
+    engineFailure: {
+      name: 'Single Engine Failure',
+      fuelBurnMultiplier: 1.38,
+      speedReduction: 45,
+      altitudeRestriction: 25000,
+      description: 'One Trent 7000 engine inoperative - conventional flight controls compensation'
+    },
+    hydraulicFault: {
+      name: 'Major Hydraulic Fault',
+      fuelBurnMultiplier: 1.16,
+      speedReduction: 20,
+      altitudeRestriction: null,
+      description: 'Green/Blue/Yellow hydraulic system fault - manual reversion possible'
+    },
+    electricalFault: {
+      name: 'Major Electrical Fault',
+      fuelBurnMultiplier: 1.24,
+      speedReduction: 30,
+      altitudeRestriction: 35000,
+      description: 'AC/DC electrical system fault - RAT deployment, essential power only'
+    },
+    depressurization: {
+      name: 'Cabin Depressurization',
+      fuelBurnMultiplier: 1.52,
+      speedReduction: 70,
+      altitudeRestriction: 10000,
+      description: 'Emergency descent to 10,000ft - conventional controls, high fuel penalty'
+    },
+    flightControlFault: {
+      name: 'Flight Control Degradation',
+      fuelBurnMultiplier: 1.20,
+      speedReduction: 25,
+      altitudeRestriction: 37000,
+      description: 'ELAC/SEC computer fault - alternate/direct law, reduced protections'
+    },
+    apuFault: {
+      name: 'APU & Electrical Fault',
+      fuelBurnMultiplier: 1.28,
+      speedReduction: 20,
+      altitudeRestriction: 39000,
+      description: 'APU failure with electrical backup - engine generators only'
+    }
+  };
+
+  const calculateEmergencyImpact = (selectedScenario) => {
+    const scenarioData = scenarios[selectedScenario];
+    
+    let newAltitude = flightData.altitude;
+    let newSpeed = aircraft.normalCruiseSpeed - scenarioData.speedReduction;
+    let newFuelBurnRate = aircraft.normalCruiseBurn * scenarioData.fuelBurnMultiplier;
+    
+    // Apply altitude restrictions
+    if (scenarioData.altitudeRestriction && flightData.altitude > scenarioData.altitudeRestriction) {
+      newAltitude = scenarioData.altitudeRestriction;
+    }
+    
+    // Calculate additional fuel burn for altitude changes and A330neo-specific factors
+    let altitudeChangeFuel = 0;
+    if (newAltitude < flightData.altitude) {
+      // Emergency descent fuel penalty (A330 has conventional systems, higher penalty than A350)
+      const descentDistance = (flightData.altitude - newAltitude) / 1000;
+      altitudeChangeFuel = descentDistance * 145; // kg per 1000ft descent penalty
+    }
+    
+    // A330neo-specific adjustments
+    let neoEfficiencyBonus = 0;
+    let conventialPenalty = 0;
+    
+    // Neo engine efficiency benefits even in emergencies
+    if (selectedScenario !== 'normal' && selectedScenario !== 'depressurization') {
+      neoEfficiencyBonus = 35; // kg fuel saved due to Trent 7000 efficiency
+    }
+    
+    // Conventional flight controls penalty (vs fly-by-wire A350)
+    if (selectedScenario === 'engineFailure' || selectedScenario === 'flightControlFault') {
+      conventialPenalty = 25; // kg additional fuel due to less sophisticated flight controls
+    }
+    
+    // Calculate new range based on fuel burn
+    const effectiveFuel = flightData.fuelRemaining - altitudeChangeFuel + neoEfficiencyBonus - conventialPenalty;
+    const newTimeRemaining = Math.max(0, effectiveFuel / newFuelBurnRate);
+    const newRange = (newSpeed * newTimeRemaining) / 1.15078; // Convert to nautical miles
+    
+    return {
+      altitude: newAltitude,
+      speed: newSpeed,
+      fuelBurnRate: newFuelBurnRate,
+      fuelRemaining: Math.max(0, effectiveFuel),
+      timeRemaining: newTimeRemaining,
+      range: Math.round(newRange),
+      emergencyStatus: scenarioData.name,
+      altitudeChangeFuel,
+      neoEfficiencyBonus,
+      conventialPenalty
+    };
+  };
+
+  useEffect(() => {
+    const newData = calculateEmergencyImpact(scenario);
+    setFlightData(prev => ({ ...prev, ...newData }));
+  }, [scenario]);
+
+  const getStatusColor = (scenario) => {
+    switch(scenario) {
+      case 'normal': return 'text-green-600';
+      case 'hydraulicFault': 
+      case 'apuFault': return 'text-yellow-600';
+      case 'flightControlFault':
+      case 'electricalFault': return 'text-orange-600';
+      case 'engineFailure': return 'text-red-600';
+      case 'depressurization': return 'text-red-700';
+      default: return 'text-gray-600';
+    }
+  };
+
+  const rangeReduction = aircraft.maxRange - flightData.range;
+  const rangeReductionPercent = ((rangeReduction / aircraft.maxRange) * 100).toFixed(1);
+
+  return (
+    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center gap-3">
+          <Plane className="text-blue-600" />
+          Airbus A330-900neo Emergency Scenarios Simulator
+        </h1>
+        <p className="text-gray-600">Simulate various emergency scenarios and their impact on fuel consumption and flight range</p>
+        <p className="text-sm text-gray-500 mt-1">Featuring Rolls-Royce Trent 7000 engines with new engine option efficiency</p>
+      </div>
+
+      {/* Aircraft Specifications */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <Settings className="text-blue-500" />
+          Aircraft Specifications - A330-900neo
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="text-center bg-gray-50 p-3 rounded">
+            <div className="text-lg font-bold text-gray-800">{aircraft.maxFuel.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Max Fuel (kg)</div>
+          </div>
+          <div className="text-center bg-gray-50 p-3 rounded">
+            <div className="text-lg font-bold text-gray-800">{aircraft.maxRange.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Max Range (nm)</div>
+          </div>
+          <div className="text-center bg-gray-50 p-3 rounded">
+            <div className="text-lg font-bold text-gray-800">{aircraft.normalCruiseSpeed}</div>
+            <div className="text-sm text-gray-600">Cruise Speed (kts)</div>
+          </div>
+          <div className="text-center bg-gray-50 p-3 rounded">
+            <div className="text-lg font-bold text-gray-800">{aircraft.serviceCeiling.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Service Ceiling (ft)</div>
+          </div>
+          <div className="text-center bg-gray-50 p-3 rounded">
+            <div className="text-lg font-bold text-gray-800">{aircraft.normalCruiseBurn}</div>
+            <div className="text-sm text-gray-600">Cruise Burn (kg/hr)</div>
+          </div>
+        </div>
+        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+          <div className="text-sm text-blue-800">
+            <strong>Neo Advantages:</strong> 25% more fuel efficient than A330ceo, advanced Trent 7000 engines, 
+            improved aerodynamics with sharklets, modern avionics with conventional flight controls heritage.
+          </div>
+        </div>
+      </div>
+
+      {/* Scenario Selection */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <AlertTriangle className="text-orange-500" />
+          Select Emergency Scenario
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Object.entries(scenarios).map(([key, data]) => (
+            <button
+              key={key}
+              onClick={() => setScenario(key)}
+              className={`p-4 rounded-lg border-2 text-left transition-all ${
+                scenario === key 
+                  ? 'border-blue-500 bg-blue-50' 
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="font-semibold text-gray-800">{data.name}</div>
+              <div className="text-sm text-gray-600 mt-1">{data.description}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Current Status */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4">Current Flight Status</h2>
+        <div className={`text-lg font-semibold mb-4 ${getStatusColor(scenario)}`}>
+          Status: {flightData.emergencyStatus}
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-800">{flightData.altitude.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Altitude (ft)</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-800">{flightData.speed}</div>
+            <div className="text-sm text-gray-600">Speed (knots)</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-800">{flightData.fuelRemaining.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Fuel Remaining (kg)</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-800">{flightData.timeRemaining.toFixed(1)}</div>
+            <div className="text-sm text-gray-600">Time Remaining (hrs)</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Performance Impact */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Gauge className="text-blue-500" />
+            Fuel Consumption Impact
+          </h3>
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <span>Normal Burn Rate:</span>
+              <span className="font-semibold">{aircraft.normalCruiseBurn} kg/hr</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Current Burn Rate:</span>
+              <span className="font-semibold text-red-600">{flightData.fuelBurnRate} kg/hr</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Increase:</span>
+              <span className="font-semibold text-red-600">
+                +{(flightData.fuelBurnRate - aircraft.normalCruiseBurn).toFixed(0)} kg/hr 
+                ({(((flightData.fuelBurnRate / aircraft.normalCruiseBurn) - 1) * 100).toFixed(1)}%)
+              </span>
+            </div>
+            {scenario !== 'normal' && scenario !== 'depressurization' && (
+              <div className="flex justify-between text-green-600">
+                <span>Neo Engine Efficiency:</span>
+                <span className="font-semibold">-35 kg saved</span>
+              </div>
+            )}
+            {(scenario === 'engineFailure' || scenario === 'flightControlFault') && (
+              <div className="flex justify-between text-orange-600">
+                <span>Conventional Controls:</span>
+                <span className="font-semibold">+25 kg penalty</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Wind className="text-green-500" />
+            Range Impact
+          </h3>
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <span>Normal Max Range:</span>
+              <span className="font-semibold">{aircraft.maxRange} nm</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Current Range:</span>
+              <span className="font-semibold text-red-600">{flightData.range} nm</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Range Reduction:</span>
+              <span className="font-semibold text-red-600">
+                -{rangeReduction} nm ({rangeReductionPercent}%)
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Comparison with Other Aircraft */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Wrench className="text-purple-500" />
+          A330neo vs Competition
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="font-semibold text-blue-800 mb-2">vs A330ceo</div>
+            <div className="text-sm text-blue-700">25% better fuel efficiency, modern engines, improved range</div>
+          </div>
+          <div className="bg-green-50 p-4 rounded-lg">
+            <div className="font-semibold text-green-800 mb-2">vs Boeing 787</div>
+            <div className="text-sm text-green-700">Similar efficiency, conventional controls vs fly-by-wire, proven reliability</div>
+          </div>
+          <div className="bg-orange-50 p-4 rounded-lg">
+            <div className="font-semibold text-orange-800 mb-2">vs A350</div>
+            <div className="text-sm text-orange-700">Lower complexity, easier maintenance, conventional pilot training</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Detailed Analysis */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-lg font-semibold mb-4">Emergency Scenario Analysis - A330-900neo Specific</h3>
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <p className="text-gray-700 mb-3">{scenarios[scenario].description}</p>
+          
+          {scenario === 'engineFailure' && (
+            <div className="text-sm text-gray-600 space-y-2">
+              <div><strong>Engine Failure Impact:</strong> Single Trent 7000 engine operation with conventional flight controls. 
+              Pilots must manually compensate for asymmetric thrust, requiring higher workload than fly-by-wire aircraft.</div>
+              <div><strong>Neo Advantage:</strong> Despite conventional controls, the Trent 7000's advanced design and 
+              fuel efficiency partially offset the emergency fuel penalties compared to older generation engines.</div>
+            </div>
+          )}
+          
+          {scenario === 'depressurization' && (
+            <div className="text-sm text-gray-600 space-y-2">
+              <div><strong>Depressurization Impact:</strong> Emergency descent with conventional flight controls requires 
+              more pilot input to maintain optimal descent profile. Higher fuel penalty at low altitude operations.</div>
+              <div><strong>A330 Systems:</strong> Robust oxygen system and straightforward emergency procedures. 
+              Conventional controls provide direct pilot authority but require more manual flight management.</div>
+            </div>
+          )}
+          
+          {scenario === 'hydraulicFault' && (
+            <div className="text-sm text-gray-600 space-y-2">
+              <div><strong>Hydraulic System Fault:</strong> A330 features three independent hydraulic systems (Green, Blue, Yellow) 
+              with manual reversion capability for primary flight controls.</div>
+              <div><strong>Conventional Advantage:</strong> Simpler hydraulic architecture than newer aircraft, with well-understood 
+              backup procedures and manual reversion training familiar to pilots.</div>
+            </div>
+          )}
+          
+          {scenario === 'electricalFault' && (
+            <div className="text-sm text-gray-600 space-y-2">
+              <div><strong>Electrical Fault Impact:</strong> Emergency electrical configuration with RAT (Ram Air Turbine) 
+              deployment providing essential power. Some avionics and systems degraded.</div>
+              <div><strong>System Design:</strong> Proven electrical architecture with clear load shedding priorities. 
+              Essential flight instruments and controls remain powered through emergency systems.</div>
+            </div>
+          )}
+
+          {scenario === 'flightControlFault' && (
+            <div className="text-sm text-gray-600 space-y-2">
+              <div><strong>Flight Control Degradation:</strong> ELAC/SEC computer failures result in alternate or direct law. 
+              Reduced flight envelope protections and automatic functions.</div>
+              <div><strong>Pilot Training:</strong> A330 pilots are extensively trained for conventional flight control operations, 
+              making degraded mode operations more manageable than on fully fly-by-wire aircraft.</div>
+            </div>
+          )}
+
+          {scenario === 'apuFault' && (
+            <div className="text-sm text-gray-600 space-y-2">
+              <div><strong>APU & Electrical Fault:</strong> Loss of auxiliary power unit with backup electrical systems. 
+              Engine generators become primary power source with load restrictions.</div>
+              <div><strong>Operational Impact:</strong> Reduced electrical capacity affects air conditioning, lighting, and 
+              non-essential systems while maintaining flight safety systems through engine-driven generators.</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AirbusA330NeoEmergencySimulator;

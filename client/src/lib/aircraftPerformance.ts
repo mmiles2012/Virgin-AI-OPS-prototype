@@ -20,6 +20,7 @@ export interface FlightPerformanceData {
   emergencyStatus: string;
   altitudeChangeFuel?: number;
   efficiencyBonus?: number;
+  conventionalPenalty?: number;
 }
 
 export interface EmergencyScenario {
@@ -50,6 +51,16 @@ export const AIRBUS_A350_SPECS: AircraftSpecs = {
   normalCruiseSpeed: 485, // knots
   normalCruiseAltitude: 41000, // ft
   maxRange: 8700, // nautical miles
+  serviceCeiling: 41450 // ft
+};
+
+// Airbus A330-900neo baseline specifications
+export const AIRBUS_A330_SPECS: AircraftSpecs = {
+  maxFuel: 139090, // kg
+  normalCruiseBurn: 2650, // kg/hr
+  normalCruiseSpeed: 470, // knots
+  normalCruiseAltitude: 41000, // ft
+  maxRange: 7200, // nautical miles
   serviceCeiling: 41450 // ft
 };
 
@@ -261,13 +272,139 @@ export const A350_EMERGENCY_SCENARIOS: Record<string, EmergencyScenario> = {
   }
 };
 
+// A330-900neo specific emergency scenarios with conventional controls and neo engine efficiency
+export const A330_EMERGENCY_SCENARIOS: Record<string, EmergencyScenario> = {
+  normal: {
+    name: 'Normal Operations',
+    fuelBurnMultiplier: 1.0,
+    speedReduction: 0,
+    altitudeRestriction: null,
+    description: 'Normal cruise flight operations with Trent 7000 engines and neo efficiency',
+    operationalImpact: ['No operational restrictions'],
+    diversionRequired: false,
+    timeToStabilize: 0
+  },
+  engineFailure: {
+    name: 'Single Engine Failure',
+    fuelBurnMultiplier: 1.38,
+    speedReduction: 45,
+    altitudeRestriction: 25000,
+    description: 'One Trent 7000 engine inoperative - conventional flight controls compensation',
+    operationalImpact: [
+      'Conventional flight controls engaged',
+      'Altitude restriction to 25,000ft',
+      'Reduced cruise speed by 45 knots',
+      '38% increase in fuel consumption',
+      'Manual compensation required for asymmetric thrust'
+    ],
+    diversionRequired: true,
+    timeToStabilize: 18
+  },
+  hydraulicFault: {
+    name: 'Major Hydraulic Fault',
+    fuelBurnMultiplier: 1.16,
+    speedReduction: 20,
+    altitudeRestriction: null,
+    description: 'Green/Blue/Yellow hydraulic system fault - manual reversion possible',
+    operationalImpact: [
+      'Manual reversion flight controls possible',
+      'Increased pilot workload',
+      '16% increase in fuel consumption',
+      'Reduced control authority'
+    ],
+    diversionRequired: false,
+    timeToStabilize: 12
+  },
+  electricalFault: {
+    name: 'Major Electrical Fault',
+    fuelBurnMultiplier: 1.24,
+    speedReduction: 30,
+    altitudeRestriction: 35000,
+    description: 'AC/DC electrical system fault - RAT deployment, essential power only',
+    operationalImpact: [
+      'RAT deployment for essential power',
+      'Limited system functionality',
+      'Altitude restriction to 35,000ft',
+      'Consider precautionary landing'
+    ],
+    diversionRequired: true,
+    timeToStabilize: 20
+  },
+  depressurization: {
+    name: 'Cabin Depressurization',
+    fuelBurnMultiplier: 1.52,
+    speedReduction: 70,
+    altitudeRestriction: 10000,
+    description: 'Emergency descent to 10,000ft - conventional controls, high fuel penalty',
+    operationalImpact: [
+      'Immediate emergency descent to 10,000ft',
+      'Oxygen masks deployed',
+      '52% increase in fuel consumption at low altitude',
+      'Immediate diversion required'
+    ],
+    diversionRequired: true,
+    timeToStabilize: 5
+  },
+  flightControlFault: {
+    name: 'Flight Control Degradation',
+    fuelBurnMultiplier: 1.20,
+    speedReduction: 25,
+    altitudeRestriction: 37000,
+    description: 'ELAC/SEC computer fault - alternate/direct law, reduced protections',
+    operationalImpact: [
+      'Flight envelope protections reduced',
+      'Alternate/Direct law active',
+      'Altitude restriction to 37,000ft',
+      'Enhanced pilot monitoring required'
+    ],
+    diversionRequired: true,
+    timeToStabilize: 15
+  },
+  apuFault: {
+    name: 'APU & Electrical Fault',
+    fuelBurnMultiplier: 1.28,
+    speedReduction: 20,
+    altitudeRestriction: 39000,
+    description: 'APU failure with electrical backup - engine generators only',
+    operationalImpact: [
+      'APU unavailable for electrical generation',
+      'Engine generators only',
+      'Limited ground power capability',
+      'Altitude restriction to 39,000ft'
+    ],
+    diversionRequired: true,
+    timeToStabilize: 10
+  },
+  medicalEmergency: {
+    name: 'Medical Emergency',
+    fuelBurnMultiplier: 1.05,
+    speedReduction: 0,
+    altitudeRestriction: null,
+    description: 'Passenger medical emergency requiring immediate landing',
+    operationalImpact: [
+      'Maintain current flight level if possible',
+      'Increase speed for time-critical diversion',
+      'Coordinate with medical advisory services',
+      'Priority handling for emergency landing'
+    ],
+    diversionRequired: true,
+    timeToStabilize: 0
+  }
+};
+
 export class AircraftPerformanceCalculator {
   private specs: AircraftSpecs;
   private scenarioSet: Record<string, EmergencyScenario>;
 
   constructor(specs: AircraftSpecs = BOEING_787_SPECS) {
     this.specs = specs;
-    this.scenarioSet = specs === AIRBUS_A350_SPECS ? A350_EMERGENCY_SCENARIOS : EMERGENCY_SCENARIOS;
+    if (specs === AIRBUS_A350_SPECS) {
+      this.scenarioSet = A350_EMERGENCY_SCENARIOS;
+    } else if (specs === AIRBUS_A330_SPECS) {
+      this.scenarioSet = A330_EMERGENCY_SCENARIOS;
+    } else {
+      this.scenarioSet = EMERGENCY_SCENARIOS;
+    }
   }
 
   calculateEmergencyImpact(
@@ -291,12 +428,15 @@ export class AircraftPerformanceCalculator {
     // Calculate additional fuel burn for altitude changes and aircraft-specific factors
     let altitudeChangeFuel = 0;
     let efficiencyBonus = 0;
+    let conventionalPenalty = 0;
     
     if (newAltitude < currentAltitude) {
-      // Emergency descent fuel penalty (A350 has better efficiency than 787)
+      // Emergency descent fuel penalty varies by aircraft type
       const descentDistance = (currentAltitude - newAltitude) / 1000;
       if (this.specs === AIRBUS_A350_SPECS) {
         altitudeChangeFuel = descentDistance * 135; // kg per 1000ft descent penalty (A350)
+      } else if (this.specs === AIRBUS_A330_SPECS) {
+        altitudeChangeFuel = descentDistance * 145; // kg per 1000ft descent penalty (A330)
       } else {
         altitudeChangeFuel = descentDistance * 150; // kg per 1000ft descent penalty (787)
       }
@@ -308,8 +448,21 @@ export class AircraftPerformanceCalculator {
       efficiencyBonus = 50; // kg fuel saved due to advanced flight controls
     }
     
+    // A330neo-specific adjustments
+    if (this.specs === AIRBUS_A330_SPECS) {
+      // Neo engine efficiency benefits even in emergencies
+      if (scenarioType !== 'normal' && scenarioType !== 'depressurization') {
+        efficiencyBonus = 35; // kg fuel saved due to Trent 7000 efficiency
+      }
+      
+      // Conventional flight controls penalty (vs fly-by-wire A350)
+      if (scenarioType === 'engineFailure' || scenarioType === 'flightControlFault') {
+        conventionalPenalty = 25; // kg additional fuel due to less sophisticated flight controls
+      }
+    }
+    
     // Calculate new range based on fuel burn
-    const effectiveFuel = Math.max(0, currentFuel - altitudeChangeFuel + efficiencyBonus);
+    const effectiveFuel = Math.max(0, currentFuel - altitudeChangeFuel + efficiencyBonus - conventionalPenalty);
     const newTimeRemaining = Math.max(0, effectiveFuel / newFuelBurnRate);
     const newRange = (newSpeed * newTimeRemaining) / 1.15078; // Convert to nautical miles
     
@@ -322,7 +475,8 @@ export class AircraftPerformanceCalculator {
       range: Math.round(newRange),
       emergencyStatus: scenario.name,
       altitudeChangeFuel,
-      efficiencyBonus
+      efficiencyBonus,
+      conventionalPenalty
     };
   }
 
@@ -395,7 +549,12 @@ export class AircraftPerformanceCalculator {
   } {
     const scenario = this.scenarioSet[scenarioType];
     const normalRange = this.specs.maxRange;
-    const aircraftType = this.specs === AIRBUS_A350_SPECS ? 'Airbus A350-1000' : 'Boeing 787-9';
+    let aircraftType = 'Boeing 787-9';
+    if (this.specs === AIRBUS_A350_SPECS) {
+      aircraftType = 'Airbus A350-1000';
+    } else if (this.specs === AIRBUS_A330_SPECS) {
+      aircraftType = 'Airbus A330-900neo';
+    }
     
     // Calculate approximate range reduction
     const effectiveSpeed = this.specs.normalCruiseSpeed - scenario.speedReduction;

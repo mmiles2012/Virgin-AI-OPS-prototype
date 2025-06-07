@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { useScenario } from '../lib/stores/useScenario';
-import { AircraftPerformanceCalculator, EMERGENCY_SCENARIOS, BOEING_787_SPECS, AIRBUS_A350_SPECS } from '../lib/aircraftPerformance';
+import { AircraftPerformanceCalculator, EMERGENCY_SCENARIOS, BOEING_787_SPECS, AIRBUS_A350_SPECS, AIRBUS_A330_SPECS } from '../lib/aircraftPerformance';
 
 interface FlightOperationalData {
   callsign: string;
@@ -83,10 +83,12 @@ export default function OperationalDecisionEngine() {
     }
   }, [flightData, manualScenario]);
 
-  const detectAircraftType = (aircraft: string): 'A350' | '787' => {
+  const detectAircraftType = (aircraft: string): 'A350' | 'A330' | '787' => {
     const aircraftUpper = aircraft.toUpperCase();
     if (aircraftUpper.includes('A350') || aircraftUpper.includes('350')) {
       return 'A350';
+    } else if (aircraftUpper.includes('A330') || aircraftUpper.includes('330')) {
+      return 'A330';
     }
     return '787'; // Default to 787 for most wide-body operations
   };
