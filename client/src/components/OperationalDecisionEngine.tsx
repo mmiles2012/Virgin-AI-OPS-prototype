@@ -12,9 +12,101 @@ interface FlightOperationalData {
   altitude: number;
   speed: number;
   fuelRemaining: number;
+  fuelBurn: number;
   weather: string;
   eta: string;
   passengers: number;
+  maximumRange: number;
+  currentWeight: number;
+}
+
+interface AirfieldOperationalData {
+  icao: string;
+  name: string;
+  distance: number;
+  bearing: number;
+  fuelRequired: number;
+  coordinates: { lat: number; lon: number };
+  
+  // Weather & Operations
+  weatherCategory: 'CAT1' | 'CAT2' | 'CAT3A' | 'CAT3B' | 'BELOW_MINS';
+  currentWeather: {
+    visibility: number; // meters
+    ceiling: number; // feet
+    winds: { speed: number; direction: number; gusts?: number };
+    precipitation: string;
+    rvr?: number; // runway visual range
+  };
+  
+  // Ground Support
+  groundHandling: {
+    available: boolean;
+    provider: string;
+    services: string[];
+    operatingHours: string;
+    availability24h: boolean;
+  };
+  
+  // Customs & Immigration
+  customs: {
+    available: boolean;
+    operatingHours: string;
+    availability24h: boolean;
+    fastTrack: boolean;
+    medicalClearance: boolean;
+  };
+  
+  // Fire & Rescue
+  fireRescue: {
+    category: number; // ICAO Cat 1-10
+    foamCapability: boolean;
+    responseTime: number; // seconds
+    availability24h: boolean;
+    medicalEvacuation: boolean;
+  };
+  
+  // Airport Operations
+  operations: {
+    operatingHours: string;
+    availability24h: boolean;
+    slots: {
+      available: boolean;
+      nextAvailable: string;
+      restrictions: string[];
+    };
+    fuelAvailability: {
+      jetA1: boolean;
+      jetA: boolean;
+      quantity: number; // tonnes
+      supplier: string;
+    };
+  };
+  
+  // Medical Facilities
+  medical: {
+    onSiteFacilities: boolean;
+    nearbyHospitals: Array<{
+      name: string;
+      distance: number; // km
+      specialties: string[];
+      trauma: boolean;
+      helicopter: boolean;
+    }>;
+  };
+  
+  // Operational Suitability
+  suitability: {
+    score: number; // 0-100
+    factors: {
+      weather: number;
+      facilities: number;
+      cost: number;
+      time: number;
+      safety: number;
+    };
+    restrictions: string[];
+    advantages: string[];
+  };
 }
 
 interface OperationalDecision {
@@ -23,38 +115,74 @@ interface OperationalDecision {
   priority: 'low' | 'medium' | 'high' | 'critical';
   title: string;
   description: string;
+  
+  // Enhanced Impact Analysis
   impact: {
-    cost: number;
-    delay: number;
-    fuel: number;
-    passengers: number;
+    cost: {
+      fuel: number;
+      handling: number;
+      passenger: number;
+      crew: number;
+      total: number;
+    };
+    time: {
+      delay: number;
+      diversion: number;
+      recovery: number;
+      total: number;
+    };
+    fuel: {
+      additional: number;
+      remaining: number;
+      percentage: number;
+    };
+    passengers: {
+      affected: number;
+      compensation: number;
+      rebooking: number;
+    };
+    operations: {
+      slotLoss: boolean;
+      downstream: number;
+      recovery: string;
+    };
   };
+  
   recommendations: string[];
   timeline: string;
   approval_required: string[];
-}
-
-interface WeatherAlert {
-  location: string;
-  type: string;
-  severity: string;
-  impact: string;
-  expires: string;
+  alternativeOptions: string[];
+  
+  // Risk Assessment
+  riskAssessment: {
+    safety: 'low' | 'medium' | 'high' | 'critical';
+    operational: 'low' | 'medium' | 'high' | 'critical';
+    financial: 'low' | 'medium' | 'high' | 'critical';
+    reputation: 'low' | 'medium' | 'high' | 'critical';
+    overall: 'low' | 'medium' | 'high' | 'critical';
+  };
 }
 
 export default function OperationalDecisionEngine() {
   const [activeDecisions, setActiveDecisions] = useState<OperationalDecision[]>([]);
   const [flightData, setFlightData] = useState<FlightOperationalData | null>(null);
-  const [weatherAlerts, setWeatherAlerts] = useState<WeatherAlert[]>([]);
+  const [availableAirfields, setAvailableAirfields] = useState<AirfieldOperationalData[]>([]);
   const [systemStatus, setSystemStatus] = useState('analyzing');
   const [manualScenario, setManualScenario] = useState<string | null>(null);
   const [performanceData, setPerformanceData] = useState<any>(null);
+  const [selectedAirfield, setSelectedAirfield] = useState<string | null>(null);
   const { selectedFlight } = useSelectedFlight();
   const { startScenario, stopScenario } = useScenario();
 
   // Convert selected flight to operational data format
   useEffect(() => {
     if (selectedFlight) {
+      const aircraftType = detectAircraftType(selectedFlight.aircraft);
+      const estimatedWeight = aircraftType === 'A350' ? 280000 : aircraftType === 'A330' ? 242000 : 254000; // kg
+      const currentFuelKg = Math.round(estimatedWeight * 0.35); // Estimate 35% fuel remaining
+      const fuelBurnRate = aircraftType === 'A350' ? 6800 : aircraftType === 'A330' ? 7200 : 6900; // kg/hr
+      const maxRange = aircraftType === 'A350' ? 15300 : aircraftType === 'A330' ? 13400 : 14800; // km
+      
       setFlightData({
         callsign: selectedFlight.callsign,
         aircraft: selectedFlight.aircraft,
@@ -62,10 +190,13 @@ export default function OperationalDecisionEngine() {
         currentPosition: { lat: selectedFlight.latitude, lon: selectedFlight.longitude },
         altitude: selectedFlight.altitude,
         speed: selectedFlight.velocity,
-        fuelRemaining: 85, // Calculated based on route progress
+        fuelRemaining: currentFuelKg,
+        fuelBurn: fuelBurnRate,
         weather: 'Fair',
         eta: '14:25 UTC',
-        passengers: selectedFlight.callsign.includes('401') ? 298 : 245
+        passengers: selectedFlight.callsign.includes('401') ? 298 : 245,
+        maximumRange: maxRange,
+        currentWeight: estimatedWeight
       });
     } else {
       setFlightData(null);
@@ -76,9 +207,11 @@ export default function OperationalDecisionEngine() {
   useEffect(() => {
     if (flightData) {
       generateOperationalDecisions(flightData);
+      generateAvailableAirfields(flightData);
       updatePerformanceCalculations(flightData);
     } else {
       setActiveDecisions([]);
+      setAvailableAirfields([]);
       setPerformanceData(null);
     }
   }, [flightData, manualScenario]);
@@ -127,28 +260,162 @@ export default function OperationalDecisionEngine() {
     });
   };
 
+  const generateAvailableAirfields = (flight: FlightOperationalData) => {
+    const currentTime = new Date();
+    const hour = currentTime.getHours();
+    const airfields: AirfieldOperationalData[] = [];
+
+    // Generate realistic airfield data based on flight position
+    const nearbyAirfields = [
+      { icao: 'EGLL', name: 'London Heathrow', distance: 180, bearing: 270 },
+      { icao: 'EHAM', name: 'Amsterdam Schiphol', distance: 220, bearing: 90 },
+      { icao: 'EDDF', name: 'Frankfurt Main', distance: 380, bearing: 135 },
+      { icao: 'LFPG', name: 'Paris Charles de Gaulle', distance: 290, bearing: 180 },
+      { icao: 'ESSA', name: 'Stockholm Arlanda', distance: 450, bearing: 45 }
+    ];
+
+    nearbyAirfields.forEach((airport, index) => {
+      const fuelRequired = Math.round(airport.distance * flight.fuelBurn / flight.speed);
+      const isNightTime = hour < 6 || hour > 22;
+      const weatherScore = 75 + Math.random() * 25; // Simulate weather conditions
+      
+      airfields.push({
+        icao: airport.icao,
+        name: airport.name,
+        distance: airport.distance,
+        bearing: airport.bearing,
+        fuelRequired: fuelRequired,
+        coordinates: { 
+          lat: flight.currentPosition.lat + (Math.random() - 0.5) * 10,
+          lon: flight.currentPosition.lon + (Math.random() - 0.5) * 10
+        },
+        
+        weatherCategory: weatherScore > 90 ? 'CAT1' : weatherScore > 70 ? 'CAT2' : 'CAT3A',
+        currentWeather: {
+          visibility: Math.round(8000 + Math.random() * 2000),
+          ceiling: Math.round(1000 + Math.random() * 500),
+          winds: {
+            speed: Math.round(5 + Math.random() * 15),
+            direction: Math.round(Math.random() * 360),
+            gusts: Math.random() > 0.7 ? Math.round(20 + Math.random() * 10) : undefined
+          },
+          precipitation: Math.random() > 0.8 ? 'Light Rain' : 'None',
+          rvr: weatherScore < 80 ? Math.round(800 + Math.random() * 400) : undefined
+        },
+
+        groundHandling: {
+          available: true,
+          provider: ['Swissport', 'Menzies', 'dnata', 'Worldwide Flight Services'][index % 4],
+          services: ['Baggage', 'Catering', 'Fuel', 'GPU', 'Pushback', 'De-icing'],
+          operatingHours: airport.icao === 'EGLL' ? '24/7' : '06:00-23:00',
+          availability24h: airport.icao === 'EGLL' || airport.icao === 'EHAM'
+        },
+
+        customs: {
+          available: true,
+          operatingHours: isNightTime ? 'On-call' : '06:00-23:00',
+          availability24h: airport.icao === 'EGLL',
+          fastTrack: airport.icao === 'EGLL' || airport.icao === 'EHAM',
+          medicalClearance: true
+        },
+
+        fireRescue: {
+          category: airport.icao === 'EGLL' ? 10 : 8 + Math.floor(Math.random() * 2),
+          foamCapability: true,
+          responseTime: 120 + Math.floor(Math.random() * 60),
+          availability24h: true,
+          medicalEvacuation: airport.icao === 'EGLL' || airport.icao === 'EHAM'
+        },
+
+        operations: {
+          operatingHours: airport.icao === 'EGLL' ? '24/7' : '06:00-23:00',
+          availability24h: airport.icao === 'EGLL' || airport.icao === 'EHAM',
+          slots: {
+            available: !isNightTime || airport.icao === 'EGLL',
+            nextAvailable: isNightTime ? '06:00+1' : 'Immediate',
+            restrictions: isNightTime ? ['Night ops restricted'] : []
+          },
+          fuelAvailability: {
+            jetA1: true,
+            jetA: false,
+            quantity: 500 + Math.floor(Math.random() * 1000),
+            supplier: ['Shell', 'BP', 'Total', 'ExxonMobil'][index % 4]
+          }
+        },
+
+        medical: {
+          onSiteFacilities: airport.icao === 'EGLL' || airport.icao === 'EHAM',
+          nearbyHospitals: [
+            {
+              name: `${airport.name.split(' ')[0]} General Hospital`,
+              distance: 8 + Math.floor(Math.random() * 15),
+              specialties: ['Emergency', 'Cardiology', 'Trauma'],
+              trauma: true,
+              helicopter: airport.icao === 'EGLL'
+            }
+          ]
+        },
+
+        suitability: {
+          score: Math.round(60 + Math.random() * 40),
+          factors: {
+            weather: Math.round(weatherScore),
+            facilities: Math.round(70 + Math.random() * 30),
+            cost: Math.round(50 + Math.random() * 40),
+            time: Math.round(80 - (airport.distance / 10)),
+            safety: Math.round(85 + Math.random() * 15)
+          },
+          restrictions: isNightTime ? ['Limited night operations'] : [],
+          advantages: airport.icao === 'EGLL' ? ['24/7 operations', 'Medical facilities'] : 
+                     airport.icao === 'EHAM' ? ['Hub operations', 'KLM maintenance'] : 
+                     ['Full ILS CAT3', 'Emergency services']
+        }
+      });
+    });
+
+    setAvailableAirfields(airfields);
+  };
+
   const generateOperationalDecisions = (flight: FlightOperationalData) => {
     const decisions: OperationalDecision[] = [];
-    const lat = Math.abs(flight.currentPosition.lat);
-    const lon = Math.abs(flight.currentPosition.lon);
-    const currentTime = new Date().getHours();
     
-    // Simulate non-normal scenarios based on flight parameters
-    const scenarios = detectNonNormalScenarios(flight, lat, lon, currentTime);
-    
-    // Medical emergency scenario (simulated based on flight characteristics)
-    if (scenarios.medical) {
+    // Enhanced medical emergency decision with comprehensive impact analysis
+    if (manualScenario === 'medical' || Math.random() > 0.7) {
       decisions.push({
         id: 'medical-diversion',
         type: 'medical',
         priority: 'critical',
-        title: 'Medical Emergency - Diversion Required',
-        description: `${flight.callsign} reports medical emergency. Immediate diversion to nearest suitable airport.`,
+        title: 'Medical Emergency - Passenger Requires Immediate Care',
+        description: `${flight.callsign} declares medical emergency. Passenger experiencing cardiac symptoms requiring immediate hospital treatment.`,
         impact: {
-          cost: 45000,
-          delay: 180,
-          fuel: 2800,
-          passengers: 280
+          cost: {
+            fuel: 15000,
+            handling: 8000,
+            passenger: 18000,
+            crew: 4000,
+            total: 45000
+          },
+          time: {
+            delay: 180,
+            diversion: 45,
+            recovery: 120,
+            total: 345
+          },
+          fuel: {
+            additional: 2800,
+            remaining: flight.fuelRemaining - 2800,
+            percentage: ((flight.fuelRemaining - 2800) / flight.fuelRemaining) * 100
+          },
+          passengers: {
+            affected: 280,
+            compensation: 18000,
+            rebooking: 45
+          },
+          operations: {
+            slotLoss: true,
+            downstream: 3,
+            recovery: 'Next day'
+          }
         },
         recommendations: [
           'Identify nearest airport with medical facilities',

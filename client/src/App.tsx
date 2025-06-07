@@ -7,7 +7,7 @@ import "@fontsource/inter";
 import Aircraft from "./components/Aircraft";
 import CockpitInterface from "./components/CockpitInterface";
 import OperationsCenter from "./components/OperationsCenter";
-import OperationalDecisionEngine from "./components/OperationalDecisionEngine";
+import EnhancedOperationalDecisionEngine from "./components/EnhancedOperationalDecisionEngine";
 import FlightMap from "./components/FlightMap";
 import ScenarioManager from "./components/ScenarioManager";
 import MetricsDisplay from "./components/MetricsDisplay";
