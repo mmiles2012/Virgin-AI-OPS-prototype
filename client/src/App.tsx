@@ -214,7 +214,7 @@ function App() {
             
             {viewMode === 'decisions' && !isInterfaceMinimized && (
               <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
-                <OperationalDecisionEngine />
+                <EnhancedOperationalDecisionEngine />
               </div>
             )}
             
