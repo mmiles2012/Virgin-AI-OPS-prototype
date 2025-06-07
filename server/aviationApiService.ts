@@ -102,10 +102,6 @@ export class AviationApiService {
 
   async testOpenSky(): Promise<{ success: boolean; message: string; data?: any }> {
     try {
-      const auth = this.openskyUsername && this.openskyPassword 
-        ? { username: this.openskyUsername, password: this.openskyPassword }
-        : undefined;
-
       const response = await axios.get('https://opensky-network.org/api/states/all', {
         params: {
           lamin: 40.0,
@@ -113,8 +109,10 @@ export class AviationApiService {
           lomin: -74.5,
           lomax: -73.5
         },
-        auth,
-        timeout: 15000
+        timeout: 15000,
+        headers: {
+          'User-Agent': 'AINO-Aviation-Operations/1.0'
+        }
       });
 
       if (response.data && response.data.states) {
@@ -135,7 +133,7 @@ export class AviationApiService {
               heading: sampleAircraft[10]
             } : null,
             timestamp: response.data.time,
-            authenticated: !!auth
+            authenticated: false
           }
         };
       } else {
@@ -284,10 +282,7 @@ export class AviationApiService {
     lonMax: number;
   }): Promise<FlightData[]> {
     try {
-      const auth = this.openskyUsername && this.openskyPassword 
-        ? { username: this.openskyUsername, password: this.openskyPassword }
-        : undefined;
-
+      // Use public OpenSky Network API without authentication
       const params: any = {};
       if (bounds) {
         params.lamin = bounds.latMin;
@@ -298,23 +293,33 @@ export class AviationApiService {
 
       const response = await axios.get('https://opensky-network.org/api/states/all', {
         params,
-        auth,
-        timeout: 20000
+        timeout: 20000,
+        headers: {
+          'User-Agent': 'AINO-Aviation-Operations/1.0'
+        }
       });
 
       const aircraft: FlightData[] = [];
       
       if (response.data && response.data.states) {
         for (const state of response.data.states) {
-          if (state[6] && state[5]) { // Has valid coordinates
+          const [
+            icao24, callsign, origin_country, time_position,
+            last_contact, longitude, latitude, baro_altitude,
+            on_ground, velocity, true_track, vertical_rate
+          ] = state;
+
+          if (latitude && longitude) { // Has valid coordinates
             aircraft.push({
-              callsign: state[1]?.trim() || 'Unknown',
-              latitude: state[6],
-              longitude: state[5],
-              altitude: state[7] || 0,
-              velocity: state[9] || 0,
-              heading: state[10] || 0,
-              aircraft: 'Unknown'
+              callsign: callsign?.trim() || icao24,
+              latitude: latitude,
+              longitude: longitude,
+              altitude: baro_altitude ? Math.round(baro_altitude * 3.28084) : 0, // Convert meters to feet
+              velocity: velocity ? Math.round(velocity * 1.94384) : 0, // Convert m/s to knots
+              heading: true_track || 0,
+              aircraft: 'Unknown',
+              origin: origin_country,
+              destination: 'Unknown'
             });
           }
         }
