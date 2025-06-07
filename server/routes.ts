@@ -711,6 +711,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // SafeAirspace alerts
+  app.get("/api/aviation/airspace-alerts", async (req, res) => {
+    try {
+      const { north, south, east, west } = req.query;
+      let bounds = undefined;
+      
+      if (north && south && east && west) {
+        bounds = {
+          north: parseFloat(north as string),
+          south: parseFloat(south as string),
+          east: parseFloat(east as string),
+          west: parseFloat(west as string)
+        };
+      }
+
+      const alerts = await aviationApiService.getSafeAirspaceAlerts(bounds);
+      res.json({
+        success: true,
+        alerts: alerts,
+        count: alerts.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('SafeAirspace alerts error:', error.message);
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        alerts: [],
+        count: 0
+      });
+    }
+  });
+
+  // Check flight path for airspace alerts
+  app.post("/api/aviation/check-flight-alerts", async (req, res) => {
+    try {
+      const { origin, destination, currentPosition, altitude } = req.body;
+      
+      if (!origin || !destination || !currentPosition || !altitude) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required flight path parameters'
+        });
+      }
+
+      const alerts = await aviationApiService.checkFlightPathAlerts({
+        origin,
+        destination,
+        currentPosition,
+        altitude
+      });
+
+      res.json({
+        success: true,
+        alerts: alerts,
+        count: alerts.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('Flight path alerts check error:', error.message);
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        alerts: [],
+        count: 0
+      });
+    }
+  });
+
   app.get("/api/aviation/live-aircraft", async (req, res) => {
     try {
       const { latMin, latMax, lonMin, lonMax } = req.query;

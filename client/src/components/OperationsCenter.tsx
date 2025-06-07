@@ -9,6 +9,7 @@ import { useScenario } from '../lib/stores/useScenario';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { AlertTriangle, Plane, MapPin, Clock } from 'lucide-react';
 import LiveFlightTracker from './LiveFlightTracker';
+import SafeAirspaceAlerts from './SafeAirspaceAlerts';
 
 export default function OperationsCenter() {
   const { 
