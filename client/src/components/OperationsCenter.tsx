@@ -128,11 +128,32 @@ export default function OperationsCenter() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {medicalEmergency ? (
+            {medicalEmergency && currentScenario?.type === 'medical' ? (
               <Alert className="border-red-500 bg-red-900/20">
                 <AlertTriangle className="h-4 w-4 text-red-400" />
                 <AlertDescription className="text-red-200">
                   Medical emergency declared. Passenger requires immediate hospital care.
+                </AlertDescription>
+              </Alert>
+            ) : currentScenario?.type === 'technical' ? (
+              <Alert className="border-orange-500 bg-orange-900/20">
+                <AlertTriangle className="h-4 w-4 text-orange-400" />
+                <AlertDescription className="text-orange-200">
+                  Technical issue detected. Monitoring aircraft systems.
+                </AlertDescription>
+              </Alert>
+            ) : currentScenario?.type === 'weather' ? (
+              <Alert className="border-yellow-500 bg-yellow-900/20">
+                <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                <AlertDescription className="text-yellow-200">
+                  Severe weather alert. Evaluating route adjustments.
+                </AlertDescription>
+              </Alert>
+            ) : currentScenario?.type === 'security' ? (
+              <Alert className="border-purple-500 bg-purple-900/20">
+                <AlertTriangle className="h-4 w-4 text-purple-400" />
+                <AlertDescription className="text-purple-200">
+                  Security incident reported. Following security protocols.
                 </AlertDescription>
               </Alert>
             ) : (

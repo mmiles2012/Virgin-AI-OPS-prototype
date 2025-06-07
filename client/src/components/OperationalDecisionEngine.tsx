@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
+import { useScenario } from '../lib/stores/useScenario';
 
 interface FlightOperationalData {
   callsign: string;
@@ -47,6 +48,7 @@ export default function OperationalDecisionEngine() {
   const [systemStatus, setSystemStatus] = useState('analyzing');
   const [manualScenario, setManualScenario] = useState<string | null>(null);
   const { selectedFlight } = useSelectedFlight();
+  const { startScenario, stopScenario } = useScenario();
 
   // Convert selected flight to operational data format
   useEffect(() => {
