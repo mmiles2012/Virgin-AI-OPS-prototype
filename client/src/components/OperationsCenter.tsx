@@ -368,6 +368,11 @@ export default function OperationsCenter() {
             </Tabs>
           </CardContent>
         </Card>
+
+        {/* SafeAirspace Alerts */}
+        <Card className="aviation-panel col-span-2">
+          <SafeAirspaceAlerts />
+        </Card>
       </div>
     </div>
   );

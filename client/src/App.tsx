@@ -15,6 +15,7 @@ import InlineApiTest from "./components/InlineApiTest";
 import LiveFlightTracker from "./components/LiveFlightTracker";
 import SimpleFlightMap from "./components/SimpleFlightMap";
 import SatelliteWorldMap from "./components/SatelliteWorldMap";
+import SafeAirspaceAlerts from "./components/SafeAirspaceAlerts";
 
 // Flight control mappings
 enum FlightControls {
@@ -52,7 +53,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map';
+type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'airspace';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -164,7 +165,16 @@ function App() {
                     Overview
                   </button>
                   
-
+                  <button
+                    onClick={() => setViewMode('airspace')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'airspace' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    SafeAirspace
+                  </button>
                   
                   <button
                     onClick={() => {
@@ -208,7 +218,11 @@ function App() {
               </div>
             )}
             
-
+            {viewMode === 'airspace' && !isInterfaceMinimized && (
+              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+                <SafeAirspaceAlerts />
+              </div>
+            )}
 
             {/* Minimized Mode Indicator */}
             {isInterfaceMinimized && viewMode !== 'overview' && (
@@ -218,7 +232,7 @@ function App() {
                     {viewMode === 'cockpit' && '✈️ Cockpit View (Minimized)'}
                     {viewMode === 'operations' && '🏢 Operations Center (Minimized)'}
                     {viewMode === 'decisions' && '🧠 Decision Engine (Minimized)'}
-
+                    {viewMode === 'airspace' && '🛡️ SafeAirspace Alerts (Minimized)'}
                   </div>
                 </div>
               </div>
