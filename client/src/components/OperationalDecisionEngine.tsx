@@ -98,7 +98,12 @@ export default function OperationalDecisionEngine() {
     const aircraftType = detectAircraftType(flight.aircraft);
     
     // Select appropriate aircraft specifications and calculator
-    const specs = aircraftType === 'A350' ? AIRBUS_A350_SPECS : BOEING_787_SPECS;
+    let specs = BOEING_787_SPECS;
+    if (aircraftType === 'A350') {
+      specs = AIRBUS_A350_SPECS;
+    } else if (aircraftType === 'A330') {
+      specs = AIRBUS_A330_SPECS;
+    }
     const calculator = new AircraftPerformanceCalculator(specs);
     
     // Calculate emergency impact on aircraft performance
@@ -549,8 +554,17 @@ export default function OperationalDecisionEngine() {
                 </div>
                 {performanceData.efficiencyBonus && performanceData.efficiencyBonus > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Fly-by-Wire Efficiency:</span>
+                    <span className="text-gray-400">
+                      {performanceData.detectedAircraftType === 'A350' ? 'Fly-by-Wire Efficiency:' : 
+                       performanceData.detectedAircraftType === 'A330' ? 'Neo Engine Efficiency:' : 'Efficiency Bonus:'}
+                    </span>
                     <span className="text-green-400 font-medium">-{performanceData.efficiencyBonus} kg saved</span>
+                  </div>
+                )}
+                {performanceData.conventionalPenalty && performanceData.conventionalPenalty > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Conventional Controls:</span>
+                    <span className="text-orange-400 font-medium">+{performanceData.conventionalPenalty} kg penalty</span>
                   </div>
                 )}
               </div>
