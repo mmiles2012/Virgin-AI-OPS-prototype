@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain } from 'lucide-react';
+import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { useScenario } from '../lib/stores/useScenario';
+import { performanceCalculator, EMERGENCY_SCENARIOS, BOEING_787_SPECS } from '../lib/aircraftPerformance';
 
 interface FlightOperationalData {
   callsign: string;
@@ -47,6 +48,7 @@ export default function OperationalDecisionEngine() {
   const [weatherAlerts, setWeatherAlerts] = useState<WeatherAlert[]>([]);
   const [systemStatus, setSystemStatus] = useState('analyzing');
   const [manualScenario, setManualScenario] = useState<string | null>(null);
+  const [performanceData, setPerformanceData] = useState<any>(null);
   const { selectedFlight } = useSelectedFlight();
   const { startScenario, stopScenario } = useScenario();
 
@@ -74,10 +76,35 @@ export default function OperationalDecisionEngine() {
   useEffect(() => {
     if (flightData) {
       generateOperationalDecisions(flightData);
+      updatePerformanceCalculations(flightData);
     } else {
       setActiveDecisions([]);
+      setPerformanceData(null);
     }
-  }, [flightData]);
+  }, [flightData, manualScenario]);
+
+  const updatePerformanceCalculations = (flight: FlightOperationalData) => {
+    const scenarioType = manualScenario || 'normal';
+    
+    // Calculate emergency impact on aircraft performance
+    const performanceImpact = performanceCalculator.calculateEmergencyImpact(
+      {
+        altitude: flight.altitude,
+        fuelRemaining: BOEING_787_SPECS.maxFuel * (flight.fuelRemaining / 100), // Convert percentage to kg
+        speed: flight.speed
+      },
+      scenarioType
+    );
+
+    // Get scenario impact summary
+    const impactSummary = performanceCalculator.getScenarioImpactSummary(scenarioType);
+
+    setPerformanceData({
+      ...performanceImpact,
+      ...impactSummary,
+      normalSpecs: BOEING_787_SPECS
+    });
+  };
 
   const generateOperationalDecisions = (flight: FlightOperationalData) => {
     const decisions: OperationalDecision[] = [];
@@ -472,6 +499,105 @@ export default function OperationalDecisionEngine() {
           </div>
         )}
       </div>
+
+      {/* Boeing 787 Performance Impact */}
+      {performanceData && flightData && (
+        <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-4 mb-6">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <Gauge className="h-5 w-5 text-blue-400" />
+            Boeing 787 Performance Impact Analysis
+          </h3>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
+            {/* Fuel Consumption Impact */}
+            <div className="bg-gray-700/50 rounded-lg p-4">
+              <h4 className="text-md font-medium text-white mb-3 flex items-center gap-2">
+                <Zap className="h-4 w-4 text-yellow-400" />
+                Fuel Consumption Impact
+              </h4>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Normal Burn Rate:</span>
+                  <span className="text-white font-medium">{performanceData.normalSpecs.normalCruiseBurn} kg/hr</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Current Burn Rate:</span>
+                  <span className="text-red-400 font-medium">{Math.round(performanceData.fuelBurnRate)} kg/hr</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Increase:</span>
+                  <span className="text-red-400 font-medium">
+                    +{Math.round(performanceData.fuelBurnRate - performanceData.normalSpecs.normalCruiseBurn)} kg/hr 
+                    ({performanceData.fuelIncreasePercent.toFixed(1)}%)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Range Impact */}
+            <div className="bg-gray-700/50 rounded-lg p-4">
+              <h4 className="text-md font-medium text-white mb-3 flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-green-400" />
+                Range Impact
+              </h4>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Normal Max Range:</span>
+                  <span className="text-white font-medium">{performanceData.normalSpecs.maxRange} nm</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Current Range:</span>
+                  <span className="text-red-400 font-medium">{performanceData.range} nm</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Range Reduction:</span>
+                  <span className="text-red-400 font-medium">
+                    -{performanceData.rangeReduction} nm ({((performanceData.rangeReduction / performanceData.normalSpecs.maxRange) * 100).toFixed(1)}%)
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Operational Recommendations */}
+          <div className="bg-gray-700/50 rounded-lg p-4">
+            <h4 className="text-md font-medium text-white mb-3">Emergency Impact Analysis</h4>
+            <p className="text-gray-300 text-sm mb-3">{performanceData.scenario.description}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div className="text-xs text-gray-400 mb-2">Flight Parameters</div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Current Altitude:</span>
+                    <span className="text-white">{performanceData.altitude.toLocaleString()} ft</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Current Speed:</span>
+                    <span className="text-white">{performanceData.speed} kts</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Time Remaining:</span>
+                    <span className="text-white">{performanceData.timeRemaining.toFixed(1)} hrs</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-gray-400 mb-2">Emergency Status</div>
+                <div className="space-y-1 text-sm">
+                  <div className={`font-medium ${
+                    performanceData.scenario.diversionRequired ? 'text-red-400' : 'text-yellow-400'
+                  }`}>
+                    {performanceData.scenario.diversionRequired ? 'DIVERSION REQUIRED' : 'CONTINUE MONITORING'}
+                  </div>
+                  <div className="text-gray-300">
+                    Stabilize Time: {performanceData.scenario.timeToStabilize} min
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Active Operational Decisions */}
       <div className="space-y-4">
