@@ -223,42 +223,37 @@ export class AviationApiService {
   }
 
   async getVirginAtlanticFlights(): Promise<FlightData[]> {
-    if (!this.aviationStackKey) {
-      throw new Error('AviationStack API key not configured');
-    }
-
     try {
-      const response = await axios.get('http://api.aviationstack.com/v1/flights', {
-        params: {
-          access_key: this.aviationStackKey,
-          airline_iata: 'VS',
-          flight_status: 'active',
-          limit: 50
-        },
-        timeout: 15000
+      // Get all current flights from OpenSky Network
+      const response = await axios.get('https://opensky-network.org/api/states/all', {
+        timeout: 20000,
+        headers: {
+          'User-Agent': 'AINO-Aviation-Operations/1.0'
+        }
       });
-
-      // Check for API quota limit error
-      if (response.data?.error?.code === 'usage_limit_reached') {
-        console.warn('AviationStack API quota exceeded, using fallback data');
-        return this.getFallbackVirginAtlanticFlights();
-      }
 
       const flights: FlightData[] = [];
       
-      if (response.data && response.data.data) {
-        for (const flight of response.data.data) {
-          if (flight.live && flight.live.latitude && flight.live.longitude) {
+      if (response.data && response.data.states) {
+        // Filter for Virgin Atlantic flights (callsigns starting with VIR)
+        for (const state of response.data.states) {
+          const [
+            icao24, callsign, origin_country, time_position,
+            last_contact, longitude, latitude, baro_altitude,
+            on_ground, velocity, true_track, vertical_rate
+          ] = state;
+
+          if (callsign && callsign.trim().toUpperCase().startsWith('VIR') && latitude && longitude) {
             flights.push({
-              callsign: flight.flight?.iata || flight.flight?.icao || 'VS',
-              latitude: flight.live.latitude,
-              longitude: flight.live.longitude,
-              altitude: flight.live.altitude || 0,
-              velocity: flight.live.speed_horizontal || 0,
-              heading: flight.live.direction || 0,
-              aircraft: flight.aircraft?.iata || 'Unknown',
-              origin: flight.departure?.airport,
-              destination: flight.arrival?.airport
+              callsign: callsign.trim(),
+              latitude: latitude,
+              longitude: longitude,
+              altitude: baro_altitude ? Math.round(baro_altitude * 3.28084) : 0, // Convert meters to feet
+              velocity: velocity ? Math.round(velocity * 1.94384) : 0, // Convert m/s to knots
+              heading: true_track || 0,
+              aircraft: 'Virgin Atlantic',
+              origin: origin_country,
+              destination: 'Unknown'
             });
           }
         }
@@ -266,14 +261,12 @@ export class AviationApiService {
 
       return flights;
     } catch (error: any) {
-      console.warn('AviationStack API error:', error.response?.status, error.message);
-      throw new Error(`AviationStack API authentication failed. Please provide a valid API key to access real-time Virgin Atlantic flight data.`);
+      console.warn('OpenSky Network error:', error.message);
+      throw new Error(`Failed to fetch Virgin Atlantic flights: ${error.message}`);
     }
   }
 
-  private getFallbackVirginAtlanticFlights(): FlightData[] {
-    throw new Error('AviationStack API authentication failed. Please provide a valid API key to access real-time Virgin Atlantic flight data.');
-  }
+
 
   async getLiveAircraftPositions(bounds?: {
     latMin: number;
