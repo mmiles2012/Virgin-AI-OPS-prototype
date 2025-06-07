@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { useScenario } from '../lib/stores/useScenario';
-import { performanceCalculator, EMERGENCY_SCENARIOS, BOEING_787_SPECS } from '../lib/aircraftPerformance';
+import { AircraftPerformanceCalculator, EMERGENCY_SCENARIOS, BOEING_787_SPECS, AIRBUS_A350_SPECS } from '../lib/aircraftPerformance';
 
 interface FlightOperationalData {
   callsign: string;

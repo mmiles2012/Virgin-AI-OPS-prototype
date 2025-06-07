@@ -1,0 +1,337 @@
+import React, { useState, useEffect } from 'react';
+import { AlertTriangle, Plane, Gauge, Zap, Wind, Settings } from 'lucide-react';
+
+const AirbusA350EmergencySimulator = () => {
+  const [scenario, setScenario] = useState('normal');
+  const [flightData, setFlightData] = useState({
+    altitude: 41000,
+    speed: 485, // knots
+    fuelRemaining: 50000, // kg
+    fuelBurnRate: 3100, // kg/hr normal cruise
+    range: 8700, // nautical miles
+    timeRemaining: 16.1, // hours
+    emergencyStatus: 'Normal Operations'
+  });
+
+  // Airbus A350-1000 baseline specifications
+  const aircraft = {
+    maxFuel: 138000, // kg
+    normalCruiseBurn: 3100, // kg/hr (slightly higher than A350-900)
+    normalCruiseSpeed: 485, // knots
+    normalCruiseAltitude: 41000, // ft
+    maxRange: 8700, // nautical miles
+    serviceCeiling: 41450, // ft
+    engines: 'Rolls-Royce Trent XWB-97'
+  };
+
+  const scenarios = {
+    normal: {
+      name: 'Normal Operations',
+      fuelBurnMultiplier: 1.0,
+      speedReduction: 0,
+      altitudeRestriction: null,
+      description: 'Normal cruise flight operations with fly-by-wire systems'
+    },
+    engineFailure: {
+      name: 'Single Engine Failure',
+      fuelBurnMultiplier: 1.32,
+      speedReduction: 35,
+      altitudeRestriction: 27000,
+      description: 'One Trent XWB engine inoperative - fly-by-wire compensation active'
+    },
+    hydraulicFault: {
+      name: 'Major Hydraulic Fault',
+      fuelBurnMultiplier: 1.12,
+      speedReduction: 15,
+      altitudeRestriction: null,
+      description: 'Green/Blue hydraulic system fault - backup actuators engaged'
+    },
+    electricalFault: {
+      name: 'Major Electrical Fault',
+      fuelBurnMultiplier: 1.22,
+      speedReduction: 25,
+      altitudeRestriction: 37000,
+      description: 'AC/DC electrical system fault - emergency electrical config'
+    },
+    depressurization: {
+      name: 'Cabin Depressurization',
+      fuelBurnMultiplier: 1.48,
+      speedReduction: 65,
+      altitudeRestriction: 10000,
+      description: 'Emergency descent to 10,000ft - high density altitude penalty'
+    },
+    flightControlFault: {
+      name: 'Flight Control Computer Fault',
+      fuelBurnMultiplier: 1.18,
+      speedReduction: 20,
+      altitudeRestriction: 35000,
+      description: 'PRIM/SEC computer degradation - alternate/direct law active'
+    }
+  };
+
+  const calculateEmergencyImpact = (selectedScenario) => {
+    const scenarioData = scenarios[selectedScenario];
+    
+    let newAltitude = flightData.altitude;
+    let newSpeed = aircraft.normalCruiseSpeed - scenarioData.speedReduction;
+    let newFuelBurnRate = aircraft.normalCruiseBurn * scenarioData.fuelBurnMultiplier;
+    
+    // Apply altitude restrictions
+    if (scenarioData.altitudeRestriction && flightData.altitude > scenarioData.altitudeRestriction) {
+      newAltitude = scenarioData.altitudeRestriction;
+    }
+    
+    // Calculate additional fuel burn for altitude changes and A350-specific factors
+    let altitudeChangeFuel = 0;
+    if (newAltitude < flightData.altitude) {
+      // Emergency descent fuel penalty (A350 has better descent efficiency than 787)
+      const descentDistance = (flightData.altitude - newAltitude) / 1000;
+      altitudeChangeFuel = descentDistance * 135; // kg per 1000ft descent penalty
+    }
+    
+    // A350-specific fuel efficiency adjustments
+    let efficiencyBonus = 0;
+    if (selectedScenario === 'hydraulicFault' || selectedScenario === 'flightControlFault') {
+      // Fly-by-wire system provides better efficiency even in degraded modes
+      efficiencyBonus = 50; // kg fuel saved due to advanced flight controls
+    }
+    
+    // Calculate new range based on fuel burn
+    const effectiveFuel = flightData.fuelRemaining - altitudeChangeFuel + efficiencyBonus;
+    const newTimeRemaining = Math.max(0, effectiveFuel / newFuelBurnRate);
+    const newRange = (newSpeed * newTimeRemaining) / 1.15078; // Convert to nautical miles
+    
+    return {
+      altitude: newAltitude,
+      speed: newSpeed,
+      fuelBurnRate: newFuelBurnRate,
+      fuelRemaining: Math.max(0, effectiveFuel),
+      timeRemaining: newTimeRemaining,
+      range: Math.round(newRange),
+      emergencyStatus: scenarioData.name,
+      altitudeChangeFuel,
+      efficiencyBonus
+    };
+  };
+
+  useEffect(() => {
+    const newData = calculateEmergencyImpact(scenario);
+    setFlightData(prev => ({ ...prev, ...newData }));
+  }, [scenario]);
+
+  const getStatusColor = (scenario) => {
+    switch(scenario) {
+      case 'normal': return 'text-green-600';
+      case 'hydraulicFault': 
+      case 'flightControlFault': return 'text-yellow-600';
+      case 'electricalFault': return 'text-orange-600';
+      case 'engineFailure': return 'text-red-600';
+      case 'depressurization': return 'text-red-700';
+      default: return 'text-gray-600';
+    }
+  };
+
+  const rangeReduction = aircraft.maxRange - flightData.range;
+  const rangeReductionPercent = ((rangeReduction / aircraft.maxRange) * 100).toFixed(1);
+
+  return (
+    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center gap-3">
+          <Plane className="text-blue-600" />
+          Airbus A350-1000 Emergency Scenarios Simulator
+        </h1>
+        <p className="text-gray-600">Simulate various emergency scenarios and their impact on fuel consumption and flight range</p>
+        <p className="text-sm text-gray-500 mt-1">Featuring Rolls-Royce Trent XWB-97 engines and advanced fly-by-wire systems</p>
+      </div>
+
+      {/* Aircraft Specifications */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <Settings className="text-blue-500" />
+          Aircraft Specifications
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center bg-gray-50 p-3 rounded">
+            <div className="text-lg font-bold text-gray-800">{aircraft.maxFuel.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Max Fuel (kg)</div>
+          </div>
+          <div className="text-center bg-gray-50 p-3 rounded">
+            <div className="text-lg font-bold text-gray-800">{aircraft.maxRange.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Max Range (nm)</div>
+          </div>
+          <div className="text-center bg-gray-50 p-3 rounded">
+            <div className="text-lg font-bold text-gray-800">{aircraft.normalCruiseSpeed}</div>
+            <div className="text-sm text-gray-600">Cruise Speed (kts)</div>
+          </div>
+          <div className="text-center bg-gray-50 p-3 rounded">
+            <div className="text-lg font-bold text-gray-800">{aircraft.serviceCeiling.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Service Ceiling (ft)</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Scenario Selection */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <AlertTriangle className="text-orange-500" />
+          Select Emergency Scenario
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Object.entries(scenarios).map(([key, data]) => (
+            <button
+              key={key}
+              onClick={() => setScenario(key)}
+              className={`p-4 rounded-lg border-2 text-left transition-all ${
+                scenario === key 
+                  ? 'border-blue-500 bg-blue-50' 
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="font-semibold text-gray-800">{data.name}</div>
+              <div className="text-sm text-gray-600 mt-1">{data.description}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Current Status */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4">Current Flight Status</h2>
+        <div className={`text-lg font-semibold mb-4 ${getStatusColor(scenario)}`}>
+          Status: {flightData.emergencyStatus}
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-800">{flightData.altitude.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Altitude (ft)</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-800">{flightData.speed}</div>
+            <div className="text-sm text-gray-600">Speed (knots)</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-800">{flightData.fuelRemaining.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">Fuel Remaining (kg)</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-gray-800">{flightData.timeRemaining.toFixed(1)}</div>
+            <div className="text-sm text-gray-600">Time Remaining (hrs)</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Performance Impact */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Gauge className="text-blue-500" />
+            Fuel Consumption Impact
+          </h3>
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <span>Normal Burn Rate:</span>
+              <span className="font-semibold">{aircraft.normalCruiseBurn} kg/hr</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Current Burn Rate:</span>
+              <span className="font-semibold text-red-600">{flightData.fuelBurnRate} kg/hr</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Increase:</span>
+              <span className="font-semibold text-red-600">
+                +{(flightData.fuelBurnRate - aircraft.normalCruiseBurn).toFixed(0)} kg/hr 
+                ({(((flightData.fuelBurnRate / aircraft.normalCruiseBurn) - 1) * 100).toFixed(1)}%)
+              </span>
+            </div>
+            {scenario !== 'normal' && (scenario === 'hydraulicFault' || scenario === 'flightControlFault') && (
+              <div className="flex justify-between text-green-600">
+                <span>Fly-by-Wire Efficiency:</span>
+                <span className="font-semibold">-50 kg saved</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Wind className="text-green-500" />
+            Range Impact
+          </h3>
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <span>Normal Max Range:</span>
+              <span className="font-semibold">{aircraft.maxRange} nm</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Current Range:</span>
+              <span className="font-semibold text-red-600">{flightData.range} nm</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Range Reduction:</span>
+              <span className="font-semibold text-red-600">
+                -{rangeReduction} nm ({rangeReductionPercent}%)
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Detailed Analysis */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-lg font-semibold mb-4">Emergency Scenario Analysis - A350-1000 Specific</h3>
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <p className="text-gray-700 mb-3">{scenarios[scenario].description}</p>
+          
+          {scenario === 'engineFailure' && (
+            <div className="text-sm text-gray-600 space-y-2">
+              <div><strong>Engine Failure Impact:</strong> Single Trent XWB-97 engine operation. The A350's fly-by-wire system 
+              automatically compensates for asymmetric thrust, reducing pilot workload and maintaining more efficient flight path.</div>
+              <div><strong>A350 Advantage:</strong> Advanced flight envelope protection and automatic trim compensation 
+              result in slightly better fuel efficiency compared to conventional aircraft during single-engine operations.</div>
+            </div>
+          )}
+          
+          {scenario === 'depressurization' && (
+            <div className="text-sm text-gray-600 space-y-2">
+              <div><strong>Depressurization Impact:</strong> Emergency descent managed by flight management system with 
+              optimized descent profile. Continued operation at 10,000ft in high air density environment.</div>
+              <div><strong>A350 Systems:</strong> Advanced cabin pressure control system and robust emergency oxygen supply. 
+              Fly-by-wire maintains optimal angle of attack even at low altitude high-drag conditions.</div>
+            </div>
+          )}
+          
+          {scenario === 'hydraulicFault' && (
+            <div className="text-sm text-gray-600 space-y-2">
+              <div><strong>Hydraulic System Fault:</strong> A350 features Green and Blue hydraulic systems with backup 
+              electric/hydraulic actuators for critical flight controls.</div>
+              <div><strong>Fly-by-Wire Benefits:</strong> Even with hydraulic degradation, electronic flight controls 
+              maintain near-optimal efficiency, resulting in lower fuel penalty than conventional aircraft.</div>
+            </div>
+          )}
+          
+          {scenario === 'electricalFault' && (
+            <div className="text-sm text-gray-600 space-y-2">
+              <div><strong>Electrical Fault Impact:</strong> Emergency electrical configuration with essential systems powered 
+              by batteries and Ram Air Turbine (RAT). Some flight management functions degraded.</div>
+              <div><strong>System Redundancy:</strong> Multiple AC/DC electrical sources with advanced load shedding 
+              prioritize flight-critical systems while maintaining reasonable efficiency.</div>
+            </div>
+          )}
+
+          {scenario === 'flightControlFault' && (
+            <div className="text-sm text-gray-600 space-y-2">
+              <div><strong>Flight Control Computer Fault:</strong> Degradation from Normal Law to Alternate or Direct Law. 
+              Loss of some flight envelope protections and automatic trim functions.</div>
+              <div><strong>Backup Systems:</strong> Secondary and backup flight control computers maintain basic fly-by-wire 
+              functionality, though with reduced automation and slightly higher pilot workload.</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AirbusA350EmergencySimulator;
