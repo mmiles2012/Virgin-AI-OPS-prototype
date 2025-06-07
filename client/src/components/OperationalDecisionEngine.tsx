@@ -83,26 +83,40 @@ export default function OperationalDecisionEngine() {
     }
   }, [flightData, manualScenario]);
 
+  const detectAircraftType = (aircraft: string): 'A350' | '787' => {
+    const aircraftUpper = aircraft.toUpperCase();
+    if (aircraftUpper.includes('A350') || aircraftUpper.includes('350')) {
+      return 'A350';
+    }
+    return '787'; // Default to 787 for most wide-body operations
+  };
+
   const updatePerformanceCalculations = (flight: FlightOperationalData) => {
     const scenarioType = manualScenario || 'normal';
+    const aircraftType = detectAircraftType(flight.aircraft);
+    
+    // Select appropriate aircraft specifications and calculator
+    const specs = aircraftType === 'A350' ? AIRBUS_A350_SPECS : BOEING_787_SPECS;
+    const calculator = new AircraftPerformanceCalculator(specs);
     
     // Calculate emergency impact on aircraft performance
-    const performanceImpact = performanceCalculator.calculateEmergencyImpact(
+    const performanceImpact = calculator.calculateEmergencyImpact(
       {
         altitude: flight.altitude,
-        fuelRemaining: BOEING_787_SPECS.maxFuel * (flight.fuelRemaining / 100), // Convert percentage to kg
+        fuelRemaining: specs.maxFuel * (flight.fuelRemaining / 100), // Convert percentage to kg
         speed: flight.speed
       },
       scenarioType
     );
 
     // Get scenario impact summary
-    const impactSummary = performanceCalculator.getScenarioImpactSummary(scenarioType);
+    const impactSummary = calculator.getScenarioImpactSummary(scenarioType);
 
     setPerformanceData({
       ...performanceImpact,
       ...impactSummary,
-      normalSpecs: BOEING_787_SPECS
+      normalSpecs: specs,
+      detectedAircraftType: aircraftType
     });
   };
 
@@ -505,7 +519,7 @@ export default function OperationalDecisionEngine() {
         <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-4 mb-6">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
             <Gauge className="h-5 w-5 text-blue-400" />
-            Boeing 787 Performance Impact Analysis
+            {performanceData.aircraftType || 'Aircraft'} Performance Impact Analysis
           </h3>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
@@ -531,6 +545,12 @@ export default function OperationalDecisionEngine() {
                     ({performanceData.fuelIncreasePercent.toFixed(1)}%)
                   </span>
                 </div>
+                {performanceData.efficiencyBonus && performanceData.efficiencyBonus > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Fly-by-Wire Efficiency:</span>
+                    <span className="text-green-400 font-medium">-{performanceData.efficiencyBonus} kg saved</span>
+                  </div>
+                )}
               </div>
             </div>
 
