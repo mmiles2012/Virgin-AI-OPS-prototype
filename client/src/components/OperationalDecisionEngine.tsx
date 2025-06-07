@@ -280,6 +280,36 @@ export default function OperationalDecisionEngine() {
 
   const triggerScenario = (scenarioType: string) => {
     setManualScenario(scenarioType);
+    
+    // Create a scenario for the scenario store
+    const scenario = {
+      id: `manual-${scenarioType}`,
+      title: scenarioType === 'medical' ? 'Medical Emergency Response' :
+             scenarioType === 'technical' ? 'Engine Failure in Cruise' :
+             scenarioType === 'weather' ? 'Severe Weather Avoidance' :
+             scenarioType === 'security' ? 'Security Incident Response' : 'Operational Scenario',
+      description: `Manual ${scenarioType} scenario triggered for operational decision support`,
+      type: scenarioType as 'medical' | 'technical' | 'weather' | 'security',
+      severity: 'high' as 'low' | 'medium' | 'high',
+      estimatedDuration: '30 minutes',
+      learningObjectives: [`Manage ${scenarioType} situation effectively`],
+      emergencyDetails: scenarioType === 'medical' ? {
+        type: 'cardiac',
+        severity: 'high',
+        symptoms: ['chest pain', 'difficulty breathing'],
+        immediateActions: ['oxygen', 'position patient', 'prepare for diversion'],
+        diversionRequired: true,
+        timeToStabilize: 30,
+        medicalEquipmentNeeded: ['AED', 'oxygen'],
+        passengerAge: 58,
+        passengerCondition: 'critical'
+      } : undefined,
+      decisionPoints: [],
+      successCriteria: [`Successfully resolve ${scenarioType} scenario`]
+    };
+    
+    startScenario(scenario);
+    
     if (flightData) {
       // Re-generate decisions with the manual scenario
       const flight = {
@@ -295,6 +325,8 @@ export default function OperationalDecisionEngine() {
 
   const clearScenario = () => {
     setManualScenario(null);
+    stopScenario();
+    
     if (flightData) {
       const flight = {
         ...flightData,
