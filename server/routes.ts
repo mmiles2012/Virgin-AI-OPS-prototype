@@ -622,6 +622,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Live aircraft tracking using OpenSky Network
+  app.get("/api/aviation/live-aircraft", async (req, res) => {
+    try {
+      const { latMin, latMax, lonMin, lonMax, limit = 50 } = req.query;
+      
+      const bounds = latMin && latMax && lonMin && lonMax ? {
+        latMin: parseFloat(latMin as string),
+        latMax: parseFloat(latMax as string), 
+        lonMin: parseFloat(lonMin as string),
+        lonMax: parseFloat(lonMax as string)
+      } : undefined;
+
+      const aircraft = await aviationApiService.getLiveAircraftPositions(bounds);
+      
+      // Limit results for performance
+      const limitedAircraft = aircraft.slice(0, parseInt(limit as string));
+      
+      res.json({
+        success: true,
+        aircraft: limitedAircraft,
+        count: limitedAircraft.length,
+        totalFound: aircraft.length,
+        timestamp: new Date().toISOString(),
+        source: 'OpenSky Network'
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
   // Aviation API Testing Routes
   app.post("/api/aviation/test-aviationstack", async (req, res) => {
     try {

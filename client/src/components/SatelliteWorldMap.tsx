@@ -394,11 +394,7 @@ export default function SatelliteWorldMap() {
             />
           ))}
           
-          {/* Equator line */}
-          <line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#fbbf24" strokeWidth="2" opacity="0.6" />
-          
-          {/* Prime Meridian */}
-          <line x1="50%" y1="0%" x2="50%" y2="100%" stroke="#fbbf24" strokeWidth="2" opacity="0.6" />
+
         </svg>
         {/* Flight Markers */}
         {/* Real-time Virgin Atlantic Flight Tracking */}
