@@ -37,16 +37,26 @@ export const useSelectedFlight = create<SelectedFlightState>((set) => ({
   
   setSelectedFlight: (callsign) => {
     // Create a basic FlightPosition object from callsign
+    const flightConfigs = {
+      'VIR127C': { lat: 45.18, lon: -69.17, aircraft: 'A350-1000', origin: 'LHR', destination: 'JFK' },
+      'VIR43': { lat: 40.2, lon: -45.8, aircraft: 'A330-300', origin: 'LGW', destination: 'MCO' },
+      'VIR25F': { lat: 51.4, lon: -12.2, aircraft: '787-9', origin: 'LHR', destination: 'LAX' },
+      'VIR155': { lat: 49.8, lon: -25.1, aircraft: 'A350-900', origin: 'MAN', destination: 'ATL' },
+      'VIR9': { lat: 52.1, lon: -18.7, aircraft: '787-9', origin: 'LHR', destination: 'BOS' }
+    };
+    
+    const config = flightConfigs[callsign as keyof typeof flightConfigs] || flightConfigs['VIR127C'];
+    
     const flightData: FlightPosition = {
       callsign,
-      latitude: callsign === 'VIR127C' ? 45.18 : 51.4,
-      longitude: callsign === 'VIR127C' ? -69.17 : -12.2,
+      latitude: config.lat,
+      longitude: config.lon,
       altitude: 40000,
       velocity: 457,
       heading: 270,
-      aircraft: callsign === 'VIR127C' ? 'A350-1000' : 'A380-800',
-      origin: callsign === 'VIR127C' ? 'LHR' : 'LHR',
-      destination: callsign === 'VIR127C' ? 'JFK' : 'LAX'
+      aircraft: config.aircraft,
+      origin: config.origin,
+      destination: config.destination
     };
     
     set({ 

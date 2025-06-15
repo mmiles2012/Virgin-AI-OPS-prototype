@@ -34,18 +34,32 @@ const ActiveFlightsList = () => {
       position: '45.18°N, 69.17°W'
     },
     { 
-      callsign: 'BAW189', 
-      aircraft: 'A380-800', 
+      callsign: 'VIR43', 
+      aircraft: 'A330-300', 
+      route: 'LGW-MCO',
+      status: 'Active',
+      position: '40.2°N, 45.8°W'
+    },
+    { 
+      callsign: 'VIR25F', 
+      aircraft: '787-9', 
       route: 'LHR-LAX',
       status: 'Active',
       position: '51.4°N, 12.2°W'
     },
     { 
-      callsign: 'VS43', 
-      aircraft: 'A330-300', 
-      route: 'LGW-MCO',
+      callsign: 'VIR155', 
+      aircraft: 'A350-900', 
+      route: 'MAN-ATL',
       status: 'Active',
-      position: '40.2°N, 45.8°W'
+      position: '49.8°N, 25.1°W'
+    },
+    { 
+      callsign: 'VIR9', 
+      aircraft: '787-9', 
+      route: 'LHR-BOS',
+      status: 'Active',
+      position: '52.1°N, 18.7°W'
     }
   ];
 
@@ -90,18 +104,29 @@ const ActiveFlightsList = () => {
 export default function EnhancedOperationalDecisionEngine() {
   const { selectedFlight } = useSelectedFlight();
   
+  const getFlightData = (callsign: string) => {
+    const flightConfigs = {
+      'VIR127C': { aircraft: 'A350-1000', route: 'LHR-JFK', passengers: 298, fuelRemaining: 42000 },
+      'VIR43': { aircraft: 'A330-300', route: 'LGW-MCO', passengers: 285, fuelRemaining: 38000 },
+      'VIR25F': { aircraft: '787-9', route: 'LHR-LAX', passengers: 258, fuelRemaining: 45000 },
+      'VIR155': { aircraft: 'A350-900', route: 'MAN-ATL', passengers: 315, fuelRemaining: 48000 },
+      'VIR9': { aircraft: '787-9', route: 'LHR-BOS', passengers: 214, fuelRemaining: 36000 }
+    };
+    return flightConfigs[callsign as keyof typeof flightConfigs] || flightConfigs['VIR127C'];
+  };
+
   const flightData: EnhancedFlightData | null = selectedFlight ? {
     callsign: selectedFlight.callsign,
-    aircraft: selectedFlight.callsign === 'VIR127C' ? 'A350-1000' : 'A380-800',
-    route: selectedFlight.callsign === 'VIR127C' ? 'LHR-JFK' : 'LHR-LAX',
+    aircraft: getFlightData(selectedFlight.callsign).aircraft,
+    route: getFlightData(selectedFlight.callsign).route,
     currentPosition: { lat: selectedFlight.latitude, lon: selectedFlight.longitude },
     altitude: selectedFlight.altitude,
     speed: selectedFlight.velocity,
-    fuelRemaining: 42000,
+    fuelRemaining: getFlightData(selectedFlight.callsign).fuelRemaining,
     fuelBurn: 2400,
     maximumRange: 8000,
     currentWeight: 280000,
-    passengers: selectedFlight.callsign === 'VIR127C' ? 298 : 450,
+    passengers: getFlightData(selectedFlight.callsign).passengers,
     eta: '14:30 UTC'
   } : null;
 
