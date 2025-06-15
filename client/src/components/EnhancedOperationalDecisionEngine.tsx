@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap, Shield, Wind, Eye, Fuel, Building, Wrench, FileText, BarChart3, CheckCircle } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
+import { useEnhancedFlightData } from '../hooks/useAviationData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -103,6 +104,7 @@ const ActiveFlightsList = () => {
 
 export default function EnhancedOperationalDecisionEngine() {
   const { selectedFlight } = useSelectedFlight();
+  const { enhancedData, loading, error } = useEnhancedFlightData(selectedFlight?.callsign);
   
   const getFlightData = (callsign: string) => {
     const flightConfigs = {
@@ -424,19 +426,27 @@ export default function EnhancedOperationalDecisionEngine() {
                           <div className="space-y-3">
                             <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
                               <span className="text-gray-300">Current Burn Rate:</span>
-                              <span className="text-white font-medium">2,400 kg/hr</span>
+                              <span className="text-white font-medium">
+                                {enhancedData.fuelAnalysis ? `${(enhancedData.fuelAnalysis.fuelBurnKg / (enhancedData.fuelAnalysis.distanceNm / 500)).toFixed(0)} kg/hr` : '2,400 kg/hr'}
+                              </span>
                             </div>
                             <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
                               <span className="text-gray-300">Route Fuel Estimate:</span>
-                              <span className="text-white font-medium">15,600 kg</span>
+                              <span className="text-white font-medium">
+                                {enhancedData.fuelAnalysis ? `${enhancedData.fuelAnalysis.fuelBurnKg.toLocaleString()} kg` : '15,600 kg'}
+                              </span>
                             </div>
                             <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
                               <span className="text-gray-300">Reserve Fuel:</span>
-                              <span className="text-green-400 font-medium">6,800 kg</span>
+                              <span className="text-green-400 font-medium">
+                                {flightData ? `${(flightData.fuelRemaining - (enhancedData.fuelAnalysis?.fuelBurnKg || 15600)).toLocaleString()} kg` : '6,800 kg'}
+                              </span>
                             </div>
                             <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
                               <span className="text-gray-300">Fuel Cost (Est):</span>
-                              <span className="text-white font-medium">$39,000</span>
+                              <span className="text-white font-medium">
+                                {enhancedData.fuelAnalysis ? `$${enhancedData.fuelAnalysis.estimatedCost.toLocaleString()}` : '$39,000'}
+                              </span>
                             </div>
                           </div>
                         </div>

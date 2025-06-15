@@ -1,0 +1,414 @@
+import requests
+import json
+import os
+from datetime import datetime
+from typing import Dict, List, Optional
+
+class AviationDataFetcher:
+    """
+    Aviation data fetcher for operations center platform
+    Integrates with multiple free aviation APIs
+    """
+    
+    def __init__(self):
+        # API Keys (set these as environment variables in Replit)
+        self.aviationstack_key = os.getenv('AVIATIONSTACK_API_KEY')
+        self.aerodatabox_key = os.getenv('AERODATABOX_API_KEY')
+        
+        # API Base URLs
+        self.aviationstack_base = "http://api.aviationstack.com/v1"
+        self.aerodatabox_base = "https://aerodatabox.p.rapidapi.com"
+        self.airportdb_base = "https://api.airportdb.io/v1"
+        
+        # Request headers
+        self.aerodatabox_headers = {
+            "X-RapidAPI-Key": self.aerodatabox_key,
+            "X-RapidAPI-Host": "aerodatabox.p.rapidapi.com"
+        }
+
+    def get_flight_data(self, flight_iata: str = None, dep_iata: str = None, 
+                       arr_iata: str = None, limit: int = 10) -> Dict:
+        """
+        Get real-time flight data from AviationStack API
+        
+        Args:
+            flight_iata: Flight number (e.g., 'AA100')
+            dep_iata: Departure airport IATA code
+            arr_iata: Arrival airport IATA code
+            limit: Number of results to return
+        """
+        if not self.aviationstack_key:
+            return {"error": "AviationStack API key not configured"}
+            
+        url = f"{self.aviationstack_base}/flights"
+        params = {
+            'access_key': self.aviationstack_key,
+            'limit': limit
+        }
+        
+        if flight_iata:
+            params['flight_iata'] = flight_iata
+        if dep_iata:
+            params['dep_iata'] = dep_iata
+        if arr_iata:
+            params['arr_iata'] = arr_iata
+            
+        try:
+            response = requests.get(url, params=params)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            return {"error": f"API request failed: {str(e)}"}
+
+    def get_airport_info(self, iata_code: str) -> Dict:
+        """
+        Get airport information from AirportDB (free API)
+        
+        Args:
+            iata_code: Airport IATA code (e.g., 'LAX')
+        """
+        url = f"{self.airportdb_base}/airport/{iata_code.upper()}"
+        
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            return {"error": f"Airport data request failed: {str(e)}"}
+
+    def get_runway_data(self, airport_iata: str) -> Dict:
+        """
+        Get runway information from AeroDataBox API
+        Note: This requires RapidAPI subscription (has free tier)
+        
+        Args:
+            airport_iata: Airport IATA code
+        """
+        if not self.aerodatabox_key:
+            return {"error": "AeroDataBox API key not configured"}
+            
+        url = f"{self.aerodatabox_base}/airports/iata/{airport_iata.upper()}"
+        
+        try:
+            response = requests.get(url, headers=self.aerodatabox_headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            return {"error": f"Runway data request failed: {str(e)}"}
+
+    def estimate_fuel_burn(self, aircraft_type: str, distance_nm: float, 
+                          passengers: int = 150) -> Dict:
+        """
+        Estimate fuel burn based on aircraft type and distance
+        This is a simplified calculation - real fuel burn depends on many factors
+        
+        Args:
+            aircraft_type: Aircraft model (e.g., 'B737', 'A320')
+            distance_nm: Distance in nautical miles
+            passengers: Number of passengers (affects weight)
+        """
+        # Simplified fuel burn rates (gallons per nautical mile)
+        fuel_rates = {
+            'B737': 5.2,
+            'A320': 5.5,
+            'B777': 12.5,
+            'A330': 11.8,
+            'B747': 16.2,
+            'A380': 20.1,
+            'E190': 3.8,
+            'CRJ9': 2.4
+        }
+        
+        base_rate = fuel_rates.get(aircraft_type.upper(), 6.0)  # Default rate
+        
+        # Adjust for passenger load (simplified calculation)
+        load_factor = 1 + (passengers - 150) * 0.001
+        adjusted_rate = base_rate * load_factor
+        
+        estimated_fuel = distance_nm * adjusted_rate
+        
+        return {
+            "aircraft_type": aircraft_type,
+            "distance_nm": distance_nm,
+            "passengers": passengers,
+            "fuel_burn_gallons": round(estimated_fuel, 2),
+            "fuel_burn_liters": round(estimated_fuel * 3.78541, 2),
+            "note": "This is a simplified estimation. Actual fuel burn varies significantly based on weather, altitude, weight, and other factors."
+        }
+
+    def get_historical_delays(self, airport_iata: str = None, airline_iata: str = None, 
+                             date_from: str = None, date_to: str = None) -> Dict:
+        """
+        Get historical flight delay data from Aviation Edge API
+        
+        Args:
+            airport_iata: Airport IATA code
+            airline_iata: Airline IATA code
+            date_from: Start date (YYYY-MM-DD)
+            date_to: End date (YYYY-MM-DD)
+        """
+        # Note: Aviation Edge requires API key for historical data
+        aviation_edge_key = os.getenv('AVIATION_EDGE_API_KEY')
+        if not aviation_edge_key:
+            return {"error": "Aviation Edge API key not configured"}
+            
+        url = "https://aviation-edge.com/v2/public/flightDelay"
+        params = {
+            'key': aviation_edge_key
+        }
+        
+        if airport_iata:
+            params['airportIata'] = airport_iata
+        if airline_iata:
+            params['airlineIata'] = airline_iata
+        if date_from:
+            params['dateFrom'] = date_from
+        if date_to:
+            params['dateTo'] = date_to
+            
+        try:
+            response = requests.get(url, params=params)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            return {"error": f"Historical delay data request failed: {str(e)}"}
+
+    def analyze_diversion_costs(self, original_dest: str, diversion_dest: str, 
+                               aircraft_type: str, passengers: int, delay_minutes: int) -> Dict:
+        """
+        Calculate estimated costs for flight diversions
+        
+        Args:
+            original_dest: Original destination airport IATA
+            diversion_dest: Diversion airport IATA
+            aircraft_type: Aircraft type
+            passengers: Number of passengers
+            delay_minutes: Total delay time in minutes
+        """
+        # Cost estimates based on industry data
+        cost_per_minute = 101  # USD per block minute (industry average)
+        fuel_cost_per_minute = 41  # USD per minute (41% of total)
+        
+        # Base operational costs
+        operational_cost = delay_minutes * cost_per_minute
+        fuel_cost = delay_minutes * fuel_cost_per_minute
+        
+        # Passenger compensation estimates (EU261 style)
+        compensation_per_pax = 0
+        if delay_minutes > 180:  # 3+ hours
+            compensation_per_pax = 300  # EUR/USD approximation
+        elif delay_minutes > 120:  # 2-3 hours
+            compensation_per_pax = 200
+        
+        passenger_compensation = passengers * compensation_per_pax
+        
+        # Hotel costs (if overnight)
+        hotel_cost = 0
+        if delay_minutes > 480:  # 8+ hours (likely overnight)
+            hotel_cost = passengers * 120  # Average hotel cost per passenger
+        
+        # Crew costs (overtime, hotel, positioning)
+        crew_cost = 0
+        if delay_minutes > 240:  # 4+ hours
+            crew_size = 6 if aircraft_type in ['B777', 'A330', 'B747', 'A380'] else 4
+            crew_cost = crew_size * 200  # Overtime and accommodation
+        
+        # Additional landing/handling fees
+        handling_fees = 2000  # Approximate diversion handling costs
+        
+        total_cost = (operational_cost + passenger_compensation + 
+                     hotel_cost + crew_cost + handling_fees)
+        
+        return {
+            "diversion_details": {
+                "original_destination": original_dest,
+                "diversion_airport": diversion_dest,
+                "aircraft_type": aircraft_type,
+                "passengers": passengers,
+                "delay_minutes": delay_minutes
+            },
+            "cost_breakdown": {
+                "operational_cost": operational_cost,
+                "fuel_cost": fuel_cost,
+                "passenger_compensation": passenger_compensation,
+                "hotel_accommodation": hotel_cost,
+                "crew_costs": crew_cost,
+                "handling_fees": handling_fees,
+                "total_estimated_cost": total_cost
+            },
+            "notes": [
+                "Costs are estimates based on industry averages",
+                "Actual costs vary by airline, region, and specific circumstances",
+                "Compensation rules vary by jurisdiction (EU261, US DOT, etc.)"
+            ]
+        }
+
+    def get_diversion_airports(self, origin_iata: str, destination_iata: str, 
+                              emergency_type: str = "technical") -> Dict:
+        """
+        Get suitable diversion airports for a route
+        
+        Args:
+            origin_iata: Origin airport IATA
+            destination_iata: Destination airport IATA
+            emergency_type: Type of emergency (technical, medical, weather, fuel)
+        """
+        # This would typically use flight planning APIs or databases
+        # For demonstration, using common diversion airports by region
+        
+        diversion_airports = {
+            # North Atlantic routes
+            ("JFK", "LHR"): ["YYT", "YHZ", "KEF", "SNN"],  # St. Johns, Halifax, Reykjavik, Shannon
+            ("LAX", "NRT"): ["ANC", "HNL", "PDX", "SEA"],  # Anchorage, Honolulu, Portland, Seattle
+            
+            # European routes
+            ("LHR", "FRA"): ["AMS", "BRU", "CDG"],  # Amsterdam, Brussels, Paris
+            ("MAD", "FCO"): ["BCN", "NCE", "MRS"],  # Barcelona, Nice, Marseille
+            
+            # Default major hubs by region
+            "North America": ["ATL", "DFW", "DEN", "LAX", "JFK", "ORD"],
+            "Europe": ["LHR", "FRA", "CDG", "AMS", "MAD", "FCO"],
+            "Asia": ["NRT", "ICN", "SIN", "HKG", "BKK", "KUL"],
+            "Middle East": ["DXB", "DOH", "KWI", "BAH"],
+        }
+        
+        route_key = (origin_iata, destination_iata)
+        suitable_airports = diversion_airports.get(route_key, [])
+        
+        if not suitable_airports:
+            # Fallback to regional hubs
+            suitable_airports = diversion_airports.get("North America", [])
+        
+        return {
+            "route": f"{origin_iata} to {destination_iata}",
+            "emergency_type": emergency_type,
+            "recommended_diversions": suitable_airports,
+            "note": "Actual diversion airports depend on fuel, weather, runway length, and emergency services"
+        }
+
+    def get_operations_summary(self, airport_iata: str, flight_number: str = None) -> Dict:
+        """
+        Get comprehensive operations data for a specific airport/flight
+        
+        Args:
+            airport_iata: Airport IATA code
+            flight_number: Optional specific flight number
+        """
+        summary = {
+            "timestamp": datetime.now().isoformat(),
+            "airport_code": airport_iata.upper(),
+            "airport_info": {},
+            "runway_data": {},
+            "flight_data": {},
+            "fuel_estimates": {},
+            "historical_delays": {},
+            "diversion_analysis": {}
+        }
+        
+        # Get airport information
+        print(f"Fetching airport data for {airport_iata}...")
+        summary["airport_info"] = self.get_airport_info(airport_iata)
+        
+        # Get runway data
+        print(f"Fetching runway data for {airport_iata}...")
+        summary["runway_data"] = self.get_runway_data(airport_iata)
+        
+        # Get flight data
+        print(f"Fetching flight data for {airport_iata}...")
+        if flight_number:
+            summary["flight_data"] = self.get_flight_data(flight_iata=flight_number)
+        else:
+            summary["flight_data"] = self.get_flight_data(dep_iata=airport_iata, limit=5)
+        
+        # Get historical delay data
+        print(f"Fetching historical delay data for {airport_iata}...")
+        summary["historical_delays"] = self.get_historical_delays(airport_iata=airport_iata)
+        
+        # Get diversion analysis
+        summary["diversion_analysis"] = self.get_diversion_airports("JFK", airport_iata)
+        
+        return summary
+
+def main():
+    """
+    Example usage of the Aviation Data Fetcher
+    """
+    fetcher = AviationDataFetcher()
+    
+    print("=== Aviation Operations Center Data Fetcher ===\n")
+    
+    # Example 1: Get airport information
+    print("1. Airport Information (LAX):")
+    airport_data = fetcher.get_airport_info("LAX")
+    print(json.dumps(airport_data, indent=2))
+    print()
+    
+    # Example 2: Get flight data
+    print("2. Flight Data (departing from LAX):")
+    flight_data = fetcher.get_flight_data(dep_iata="LAX", limit=3)
+    print(json.dumps(flight_data, indent=2))
+    print()
+    
+    # Example 3: Fuel burn estimation
+    print("3. Fuel Burn Estimation:")
+    fuel_estimate = fetcher.estimate_fuel_burn("B737", 500, 160)
+    print(json.dumps(fuel_estimate, indent=2))
+    print()
+    
+    # Example 4: Diversion cost analysis
+    print("4. Diversion Cost Analysis:")
+    diversion_costs = fetcher.analyze_diversion_costs("LHR", "SNN", "B777", 300, 240)
+    print(json.dumps(diversion_costs, indent=2))
+    print()
+    
+    # Example 5: Diversion airports
+    print("5. Suitable Diversion Airports:")
+    diversion_airports = fetcher.get_diversion_airports("JFK", "LHR", "technical")
+    print(json.dumps(diversion_airports, indent=2))
+    print()
+    
+    # Example 6: Historical delay data
+    print("6. Historical Delay Data:")
+    delay_data = fetcher.get_historical_delays(airport_iata="JFK")
+    print(json.dumps(delay_data, indent=2))
+    print()
+    
+    # Example 7: Operations summary
+    print("7. Complete Operations Summary for JFK:")
+    ops_summary = fetcher.get_operations_summary("JFK")
+    print(json.dumps(ops_summary, indent=2))
+
+if __name__ == "__main__":
+    main()
+
+# Setup instructions for Replit:
+"""
+1. Create these environment variables in your Repl secrets:
+   - AVIATIONSTACK_API_KEY: Get free key from aviationstack.com
+   - AERODATABOX_API_KEY: Get free key from rapidapi.com (AeroDataBox)
+   - AVIATION_EDGE_API_KEY: Get key from aviation-edge.com (for historical delays)
+
+2. Install required packages by creating requirements.txt with:
+   requests
+
+3. Run this script to test the API integrations
+
+4. Key Features Added:
+   - Historical delay data analysis
+   - Diversion cost calculations (operational, passenger compensation, hotels)
+   - Suitable diversion airport recommendations
+   - Industry-standard cost estimates per delay minute
+
+5. Data Sources for Diversion Analysis:
+   - FAA ASPM (Aviation System Performance Metrics) for US diversions
+   - Aviation Edge for historical delay/cancellation data
+   - Industry cost models for financial impact assessment
+   - Regional diversion airport databases
+
+6. Cost Calculation Methodology:
+   - Based on $101/minute operational cost (industry average)
+   - Passenger compensation following EU261/US DOT guidelines
+   - Hotel costs estimated at $120/passenger for overnight delays
+   - Crew overtime and positioning costs included
+   - Additional handling/landing fees for diversion airports
+"""
