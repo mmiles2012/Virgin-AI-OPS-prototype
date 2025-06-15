@@ -106,16 +106,17 @@ export default function EnhancedOperationalDecisionEngine() {
   } : null;
 
   return (
-    <div className="h-full bg-gradient-to-br from-blue-900/20 via-gray-900 to-gray-800 text-white">
+    <div className="h-full bg-gradient-to-br from-blue-900/20 via-gray-900 to-gray-800 text-white overflow-hidden">
       <div className="flex h-full gap-4 p-4">
         {/* Left Sidebar */}
-        <div className="w-64 flex-shrink-0">
+        <div className="w-64 flex-shrink-0 overflow-y-auto">
           <ActiveFlightsList />
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 space-y-6">
-          {!flightData ? (
+        <div className="flex-1 overflow-y-auto">
+          <div className="space-y-6 pb-6">
+            {!flightData ? (
             <Card className="bg-gray-800/50 border-gray-600">
               <CardContent className="flex items-center justify-center py-12">
                 <div className="text-center">
@@ -1191,6 +1192,7 @@ export default function EnhancedOperationalDecisionEngine() {
               </Tabs>
             </div>
           )}
+          </div>
         </div>
       </div>
     </div>
