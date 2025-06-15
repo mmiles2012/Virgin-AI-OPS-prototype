@@ -526,10 +526,6 @@ export default function EnhancedOperationalDecisionEngine() {
 
   const toRadians = (degrees: number): number => degrees * (Math.PI / 180);
 
-  if (!flightData) {
-    return <FlightSelector />;
-  }
-
   // Active Flights Sidebar Component
   const ActiveFlightsList = () => {
     const [availableFlights, setAvailableFlights] = useState<any[]>([]);
@@ -661,65 +657,78 @@ export default function EnhancedOperationalDecisionEngine() {
   };
 
   return (
-    <div className="flex gap-6 p-6">
-      {/* Left Sidebar - Active Flights List */}
-      <div className="w-64 flex-shrink-0">
-        <ActiveFlightsList />
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-800">
+      <div className="flex gap-6 p-6">
+        {/* Left Sidebar - Active Flights List */}
+        <div className="w-64 flex-shrink-0">
+          <ActiveFlightsList />
+        </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 space-y-6">
-        {/* Flight Overview Card */}
-        <Card className="bg-gray-800/50 border-gray-600">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Brain className="h-5 w-5" />
-              Enhanced Operational Decision Engine - {flightData.callsign}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              <div>
-                <div className="text-gray-400 text-sm">Aircraft</div>
-                <div className="text-white font-medium">{flightData.aircraft}</div>
-              </div>
-              <div>
-                <div className="text-gray-400 text-sm">Route</div>
-                <div className="text-white font-medium">{flightData.route}</div>
-              </div>
-              <div>
-                <div className="text-gray-400 text-sm">Fuel Remaining</div>
-                <div className="text-white font-medium">{flightData.fuelRemaining.toLocaleString()} kg</div>
-              </div>
-              <div>
-                <div className="text-gray-400 text-sm">Passengers</div>
-                <div className="text-white font-medium">{flightData.passengers}</div>
-              </div>
-            </div>
+        {/* Main Content Area */}
+        <div className="flex-1 space-y-6">
+          {!flightData ? (
+            <Card className="bg-gray-800/50 border-gray-600">
+              <CardContent className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <Plane className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-white mb-2">Select a Flight</h3>
+                  <p className="text-gray-400">Choose a flight from the sidebar to begin operational decision analysis</p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              {/* Flight Overview Card */}
+              <Card className="bg-gray-800/50 border-gray-600">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Brain className="h-5 w-5" />
+                    Enhanced Operational Decision Engine - {flightData?.callsign}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div>
+                      <div className="text-gray-400 text-sm">Aircraft</div>
+                      <div className="text-white font-medium">{flightData?.aircraft}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400 text-sm">Route</div>
+                      <div className="text-white font-medium">{flightData?.route}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400 text-sm">Fuel Remaining</div>
+                      <div className="text-white font-medium">{flightData?.fuelRemaining.toLocaleString()} kg</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400 text-sm">Passengers</div>
+                      <div className="text-white font-medium">{flightData?.passengers}</div>
+                    </div>
+                  </div>
           
-            <div className="flex gap-2 mb-4">
-              <select 
-                value={emergencyType} 
-                onChange={(e) => setEmergencyType(e.target.value)}
-                className="bg-gray-700 border border-gray-600 text-white rounded px-3 py-1"
-              >
-                <option value="medical">Medical Emergency</option>
-                <option value="technical">Technical Issue</option>
-                <option value="weather">Weather Event</option>
-                <option value="fuel">Fuel Emergency</option>
-              </select>
-            </div>
-          </CardContent>
-        </Card>
+                  <div className="flex gap-2 mb-4">
+                    <select 
+                      value={emergencyType} 
+                      onChange={(e) => setEmergencyType(e.target.value)}
+                      className="bg-gray-700 border border-gray-600 text-white rounded px-3 py-1"
+                    >
+                      <option value="medical">Medical Emergency</option>
+                      <option value="technical">Technical Issue</option>
+                      <option value="weather">Weather Event</option>
+                      <option value="fuel">Fuel Emergency</option>
+                    </select>
+                  </div>
+                </CardContent>
+              </Card>
 
-        <Tabs defaultValue="simulation" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="simulation">Diversion Simulation</TabsTrigger>
-            <TabsTrigger value="airfields">Available Airfields</TabsTrigger>
-            <TabsTrigger value="analysis">Cost Analysis</TabsTrigger>
-            <TabsTrigger value="crew">Crew Status</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
-          </TabsList>
+              <Tabs defaultValue="simulation" className="space-y-4">
+                <TabsList className="grid w-full grid-cols-5">
+                  <TabsTrigger value="simulation">Diversion Simulation</TabsTrigger>
+                  <TabsTrigger value="airfields">Available Airfields</TabsTrigger>
+                  <TabsTrigger value="analysis">Cost Analysis</TabsTrigger>
+                  <TabsTrigger value="crew">Crew Status</TabsTrigger>
+                  <TabsTrigger value="reports">Reports</TabsTrigger>
+                </TabsList>
 
           <TabsContent value="simulation" className="space-y-4">
             {/* VIR127C Specific Diversion Comparison */}
@@ -1615,6 +1624,9 @@ export default function EnhancedOperationalDecisionEngine() {
           </div>
         </TabsContent>
       </Tabs>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
