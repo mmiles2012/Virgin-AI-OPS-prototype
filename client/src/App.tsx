@@ -245,16 +245,7 @@ function App() {
               </div>
             )}
 
-            {/* Scenario manager - bottom positioned interface */}
-            {!isInterfaceMinimized && viewMode !== 'overview' && (
-              <div className="absolute bottom-4 left-4 right-4 z-40 pointer-events-auto">
-                <div className="flex gap-4">
-                  <div className="max-w-sm">
-                    <ScenarioManager onEmergencyActivate={setIsEmergencyActive} draggable={false} />
-                  </div>
-                </div>
-              </div>
-            )}
+
 
             {/* Minimized status bar */}
             {isInterfaceMinimized && (
