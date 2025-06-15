@@ -106,6 +106,107 @@ interface AirfieldData {
   advantages: string[];
 }
 
+const FlightSelector = () => {
+  const [availableFlights, setAvailableFlights] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { selectFlight } = useSelectedFlight();
+
+  useEffect(() => {
+    const fetchFlights = async () => {
+      try {
+        const response = await fetch('/api/aviation/virgin-atlantic-flights');
+        const data = await response.json();
+        if (data.success) {
+          setAvailableFlights(data.flights);
+        }
+      } catch (error) {
+        console.error('Failed to fetch flights:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFlights();
+  }, []);
+
+  const handleFlightSelect = (flight: any) => {
+    selectFlight(flight);
+  };
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <Card className="bg-gray-800/50 border-gray-600">
+          <CardContent className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <div className="animate-spin h-8 w-8 border-b-2 border-blue-400 rounded-full mx-auto mb-4"></div>
+              <p className="text-gray-400">Loading available flights...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 space-y-4">
+      <Card className="bg-gray-800/50 border-gray-600">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center gap-2">
+            <Plane className="h-5 w-5" />
+            Select Flight for Decision Analysis
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-400 mb-4">
+            Choose a Virgin Atlantic flight to analyze diversion options and operational decisions:
+          </p>
+          <div className="grid gap-3 max-h-96 overflow-y-auto">
+            {availableFlights.map((flight, index) => (
+              <div
+                key={index}
+                className="p-3 bg-gray-700/50 border border-gray-600 rounded cursor-pointer hover:border-blue-500 hover:bg-blue-900/20 transition-colors"
+                onClick={() => handleFlightSelect(flight)}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-white font-medium">{flight.callsign}</h3>
+                  <Badge className={flight.callsign === 'VIR127C' ? 'bg-blue-600' : 'bg-gray-600'}>
+                    {flight.callsign === 'VIR127C' ? 'Featured Flight' : 'Active'}
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-4 gap-2 text-xs">
+                  <div>
+                    <span className="text-gray-400">Position:</span>
+                    <span className="text-white ml-1">{flight.latitude.toFixed(2)}°N, {flight.longitude.toFixed(2)}°W</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Altitude:</span>
+                    <span className="text-white ml-1">{flight.altitude.toLocaleString()} ft</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Speed:</span>
+                    <span className="text-white ml-1">{flight.velocity} kts</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Heading:</span>
+                    <span className="text-white ml-1">{flight.heading.toFixed(0)}°</span>
+                  </div>
+                </div>
+                {flight.callsign === 'VIR127C' && (
+                  <div className="mt-2 p-2 bg-blue-900/30 border border-blue-600 rounded text-xs">
+                    <div className="text-blue-300 font-medium">Over North Atlantic - Ideal for diversion analysis</div>
+                    <div className="text-gray-300">Medical emergency scenario available</div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 export default function EnhancedOperationalDecisionEngine() {
   const [flightData, setFlightData] = useState<EnhancedFlightData | null>(null);
   const [flightModel, setFlightModel] = useState<Flight | null>(null);
@@ -425,107 +526,6 @@ export default function EnhancedOperationalDecisionEngine() {
   if (!flightData) {
     return <FlightSelector />;
   }
-
-  const FlightSelector = () => {
-    const [availableFlights, setAvailableFlights] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const { selectFlight } = useSelectedFlight();
-
-    useEffect(() => {
-      const fetchFlights = async () => {
-        try {
-          const response = await fetch('/api/aviation/virgin-atlantic-flights');
-          const data = await response.json();
-          if (data.success) {
-            setAvailableFlights(data.flights);
-          }
-        } catch (error) {
-          console.error('Failed to fetch flights:', error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchFlights();
-    }, []);
-
-    const handleFlightSelect = (flight: any) => {
-      selectFlight(flight);
-    };
-
-    if (loading) {
-      return (
-        <div className="p-6">
-          <Card className="bg-gray-800/50 border-gray-600">
-            <CardContent className="flex items-center justify-center py-8">
-              <div className="text-center">
-                <div className="animate-spin h-8 w-8 border-b-2 border-blue-400 rounded-full mx-auto mb-4"></div>
-                <p className="text-gray-400">Loading available flights...</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
-    }
-
-    return (
-      <div className="p-6 space-y-4">
-        <Card className="bg-gray-800/50 border-gray-600">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <Plane className="h-5 w-5" />
-              Select Flight for Decision Analysis
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-400 mb-4">
-              Choose a Virgin Atlantic flight to analyze diversion options and operational decisions:
-            </p>
-            <div className="grid gap-3 max-h-96 overflow-y-auto">
-              {availableFlights.map((flight, index) => (
-                <div
-                  key={index}
-                  className="p-3 bg-gray-700/50 border border-gray-600 rounded cursor-pointer hover:border-blue-500 hover:bg-blue-900/20 transition-colors"
-                  onClick={() => handleFlightSelect(flight)}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-white font-medium">{flight.callsign}</h3>
-                    <Badge className={flight.callsign === 'VIR127C' ? 'bg-blue-600' : 'bg-gray-600'}>
-                      {flight.callsign === 'VIR127C' ? 'Featured Flight' : 'Active'}
-                    </Badge>
-                  </div>
-                  <div className="grid grid-cols-4 gap-2 text-xs">
-                    <div>
-                      <span className="text-gray-400">Position:</span>
-                      <span className="text-white ml-1">{flight.latitude.toFixed(2)}°N, {flight.longitude.toFixed(2)}°W</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-400">Altitude:</span>
-                      <span className="text-white ml-1">{flight.altitude.toLocaleString()} ft</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-400">Speed:</span>
-                      <span className="text-white ml-1">{flight.velocity} kts</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-400">Heading:</span>
-                      <span className="text-white ml-1">{flight.heading.toFixed(0)}°</span>
-                    </div>
-                  </div>
-                  {flight.callsign === 'VIR127C' && (
-                    <div className="mt-2 p-2 bg-blue-900/30 border border-blue-600 rounded text-xs">
-                      <div className="text-blue-300 font-medium">Over North Atlantic - Ideal for diversion analysis</div>
-                      <div className="text-gray-300">Medical emergency scenario available</div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  };
 
   return (
     <div className="p-6 space-y-6">
