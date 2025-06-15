@@ -649,6 +649,192 @@ export default function EnhancedOperationalDecisionEngine() {
                   </Card>
                 </TabsContent>
 
+                <TabsContent value="ml-prediction" className="space-y-4">
+                  <Card className="bg-gray-800/50 border-gray-700">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <Target className="h-5 w-5 text-purple-400" />
+                        Machine Learning Diversion Risk Assessment
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {/* Real-time Risk Score */}
+                      <div className="bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-lg p-6 border border-purple-500/30">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-white font-semibold text-lg">Current Diversion Risk</h3>
+                          <Badge className="bg-red-600 text-white px-3 py-1">
+                            HIGH RISK
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-6">
+                          <div className="relative w-32 h-32">
+                            <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
+                              <circle cx="50" cy="50" r="40" stroke="gray" strokeWidth="8" fill="none" className="opacity-30" />
+                              <circle 
+                                cx="50" cy="50" r="40" stroke="#dc2626" strokeWidth="8" fill="none"
+                                strokeDasharray={`${72 * 2.51} ${100 * 2.51}`}
+                                className="drop-shadow-lg"
+                              />
+                            </svg>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-white font-bold text-2xl">72%</span>
+                            </div>
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-white text-sm mb-2">Confidence Level: <span className="font-semibold text-green-400">94%</span></div>
+                            <div className="text-gray-300 text-sm">
+                              Model predicts <span className="text-red-400 font-semibold">high probability</span> of diversion required within next 45 minutes based on current medical emergency and route conditions.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Risk Factor Analysis */}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                            <Activity className="h-4 w-4 text-red-400" />
+                            Primary Risk Factors
+                          </h4>
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between p-3 bg-red-600/20 border border-red-600/30 rounded">
+                              <span className="text-red-300">Medical Emergency Indicators</span>
+                              <span className="text-red-400 font-semibold">35%</span>
+                            </div>
+                            <div className="flex items-center justify-between p-3 bg-orange-600/20 border border-orange-600/30 rounded">
+                              <span className="text-orange-300">Marginal Weather Conditions</span>
+                              <span className="text-orange-400 font-semibold">15%</span>
+                            </div>
+                            <div className="flex items-center justify-between p-3 bg-blue-600/20 border border-blue-600/30 rounded">
+                              <span className="text-blue-300">Route Historical Risk (LHR-JFK)</span>
+                              <span className="text-blue-400 font-semibold">12%</span>
+                            </div>
+                            <div className="flex items-center justify-between p-3 bg-yellow-600/20 border border-yellow-600/30 rounded">
+                              <span className="text-yellow-300">Fuel Status Assessment</span>
+                              <span className="text-yellow-400 font-semibold">10%</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                            <Brain className="h-4 w-4 text-purple-400" />
+                            AI Recommendations
+                          </h4>
+                          <div className="space-y-3">
+                            <div className="p-3 bg-purple-600/20 border border-purple-600/30 rounded text-sm">
+                              <div className="text-purple-300 font-medium mb-1">Immediate Action</div>
+                              <div className="text-white">Alert medical facilities at diversion airports</div>
+                            </div>
+                            <div className="p-3 bg-blue-600/20 border border-blue-600/30 rounded text-sm">
+                              <div className="text-blue-300 font-medium mb-1">Strategic Planning</div>
+                              <div className="text-white">Prepare contingency plans for nearest suitable airports</div>
+                            </div>
+                            <div className="p-3 bg-green-600/20 border border-green-600/30 rounded text-sm">
+                              <div className="text-green-300 font-medium mb-1">Monitoring</div>
+                              <div className="text-white">Monitor weather updates and fuel consumption closely</div>
+                            </div>
+                            <div className="p-3 bg-yellow-600/20 border border-yellow-600/30 rounded text-sm">
+                              <div className="text-yellow-300 font-medium mb-1">Communication</div>
+                              <div className="text-white">Brief crew on potential diversion scenarios</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Historical Pattern Analysis */}
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4 text-blue-400" />
+                          Historical Pattern Analysis (LHR-JFK Route)
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="bg-gray-800/50 rounded p-4 text-center">
+                            <div className="text-2xl font-bold text-white mb-1">1,247</div>
+                            <div className="text-gray-400 text-sm">Similar Routes (Past 30 Days)</div>
+                          </div>
+                          <div className="bg-gray-800/50 rounded p-4 text-center">
+                            <div className="text-2xl font-bold text-red-400 mb-1">89</div>
+                            <div className="text-gray-400 text-sm">Diversions Recorded</div>
+                          </div>
+                          <div className="bg-gray-800/50 rounded p-4 text-center">
+                            <div className="text-2xl font-bold text-green-400 mb-1">$142K</div>
+                            <div className="text-gray-400 text-sm">Average Diversion Cost</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* NOTAM Analysis */}
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                          <Eye className="h-4 w-4 text-orange-400" />
+                          NOTAM Text Analysis & NLP Processing
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="bg-gray-800/50 rounded p-3">
+                            <div className="text-orange-400 font-medium text-sm mb-1">High-Risk NOTAM Detected</div>
+                            <div className="text-white text-sm">"Thunderstorm expected at ETA - Low visibility procedures may be implemented"</div>
+                            <div className="text-gray-400 text-xs mt-1">NLP Confidence: 87% | Risk Weight: +15%</div>
+                          </div>
+                          <div className="bg-gray-800/50 rounded p-3">
+                            <div className="text-blue-400 font-medium text-sm mb-1">Route Advisory</div>
+                            <div className="text-white text-sm">"Bird activity reported in terminal area - Exercise caution during approach"</div>
+                            <div className="text-gray-400 text-xs mt-1">NLP Confidence: 92% | Risk Weight: +3%</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Clustering Analysis */}
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                          <BarChart3 className="h-4 w-4 text-green-400" />
+                          Unsupervised Learning Insights
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          <div className="bg-red-600/20 border border-red-600/30 rounded p-3">
+                            <div className="text-red-400 font-medium mb-2">Cluster 1: Medical Emergencies</div>
+                            <div className="text-white">Current flight matches this pattern</div>
+                            <div className="text-gray-400 mt-1">Typical diversion rate: 78%</div>
+                          </div>
+                          <div className="bg-blue-600/20 border border-blue-600/30 rounded p-3">
+                            <div className="text-blue-400 font-medium mb-2">Cluster 2: Weather Events</div>
+                            <div className="text-white">Secondary risk factor identified</div>
+                            <div className="text-gray-400 mt-1">Typical diversion rate: 45%</div>
+                          </div>
+                          <div className="bg-green-600/20 border border-green-600/30 rounded p-3">
+                            <div className="text-green-400 font-medium mb-2">Cluster 3: Technical Issues</div>
+                            <div className="text-white">No current indicators</div>
+                            <div className="text-gray-400 mt-1">Typical diversion rate: 23%</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Model Performance Metrics */}
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <h4 className="text-white font-semibold mb-4">RandomForest Model Performance</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-green-400">94.2%</div>
+                            <div className="text-gray-400">Accuracy</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-blue-400">91.8%</div>
+                            <div className="text-gray-400">Precision</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-purple-400">89.3%</div>
+                            <div className="text-gray-400">Recall</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-orange-400">90.5%</div>
+                            <div className="text-gray-400">F1-Score</div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
                 <TabsContent value="airfields" className="space-y-4">
                   <Card className="bg-gray-800/50 border-gray-600">
                     <CardHeader>
