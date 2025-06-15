@@ -63,7 +63,7 @@ const ActiveFlightsList = () => {
             key={flight.callsign}
             onClick={() => setSelectedFlight(flight.callsign)}
             className={`p-3 rounded-lg cursor-pointer transition-all border ${
-              selectedFlight === flight.callsign
+              selectedFlight?.callsign === flight.callsign
                 ? 'bg-blue-600/30 border-blue-400 shadow-lg'
                 : 'bg-gray-700/50 border-gray-600 hover:bg-gray-700/70'
             }`}
@@ -91,17 +91,17 @@ export default function EnhancedOperationalDecisionEngine() {
   const { selectedFlight } = useSelectedFlight();
   
   const flightData: EnhancedFlightData | null = selectedFlight ? {
-    callsign: selectedFlight,
-    aircraft: selectedFlight === 'VIR127C' ? 'A350-1000' : 'A380-800',
-    route: selectedFlight === 'VIR127C' ? 'LHR-JFK' : 'LHR-LAX',
-    currentPosition: { lat: 45.18, lon: -69.17 },
-    altitude: 40000,
-    speed: 457,
+    callsign: selectedFlight.callsign,
+    aircraft: selectedFlight.callsign === 'VIR127C' ? 'A350-1000' : 'A380-800',
+    route: selectedFlight.callsign === 'VIR127C' ? 'LHR-JFK' : 'LHR-LAX',
+    currentPosition: { lat: selectedFlight.latitude, lon: selectedFlight.longitude },
+    altitude: selectedFlight.altitude,
+    speed: selectedFlight.velocity,
     fuelRemaining: 42000,
     fuelBurn: 2400,
     maximumRange: 8000,
     currentWeight: 280000,
-    passengers: selectedFlight === 'VIR127C' ? 298 : 450,
+    passengers: selectedFlight.callsign === 'VIR127C' ? 298 : 450,
     eta: '14:30 UTC'
   } : null;
 
