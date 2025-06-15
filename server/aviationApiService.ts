@@ -89,6 +89,52 @@ interface FuelEstimate {
   note: string;
 }
 
+interface DiversionCostAnalysis {
+  diversionDetails: {
+    originalDestination: string;
+    diversionAirport: string;
+    aircraftType: string;
+    passengers: number;
+    delayMinutes: number;
+  };
+  costBreakdown: {
+    operationalCost: number;
+    fuelCost: number;
+    passengerCompensation: number;
+    hotelAccommodation: number;
+    crewCosts: number;
+    handlingFees: number;
+    totalEstimatedCost: number;
+  };
+  notes: string[];
+}
+
+interface HistoricalDelayData {
+  airport: string;
+  averageDelay: number;
+  delayFrequency: number;
+  majorCauses: string[];
+  seasonalTrends: {
+    month: string;
+    averageDelay: number;
+  }[];
+}
+
+interface DiversionRecommendation {
+  route: string;
+  emergencyType: string;
+  recommendedDiversions: string[];
+  airportDetails: {
+    iata: string;
+    name: string;
+    distance: number;
+    fuelRequired: number;
+    medicalCapabilities: string;
+    runwayLength: number;
+    suitabilityScore: number;
+  }[];
+}
+
 interface SafeAirspaceAlert {
   id: string;
   type: 'NOTAM' | 'TFR' | 'RESTRICTED' | 'WARNING' | 'PROHIBITED';
@@ -940,6 +986,184 @@ export class AviationApiService {
     } catch (error: any) {
       throw new Error(`Failed to generate operations summary: ${error.message}`);
     }
+  }
+
+  /**
+   * Calculate comprehensive diversion cost analysis
+   */
+  analyzeDiversionCosts(
+    originalDest: string, 
+    diversionDest: string, 
+    aircraftType: string, 
+    passengers: number, 
+    delayMinutes: number
+  ): DiversionCostAnalysis {
+    // Cost estimates based on industry data
+    const costPerMinute = 101; // USD per block minute (industry average)
+    const fuelCostPerMinute = 41; // USD per minute (41% of total)
+    
+    // Base operational costs
+    const operationalCost = delayMinutes * costPerMinute;
+    const fuelCost = delayMinutes * fuelCostPerMinute;
+    
+    // Passenger compensation estimates (EU261/DOT style)
+    let compensationPerPax = 0;
+    if (delayMinutes > 180) { // 3+ hours
+      compensationPerPax = 300; // EUR/USD approximation
+    } else if (delayMinutes > 120) { // 2-3 hours
+      compensationPerPax = 200;
+    }
+    
+    const passengerCompensation = passengers * compensationPerPax;
+    
+    // Hotel costs (if overnight)
+    let hotelCost = 0;
+    if (delayMinutes > 480) { // 8+ hours (likely overnight)
+      hotelCost = passengers * 120; // Average hotel cost per passenger
+    }
+    
+    // Crew costs (overtime, hotel, positioning)
+    let crewCost = 0;
+    if (delayMinutes > 240) { // 4+ hours
+      const crewSize = ['B777', 'A330', 'B747', 'A380', 'A350'].some(type => 
+        aircraftType.includes(type)) ? 6 : 4;
+      crewCost = crewSize * 200; // Overtime and accommodation
+    }
+    
+    // Additional landing/handling fees
+    const handlingFees = 2000; // Approximate diversion handling costs
+    
+    const totalCost = operationalCost + passengerCompensation + 
+                     hotelCost + crewCost + handlingFees;
+    
+    return {
+      diversionDetails: {
+        originalDestination: originalDest,
+        diversionAirport: diversionDest,
+        aircraftType,
+        passengers,
+        delayMinutes
+      },
+      costBreakdown: {
+        operationalCost,
+        fuelCost,
+        passengerCompensation,
+        hotelAccommodation: hotelCost,
+        crewCosts: crewCost,
+        handlingFees,
+        totalEstimatedCost: totalCost
+      },
+      notes: [
+        'Costs are estimates based on industry averages',
+        'Actual costs vary by airline, region, and specific circumstances',
+        'Compensation rules vary by jurisdiction (EU261, US DOT, etc.)'
+      ]
+    };
+  }
+
+  /**
+   * Get suitable diversion airports for a route
+   */
+  getDiversionRecommendations(
+    originIata: string, 
+    destinationIata: string, 
+    emergencyType: string = 'technical'
+  ): DiversionRecommendation {
+    // Virgin Atlantic route-specific diversion airports
+    const diversionAirports = {
+      // North Atlantic routes
+      'LHR-JFK': ['CYQX', 'CYHZ', 'BIKF', 'EINN'], // Gander, Halifax, Reykjavik, Shannon
+      'LHR-LAX': ['CYQX', 'CYHZ', 'KORD', 'KDEN'], // Gander, Halifax, Chicago, Denver
+      'LHR-BOS': ['CYQX', 'CYHZ', 'EINN', 'BIKF'], // Gander, Halifax, Shannon, Reykjavik
+      'LGW-MCO': ['CYQX', 'CYHZ', 'KATL', 'KJFK'], // Gander, Halifax, Atlanta, JFK
+      'MAN-ATL': ['CYQX', 'CYHZ', 'KJFK', 'KORD'], // Gander, Halifax, JFK, Chicago
+      
+      // Default by emergency type
+      'medical': ['CYQX', 'CYHZ', 'KJFK', 'KORD', 'KATL'],
+      'technical': ['CYQX', 'CYHZ', 'EINN', 'BIKF', 'KJFK'],
+      'weather': ['CYQX', 'CYHZ', 'KATL', 'KORD', 'KDEN'],
+      'fuel': ['CYQX', 'CYHZ', 'EINN', 'KJFK'] // Shortest diversions
+    };
+    
+    const routeKey = `${originIata}-${destinationIata}`;
+    let suitableAirports = diversionAirports[routeKey as keyof typeof diversionAirports] || 
+                          diversionAirports[emergencyType as keyof typeof diversionAirports] ||
+                          ['CYQX', 'CYHZ', 'KJFK'];
+    
+    // Enhanced airport details for Virgin Atlantic operations
+    const airportDetails = {
+      'CYQX': { name: 'Gander International', distance: 234, fuel: 1850, medical: 'Level 2 Trauma', runway: 3048, score: 95 },
+      'CYHZ': { name: 'Halifax Stanfield', distance: 312, fuel: 2400, medical: 'Level 1 Trauma', runway: 3200, score: 92 },
+      'EINN': { name: 'Shannon Airport', distance: 289, fuel: 2200, medical: 'Level 2 Hospital', runway: 3200, score: 88 },
+      'BIKF': { name: 'Keflavik International', distance: 356, fuel: 2600, medical: 'Regional Hospital', runway: 3065, score: 85 },
+      'KJFK': { name: 'John F Kennedy Intl', distance: 512, fuel: 3800, medical: 'Level 1 Trauma', runway: 4423, score: 90 },
+      'KORD': { name: 'Chicago O\'Hare', distance: 678, fuel: 4900, medical: 'Level 1 Trauma', runway: 4000, score: 87 },
+      'KATL': { name: 'Atlanta Hartsfield', distance: 723, fuel: 5200, medical: 'Level 1 Trauma', runway: 3624, score: 89 },
+      'KDEN': { name: 'Denver International', distance: 856, fuel: 6100, medical: 'Level 1 Trauma', runway: 4877, score: 82 }
+    };
+    
+    const detailedAirports = (suitableAirports as string[]).map(iata => ({
+      iata,
+      name: airportDetails[iata as keyof typeof airportDetails]?.name || 'Unknown Airport',
+      distance: airportDetails[iata as keyof typeof airportDetails]?.distance || 0,
+      fuelRequired: airportDetails[iata as keyof typeof airportDetails]?.fuel || 0,
+      medicalCapabilities: airportDetails[iata as keyof typeof airportDetails]?.medical || 'Basic',
+      runwayLength: airportDetails[iata as keyof typeof airportDetails]?.runway || 0,
+      suitabilityScore: airportDetails[iata as keyof typeof airportDetails]?.score || 70
+    })).sort((a, b) => b.suitabilityScore - a.suitabilityScore);
+    
+    return {
+      route: `${originIata} to ${destinationIata}`,
+      emergencyType,
+      recommendedDiversions: suitableAirports as string[],
+      airportDetails: detailedAirports
+    };
+  }
+
+  /**
+   * Get historical delay analysis
+   */
+  getHistoricalDelayData(airportIata: string): HistoricalDelayData {
+    // Simulated historical data based on real airport performance
+    const delayData = {
+      'LHR': { avg: 18.2, freq: 32, causes: ['ATC Delays', 'Weather', 'Congestion'] },
+      'JFK': { avg: 22.1, freq: 38, causes: ['Weather', 'ATC Delays', 'Airport Operations'] },
+      'LAX': { avg: 16.8, freq: 29, causes: ['Congestion', 'Weather', 'Ground Operations'] },
+      'ATL': { avg: 14.3, freq: 26, causes: ['Weather', 'Congestion', 'Crew Scheduling'] },
+      'BOS': { avg: 19.7, freq: 34, causes: ['Weather', 'ATC Delays', 'Equipment'] },
+      'MCO': { avg: 12.1, freq: 22, causes: ['Weather', 'Congestion', 'Ground Operations'] },
+      'LGW': { avg: 15.4, freq: 28, causes: ['ATC Delays', 'Weather', 'Single Runway'] },
+      'MAN': { avg: 13.8, freq: 25, causes: ['Weather', 'ATC Delays', 'Maintenance'] },
+      'CYQX': { avg: 8.2, freq: 15, causes: ['Weather', 'Equipment', 'Crew'] },
+      'CYHZ': { avg: 11.5, freq: 20, causes: ['Weather', 'ATC Delays', 'Equipment'] }
+    };
+    
+    const data = delayData[airportIata as keyof typeof delayData] || 
+                 { avg: 15.0, freq: 30, causes: ['Weather', 'ATC Delays', 'Operations'] };
+    
+    // Generate seasonal trends
+    const seasonalTrends = [
+      { month: 'Jan', averageDelay: data.avg * 1.2 },
+      { month: 'Feb', averageDelay: data.avg * 1.1 },
+      { month: 'Mar', averageDelay: data.avg * 0.9 },
+      { month: 'Apr', averageDelay: data.avg * 0.8 },
+      { month: 'May', averageDelay: data.avg * 0.7 },
+      { month: 'Jun', averageDelay: data.avg * 1.0 },
+      { month: 'Jul', averageDelay: data.avg * 1.3 },
+      { month: 'Aug', averageDelay: data.avg * 1.2 },
+      { month: 'Sep', averageDelay: data.avg * 0.8 },
+      { month: 'Oct', averageDelay: data.avg * 0.9 },
+      { month: 'Nov', averageDelay: data.avg * 1.1 },
+      { month: 'Dec', averageDelay: data.avg * 1.4 }
+    ];
+    
+    return {
+      airport: airportIata,
+      averageDelay: data.avg,
+      delayFrequency: data.freq,
+      majorCauses: data.causes,
+      seasonalTrends
+    };
   }
 }
 

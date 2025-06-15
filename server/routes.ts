@@ -219,6 +219,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/aviation/diversion-cost-analysis", async (req, res) => {
+    try {
+      const { originalDest, diversionDest, aircraftType, passengers, delayMinutes } = req.query;
+      
+      if (!originalDest || !diversionDest || !aircraftType || !passengers || !delayMinutes) {
+        return res.status(400).json({ 
+          error: "All parameters required: originalDest, diversionDest, aircraftType, passengers, delayMinutes" 
+        });
+      }
+
+      const analysis = aviationApiService.analyzeDiversionCosts(
+        String(originalDest),
+        String(diversionDest),
+        String(aircraftType),
+        Number(passengers),
+        Number(delayMinutes)
+      );
+
+      res.json(analysis);
+    } catch (error) {
+      console.error('Diversion cost analysis error:', error);
+      res.status(500).json({ 
+        error: "Failed to calculate diversion costs" 
+      });
+    }
+  });
+
+  app.get("/api/aviation/diversion-recommendations", async (req, res) => {
+    try {
+      const { origin, destination, emergencyType } = req.query;
+      
+      if (!origin || !destination) {
+        return res.status(400).json({ 
+          error: "Origin and destination airports required" 
+        });
+      }
+
+      const recommendations = aviationApiService.getDiversionRecommendations(
+        String(origin),
+        String(destination),
+        emergencyType ? String(emergencyType) : 'technical'
+      );
+
+      res.json(recommendations);
+    } catch (error) {
+      console.error('Diversion recommendations error:', error);
+      res.status(500).json({ 
+        error: "Failed to get diversion recommendations" 
+      });
+    }
+  });
+
+  app.get("/api/aviation/historical-delays/:iata", async (req, res) => {
+    try {
+      const { iata } = req.params;
+      
+      if (!iata || iata.length !== 3) {
+        return res.status(400).json({ 
+          error: "Valid 3-letter IATA code required" 
+        });
+      }
+
+      const delayData = aviationApiService.getHistoricalDelayData(iata);
+      res.json(delayData);
+    } catch (error) {
+      console.error('Historical delay data error:', error);
+      res.status(500).json({ 
+        error: "Failed to fetch historical delay data" 
+      });
+    }
+  });
+
   // Training scenario endpoints
   app.get("/api/scenarios", (req, res) => {
     res.json(scenarios);
