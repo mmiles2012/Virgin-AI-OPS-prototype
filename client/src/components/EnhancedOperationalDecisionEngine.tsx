@@ -666,7 +666,17 @@ export default function EnhancedOperationalDecisionEngine() {
 
         {/* Main Content Area */}
         <div className="flex-1 space-y-6">
-          {flightData && (
+          {!flightData ? (
+            <Card className="bg-gray-800/50 border-gray-600">
+              <CardContent className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <Plane className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-white mb-2">Select a Flight</h3>
+                  <p className="text-gray-400">Choose a flight from the sidebar to begin operational decision analysis</p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
             <>
               {/* Flight Overview Card */}
               <Card className="bg-gray-800/50 border-gray-600">
@@ -694,19 +704,6 @@ export default function EnhancedOperationalDecisionEngine() {
                       <div className="text-gray-400 text-sm">Passengers</div>
                       <div className="text-white font-medium">{flightData?.passengers}</div>
                     </div>
-                  </div>
-          
-                  <div className="flex gap-2 mb-4">
-                    <select 
-                      value={emergencyType} 
-                      onChange={(e) => setEmergencyType(e.target.value)}
-                      className="bg-gray-700 border border-gray-600 text-white rounded px-3 py-1"
-                    >
-                      <option value="medical">Medical Emergency</option>
-                      <option value="technical">Technical Issue</option>
-                      <option value="weather">Weather Event</option>
-                      <option value="fuel">Fuel Emergency</option>
-                    </select>
                   </div>
                 </CardContent>
               </Card>
