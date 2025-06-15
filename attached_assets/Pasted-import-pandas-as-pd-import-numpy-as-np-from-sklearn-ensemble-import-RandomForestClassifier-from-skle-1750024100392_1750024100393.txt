@@ -1,0 +1,64 @@
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+from sklearn.cluster import KMeans
+from sklearn.feature_extraction.text import TfidfVectorizer
+import joblib
+
+# Simulate a dataset (expansion includes NOTAM/NLP, unsupervised clustering)
+np.random.seed(42)
+num_samples = 500
+
+# Create dummy structured data
+df = pd.DataFrame({
+    'weather_score': np.random.randint(1, 11, size=num_samples),
+    'tech_flag': np.random.randint(0, 2, size=num_samples),
+    'medical_flag': np.random.randint(0, 2, size=num_samples),
+    'route_LHR-JFK': np.random.randint(0, 2, size=num_samples),
+    'route_LHR-DEL': np.random.randint(0, 2, size=num_samples),
+    'aircraft_type_B789': np.random.randint(0, 2, size=num_samples),
+    'aircraft_type_A350': np.random.randint(0, 2, size=num_samples),
+    'notam_text': np.random.choice([
+        "Runway closure due to maintenance",
+        "Bird activity reported",
+        "Thunderstorm expected at ETA",
+        "Airport low visibility procedures in effect",
+        "No significant weather",
+        "Taxiway closed due to flooding"
+    ], size=num_samples),
+    'diverted': np.random.randint(0, 2, size=num_samples)
+})
+
+# Text vectorization of NOTAM field
+vectorizer = TfidfVectorizer()
+notam_vectors = vectorizer.fit_transform(df['notam_text'])
+notam_df = pd.DataFrame(notam_vectors.toarray(), columns=vectorizer.get_feature_names_out())
+
+# Combine structured and unstructured features
+df_combined = pd.concat([df.drop(columns=['notam_text', 'diverted']), notam_df], axis=1)
+X = df_combined
+y = df['diverted']
+
+# Train a classifier
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+clf = RandomForestClassifier(n_estimators=100, random_state=42)
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+
+# Save model
+joblib.dump(clf, 'expanded_diversion_model.pkl')
+
+# Unsupervised learning (clustering diversion causes for insight)
+kmeans = KMeans(n_clusters=3, random_state=42)
+clusters = kmeans.fit_predict(X)
+
+df['cluster'] = clusters
+
+# Output: print report
+report = classification_report(y_test, y_pred)
+print(report)
+
+# Save processed data
+df.to_csv('diversion_expanded_data.csv', index=False)
