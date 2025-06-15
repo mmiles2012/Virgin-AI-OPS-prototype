@@ -148,6 +148,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(medicalAirports);
   });
 
+  // Enhanced aviation data endpoints
+  app.get("/api/aviation/fuel-estimate", async (req, res) => {
+    try {
+      const { aircraftType, distance, passengers } = req.query;
+      
+      if (!aircraftType || !distance) {
+        return res.status(400).json({ 
+          error: "Aircraft type and distance required" 
+        });
+      }
+
+      const estimate = aviationApiService.estimateFuelBurn(
+        String(aircraftType),
+        Number(distance),
+        passengers ? Number(passengers) : 150
+      );
+
+      res.json(estimate);
+    } catch (error) {
+      console.error('Fuel estimation error:', error);
+      res.status(500).json({ 
+        error: "Failed to calculate fuel estimate" 
+      });
+    }
+  });
+
+  app.get("/api/aviation/airport-data/:iata", async (req, res) => {
+    try {
+      const { iata } = req.params;
+      
+      if (!iata || iata.length !== 3) {
+        return res.status(400).json({ 
+          error: "Valid 3-letter IATA code required" 
+        });
+      }
+
+      const airportData = await aviationApiService.getAirportData(iata);
+      res.json(airportData);
+    } catch (error) {
+      console.error('Airport data error:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Failed to fetch airport data" 
+      });
+    }
+  });
+
+  app.get("/api/aviation/operations-summary/:iata", async (req, res) => {
+    try {
+      const { iata } = req.params;
+      const { flightNumber } = req.query;
+      
+      if (!iata || iata.length !== 3) {
+        return res.status(400).json({ 
+          error: "Valid 3-letter IATA code required" 
+        });
+      }
+
+      const summary = await aviationApiService.getOperationsSummary(
+        iata, 
+        flightNumber ? String(flightNumber) : undefined
+      );
+      
+      res.json(summary);
+    } catch (error) {
+      console.error('Operations summary error:', error);
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "Failed to generate operations summary" 
+      });
+    }
+  });
+
   // Training scenario endpoints
   app.get("/api/scenarios", (req, res) => {
     res.json(scenarios);

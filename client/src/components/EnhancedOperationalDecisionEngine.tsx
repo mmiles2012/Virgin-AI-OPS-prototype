@@ -189,10 +189,14 @@ export default function EnhancedOperationalDecisionEngine() {
               </Card>
 
               <Tabs defaultValue="simulation" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-5 bg-gray-800/50 p-1 rounded-lg">
+                <TabsList className="grid w-full grid-cols-6 bg-gray-800/50 p-1 rounded-lg">
                   <TabsTrigger value="simulation" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
                     <Gauge className="h-4 w-4 mr-2" />
                     Diversion
+                  </TabsTrigger>
+                  <TabsTrigger value="data" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                    <Brain className="h-4 w-4 mr-2" />
+                    Data
                   </TabsTrigger>
                   <TabsTrigger value="airfields" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
                     <Building className="h-4 w-4 mr-2" />
@@ -399,6 +403,146 @@ export default function EnhancedOperationalDecisionEngine() {
                       </CardContent>
                     </Card>
                   )}
+                </TabsContent>
+
+                <TabsContent value="data" className="space-y-4">
+                  <Card className="bg-gray-800/50 border-gray-600">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <Brain className="h-5 w-5" />
+                        Enhanced Aviation Data
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Fuel Analysis */}
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                            <Gauge className="h-4 w-4 text-blue-400" />
+                            Fuel Performance Analysis
+                          </h3>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Current Burn Rate:</span>
+                              <span className="text-white font-medium">2,400 kg/hr</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Route Fuel Estimate:</span>
+                              <span className="text-white font-medium">15,600 kg</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Reserve Fuel:</span>
+                              <span className="text-green-400 font-medium">6,800 kg</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Fuel Cost (Est):</span>
+                              <span className="text-white font-medium">$39,000</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Weather Conditions */}
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                            <Wind className="h-4 w-4 text-blue-400" />
+                            Weather Conditions
+                          </h3>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Visibility:</span>
+                              <span className="text-white font-medium">12 km</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Wind Speed:</span>
+                              <span className="text-white font-medium">15 kt</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Temperature:</span>
+                              <span className="text-white font-medium">-8°C</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Conditions:</span>
+                              <span className="text-green-400 font-medium">Clear</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Aircraft Performance */}
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                            <Plane className="h-4 w-4 text-blue-400" />
+                            Aircraft Performance
+                          </h3>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Max Range:</span>
+                              <span className="text-white font-medium">8,000 nm</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Service Ceiling:</span>
+                              <span className="text-white font-medium">43,000 ft</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Current Weight:</span>
+                              <span className="text-white font-medium">280,000 kg</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Load Factor:</span>
+                              <span className="text-green-400 font-medium">85%</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Route Analytics */}
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-blue-400" />
+                            Route Analytics
+                          </h3>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Total Distance:</span>
+                              <span className="text-white font-medium">3,459 nm</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Completed:</span>
+                              <span className="text-white font-medium">1,847 nm (53%)</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Remaining:</span>
+                              <span className="text-white font-medium">1,612 nm</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">ETA Original:</span>
+                              <span className="text-white font-medium">14:30 UTC</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Comprehensive Analysis */}
+                      <div className="mt-6 bg-gray-700/30 rounded-lg p-4">
+                        <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                          <Brain className="h-4 w-4 text-purple-400" />
+                          AI Analysis Summary
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          <div className="bg-green-600/20 border border-green-600/30 rounded p-3">
+                            <div className="text-green-400 font-medium mb-1">Fuel Status</div>
+                            <div className="text-white">Adequate reserves for diversion plus 45-minute holding</div>
+                          </div>
+                          <div className="bg-blue-600/20 border border-blue-600/30 rounded p-3">
+                            <div className="text-blue-400 font-medium mb-1">Weather Impact</div>
+                            <div className="text-white">Clear conditions at all diversion airports</div>
+                          </div>
+                          <div className="bg-yellow-600/20 border border-yellow-600/30 rounded p-3">
+                            <div className="text-yellow-400 font-medium mb-1">Performance</div>
+                            <div className="text-white">Aircraft within normal operating parameters</div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </TabsContent>
 
                 <TabsContent value="airfields" className="space-y-4">
