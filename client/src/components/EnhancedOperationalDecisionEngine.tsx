@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap, Shield, Wind, Eye, Fuel, Building, Wrench, FileText, BarChart3, CheckCircle } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
-import { Flight, FlightModel } from '../lib/flightModel';
-import { ScenarioEngine, DiversionResult, DiversionScenario } from '../lib/scenarioEngine';
-import { FuelAnalytics, FuelDecisionAnalysis } from '../lib/fuelAnalytics';
-import { CrewModule, CrewLegalityCheck } from '../lib/crewModule';
-import { CostModel, DiversionCostEstimate, CustomerImpactScore } from '../lib/costModel';
-import { DataFeeds } from '../lib/dataFeeds';
-import { ReportGenerator } from '../lib/reportGenerator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -48,35 +41,35 @@ const ActiveFlightsList = () => {
       position: '51.4°N, 12.2°W'
     },
     { 
-      callsign: 'AFR447', 
-      aircraft: 'A330-200', 
-      route: 'CDG-GIG',
+      callsign: 'VS43', 
+      aircraft: 'A330-300', 
+      route: 'LGW-MCO',
       status: 'Active',
-      position: '28.5°N, 45.8°W'
+      position: '40.2°N, 45.8°W'
     }
   ];
 
   return (
-    <Card className="bg-gray-900/80 border-gray-500 h-full">
+    <Card className="bg-gray-800/50 border-gray-600 h-full">
       <CardHeader className="pb-3">
-        <CardTitle className="text-white flex items-center gap-2">
+        <CardTitle className="text-white text-lg flex items-center gap-2">
           <Plane className="h-5 w-5 text-blue-400" />
           Active Flights
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="space-y-3">
         {fallbackFlights.map((flight) => (
           <div
             key={flight.callsign}
             onClick={() => setSelectedFlight(flight.callsign)}
-            className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            className={`p-3 rounded-lg cursor-pointer transition-all border ${
               selectedFlight === flight.callsign
-                ? 'bg-blue-600/30 border-blue-500'
-                : 'bg-gray-800/50 border-gray-600 hover:bg-gray-700/50'
+                ? 'bg-blue-600/30 border-blue-400 shadow-lg'
+                : 'bg-gray-700/50 border-gray-600 hover:bg-gray-700/70'
             }`}
           >
             <div className="flex items-center justify-between mb-2">
-              <div className="font-semibold text-white">{flight.callsign}</div>
+              <span className="text-white font-semibold">{flight.callsign}</span>
               {flight.status === 'Featured' && (
                 <Badge className="bg-red-600 text-white text-xs">Featured</Badge>
               )}
@@ -133,7 +126,7 @@ export default function EnhancedOperationalDecisionEngine() {
               </CardContent>
             </Card>
           ) : (
-            <>
+            <div className="space-y-6">
               {/* Flight Overview Card */}
               <Card className="bg-gray-900/80 border-gray-500 shadow-lg">
                 <CardHeader className="pb-3">
@@ -278,106 +271,108 @@ export default function EnhancedOperationalDecisionEngine() {
                                   <span className="text-white font-medium">$8,200</span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="text-gray-400">Fuel/Handling:</span>
+                                  <span className="text-gray-400">Aircraft Costs:</span>
                                   <span className="text-white font-medium">$12,850</span>
                                 </div>
-                                <div className="flex justify-between border-t border-gray-600 pt-2 mt-2">
-                                  <span className="text-yellow-400 font-semibold">Total Cost:</span>
-                                  <span className="text-yellow-400 font-bold">$110,450</span>
+                                <div className="border-t border-gray-600 pt-2 mt-3">
+                                  <div className="flex justify-between text-lg font-semibold">
+                                    <span className="text-green-400">Total Cost:</span>
+                                    <span className="text-green-400">$110,450</span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
-                  
+
                           {/* Halifax Option */}
-                          <div className="bg-gray-800/60 border border-green-500 rounded-lg p-5 shadow-md">
+                          <div className="bg-gray-800/60 border border-gray-500 rounded-lg p-5 shadow-md">
                             <div className="flex items-center justify-between mb-4">
                               <div className="flex items-center gap-3">
-                                <div className="bg-green-600/20 p-2 rounded-lg">
-                                  <MapPin className="h-5 w-5 text-green-400" />
+                                <div className="bg-blue-600/20 p-2 rounded-lg">
+                                  <MapPin className="h-5 w-5 text-blue-400" />
                                 </div>
                                 <div>
                                   <h3 className="text-white font-semibold text-lg">Halifax</h3>
                                   <p className="text-gray-400 text-sm">CYHZ</p>
                                 </div>
                               </div>
-                              <Badge className="bg-green-600 text-white px-3 py-1 text-sm">Score: 89</Badge>
+                              <Badge className="bg-blue-600 text-white px-3 py-1 text-sm">Score: 85</Badge>
                             </div>
                             
                             <div className="grid grid-cols-3 gap-4 mb-4">
                               <div className="text-center bg-gray-700/50 p-3 rounded">
                                 <div className="text-gray-400 text-xs uppercase">Distance</div>
-                                <div className="text-white font-semibold">398 km</div>
+                                <div className="text-white font-semibold">312 km</div>
                               </div>
                               <div className="text-center bg-gray-700/50 p-3 rounded">
                                 <div className="text-gray-400 text-xs uppercase">Flight Time</div>
-                                <div className="text-white font-semibold">28 min</div>
+                                <div className="text-white font-semibold">23 min</div>
                               </div>
                               <div className="text-center bg-gray-700/50 p-3 rounded">
                                 <div className="text-gray-400 text-xs uppercase">Fuel Required</div>
-                                <div className="text-white font-semibold">3,200 kg</div>
+                                <div className="text-white font-semibold">2,400 kg</div>
                               </div>
                             </div>
                             
                             <div className="bg-gray-700/30 rounded-lg p-4">
                               <div className="flex items-center gap-2 mb-3">
-                                <DollarSign className="h-4 w-4 text-green-400" />
+                                <DollarSign className="h-4 w-4 text-blue-400" />
                                 <span className="text-gray-300 font-medium">Cost Analysis</span>
                               </div>
                               <div className="space-y-2 text-sm">
                                 <div className="flex justify-between">
                                   <span className="text-gray-400">Passenger Care:</span>
-                                  <span className="text-white font-medium">$96,800</span>
+                                  <span className="text-white font-medium">$95,200</span>
                                 </div>
                                 <div className="flex justify-between">
                                   <span className="text-gray-400">Crew Costs:</span>
-                                  <span className="text-white font-medium">$9,400</span>
+                                  <span className="text-white font-medium">$9,600</span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="text-gray-400">Fuel/Handling:</span>
-                                  <span className="text-white font-medium">$16,400</span>
+                                  <span className="text-gray-400">Aircraft Costs:</span>
+                                  <span className="text-white font-medium">$17,800</span>
                                 </div>
-                                <div className="flex justify-between border-t border-gray-600 pt-2 mt-2">
-                                  <span className="text-green-400 font-semibold">Total Cost:</span>
-                                  <span className="text-green-400 font-bold">$122,600</span>
+                                <div className="border-t border-gray-600 pt-2 mt-3">
+                                  <div className="flex justify-between text-lg font-semibold">
+                                    <span className="text-blue-400">Total Cost:</span>
+                                    <span className="text-blue-400">$122,600</span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        
-                        {/* AI Recommendation */}
-                        <div className="mt-6 bg-blue-900/30 border border-blue-500 rounded-lg p-4">
+
+                        <div className="mt-6 bg-green-900/20 border border-green-500 rounded-lg p-4">
                           <div className="flex items-center gap-3 mb-3">
-                            <Brain className="h-5 w-5 text-blue-400" />
-                            <h3 className="text-blue-300 font-semibold">AI Recommendation</h3>
+                            <CheckCircle className="h-5 w-5 text-green-400" />
+                            <span className="text-green-300 font-semibold">AI Recommendation</span>
                           </div>
-                          <div className="bg-green-600/20 border border-green-500 rounded p-3">
-                            <p className="text-green-300 font-medium mb-2">RECOMMEND: Halifax (CYHZ)</p>
-                            <p className="text-gray-300 text-sm">
-                              Despite higher cost ($12,150 difference), Halifax offers superior medical facilities, 
-                              24/7 operations, and better passenger care infrastructure for this medical emergency.
-                            </p>
-                          </div>
+                          <p className="text-gray-300 text-sm">
+                            <strong className="text-green-400">Recommend Gander (CYQX)</strong> - Lower cost option with adequate medical facilities. 
+                            Save $12,150 compared to Halifax while maintaining safety standards.
+                          </p>
                         </div>
                       </CardContent>
                     </Card>
                   )}
 
-                  {/* General Simulation Content for all flights */}
-                  <Card className="bg-gray-800/50 border-gray-600">
-                    <CardHeader>
-                      <CardTitle className="text-white flex items-center gap-2">
-                        <Gauge className="h-5 w-5" />
-                        Diversion Simulation Engine
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-gray-300">
-                        Advanced diversion analysis and recommendation system for operational decision support.
-                      </div>
-                    </CardContent>
-                  </Card>
+                  {/* Generic Diversion Analysis for other flights */}
+                  {flightData?.callsign !== 'VIR127C' && (
+                    <Card className="bg-gray-800/50 border-gray-600">
+                      <CardHeader>
+                        <CardTitle className="text-white flex items-center gap-2">
+                          <Gauge className="h-5 w-5" />
+                          Diversion Analysis
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-gray-300">
+                          Diversion analysis and operational recommendations for flight {flightData?.callsign}.
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="airfields" className="space-y-4">
@@ -390,7 +385,7 @@ export default function EnhancedOperationalDecisionEngine() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-gray-300">
-                        Comprehensive airfield database with real-time operational status and capabilities.
+                        Analysis of suitable diversion airports based on current position, fuel, and operational requirements.
                       </div>
                     </CardContent>
                   </Card>
@@ -400,13 +395,13 @@ export default function EnhancedOperationalDecisionEngine() {
                   <Card className="bg-gray-800/50 border-gray-600">
                     <CardHeader>
                       <CardTitle className="text-white flex items-center gap-2">
-                        <BarChart3 className="h-5 w-5" />
+                        <DollarSign className="h-5 w-5" />
                         Cost Analysis
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="text-gray-300">
-                        Detailed cost breakdown and financial impact assessment for diversion scenarios.
+                        Comprehensive cost analysis including fuel, crew, passenger care, and operational expenses.
                       </div>
                     </CardContent>
                   </Card>
@@ -417,12 +412,12 @@ export default function EnhancedOperationalDecisionEngine() {
                     <CardHeader>
                       <CardTitle className="text-white flex items-center gap-2">
                         <Users className="h-5 w-5" />
-                        Crew Status
+                        Crew Management
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="text-gray-300">
-                        Flight and cabin crew duty time analysis and regulatory compliance monitoring.
+                        Crew duty time analysis, fatigue management, and regulatory compliance monitoring.
                       </div>
                     </CardContent>
                   </Card>
@@ -444,7 +439,7 @@ export default function EnhancedOperationalDecisionEngine() {
                   </Card>
                 </TabsContent>
               </Tabs>
-            </>
+            </div>
           )}
         </div>
       </div>
