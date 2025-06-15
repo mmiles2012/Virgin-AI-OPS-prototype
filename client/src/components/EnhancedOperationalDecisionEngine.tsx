@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap, Shield, Wind, Eye, Fuel, Building, Wrench, FileText, BarChart3 } from 'lucide-react';
+import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap, Shield, Wind, Eye, Fuel, Building, Wrench, FileText, BarChart3, CheckCircle } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { Flight, FlightModel } from '../lib/flightModel';
 import { ScenarioEngine, DiversionResult, DiversionScenario } from '../lib/scenarioEngine';
@@ -675,28 +675,241 @@ export default function EnhancedOperationalDecisionEngine() {
                   </div>
                 </div>
                 
-                <div className="mt-6 p-4 bg-green-900/20 border border-green-500 rounded">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="h-5 w-5 text-green-400" />
-                    <span className="text-green-300 font-medium">AI Recommendation: Halifax (CYHZ)</span>
-                  </div>
-                  <div className="text-green-200 text-sm">
-                    Higher operational score (85 vs 78) justifies additional 12 minutes and $12,150 cost. 
-                    Superior medical facilities, 24/7 customs, and better passenger care outweigh minimal distance advantage of Gander.
-                    Both options maintain crew legality with adequate fuel margins.
-                  </div>
-                  <div className="mt-3 grid grid-cols-3 gap-4 text-xs">
-                    <div>
-                      <span className="text-green-400">Cost Difference:</span>
-                      <span className="text-white ml-1">+$12,150</span>
+                {/* Visual Decision Matrix */}
+                <div className="mt-6 space-y-4">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* Cost Comparison Chart */}
+                    <div className="p-4 bg-gray-900/50 border border-gray-600 rounded">
+                      <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                        <DollarSign className="h-4 w-4" />
+                        Cost Comparison
+                      </h4>
+                      <div className="space-y-3">
+                        <div>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="text-gray-400">Gander (CYQX)</span>
+                            <span className="text-white">$110,450</span>
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-2">
+                            <div className="bg-yellow-500 h-2 rounded-full" style={{width: '90%'}}></div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="text-gray-400">Halifax (CYHZ)</span>
+                            <span className="text-white">$122,600</span>
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-2">
+                            <div className="bg-blue-500 h-2 rounded-full" style={{width: '100%'}}></div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-green-400">Time Difference:</span>
-                      <span className="text-white ml-1">+12 minutes</span>
+
+                    {/* Risk Assessment Matrix */}
+                    <div className="p-4 bg-gray-900/50 border border-gray-600 rounded">
+                      <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                        <Shield className="h-4 w-4" />
+                        Risk Assessment
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                          <div className="text-gray-400 mb-2">Gander</div>
+                          <div className="space-y-1">
+                            <div className="flex justify-between">
+                              <span>Fuel Risk:</span>
+                              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Crew Risk:</span>
+                              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Weather:</span>
+                              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Facilities:</span>
+                              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-400 mb-2">Halifax</div>
+                          <div className="space-y-1">
+                            <div className="flex justify-between">
+                              <span>Fuel Risk:</span>
+                              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Crew Risk:</span>
+                              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Weather:</span>
+                              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Facilities:</span>
+                              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-green-400">Fuel Difference:</span>
-                      <span className="text-white ml-1">+1,300 kg</span>
+                  </div>
+
+                  {/* Overall Score Visualization */}
+                  <div className="p-4 bg-gray-900/50 border border-gray-600 rounded">
+                    <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4" />
+                      Operational Suitability Scores
+                    </h4>
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-gray-400">Gander (CYQX)</span>
+                          <span className="text-white font-medium">78/100</span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3 mb-2">
+                          <div className="bg-yellow-500 h-3 rounded-full flex items-center justify-end pr-2" style={{width: '78%'}}>
+                            <span className="text-xs text-black font-medium">78</span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs">
+                          <div>
+                            <span className="text-gray-400">Time:</span>
+                            <span className="text-green-400 ml-1">95</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Cost:</span>
+                            <span className="text-green-400 ml-1">88</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Safety:</span>
+                            <span className="text-yellow-400 ml-1">72</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-gray-400">Halifax (CYHZ)</span>
+                          <span className="text-white font-medium">85/100</span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-3 mb-2">
+                          <div className="bg-green-500 h-3 rounded-full flex items-center justify-end pr-2" style={{width: '85%'}}>
+                            <span className="text-xs text-black font-medium">85</span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs">
+                          <div>
+                            <span className="text-gray-400">Time:</span>
+                            <span className="text-yellow-400 ml-1">82</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Cost:</span>
+                            <span className="text-yellow-400 ml-1">79</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-400">Safety:</span>
+                            <span className="text-green-400 ml-1">94</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Flight Path Visualization */}
+                  <div className="p-4 bg-gray-900/50 border border-gray-600 rounded">
+                    <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      Flight Path Analysis
+                    </h4>
+                    <div className="relative h-32 bg-gray-800 rounded border border-gray-600 overflow-hidden">
+                      {/* Simplified flight path visualization */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="relative w-full h-full">
+                          {/* Current position */}
+                          <div className="absolute top-1/2 left-1/4 transform -translate-y-1/2">
+                            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                            <div className="text-xs text-blue-300 mt-1 whitespace-nowrap">VIR127C</div>
+                            <div className="text-xs text-gray-400">45.18°N, 69.17°W</div>
+                          </div>
+                          
+                          {/* Gander option */}
+                          <div className="absolute top-1/4 right-1/3 transform -translate-y-1/2">
+                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                            <div className="text-xs text-yellow-300 mt-1">CYQX</div>
+                            <div className="text-xs text-gray-400">234km</div>
+                            {/* Path line to Gander */}
+                            <div className="absolute top-1 left-0 w-20 h-px bg-yellow-500 transform -rotate-12 origin-left"></div>
+                          </div>
+                          
+                          {/* Halifax option */}
+                          <div className="absolute bottom-1/4 right-1/4 transform translate-y-1/2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div className="text-xs text-green-300 mt-1">CYHZ</div>
+                            <div className="text-xs text-gray-400">421km</div>
+                            {/* Path line to Halifax */}
+                            <div className="absolute top-0 left-0 w-24 h-px bg-green-500 transform rotate-12 origin-left"></div>
+                          </div>
+                          
+                          {/* Original destination indicator */}
+                          <div className="absolute top-1/2 right-8 transform -translate-y-1/2">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                            <div className="text-xs text-gray-400 mt-1">Original</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4 mt-3 text-xs">
+                      <div className="text-center">
+                        <div className="text-blue-300">Current Position</div>
+                        <div className="text-gray-400">45.18°N, 69.17°W</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-yellow-300">Gander: 234km (17min)</div>
+                        <div className="text-gray-400">Closest option</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-green-300">Halifax: 421km (29min)</div>
+                        <div className="text-gray-400">Best facilities</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Final Recommendation */}
+                  <div className="p-4 bg-green-900/20 border border-green-500 rounded">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle className="h-5 w-5 text-green-400" />
+                      <span className="text-green-300 font-medium">AI Recommendation: Halifax (CYHZ)</span>
+                    </div>
+                    <div className="text-green-200 text-sm mb-3">
+                      Higher operational score (85 vs 78) justifies additional 12 minutes and $12,150 cost. 
+                      Superior medical facilities, 24/7 customs, and better passenger care outweigh minimal distance advantage of Gander.
+                      Both options maintain crew legality with adequate fuel margins.
+                    </div>
+                    <div className="grid grid-cols-4 gap-4 text-xs">
+                      <div className="text-center p-2 bg-green-800/20 rounded">
+                        <div className="text-green-400 font-medium">Cost Impact</div>
+                        <div className="text-white">+$12,150</div>
+                        <div className="text-gray-400">(11% increase)</div>
+                      </div>
+                      <div className="text-center p-2 bg-green-800/20 rounded">
+                        <div className="text-green-400 font-medium">Time Impact</div>
+                        <div className="text-white">+12 minutes</div>
+                        <div className="text-gray-400">(71% increase)</div>
+                      </div>
+                      <div className="text-center p-2 bg-green-800/20 rounded">
+                        <div className="text-green-400 font-medium">Fuel Impact</div>
+                        <div className="text-white">+1,300 kg</div>
+                        <div className="text-gray-400">(70% increase)</div>
+                      </div>
+                      <div className="text-center p-2 bg-green-800/20 rounded">
+                        <div className="text-green-400 font-medium">Risk Reduction</div>
+                        <div className="text-white">9% better</div>
+                        <div className="text-gray-400">(facilities)</div>
+                      </div>
                     </div>
                   </div>
                 </div>
