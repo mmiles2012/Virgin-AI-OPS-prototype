@@ -1380,6 +1380,142 @@ export class AviationApiService {
       averageDiversionCost: data.avgCost
     };
   }
+
+  /**
+   * NLP Processing for NOTAM text analysis (TF-IDF simulation)
+   */
+  private processNotamText(notamText: string): { riskWeight: number; highRisk: boolean; category: string; confidence: number } {
+    const text = notamText.toLowerCase();
+    
+    // High-risk keywords with TF-IDF-style weighting
+    const highRiskTerms = {
+      'thunderstorm': 0.15,
+      'severe': 0.12,
+      'closure': 0.10,
+      'emergency': 0.14,
+      'flooding': 0.08,
+      'low visibility': 0.11,
+      'runway closed': 0.13,
+      'bird activity': 0.03,
+      'maintenance': 0.02,
+      'equipment failure': 0.09
+    };
+    
+    // Medium-risk terms
+    const mediumRiskTerms = {
+      'caution': 0.04,
+      'advisory': 0.02,
+      'procedures': 0.03,
+      'approach': 0.02,
+      'departure': 0.02,
+      'taxiway': 0.01
+    };
+    
+    let riskScore = 0;
+    let category = 'Standard Advisory';
+    let matchedTerms: string[] = [];
+    
+    // Process high-risk terms
+    for (const [term, weight] of Object.entries(highRiskTerms)) {
+      if (text.includes(term)) {
+        riskScore += weight;
+        matchedTerms.push(term);
+        if (weight > 0.10) {
+          category = 'High-Risk Weather/Operations';
+        } else if (weight > 0.05) {
+          category = 'Operational Advisory';
+        }
+      }
+    }
+    
+    // Process medium-risk terms
+    for (const [term, weight] of Object.entries(mediumRiskTerms)) {
+      if (text.includes(term)) {
+        riskScore += weight;
+        matchedTerms.push(term);
+      }
+    }
+    
+    const confidence = Math.min(0.95, 0.70 + (matchedTerms.length * 0.08));
+    
+    return {
+      riskWeight: Math.min(riskScore, 0.25), // Cap at 25% of total risk
+      highRisk: riskScore > 0.08,
+      category,
+      confidence
+    };
+  }
+
+  /**
+   * Build feature vector matching Python model structure
+   */
+  private buildFeatureVector(route: string, aircraftType: string, conditions: any): number[] {
+    const features: number[] = [];
+    
+    // Structured features (matching Python DataFrame columns)
+    features.push(conditions.weatherScore || 5);
+    features.push(conditions.techFlag ? 1 : 0);
+    features.push(conditions.medicalFlag ? 1 : 0);
+    
+    // Route dummy encoding
+    features.push(route === 'LHR-JFK' ? 1 : 0);
+    features.push(route === 'LHR-DEL' ? 1 : 0);
+    features.push(route === 'LGW-MCO' ? 1 : 0);
+    features.push(route === 'MAN-ATL' ? 1 : 0);
+    
+    // Aircraft type dummy encoding
+    features.push(aircraftType.includes('787') ? 1 : 0);
+    features.push(aircraftType.includes('A350') ? 1 : 0);
+    features.push(aircraftType.includes('A330') ? 1 : 0);
+    
+    // Additional operational features
+    features.push(conditions.fuelStatus || 0.8);
+    features.push(conditions.timeOfDay || 14);
+    
+    return features;
+  }
+
+  /**
+   * Simulate RandomForest ensemble with multiple decision trees
+   */
+  private simulateRandomForestTrees(features: number[]): number[] {
+    const numTrees = 10; // Simplified ensemble
+    const predictions: number[] = [];
+    
+    for (let i = 0; i < numTrees; i++) {
+      // Simulate decision tree with different feature subsets and thresholds
+      let treeScore = 0;
+      
+      // Tree 1: Weather-focused
+      if (i % 3 === 0) {
+        if (features[0] >= 7) treeScore += 0.4; // weather_score
+        if (features[2] === 1) treeScore += 0.6; // medical_flag
+        if (features[3] === 1) treeScore += 0.2; // route_LHR-JFK
+      }
+      
+      // Tree 2: Technical-focused
+      else if (i % 3 === 1) {
+        if (features[1] === 1) treeScore += 0.7; // tech_flag
+        if (features[9] === 1) treeScore += 0.1; // aircraft_A350
+        if (features[11] < 0.3) treeScore += 0.3; // fuel_status
+      }
+      
+      // Tree 3: Route-focused
+      else {
+        if (features[3] === 1) treeScore += 0.3; // route_LHR-JFK
+        if (features[12] >= 22 || features[12] <= 6) treeScore += 0.1; // night ops
+        if (features[2] === 1) treeScore += 0.5; // medical_flag
+      }
+      
+      // Add some randomness to simulate bootstrap sampling
+      const randomFactor = 0.9 + (Math.random() * 0.2); // 0.9-1.1 multiplier
+      treeScore *= randomFactor;
+      
+      predictions.push(Math.min(treeScore, 1.0));
+    }
+    
+    return predictions;
+  }
 }
 
 export const aviationApiService = new AviationApiService();
