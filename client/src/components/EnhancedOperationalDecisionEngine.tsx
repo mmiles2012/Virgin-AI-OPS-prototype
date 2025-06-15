@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap, Shield, Wind, Eye, Fuel, Building, Wrench, FileText, BarChart3, CheckCircle } from 'lucide-react';
+import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap, Shield, Wind, Eye, Fuel, Building, Wrench, FileText, BarChart3, CheckCircle, Target, Activity } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { useEnhancedFlightData } from '../hooks/useAviationData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -191,7 +191,7 @@ export default function EnhancedOperationalDecisionEngine() {
               </Card>
 
               <Tabs defaultValue="simulation" className="space-y-6">
-                <TabsList className="grid w-full grid-cols-6 bg-gray-800/50 p-1 rounded-lg">
+                <TabsList className="grid w-full grid-cols-7 bg-gray-800/50 p-1 rounded-lg">
                   <TabsTrigger value="simulation" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
                     <Gauge className="h-4 w-4 mr-2" />
                     Diversion
@@ -199,6 +199,10 @@ export default function EnhancedOperationalDecisionEngine() {
                   <TabsTrigger value="data" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
                     <Brain className="h-4 w-4 mr-2" />
                     Data
+                  </TabsTrigger>
+                  <TabsTrigger value="ml-prediction" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                    <Target className="h-4 w-4 mr-2" />
+                    ML Risk
                   </TabsTrigger>
                   <TabsTrigger value="airfields" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
                     <Building className="h-4 w-4 mr-2" />

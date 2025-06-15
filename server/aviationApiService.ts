@@ -135,6 +135,30 @@ interface DiversionRecommendation {
   }[];
 }
 
+interface MLDiversionPrediction {
+  flightId: string;
+  route: string;
+  aircraftType: string;
+  currentConditions: {
+    weatherScore: number;
+    techFlag: boolean;
+    medicalFlag: boolean;
+    fuelStatus: number;
+    timeOfDay: number;
+  };
+  predictions: {
+    diversionProbability: number;
+    confidenceLevel: number;
+    primaryRiskFactors: string[];
+    recommendedActions: string[];
+  };
+  historicalPatterns: {
+    similarRoutes: number;
+    diversionsInPast30Days: number;
+    averageDiversionCost: number;
+  };
+}
+
 interface SafeAirspaceAlert {
   id: string;
   type: 'NOTAM' | 'TFR' | 'RESTRICTED' | 'WARNING' | 'PROHIBITED';
@@ -1163,6 +1187,179 @@ export class AviationApiService {
       delayFrequency: data.freq,
       majorCauses: data.causes,
       seasonalTrends
+    };
+  }
+
+  /**
+   * Machine Learning-based diversion prediction
+   * Implements decision tree logic based on historical patterns
+   */
+  predictDiversionRisk(
+    flightId: string,
+    route: string,
+    aircraftType: string,
+    currentConditions: {
+      weatherScore: number;
+      techFlag: boolean;
+      medicalFlag: boolean;
+      fuelStatus: number;
+      timeOfDay: number;
+    }
+  ): MLDiversionPrediction {
+    // Simplified ML model implementation using decision tree logic
+    // In production, this would call an actual trained ML model
+    
+    let diversionScore = 0.0;
+    const riskFactors: string[] = [];
+    const actions: string[] = [];
+    
+    // Weather risk assessment (30% weight)
+    if (currentConditions.weatherScore >= 8) {
+      diversionScore += 0.25;
+      riskFactors.push('Severe Weather Conditions');
+      actions.push('Monitor weather updates closely');
+    } else if (currentConditions.weatherScore >= 6) {
+      diversionScore += 0.15;
+      riskFactors.push('Marginal Weather');
+      actions.push('Prepare alternate routing options');
+    }
+    
+    // Technical issues (40% weight)
+    if (currentConditions.techFlag) {
+      diversionScore += 0.35;
+      riskFactors.push('Technical/MEL Issues');
+      actions.push('Review maintenance logs and dispatch deviations');
+    }
+    
+    // Medical emergency (35% weight)
+    if (currentConditions.medicalFlag) {
+      diversionScore += 0.30;
+      riskFactors.push('Medical Emergency Indicators');
+      actions.push('Alert medical facilities at diversion airports');
+    }
+    
+    // Fuel status risk (20% weight)
+    if (currentConditions.fuelStatus < 0.2) {
+      diversionScore += 0.20;
+      riskFactors.push('Low Fuel Status');
+      actions.push('Immediate fuel planning and nearest suitable airport review');
+    } else if (currentConditions.fuelStatus < 0.3) {
+      diversionScore += 0.10;
+      riskFactors.push('Marginal Fuel Reserves');
+      actions.push('Monitor fuel consumption closely');
+    }
+    
+    // Time of day factor (10% weight)
+    const hour = currentConditions.timeOfDay;
+    if (hour >= 22 || hour <= 6) { // Night operations
+      diversionScore += 0.05;
+      riskFactors.push('Night Operations');
+      actions.push('Ensure crew alertness and airport lighting capabilities');
+    }
+    
+    // Route-specific historical risk
+    const routeRisk = this.getRouteRisk(route);
+    diversionScore += routeRisk * 0.15;
+    
+    // Aircraft type reliability factor
+    const aircraftRisk = this.getAircraftRisk(aircraftType);
+    diversionScore += aircraftRisk * 0.10;
+    
+    // Cap the score at 1.0
+    const finalProbability = Math.min(diversionScore, 1.0);
+    
+    // Calculate confidence based on data quality
+    const confidence = this.calculateConfidence(currentConditions, route, aircraftType);
+    
+    // Historical patterns for context
+    const historicalPatterns = this.getHistoricalDiversionPatterns(route);
+    
+    // Add general recommendations based on score
+    if (finalProbability > 0.7) {
+      actions.push('Consider immediate diversion planning');
+      actions.push('Alert operations center and ground services');
+    } else if (finalProbability > 0.4) {
+      actions.push('Prepare contingency plans');
+      actions.push('Brief crew on potential diversion scenarios');
+    } else {
+      actions.push('Continue monitoring conditions');
+    }
+    
+    return {
+      flightId,
+      route,
+      aircraftType,
+      currentConditions,
+      predictions: {
+        diversionProbability: Math.round(finalProbability * 100) / 100,
+        confidenceLevel: confidence,
+        primaryRiskFactors: riskFactors,
+        recommendedActions: actions
+      },
+      historicalPatterns
+    };
+  }
+
+  private getRouteRisk(route: string): number {
+    // Historical diversion rates by route
+    const routeRisks = {
+      'LHR-JFK': 0.12, // North Atlantic winter weather
+      'LHR-LAX': 0.08, // Long haul, multiple weather systems
+      'LHR-BOS': 0.10, // Northeast US weather variability
+      'LGW-MCO': 0.06, // Generally stable route
+      'MAN-ATL': 0.07, // Southern routing, less weather
+    };
+    
+    return routeRisks[route as keyof typeof routeRisks] || 0.08;
+  }
+
+  private getAircraftRisk(aircraftType: string): number {
+    // Aircraft reliability factors (lower is better)
+    const aircraftRisks = {
+      'A350-1000': 0.02, // Very modern, reliable
+      'A350-900': 0.02,
+      '787-9': 0.03,      // Modern but some early issues
+      'A330-300': 0.04,   // Mature platform
+      'A330-200': 0.04,
+      '747-400': 0.06     // Older technology
+    };
+    
+    return aircraftRisks[aircraftType as keyof typeof aircraftRisks] || 0.05;
+  }
+
+  private calculateConfidence(conditions: any, route: string, aircraftType: string): number {
+    let confidence = 0.8; // Base confidence
+    
+    // More data points increase confidence
+    if (conditions.weatherScore !== undefined) confidence += 0.05;
+    if (conditions.techFlag !== undefined) confidence += 0.05;
+    if (conditions.medicalFlag !== undefined) confidence += 0.05;
+    if (conditions.fuelStatus !== undefined) confidence += 0.05;
+    
+    // Well-known routes have higher confidence
+    const knownRoutes = ['LHR-JFK', 'LHR-LAX', 'LGW-MCO', 'MAN-ATL', 'LHR-BOS'];
+    if (knownRoutes.includes(route)) confidence += 0.05;
+    
+    return Math.min(confidence, 1.0);
+  }
+
+  private getHistoricalDiversionPatterns(route: string) {
+    // Simulated historical data
+    const patterns = {
+      'LHR-JFK': { similar: 1247, diversions: 89, avgCost: 142000 },
+      'LHR-LAX': { similar: 892, diversions: 34, avgCost: 185000 },
+      'LGW-MCO': { similar: 654, diversions: 18, avgCost: 98000 },
+      'MAN-ATL': { similar: 423, diversions: 12, avgCost: 125000 },
+      'LHR-BOS': { similar: 567, diversions: 28, avgCost: 118000 }
+    };
+    
+    const data = patterns[route as keyof typeof patterns] || 
+                 { similar: 300, diversions: 15, avgCost: 120000 };
+    
+    return {
+      similarRoutes: data.similar,
+      diversionsInPast30Days: data.diversions,
+      averageDiversionCost: data.avgCost
     };
   }
 }

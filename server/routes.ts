@@ -291,6 +291,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/aviation/ml-diversion-prediction", async (req, res) => {
+    try {
+      const { flightId, route, aircraftType, weatherScore, techFlag, medicalFlag, fuelStatus, timeOfDay } = req.query;
+      
+      if (!flightId || !route || !aircraftType) {
+        return res.status(400).json({ 
+          error: "Required parameters: flightId, route, aircraftType" 
+        });
+      }
+
+      const conditions = {
+        weatherScore: weatherScore ? Number(weatherScore) : 5,
+        techFlag: techFlag === 'true',
+        medicalFlag: medicalFlag === 'true',
+        fuelStatus: fuelStatus ? Number(fuelStatus) : 0.8,
+        timeOfDay: timeOfDay ? Number(timeOfDay) : new Date().getHours()
+      };
+
+      const prediction = aviationApiService.predictDiversionRisk(
+        String(flightId),
+        String(route),
+        String(aircraftType),
+        conditions
+      );
+
+      res.json(prediction);
+    } catch (error) {
+      console.error('ML diversion prediction error:', error);
+      res.status(500).json({ 
+        error: "Failed to generate diversion prediction" 
+      });
+    }
+  });
+
   // Training scenario endpoints
   app.get("/api/scenarios", (req, res) => {
     res.json(scenarios);
