@@ -161,3 +161,83 @@ export class Flight {
     return (this.fuelOnBoard - requiredFuel) >= minimumReserve;
   }
 }
+
+// Aircraft performance models for multi-aircraft decision support
+export class FlightModel {
+  private aircraftType: 'A350' | 'A330' | '787';
+  
+  constructor(aircraftType: 'A350' | 'A330' | '787') {
+    this.aircraftType = aircraftType;
+  }
+
+  getOperatingWeight(): number {
+    const weights = {
+      'A350': 137000, // kg
+      'A330': 120000,
+      '787': 118000
+    };
+    return weights[this.aircraftType];
+  }
+
+  getMaxRange(): number {
+    const ranges = {
+      'A350': 15000, // km
+      'A330': 13400,
+      '787': 14800
+    };
+    return ranges[this.aircraftType];
+  }
+
+  getFuelBurnRate(): number {
+    const burnRates = {
+      'A350': 6500, // kg/hour
+      'A330': 7200,
+      '787': 6800
+    };
+    return burnRates[this.aircraftType];
+  }
+
+  getMaxFuelCapacity(): number {
+    const capacities = {
+      'A350': 138000, // kg
+      'A330': 139090,
+      '787': 126372
+    };
+    return capacities[this.aircraftType];
+  }
+
+  getCruiseSpeed(): number {
+    const speeds = {
+      'A350': 903, // km/h
+      'A330': 871,
+      '787': 913
+    };
+    return speeds[this.aircraftType];
+  }
+
+  getServiceCeiling(): number {
+    const ceilings = {
+      'A350': 43000, // feet
+      'A330': 41450,
+      '787': 43000
+    };
+    return ceilings[this.aircraftType];
+  }
+
+  calculateFlightTime(distanceKm: number): number {
+    const cruiseSpeed = this.getCruiseSpeed();
+    return (distanceKm / cruiseSpeed) * 60; // minutes
+  }
+
+  calculateFuelRequired(distanceKm: number): number {
+    const flightTimeHours = distanceKm / this.getCruiseSpeed();
+    const burnRate = this.getFuelBurnRate();
+    return Math.round(flightTimeHours * burnRate);
+  }
+
+  canReachDestination(distanceKm: number, currentFuel: number): boolean {
+    const requiredFuel = this.calculateFuelRequired(distanceKm);
+    const reserveFuel = requiredFuel * 0.15; // 15% reserve
+    return currentFuel >= (requiredFuel + reserveFuel);
+  }
+}

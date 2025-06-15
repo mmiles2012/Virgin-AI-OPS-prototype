@@ -106,57 +106,6 @@ interface AirfieldData {
   advantages: string[];
 }
 
-interface DecisionImpact {
-  cost: {
-    fuel: number;
-    handling: number;
-    passenger: number;
-    crew: number;
-    total: number;
-  };
-  time: {
-    delay: number;
-    diversion: number;
-    recovery: number;
-    total: number;
-  };
-  fuel: {
-    additional: number;
-    remaining: number;
-    percentage: number;
-  };
-  passengers: {
-    affected: number;
-    compensation: number;
-    rebooking: number;
-  };
-  operations: {
-    slotLoss: boolean;
-    downstream: number;
-    recovery: string;
-  };
-}
-
-interface OperationalDecision {
-  id: string;
-  type: 'medical' | 'technical' | 'weather' | 'fuel';
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  title: string;
-  description: string;
-  impact: DecisionImpact;
-  recommendations: string[];
-  timeline: string;
-  approvalRequired: string[];
-  alternativeOptions: string[];
-  riskAssessment: {
-    safety: 'low' | 'medium' | 'high' | 'critical';
-    operational: 'low' | 'medium' | 'high' | 'critical';
-    financial: 'low' | 'medium' | 'high' | 'critical';
-    reputation: 'low' | 'medium' | 'high' | 'critical';
-    overall: 'low' | 'medium' | 'high' | 'critical';
-  };
-}
-
 export default function EnhancedOperationalDecisionEngine() {
   const [flightData, setFlightData] = useState<EnhancedFlightData | null>(null);
   const [flightModel, setFlightModel] = useState<Flight | null>(null);
@@ -176,15 +125,17 @@ export default function EnhancedOperationalDecisionEngine() {
   useEffect(() => {
     if (selectedFlight) {
       const aircraftType = detectAircraftType(selectedFlight.aircraft);
-      const estimatedWeight = aircraftType === 'A350' ? 280000 : aircraftType === 'A330' ? 242000 : 254000;
-      const currentFuelKg = Math.round(estimatedWeight * 0.35);
-      const fuelBurnRate = aircraftType === 'A350' ? 6800 : aircraftType === 'A330' ? 7200 : 6900;
-      const maxRange = aircraftType === 'A350' ? 15300 : aircraftType === 'A330' ? 13400 : 14800;
+      const flightModel = new FlightModel(aircraftType);
       
+      const currentFuelKg = Math.floor(Math.random() * 15000) + 30000;
+      const fuelBurnRate = flightModel.getFuelBurnRate();
+      const maxRange = flightModel.getMaxRange();
+      const estimatedWeight = flightModel.getOperatingWeight() + currentFuelKg + (280 * 85);
+
       setFlightData({
         callsign: selectedFlight.callsign,
         aircraft: selectedFlight.aircraft,
-        route: `${selectedFlight.origin} → ${selectedFlight.destination}`,
+        route: `${selectedFlight.origin || 'JFK'} → ${selectedFlight.destination || 'LHR'}`,
         currentPosition: { lat: selectedFlight.latitude, lon: selectedFlight.longitude },
         altitude: selectedFlight.altitude,
         speed: selectedFlight.velocity,
@@ -237,99 +188,106 @@ export default function EnhancedOperationalDecisionEngine() {
   };
 
   const generateAirfieldData = (flight: EnhancedFlightData) => {
-    const currentTime = new Date();
-    const hour = currentTime.getHours();
-    const isNightTime = hour < 6 || hour > 22;
-
-    const nearbyAirfields = [
-      { icao: 'EGLL', name: 'London Heathrow', distance: 180, bearing: 270 },
-      { icao: 'EHAM', name: 'Amsterdam Schiphol', distance: 220, bearing: 90 },
-      { icao: 'EDDF', name: 'Frankfurt Main', distance: 380, bearing: 135 },
-      { icao: 'LFPG', name: 'Paris Charles de Gaulle', distance: 290, bearing: 180 },
-      { icao: 'ESSA', name: 'Stockholm Arlanda', distance: 450, bearing: 45 }
+    const alternateAirports = [
+      { icao: 'EGLL', name: 'London Heathrow', lat: 51.4700, lon: -0.4543 },
+      { icao: 'EHAM', name: 'Amsterdam Schiphol', lat: 52.3086, lon: 4.7639 },
+      { icao: 'EDDF', name: 'Frankfurt Main', lat: 50.0333, lon: 8.5706 },
+      { icao: 'LFPG', name: 'Paris Charles de Gaulle', lat: 49.0097, lon: 2.5479 },
+      { icao: 'KJFK', name: 'John F Kennedy Intl', lat: 40.6413, lon: -73.7781 },
+      { icao: 'KORD', name: 'Chicago OHare Intl', lat: 41.9742, lon: -87.9073 }
     ];
 
-    const airfields: AirfieldData[] = nearbyAirfields.map((airport, index) => {
-      const fuelRequired = Math.round(airport.distance * flight.fuelBurn / flight.speed);
-      const weatherScore = 75 + Math.random() * 25;
-      const isHub = airport.icao === 'EGLL' || airport.icao === 'EHAM';
+    const airfields = alternateAirports.map(airport => {
+      const distance = calculateDistance(
+        flight.currentPosition.lat, flight.currentPosition.lon,
+        airport.lat, airport.lon
+      );
+
+      const fuelRequired = (distance / 1000) * 3.2; // Rough fuel calculation
 
       return {
         icao: airport.icao,
         name: airport.name,
-        distance: airport.distance,
-        bearing: airport.bearing,
-        fuelRequired,
+        distance: Math.round(distance),
+        bearing: calculateBearing(flight.currentPosition.lat, flight.currentPosition.lon, airport.lat, airport.lon),
+        fuelRequired: Math.round(fuelRequired),
         
-        weatherCategory: weatherScore > 90 ? 'CAT1' : weatherScore > 70 ? 'CAT2' : 'CAT3A',
-        visibility: Math.round(8000 + Math.random() * 2000),
-        ceiling: Math.round(1000 + Math.random() * 500),
+        // Weather Conditions (realistic for each airport)
+        weatherCategory: Math.random() > 0.7 ? 'CAT1' : Math.random() > 0.3 ? 'CAT2' : 'CAT3A' as 'CAT1' | 'CAT2' | 'CAT3A' | 'CAT3B' | 'BELOW_MINS',
+        visibility: Math.round((Math.random() * 8 + 2) * 10) / 10, // 2-10km
+        ceiling: Math.round(Math.random() * 2000 + 500), // 500-2500ft
         winds: {
-          speed: Math.round(5 + Math.random() * 15),
+          speed: Math.round(Math.random() * 25 + 5), // 5-30kt
           direction: Math.round(Math.random() * 360),
-          gusts: Math.random() > 0.7 ? Math.round(20 + Math.random() * 10) : undefined
+          gusts: Math.random() > 0.6 ? Math.round(Math.random() * 10 + 25) : undefined
         },
         
+        // Ground Operations
         groundHandling: {
-          available: true,
-          provider: ['Swissport', 'Menzies', 'dnata', 'WFS'][index % 4],
-          services: ['Baggage', 'Catering', 'Fuel', 'GPU', 'Pushback', 'De-icing'],
-          operatingHours: isHub ? '24/7' : '06:00-23:00',
-          availability24h: isHub
+          available: Math.random() > 0.1, // 90% available
+          provider: ['Swissport', 'Menzies', 'Dnata', 'WFS'][Math.floor(Math.random() * 4)],
+          services: ['Baggage', 'Catering', 'Fuel', 'Ground Power', 'Pushback'],
+          operatingHours: Math.random() > 0.3 ? '24/7' : '06:00-23:00',
+          availability24h: Math.random() > 0.3
         },
         
+        // Customs & Immigration
         customs: {
-          available: true,
-          operatingHours: isNightTime ? 'On-call' : '06:00-23:00',
-          availability24h: isHub,
-          fastTrack: isHub,
-          medicalClearance: true
+          available: Math.random() > 0.05, // 95% available
+          operatingHours: Math.random() > 0.4 ? '24/7' : '07:00-22:00',
+          availability24h: Math.random() > 0.4,
+          fastTrack: Math.random() > 0.5,
+          medicalClearance: emergencyType === 'medical' ? Math.random() > 0.2 : Math.random() > 0.7
         },
         
+        // Fire & Rescue
         fireRescue: {
-          category: isHub ? 10 : 8 + Math.floor(Math.random() * 2),
-          foamCapability: true,
-          responseTime: 120 + Math.floor(Math.random() * 60),
-          availability24h: true,
-          medicalEvacuation: isHub
+          category: Math.floor(Math.random() * 3) + 7, // Cat 7-9
+          foamCapability: Math.random() > 0.1,
+          responseTime: Math.round(Math.random() * 2 + 2), // 2-4 minutes
+          availability24h: Math.random() > 0.05,
+          medicalEvacuation: emergencyType === 'medical' ? Math.random() > 0.1 : Math.random() > 0.4
         },
         
+        // Operations
         slots: {
-          available: !isNightTime || isHub,
-          nextAvailable: isNightTime ? '06:00+1' : 'Immediate',
-          restrictions: isNightTime ? ['Night ops restricted'] : []
+          available: Math.random() > 0.2, // 80% slot availability
+          nextAvailable: new Date(Date.now() + Math.random() * 3600000).toISOString(),
+          restrictions: Math.random() > 0.7 ? ['Noise sensitive hours'] : []
         },
         
         fuelAvailability: {
-          jetA1: true,
-          quantity: 500 + Math.floor(Math.random() * 1000),
-          supplier: ['Shell', 'BP', 'Total', 'ExxonMobil'][index % 4]
+          jetA1: Math.random() > 0.02, // 98% fuel availability
+          quantity: Math.round(Math.random() * 50000 + 10000), // 10k-60k liters
+          supplier: ['Shell', 'BP', 'Total', 'ExxonMobil'][Math.floor(Math.random() * 4)]
         },
         
+        // Medical Facilities
         medical: {
-          onSite: isHub,
+          onSite: Math.random() > 0.3,
           nearbyHospitals: [
             {
               name: `${airport.name.split(' ')[0]} General Hospital`,
-              distance: 8 + Math.floor(Math.random() * 15),
+              distance: Math.round(Math.random() * 15 + 2), // 2-17km
               specialties: ['Emergency', 'Cardiology', 'Trauma'],
-              trauma: true
+              trauma: Math.random() > 0.3
             }
           ]
         },
         
+        // Suitability Scoring
         suitability: {
-          overall: Math.round(60 + Math.random() * 40),
-          weather: Math.round(weatherScore),
-          facilities: Math.round(70 + Math.random() * 30),
-          cost: Math.round(50 + Math.random() * 40),
-          time: Math.round(80 - (airport.distance / 10)),
-          safety: Math.round(85 + Math.random() * 15)
+          overall: Math.round((Math.random() * 40 + 60)), // 60-100
+          weather: Math.round((Math.random() * 30 + 70)), // 70-100
+          facilities: Math.round((Math.random() * 35 + 65)), // 65-100
+          cost: Math.round((Math.random() * 50 + 50)), // 50-100
+          time: Math.round((100 - (distance / 100))), // Distance-based
+          safety: Math.round((Math.random() * 20 + 80)) // 80-100
         },
         
-        restrictions: isNightTime ? ['Limited night operations'] : [],
-        advantages: isHub ? ['24/7 operations', 'Medical facilities'] : 
-                   airport.icao === 'EDDF' ? ['Hub operations', 'Maintenance'] : 
+        restrictions: Math.random() > 0.8 ? ['Slot restrictions 22:00-06:00'] : [],
+        advantages: airport.icao.startsWith('E') ? 
+                   ['EU regulations', 'Schengen area', 'Multiple airlines'] :
                    ['Full ILS CAT3', 'Emergency services']
       };
     });
@@ -418,141 +376,7 @@ export default function EnhancedOperationalDecisionEngine() {
     setReportGenerated(report);
   };
 
-  const generateOperationalDecisions = (flight: EnhancedFlightData) => {
-    const decisions: OperationalDecision[] = [];
-
-    if (emergencyType === 'medical') {
-      decisions.push({
-        id: 'medical-diversion',
-        type: 'medical',
-        priority: 'critical',
-        title: 'Medical Emergency - Immediate Diversion Required',
-        description: `${flight.callsign} declares medical emergency. Passenger experiencing cardiac symptoms requiring immediate hospital treatment.`,
-        impact: {
-          cost: {
-            fuel: 15000,
-            handling: 8000,
-            passenger: 18000,
-            crew: 4000,
-            total: 45000
-          },
-          time: {
-            delay: 180,
-            diversion: 45,
-            recovery: 120,
-            total: 345
-          },
-          fuel: {
-            additional: 2800,
-            remaining: flight.fuelRemaining - 2800,
-            percentage: ((flight.fuelRemaining - 2800) / flight.fuelRemaining) * 100
-          },
-          passengers: {
-            affected: flight.passengers,
-            compensation: 18000,
-            rebooking: 45
-          },
-          operations: {
-            slotLoss: true,
-            downstream: 3,
-            recovery: 'Next day'
-          }
-        },
-        recommendations: [
-          'Divert to nearest airport with medical facilities',
-          'Coordinate with emergency medical services',
-          'Prepare passenger manifest for customs',
-          'Arrange ground transportation to hospital'
-        ],
-        timeline: 'Immediate decision required - passenger condition deteriorating',
-        approvalRequired: ['Captain', 'Operations Control', 'Medical Advisory'],
-        alternativeOptions: ['Continue to destination with medical kit', 'Medical advice via satellite'],
-        riskAssessment: {
-          safety: 'critical',
-          operational: 'high',
-          financial: 'medium',
-          reputation: 'high',
-          overall: 'critical'
-        }
-      });
-    }
-
-    if (emergencyType === 'technical') {
-      decisions.push({
-        id: 'technical-assessment',
-        type: 'technical',
-        priority: 'high',
-        title: 'Engine Parameter Deviation - Assessment Required',
-        description: `${flight.callsign} reports elevated engine temperature on Engine 2. Monitoring required.`,
-        impact: {
-          cost: {
-            fuel: 8000,
-            handling: 5000,
-            passenger: 12000,
-            crew: 2000,
-            total: 27000
-          },
-          time: {
-            delay: 120,
-            diversion: 30,
-            recovery: 180,
-            total: 330
-          },
-          fuel: {
-            additional: 1500,
-            remaining: flight.fuelRemaining - 1500,
-            percentage: ((flight.fuelRemaining - 1500) / flight.fuelRemaining) * 100
-          },
-          passengers: {
-            affected: flight.passengers,
-            compensation: 8000,
-            rebooking: 25
-          },
-          operations: {
-            slotLoss: false,
-            downstream: 1,
-            recovery: 'Same day'
-          }
-        },
-        recommendations: [
-          'Monitor engine parameters closely',
-          'Reduce thrust if within limits',
-          'Prepare for single-engine approach if required',
-          'Brief cabin crew on potential emergency'
-        ],
-        timeline: 'Monitor for 30 minutes, decide based on trend',
-        approvalRequired: ['Captain', 'Operations Control', 'Maintenance Control'],
-        alternativeOptions: ['Continue monitoring', 'Immediate diversion', 'Engine shutdown'],
-        riskAssessment: {
-          safety: 'high',
-          operational: 'medium',
-          financial: 'medium',
-          reputation: 'low',
-          overall: 'high'
-        }
-      });
-    }
-
-    setOperationalDecisions(decisions);
-  };
-
-  const getSuitabilityColor = (score: number) => {
-    if (score >= 80) return 'text-green-400';
-    if (score >= 60) return 'text-yellow-400';
-    return 'text-red-400';
-  };
-
-  const getRiskColor = (risk: string) => {
-    switch (risk) {
-      case 'critical': return 'text-red-400 bg-red-900/20';
-      case 'high': return 'text-orange-400 bg-orange-900/20';
-      case 'medium': return 'text-yellow-400 bg-yellow-900/20';
-      case 'low': return 'text-green-400 bg-green-900/20';
-      default: return 'text-gray-400 bg-gray-900/20';
-    }
-  };
-
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -560,343 +384,582 @@ export default function EnhancedOperationalDecisionEngine() {
     }).format(amount);
   };
 
-  const formatTime = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  const getRiskColor = (risk: string): string => {
+    switch (risk) {
+      case 'low': return 'bg-green-600';
+      case 'medium': return 'bg-yellow-600';
+      case 'high': return 'bg-orange-600';
+      case 'critical': return 'bg-red-600';
+      default: return 'bg-gray-600';
+    }
   };
+
+  const getSuitabilityColor = (score: number) => {
+    if (score >= 80) return 'text-green-400';
+    if (score >= 60) return 'text-yellow-400';
+    if (score >= 40) return 'text-orange-400';
+    return 'text-red-400';
+  };
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371; // Earth's radius in km
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  const calculateBearing = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const dLon = toRadians(lon2 - lon1);
+    const y = Math.sin(dLon) * Math.cos(toRadians(lat2));
+    const x = Math.cos(toRadians(lat1)) * Math.sin(toRadians(lat2)) -
+              Math.sin(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.cos(dLon);
+    return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  };
+
+  const toRadians = (degrees: number): number => degrees * (Math.PI / 180);
 
   if (!flightData) {
     return (
-      <div className="p-6 text-center">
-        <Plane className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-        <div className="text-gray-400">Select a flight to analyze operational decisions</div>
+      <div className="p-6">
+        <Card className="bg-gray-800/50 border-gray-600">
+          <CardContent className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <Plane className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-white mb-2">No Flight Selected</h3>
+              <p className="text-gray-400">Please select a flight to begin operational decision analysis</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">Enhanced Operational Decision Engine</h2>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setEmergencyType('medical')}
-            className={`px-3 py-1 rounded text-sm ${emergencyType === 'medical' ? 'bg-red-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-          >
-            Medical
-          </button>
-          <button
-            onClick={() => setEmergencyType('technical')}
-            className={`px-3 py-1 rounded text-sm ${emergencyType === 'technical' ? 'bg-orange-600 text-white' : 'bg-gray-700 text-gray-300'}`}
-          >
-            Technical
-          </button>
-        </div>
-      </div>
-
-      {/* Flight Overview */}
+      {/* Flight Overview Card */}
       <Card className="bg-gray-800/50 border-gray-600">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
-            <Plane className="h-5 w-5" />
-            Flight Analysis: {flightData.callsign}
+            <Brain className="h-5 w-5" />
+            Enhanced Operational Decision Engine - {flightData.callsign}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div>
-              <div className="text-gray-400">Aircraft</div>
+              <div className="text-gray-400 text-sm">Aircraft</div>
               <div className="text-white font-medium">{flightData.aircraft}</div>
             </div>
             <div>
-              <div className="text-gray-400">Fuel Remaining</div>
+              <div className="text-gray-400 text-sm">Route</div>
+              <div className="text-white font-medium">{flightData.route}</div>
+            </div>
+            <div>
+              <div className="text-gray-400 text-sm">Fuel Remaining</div>
               <div className="text-white font-medium">{flightData.fuelRemaining.toLocaleString()} kg</div>
             </div>
             <div>
-              <div className="text-gray-400">Range Available</div>
-              <div className="text-white font-medium">{Math.round(flightData.fuelRemaining / flightData.fuelBurn * flightData.speed)} km</div>
+              <div className="text-gray-400 text-sm">Passengers</div>
+              <div className="text-white font-medium">{flightData.passengers}</div>
             </div>
-            <div>
-              <div className="text-gray-400">Passengers</div>
-              <div className="text-white font-medium">{flightData.passengers} PAX</div>
-            </div>
+          </div>
+          
+          <div className="flex gap-2 mb-4">
+            <select 
+              value={emergencyType} 
+              onChange={(e) => setEmergencyType(e.target.value)}
+              className="bg-gray-700 border border-gray-600 text-white rounded px-3 py-1"
+            >
+              <option value="medical">Medical Emergency</option>
+              <option value="technical">Technical Issue</option>
+              <option value="weather">Weather Event</option>
+              <option value="fuel">Fuel Emergency</option>
+            </select>
           </div>
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="decisions" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="decisions">Operational Decisions</TabsTrigger>
+      <Tabs defaultValue="simulation" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="simulation">Diversion Simulation</TabsTrigger>
           <TabsTrigger value="airfields">Available Airfields</TabsTrigger>
-          <TabsTrigger value="analysis">Impact Analysis</TabsTrigger>
+          <TabsTrigger value="analysis">Cost Analysis</TabsTrigger>
+          <TabsTrigger value="crew">Crew Status</TabsTrigger>
+          <TabsTrigger value="reports">Reports</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="decisions" className="space-y-4">
-          {operationalDecisions.map((decision) => (
-            <Card key={decision.id} className="bg-gray-800/50 border-gray-600">
+        <TabsContent value="simulation" className="space-y-4">
+          {diversionScenarios.length > 0 && (
+            <Card className="bg-gray-800/50 border-gray-600">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-red-400" />
-                    {decision.title}
-                  </CardTitle>
-                  <Badge className={`${getRiskColor(decision.riskAssessment.overall)} border-0`}>
-                    {decision.riskAssessment.overall.toUpperCase()} RISK
-                  </Badge>
-                </div>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Brain className="h-5 w-5" />
+                  Diversion Scenarios
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-gray-300">{decision.description}</p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <h4 className="text-blue-300 font-medium">Financial Impact</h4>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Total Cost:</span>
-                        <span className="text-white">{formatCurrency(decision.impact.cost.total)}</span>
+                <div className="grid gap-3">
+                  {diversionScenarios.map((scenario, index) => (
+                    <div
+                      key={index}
+                      className={`p-3 rounded border cursor-pointer transition-colors ${
+                        selectedScenario?.airport === scenario.airport
+                          ? 'border-blue-500 bg-blue-900/20'
+                          : 'border-gray-600 hover:border-gray-500'
+                      }`}
+                      onClick={() => setSelectedScenario(scenario)}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-white font-medium">{scenario.airport} - {scenario.airportName}</h3>
+                        <Badge className={`${
+                          scenario.urgency === 'critical' ? 'bg-red-600' :
+                          scenario.urgency === 'emergency' ? 'bg-orange-600' :
+                          scenario.urgency === 'urgent' ? 'bg-yellow-600' : 'bg-blue-600'
+                        }`}>
+                          {scenario.urgency.toUpperCase()}
+                        </Badge>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Fuel:</span>
-                        <span className="text-white">{formatCurrency(decision.impact.cost.fuel)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Handling:</span>
-                        <span className="text-white">{formatCurrency(decision.impact.cost.handling)}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <h4 className="text-blue-300 font-medium">Time Impact</h4>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Total Delay:</span>
-                        <span className="text-white">{formatTime(decision.impact.time.total)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Diversion:</span>
-                        <span className="text-white">{formatTime(decision.impact.time.diversion)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Recovery:</span>
-                        <span className="text-white">{formatTime(decision.impact.time.recovery)}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <h4 className="text-blue-300 font-medium">Fuel Impact</h4>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Additional:</span>
-                        <span className="text-white">{decision.impact.fuel.additional.toLocaleString()} kg</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Remaining:</span>
-                        <span className="text-white">{decision.impact.fuel.remaining.toLocaleString()} kg</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Percentage:</span>
-                        <span className="text-white">{decision.impact.fuel.percentage.toFixed(1)}%</span>
+                      <p className="text-gray-300 text-sm mb-2">{scenario.reason}</p>
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div>
+                          <span className="text-gray-400">Distance:</span>
+                          <span className="text-white ml-1">{scenario.distance} km</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Flight Time:</span>
+                          <span className="text-white ml-1">{scenario.estimatedFlightTime} min</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Extra Fuel:</span>
+                          <span className="text-white ml-1">{scenario.extraFuelBurn.toLocaleString()} kg</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
 
-                <div className="space-y-2">
-                  <h4 className="text-blue-300 font-medium">Recommendations</h4>
-                  <ul className="text-sm text-gray-300 space-y-1">
-                    {decision.recommendations.map((rec, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="text-blue-400 mt-1">•</span>
-                        {rec}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {simulationResult && (
+                  <div className="mt-6 p-4 bg-blue-900/20 border border-blue-500 rounded">
+                    <h4 className="text-blue-300 font-medium mb-3">Simulation Results</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <div className="text-gray-400">Original ETA</div>
+                        <div className="text-white">{new Date(simulationResult.originalEta).toLocaleTimeString()}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400">New ETA</div>
+                        <div className="text-white">{new Date(simulationResult.newEta).toLocaleTimeString()}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400">Total Delay</div>
+                        <div className="text-white">{simulationResult.totalDelay} min</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-400">Fuel Remaining</div>
+                        <div className="text-white">{simulationResult.fuelRemaining.toLocaleString()} kg</div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4">
+                      <div className="text-gray-400 mb-2">Risk Assessment</div>
+                      <div className="flex gap-2">
+                        <Badge className={getRiskColor(simulationResult.riskAssessment.overall)}>
+                          Overall: {simulationResult.riskAssessment.overall.toUpperCase()}
+                        </Badge>
+                        <Badge className={getRiskColor(simulationResult.riskAssessment.fuel)}>
+                          Fuel: {simulationResult.riskAssessment.fuel.toUpperCase()}
+                        </Badge>
+                        <Badge className={getRiskColor(simulationResult.riskAssessment.crew)}>
+                          Crew: {simulationResult.riskAssessment.crew.toUpperCase()}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex gap-2">
-                  <Badge variant="outline" className="text-green-400 border-green-500">
-                    Timeline: {decision.timeline}
-                  </Badge>
-                  <Badge variant="outline" className="text-yellow-400 border-yellow-500">
-                    Approval: {decision.approvalRequired.join(', ')}
-                  </Badge>
+                  <Button onClick={runDiversionSimulation} disabled={!selectedScenario}>
+                    Run Simulation
+                  </Button>
+                  <Button onClick={generateMORReport} disabled={!simulationResult} variant="outline">
+                    Generate MOR Report
+                  </Button>
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </TabsContent>
-
-        <TabsContent value="airfields" className="space-y-4">
-          {availableAirfields.map((airfield) => (
-            <Card key={airfield.icao} className="bg-gray-800/50 border-gray-600">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    {airfield.icao} - {airfield.name}
-                  </CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Badge className={`${getSuitabilityColor(airfield.suitability.overall)} bg-gray-700`}>
-                      Score: {airfield.suitability.overall}
-                    </Badge>
-                    <Badge className="bg-blue-700 text-blue-200">
-                      {airfield.distance} km
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                  <div className="space-y-2">
-                    <h4 className="text-blue-300 font-medium flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
-                      Weather
-                    </h4>
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Category:</span>
-                        <span className="text-white">{airfield.weatherCategory}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Visibility:</span>
-                        <span className="text-white">{(airfield.visibility / 1000).toFixed(1)} km</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Ceiling:</span>
-                        <span className="text-white">{airfield.ceiling} ft</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Winds:</span>
-                        <span className="text-white">{airfield.winds.speed} kt</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h4 className="text-blue-300 font-medium flex items-center gap-1">
-                      <Wrench className="h-4 w-4" />
-                      Ground Support
-                    </h4>
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Provider:</span>
-                        <span className="text-white">{airfield.groundHandling.provider}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Hours:</span>
-                        <span className="text-white">{airfield.groundHandling.operatingHours}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">24/7:</span>
-                        <span className={airfield.groundHandling.availability24h ? 'text-green-400' : 'text-red-400'}>
-                          {airfield.groundHandling.availability24h ? 'Yes' : 'No'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h4 className="text-blue-300 font-medium flex items-center gap-1">
-                      <Shield className="h-4 w-4" />
-                      Fire & Rescue
-                    </h4>
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Category:</span>
-                        <span className="text-white">{airfield.fireRescue.category}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Response:</span>
-                        <span className="text-white">{airfield.fireRescue.responseTime}s</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Med Evac:</span>
-                        <span className={airfield.fireRescue.medicalEvacuation ? 'text-green-400' : 'text-red-400'}>
-                          {airfield.fireRescue.medicalEvacuation ? 'Available' : 'Limited'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <h4 className="text-blue-300 font-medium flex items-center gap-1">
-                      <Building className="h-4 w-4" />
-                      Operations
-                    </h4>
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Slots:</span>
-                        <span className={airfield.slots.available ? 'text-green-400' : 'text-yellow-400'}>
-                          {airfield.slots.available ? 'Available' : airfield.slots.nextAvailable}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Fuel:</span>
-                        <span className="text-white">{airfield.fuelAvailability.quantity}T</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Customs:</span>
-                        <span className={airfield.customs.availability24h ? 'text-green-400' : 'text-yellow-400'}>
-                          {airfield.customs.availability24h ? '24/7' : 'Limited'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {airfield.advantages.length > 0 && (
-                  <div>
-                    <h4 className="text-green-300 font-medium mb-2">Advantages</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {airfield.advantages.map((advantage, index) => (
-                        <Badge key={index} variant="outline" className="text-green-400 border-green-500 text-xs">
-                          {advantage}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {airfield.restrictions.length > 0 && (
-                  <div>
-                    <h4 className="text-red-300 font-medium mb-2">Restrictions</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {airfield.restrictions.map((restriction, index) => (
-                        <Badge key={index} variant="outline" className="text-red-400 border-red-500 text-xs">
-                          {restriction}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="pt-2 border-t border-gray-600">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-400">Fuel Required for Diversion:</span>
-                    <span className="text-white font-medium">{airfield.fuelRequired.toLocaleString()} kg</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          )}
         </TabsContent>
 
         <TabsContent value="analysis" className="space-y-4">
-          <Card className="bg-gray-800/50 border-gray-600">
-            <CardHeader>
-              <CardTitle className="text-white">Comprehensive Impact Analysis</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-gray-300">
-                <p>Detailed analysis of operational impacts, fuel modifications, range calculations, and airfield suitability assessments are now available for each scenario.</p>
-                <p className="mt-2">The system evaluates CAT1 weather conditions, ground handling availability, customs operations, fire rescue capabilities, and 24-hour operating status for optimal decision support.</p>
-              </div>
-            </CardContent>
-          </Card>
+          {costAnalysis && customerImpact && (
+            <div className="grid gap-4">
+              <Card className="bg-gray-800/50 border-gray-600">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <DollarSign className="h-5 w-5" />
+                    Cost Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                      <div className="text-gray-400">Hotel Costs</div>
+                      <div className="text-white font-medium">{formatCurrency(costAnalysis.hotel)}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Meal Costs</div>
+                      <div className="text-white font-medium">{formatCurrency(costAnalysis.meals)}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Rebooking</div>
+                      <div className="text-white font-medium">{formatCurrency(costAnalysis.rebooking)}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Crew Costs</div>
+                      <div className="text-white font-medium">{formatCurrency(costAnalysis.breakdown.crewCosts)}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Fuel Costs</div>
+                      <div className="text-white font-medium">{formatCurrency(costAnalysis.breakdown.fuelCosts)}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Total Cost</div>
+                      <div className="text-yellow-400 font-bold text-lg">{formatCurrency(costAnalysis.total)}</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800/50 border-gray-600">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Customer Impact
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <div className="text-gray-400">Disruption Score</div>
+                      <div className="text-3xl font-bold text-white">{customerImpact.score}/100</div>
+                      <div className={`text-sm ${
+                        customerImpact.category === 'severe' ? 'text-red-400' :
+                        customerImpact.category === 'high' ? 'text-orange-400' :
+                        customerImpact.category === 'moderate' ? 'text-yellow-400' : 'text-green-400'
+                      }`}>
+                        {customerImpact.category.toUpperCase()} IMPACT
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-gray-400">Est. Compensation</div>
+                      <div className="text-white font-medium">{formatCurrency(customerImpact.estimatedCompensation)}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <div className="text-gray-400">Delay</div>
+                      <div className="text-white">{customerImpact.factors.delayMinutes} minutes</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Reroute</div>
+                      <div className="text-white">{customerImpact.factors.rerouteRequired ? 'Yes' : 'No'}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Missed Connection</div>
+                      <div className="text-white">{customerImpact.factors.missedConnection ? 'Yes' : 'No'}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Compensation Required</div>
+                      <div className="text-white">{customerImpact.factors.compensationRequired ? 'Yes' : 'No'}</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="crew" className="space-y-4">
+          {crewStatus && fuelAnalysis && (
+            <div className="grid gap-4">
+              <Card className="bg-gray-800/50 border-gray-600">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Crew Legality Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <div className="text-gray-400">Legal Status</div>
+                      <div className={`text-2xl font-bold ${crewStatus.legal ? 'text-green-400' : 'text-red-400'}`}>
+                        {crewStatus.legal ? 'LEGAL' : 'ILLEGAL'}
+                      </div>
+                    </div>
+                    <Badge className={getRiskColor(crewStatus.riskLevel)}>
+                      {crewStatus.riskLevel.toUpperCase()} RISK
+                    </Badge>
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-4 text-sm mb-4">
+                    <div>
+                      <div className="text-gray-400">Time Remaining</div>
+                      <div className="text-white">{crewStatus.timeRemaining} min</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Required Time</div>
+                      <div className="text-white">{crewStatus.requiredTime} min</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Safety Margin</div>
+                      <div className="text-white">{crewStatus.safetyMargin} min</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-gray-400 mb-2">Recommendations</div>
+                    <ul className="text-sm text-gray-300 space-y-1">
+                      {crewStatus.recommendations.map((rec, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="text-blue-400 mt-1">•</span>
+                          {rec}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800/50 border-gray-600">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Fuel className="h-5 w-5" />
+                    Fuel Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <div className="text-gray-400">Efficiency</div>
+                      <div className="text-white font-medium">{fuelAnalysis.efficiency}%</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Requested Extra</div>
+                      <div className="text-white">{fuelAnalysis.requestedExtra.toLocaleString()} kg</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Actual Burn</div>
+                      <div className="text-white">{fuelAnalysis.actualBurn.toLocaleString()} kg</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Wasted Fuel</div>
+                      <div className="text-white">{fuelAnalysis.wastedFuel.toLocaleString()} kg</div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <div className="text-gray-400 mb-2">Cost Impact</div>
+                    <div className="text-yellow-400 font-medium">{formatCurrency(fuelAnalysis.cost)}</div>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <div className="text-gray-400 mb-2">Recommendation</div>
+                    <div className="text-gray-300 text-sm">{fuelAnalysis.recommendation}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="reports" className="space-y-4">
+          {reportGenerated && (
+            <Card className="bg-gray-800/50 border-gray-600">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Mandatory Occurrence Report (MOR)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <pre className="text-sm text-gray-300 whitespace-pre-wrap bg-gray-900 p-4 rounded overflow-auto max-h-96">
+                  {reportGenerated}
+                </pre>
+                <div className="mt-4 flex gap-2">
+                  <Button variant="outline" onClick={() => navigator.clipboard.writeText(reportGenerated)}>
+                    Copy Report
+                  </Button>
+                  <Button variant="outline">
+                    Download PDF
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
+          {weatherData && (
+            <Card className="bg-gray-800/50 border-gray-600">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Eye className="h-5 w-5" />
+                  Weather Data
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-3">
+                  {weatherData.map((report: any, index: number) => (
+                    <div key={index} className="p-3 border border-gray-600 rounded">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-white font-medium">{report.airport}</h4>
+                        <Badge className={
+                          report.data.conditions === 'VMC' ? 'bg-green-600' :
+                          report.data.conditions === 'MVFR' ? 'bg-yellow-600' : 'bg-red-600'
+                        }>
+                          {report.data.conditions}
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div>
+                          <span className="text-gray-400">Visibility:</span>
+                          <span className="text-white ml-1">{report.data.visibility} km</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Ceiling:</span>
+                          <span className="text-white ml-1">{report.data.ceiling} ft</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Winds:</span>
+                          <span className="text-white ml-1">{report.data.winds.direction}°/{report.data.winds.speed}kt</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="airfields" className="space-y-4">
+          <div className="grid gap-4">
+            {availableAirfields.map((airfield, index) => (
+              <Card key={index} className="bg-gray-800/50 border-gray-600">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5" />
+                      {airfield.icao} - {airfield.name}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Badge className={getSuitabilityColor(airfield.suitability.overall) === 'text-green-400' ? 'bg-green-600' : 
+                                       getSuitabilityColor(airfield.suitability.overall) === 'text-yellow-400' ? 'bg-yellow-600' :
+                                       getSuitabilityColor(airfield.suitability.overall) === 'text-orange-400' ? 'bg-orange-600' : 'bg-red-600'}>
+                        {airfield.suitability.overall}% Suitable
+                      </Badge>
+                      <Badge className={airfield.weatherCategory === 'CAT1' ? 'bg-green-600' : 
+                                       airfield.weatherCategory === 'CAT2' ? 'bg-yellow-600' : 'bg-orange-600'}>
+                        {airfield.weatherCategory}
+                      </Badge>
+                    </div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div>
+                      <div className="text-gray-400 text-sm">Distance</div>
+                      <div className="text-white font-medium">{airfield.distance} km</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400 text-sm">Fuel Required</div>
+                      <div className="text-white font-medium">{airfield.fuelRequired.toLocaleString()} kg</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400 text-sm">Visibility</div>
+                      <div className="text-white font-medium">{airfield.visibility} km</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400 text-sm">Winds</div>
+                      <div className="text-white font-medium">
+                        {airfield.winds.direction}°/{airfield.winds.speed}kt
+                        {airfield.winds.gusts && ` G${airfield.winds.gusts}kt`}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <div className="text-gray-400 text-sm mb-2">Ground Handling</div>
+                      <div className="text-white text-sm">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className={`w-2 h-2 rounded-full ${airfield.groundHandling.available ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                          {airfield.groundHandling.provider}
+                        </div>
+                        <div className="text-gray-300">{airfield.groundHandling.operatingHours}</div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-gray-400 text-sm mb-2">Customs & Immigration</div>
+                      <div className="text-white text-sm">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className={`w-2 h-2 rounded-full ${airfield.customs.available ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                          {airfield.customs.availability24h ? '24/7' : 'Limited Hours'}
+                        </div>
+                        {airfield.customs.medicalClearance && (
+                          <div className="text-green-300 text-xs">Medical Clearance Available</div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-gray-400 text-sm mb-2">Fire & Rescue</div>
+                      <div className="text-white text-sm">
+                        <div className="mb-1">Category {airfield.fireRescue.category}</div>
+                        <div className="text-gray-300 text-xs">
+                          Response: {airfield.fireRescue.responseTime} min
+                        </div>
+                        {airfield.fireRescue.medicalEvacuation && (
+                          <div className="text-green-300 text-xs">Medical Evacuation</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {airfield.advantages.length > 0 && (
+                    <div className="mt-4">
+                      <div className="text-gray-400 text-sm mb-2">Advantages</div>
+                      <div className="flex gap-2 flex-wrap">
+                        {airfield.advantages.map((advantage, idx) => (
+                          <Badge key={idx} variant="outline" className="text-green-300 border-green-600">
+                            {advantage}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {airfield.restrictions.length > 0 && (
+                    <div className="mt-2">
+                      <div className="text-gray-400 text-sm mb-2">Restrictions</div>
+                      <div className="flex gap-2 flex-wrap">
+                        {airfield.restrictions.map((restriction, idx) => (
+                          <Badge key={idx} variant="outline" className="text-red-300 border-red-600">
+                            {restriction}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
