@@ -679,51 +679,51 @@ export default function EnhancedOperationalDecisionEngine() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            <div>
-              <div className="text-gray-400 text-sm">Aircraft</div>
-              <div className="text-white font-medium">{flightData.aircraft}</div>
+              <div>
+                <div className="text-gray-400 text-sm">Aircraft</div>
+                <div className="text-white font-medium">{flightData.aircraft}</div>
+              </div>
+              <div>
+                <div className="text-gray-400 text-sm">Route</div>
+                <div className="text-white font-medium">{flightData.route}</div>
+              </div>
+              <div>
+                <div className="text-gray-400 text-sm">Fuel Remaining</div>
+                <div className="text-white font-medium">{flightData.fuelRemaining.toLocaleString()} kg</div>
+              </div>
+              <div>
+                <div className="text-gray-400 text-sm">Passengers</div>
+                <div className="text-white font-medium">{flightData.passengers}</div>
+              </div>
             </div>
-            <div>
-              <div className="text-gray-400 text-sm">Route</div>
-              <div className="text-white font-medium">{flightData.route}</div>
-            </div>
-            <div>
-              <div className="text-gray-400 text-sm">Fuel Remaining</div>
-              <div className="text-white font-medium">{flightData.fuelRemaining.toLocaleString()} kg</div>
-            </div>
-            <div>
-              <div className="text-gray-400 text-sm">Passengers</div>
-              <div className="text-white font-medium">{flightData.passengers}</div>
-            </div>
-          </div>
           
-          <div className="flex gap-2 mb-4">
-            <select 
-              value={emergencyType} 
-              onChange={(e) => setEmergencyType(e.target.value)}
-              className="bg-gray-700 border border-gray-600 text-white rounded px-3 py-1"
-            >
-              <option value="medical">Medical Emergency</option>
-              <option value="technical">Technical Issue</option>
-              <option value="weather">Weather Event</option>
-              <option value="fuel">Fuel Emergency</option>
-            </select>
-          </div>
-        </CardContent>
-      </Card>
+            <div className="flex gap-2 mb-4">
+              <select 
+                value={emergencyType} 
+                onChange={(e) => setEmergencyType(e.target.value)}
+                className="bg-gray-700 border border-gray-600 text-white rounded px-3 py-1"
+              >
+                <option value="medical">Medical Emergency</option>
+                <option value="technical">Technical Issue</option>
+                <option value="weather">Weather Event</option>
+                <option value="fuel">Fuel Emergency</option>
+              </select>
+            </div>
+          </CardContent>
+        </Card>
 
-      <Tabs defaultValue="simulation" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="simulation">Diversion Simulation</TabsTrigger>
-          <TabsTrigger value="airfields">Available Airfields</TabsTrigger>
-          <TabsTrigger value="analysis">Cost Analysis</TabsTrigger>
-          <TabsTrigger value="crew">Crew Status</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-        </TabsList>
+        <Tabs defaultValue="simulation" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="simulation">Diversion Simulation</TabsTrigger>
+            <TabsTrigger value="airfields">Available Airfields</TabsTrigger>
+            <TabsTrigger value="analysis">Cost Analysis</TabsTrigger>
+            <TabsTrigger value="crew">Crew Status</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="simulation" className="space-y-4">
-          {/* VIR127C Specific Diversion Comparison */}
-          {flightData?.callsign === 'VIR127C' && (
+          <TabsContent value="simulation" className="space-y-4">
+            {/* VIR127C Specific Diversion Comparison */}
+            {flightData?.callsign === 'VIR127C' && (
             <Card className="bg-blue-900/20 border-blue-500 mb-6">
               <CardHeader>
                 <CardTitle className="text-blue-300 flex items-center gap-2">
