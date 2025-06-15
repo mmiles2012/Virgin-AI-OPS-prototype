@@ -493,12 +493,223 @@ export default function EnhancedOperationalDecisionEngine() {
         </TabsList>
 
         <TabsContent value="simulation" className="space-y-4">
+          {/* VIR127C Specific Diversion Comparison */}
+          {flightData?.callsign === 'VIR127C' && (
+            <Card className="bg-blue-900/20 border-blue-500 mb-6">
+              <CardHeader>
+                <CardTitle className="text-blue-300 flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5" />
+                  VIR127C Medical Emergency - Gander vs Halifax Comparison
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-blue-200 mb-4">
+                  Current: 45.18°N, 69.17°W | Alt: 40,000ft | Speed: 457kt | Fuel: 42,000kg | Crew: 187min remaining
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Gander Option */}
+                  <div className="p-4 border border-gray-600 rounded bg-gray-800/30">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-white font-medium flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        Gander (CYQX)
+                      </h3>
+                      <Badge className="bg-yellow-600">Score: 78</Badge>
+                    </div>
+                    
+                    <div className="space-y-3 text-sm">
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <div className="text-gray-400">Distance</div>
+                          <div className="text-white">234 km</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-400">Flight Time</div>
+                          <div className="text-white">17 min</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-400">Fuel Req.</div>
+                          <div className="text-white">1,850 kg</div>
+                        </div>
+                      </div>
+                      
+                      <div className="border-t border-gray-600 pt-2">
+                        <div className="text-gray-400 mb-1">Cost Breakdown</div>
+                        <div className="space-y-1 text-xs">
+                          <div className="flex justify-between">
+                            <span>Passenger Care:</span>
+                            <span className="text-white">$89,400</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Crew Costs:</span>
+                            <span className="text-white">$8,200</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Fuel/Handling:</span>
+                            <span className="text-white">$12,850</span>
+                          </div>
+                          <div className="flex justify-between border-t border-gray-500 pt-1">
+                            <span className="text-yellow-400 font-medium">Total:</span>
+                            <span className="text-yellow-400 font-bold">$110,450</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="border-t border-gray-600 pt-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-gray-400">Crew Status:</span>
+                          <span className="text-green-400 font-medium">LEGAL</span>
+                        </div>
+                        <div className="text-xs text-gray-300">170 min remaining (LOW risk)</div>
+                      </div>
+                      
+                      <div className="border-t border-gray-600 pt-2">
+                        <div className="text-gray-400 mb-1">Facilities</div>
+                        <div className="text-xs space-y-1">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span className="text-gray-300">Medical available</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                            <span className="text-gray-300">Limited customs hours</span>
+                          </div>
+                          <div className="text-gray-300">Fire Category 8</div>
+                        </div>
+                      </div>
+                      
+                      <div className="border-t border-gray-600 pt-2">
+                        <div className="text-green-400 text-xs font-medium mb-1">Advantages:</div>
+                        <ul className="text-xs text-gray-300 space-y-1">
+                          <li>• Closest airport (234 km)</li>
+                          <li>• Established diversion hub</li>
+                          <li>• Experienced with wide-body</li>
+                          <li>• Minimal fuel/time exposure</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Halifax Option */}
+                  <div className="p-4 border border-gray-600 rounded bg-gray-800/30">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-white font-medium flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        Halifax (CYHZ)
+                      </h3>
+                      <Badge className="bg-green-600">Score: 85</Badge>
+                    </div>
+                    
+                    <div className="space-y-3 text-sm">
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <div className="text-gray-400">Distance</div>
+                          <div className="text-white">421 km</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-400">Flight Time</div>
+                          <div className="text-white">29 min</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-400">Fuel Req.</div>
+                          <div className="text-white">3,150 kg</div>
+                        </div>
+                      </div>
+                      
+                      <div className="border-t border-gray-600 pt-2">
+                        <div className="text-gray-400 mb-1">Cost Breakdown</div>
+                        <div className="space-y-1 text-xs">
+                          <div className="flex justify-between">
+                            <span>Passenger Care:</span>
+                            <span className="text-white">$94,800</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Crew Costs:</span>
+                            <span className="text-white">$9,600</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Fuel/Handling:</span>
+                            <span className="text-white">$18,200</span>
+                          </div>
+                          <div className="flex justify-between border-t border-gray-500 pt-1">
+                            <span className="text-yellow-400 font-medium">Total:</span>
+                            <span className="text-yellow-400 font-bold">$122,600</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="border-t border-gray-600 pt-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-gray-400">Crew Status:</span>
+                          <span className="text-green-400 font-medium">LEGAL</span>
+                        </div>
+                        <div className="text-xs text-gray-300">158 min remaining (LOW risk)</div>
+                      </div>
+                      
+                      <div className="border-t border-gray-600 pt-2">
+                        <div className="text-gray-400 mb-1">Facilities</div>
+                        <div className="text-xs space-y-1">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span className="text-gray-300">Excellent medical</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span className="text-gray-300">24/7 customs</span>
+                          </div>
+                          <div className="text-gray-300">Fire Category 9</div>
+                        </div>
+                      </div>
+                      
+                      <div className="border-t border-gray-600 pt-2">
+                        <div className="text-green-400 text-xs font-medium mb-1">Advantages:</div>
+                        <ul className="text-xs text-gray-300 space-y-1">
+                          <li>• Major international airport</li>
+                          <li>• Superior passenger facilities</li>
+                          <li>• Better onward connections</li>
+                          <li>• 24/7 operations</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-6 p-4 bg-green-900/20 border border-green-500 rounded">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle className="h-5 w-5 text-green-400" />
+                    <span className="text-green-300 font-medium">AI Recommendation: Halifax (CYHZ)</span>
+                  </div>
+                  <div className="text-green-200 text-sm">
+                    Higher operational score (85 vs 78) justifies additional 12 minutes and $12,150 cost. 
+                    Superior medical facilities, 24/7 customs, and better passenger care outweigh minimal distance advantage of Gander.
+                    Both options maintain crew legality with adequate fuel margins.
+                  </div>
+                  <div className="mt-3 grid grid-cols-3 gap-4 text-xs">
+                    <div>
+                      <span className="text-green-400">Cost Difference:</span>
+                      <span className="text-white ml-1">+$12,150</span>
+                    </div>
+                    <div>
+                      <span className="text-green-400">Time Difference:</span>
+                      <span className="text-white ml-1">+12 minutes</span>
+                    </div>
+                    <div>
+                      <span className="text-green-400">Fuel Difference:</span>
+                      <span className="text-white ml-1">+1,300 kg</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
           {diversionScenarios.length > 0 && (
             <Card className="bg-gray-800/50 border-gray-600">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Brain className="h-5 w-5" />
-                  Diversion Scenarios
+                  All Diversion Scenarios
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
