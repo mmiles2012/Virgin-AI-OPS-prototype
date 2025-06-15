@@ -116,11 +116,14 @@ const FlightSelector = () => {
       try {
         const response = await fetch('/api/aviation/virgin-atlantic-flights');
         const data = await response.json();
-        if (data.success) {
+        if (data.success && data.flights.length > 0) {
           setAvailableFlights(data.flights);
+        } else {
+          setAvailableFlights([]);
         }
       } catch (error) {
         console.error('Failed to fetch flights:', error);
+        setAvailableFlights([]);
       } finally {
         setLoading(false);
       }
@@ -527,18 +530,155 @@ export default function EnhancedOperationalDecisionEngine() {
     return <FlightSelector />;
   }
 
-  return (
-    <div className="p-6 space-y-6">
-      {/* Flight Overview Card */}
-      <Card className="bg-gray-800/50 border-gray-600">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Brain className="h-5 w-5" />
-            Enhanced Operational Decision Engine - {flightData.callsign}
+  // Active Flights Sidebar Component
+  const ActiveFlightsList = () => {
+    const [availableFlights, setAvailableFlights] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const { selectFlight, selectedFlight } = useSelectedFlight();
+
+    // Fallback flight data when API is rate-limited
+    const fallbackFlights = [
+      {
+        callsign: 'VIR127C',
+        latitude: 49.2827,
+        longitude: -57.1500,
+        altitude: 40000,
+        velocity: 458,
+        heading: 235,
+        aircraft: 'A350-1000',
+        origin: 'LHR',
+        destination: 'JFK'
+      },
+      {
+        callsign: 'VIR401',
+        latitude: 51.4700,
+        longitude: -0.4543,
+        altitude: 35000,
+        velocity: 465,
+        heading: 285,
+        aircraft: 'Boeing 787-9',
+        origin: 'LHR',
+        destination: 'LAX'
+      },
+      {
+        callsign: 'VIR23X',
+        latitude: 54.5714,
+        longitude: -4.4977,
+        altitude: 33975,
+        velocity: 438,
+        heading: 310,
+        aircraft: 'A330-300',
+        origin: 'MAN',
+        destination: 'JFK'
+      },
+      {
+        callsign: 'VIR135G',
+        latitude: 44.8222,
+        longitude: -69.6039,
+        altitude: 38000,
+        velocity: 465,
+        heading: 207,
+        aircraft: 'Boeing 787-9',
+        origin: 'LHR',
+        destination: 'BOS'
+      }
+    ];
+
+    useEffect(() => {
+      const fetchFlights = async () => {
+        try {
+          const response = await fetch('/api/aviation/virgin-atlantic-flights');
+          const data = await response.json();
+          if (data.success && data.flights.length > 0) {
+            setAvailableFlights(data.flights);
+          } else {
+            // Use fallback when API is rate-limited
+            setAvailableFlights(fallbackFlights);
+          }
+        } catch (error) {
+          console.error('API rate limited, using sample flights:', error);
+          setAvailableFlights(fallbackFlights);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchFlights();
+      // Refresh every 2 minutes to avoid rate limits
+      const interval = setInterval(fetchFlights, 120000);
+      return () => clearInterval(interval);
+    }, []);
+
+    const handleFlightSelect = (flight: any) => {
+      selectFlight(flight);
+    };
+
+    return (
+      <Card className="bg-gray-800/50 border-gray-600 h-fit">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-white text-sm flex items-center gap-2">
+            <Plane className="h-4 w-4" />
+            Active Flights
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <CardContent className="space-y-2">
+          {loading ? (
+            <div className="text-center py-4">
+              <div className="animate-spin h-6 w-6 border-b-2 border-blue-400 rounded-full mx-auto mb-2"></div>
+              <p className="text-gray-400 text-xs">Loading...</p>
+            </div>
+          ) : (
+            availableFlights.slice(0, 6).map((flight, index) => (
+              <div
+                key={index}
+                className={`p-2 rounded cursor-pointer transition-colors text-xs ${
+                  selectedFlight?.callsign === flight.callsign
+                    ? 'bg-blue-600/30 border border-blue-500'
+                    : 'bg-gray-700/50 border border-gray-600 hover:border-blue-500 hover:bg-blue-900/20'
+                }`}
+                onClick={() => handleFlightSelect(flight)}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-white font-medium">{flight.callsign}</span>
+                  {flight.callsign === 'VIR127C' && (
+                    <Badge variant="secondary" className="text-xs px-1 py-0">Featured</Badge>
+                  )}
+                </div>
+                <div className="text-gray-400 space-y-0.5">
+                  <div>{flight.origin || 'LHR'} → {flight.destination || 'JFK'}</div>
+                  <div>FL{Math.floor(flight.altitude/100)} • {flight.velocity}kts</div>
+                  <div>{flight.latitude.toFixed(2)}°N {Math.abs(flight.longitude).toFixed(2)}°W</div>
+                </div>
+              </div>
+            ))
+          )}
+          <div className="text-xs text-gray-500 pt-2 border-t border-gray-600">
+            Click any flight to analyze diversion options
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  return (
+    <div className="flex gap-6 p-6">
+      {/* Left Sidebar - Active Flights List */}
+      <div className="w-64 flex-shrink-0">
+        <ActiveFlightsList />
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 space-y-6">
+        {/* Flight Overview Card */}
+        <Card className="bg-gray-800/50 border-gray-600">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Brain className="h-5 w-5" />
+              Enhanced Operational Decision Engine - {flightData.callsign}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div>
               <div className="text-gray-400 text-sm">Aircraft</div>
               <div className="text-white font-medium">{flightData.aircraft}</div>
@@ -1475,6 +1615,7 @@ export default function EnhancedOperationalDecisionEngine() {
           </div>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
