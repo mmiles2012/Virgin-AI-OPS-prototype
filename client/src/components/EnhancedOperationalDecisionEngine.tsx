@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap, Shield, Wind, Eye, Fuel, Building, Wrench } from 'lucide-react';
+import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap, Shield, Wind, Eye, Fuel, Building, Wrench, FileText, BarChart3 } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { Flight, FlightModel } from '../lib/flightModel';
+import { ScenarioEngine, DiversionResult, DiversionScenario } from '../lib/scenarioEngine';
+import { FuelAnalytics, FuelDecisionAnalysis } from '../lib/fuelAnalytics';
+import { CrewModule, CrewLegalityCheck } from '../lib/crewModule';
+import { CostModel, DiversionCostEstimate, CustomerImpactScore } from '../lib/costModel';
+import { DataFeeds } from '../lib/dataFeeds';
+import { ReportGenerator } from '../lib/reportGenerator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 
 interface EnhancedFlightData {
   callsign: string;
@@ -152,9 +159,17 @@ interface OperationalDecision {
 
 export default function EnhancedOperationalDecisionEngine() {
   const [flightData, setFlightData] = useState<EnhancedFlightData | null>(null);
+  const [flightModel, setFlightModel] = useState<Flight | null>(null);
   const [availableAirfields, setAvailableAirfields] = useState<AirfieldData[]>([]);
-  const [operationalDecisions, setOperationalDecisions] = useState<OperationalDecision[]>([]);
-  const [selectedAirfield, setSelectedAirfield] = useState<string | null>(null);
+  const [diversionScenarios, setDiversionScenarios] = useState<DiversionScenario[]>([]);
+  const [selectedScenario, setSelectedScenario] = useState<DiversionScenario | null>(null);
+  const [simulationResult, setSimulationResult] = useState<DiversionResult | null>(null);
+  const [costAnalysis, setCostAnalysis] = useState<DiversionCostEstimate | null>(null);
+  const [customerImpact, setCustomerImpact] = useState<CustomerImpactScore | null>(null);
+  const [crewStatus, setCrewStatus] = useState<CrewLegalityCheck | null>(null);
+  const [fuelAnalysis, setFuelAnalysis] = useState<FuelDecisionAnalysis | null>(null);
+  const [weatherData, setWeatherData] = useState<any>(null);
+  const [reportGenerated, setReportGenerated] = useState<string>('');
   const [emergencyType, setEmergencyType] = useState<string>('medical');
   const { selectedFlight } = useSelectedFlight();
 
@@ -180,17 +195,39 @@ export default function EnhancedOperationalDecisionEngine() {
         passengers: selectedFlight.callsign.includes('401') ? 298 : 245,
         eta: '14:25 UTC'
       });
+
+      // Create flight model instance
+      const flight = new Flight(
+        selectedFlight.callsign,
+        selectedFlight.origin || 'JFK',
+        selectedFlight.destination || 'LHR',
+        selectedFlight.aircraft,
+        480 - Math.floor(Math.random() * 240), // Random crew duty remaining
+        currentFuelKg,
+        '14:30Z',
+        '00:15Z'
+      );
+      
+      setFlightModel(flight);
     } else {
       setFlightData(null);
+      setFlightModel(null);
     }
   }, [selectedFlight]);
 
   useEffect(() => {
-    if (flightData) {
+    if (flightData && flightModel) {
       generateAirfieldData(flightData);
-      generateOperationalDecisions(flightData);
+      generateDiversionScenarios();
+      fetchWeatherData();
     }
-  }, [flightData, emergencyType]);
+  }, [flightData, flightModel, emergencyType]);
+
+  useEffect(() => {
+    if (selectedScenario && flightModel) {
+      runDiversionSimulation();
+    }
+  }, [selectedScenario, flightModel]);
 
   const detectAircraftType = (aircraft: string): 'A350' | 'A330' | '787' => {
     const aircraftUpper = aircraft.toUpperCase();
@@ -298,6 +335,87 @@ export default function EnhancedOperationalDecisionEngine() {
     });
 
     setAvailableAirfields(airfields.sort((a, b) => b.suitability.overall - a.suitability.overall));
+  };
+
+  const generateDiversionScenarios = () => {
+    if (!flightModel) return;
+    
+    const scenarios = ScenarioEngine.generateDiversionScenarios(flightModel, emergencyType);
+    setDiversionScenarios(scenarios);
+    
+    if (scenarios.length > 0) {
+      setSelectedScenario(scenarios[0]); // Auto-select the first scenario
+    }
+  };
+
+  const fetchWeatherData = () => {
+    if (!availableAirfields.length) return;
+    
+    const weatherReports = availableAirfields.map(airfield => ({
+      airport: airfield.icao,
+      data: DataFeeds.getWeather(airfield.icao)
+    }));
+    
+    setWeatherData(weatherReports);
+  };
+
+  const runDiversionSimulation = () => {
+    if (!selectedScenario || !flightModel) return;
+
+    // Run the diversion simulation
+    const result = ScenarioEngine.simulateDiversion(flightModel, selectedScenario);
+    setSimulationResult(result);
+
+    // Calculate cost analysis
+    const passengers = flightData?.passengers || 280;
+    const region = selectedScenario.airport.startsWith('E') ? 'european' : 'longhaul';
+    const overnightRequired = result.totalDelay > 480; // 8+ hours
+    const delayHours = result.totalDelay / 60;
+    
+    const costEst = CostModel.estimateDiversionCost(passengers, region, overnightRequired, delayHours);
+    setCostAnalysis(costEst);
+
+    // Calculate customer impact
+    const customerImp = CostModel.customerDisruptionScore(
+      result.totalDelay,
+      true, // reroute required for diversion
+      result.totalDelay > 240 // missed connection if delay > 4h
+    );
+    setCustomerImpact(customerImp);
+
+    // Check crew legality
+    const crewCheck = CrewModule.checkLegalityStatus(
+      result.crewTimeRemaining,
+      selectedScenario.crewTimeUsed,
+      flightModel.crewOnDuty - result.crewTimeRemaining
+    );
+    setCrewStatus(crewCheck);
+
+    // Analyze fuel decision
+    const fuelAnalysisResult = FuelAnalytics.evaluateFuelDecision(
+      selectedScenario.extraFuelBurn + 500, // requested extra
+      selectedScenario.extraFuelBurn // actual burn
+    );
+    setFuelAnalysis(fuelAnalysisResult);
+  };
+
+  const generateMORReport = () => {
+    if (!flightModel || !simulationResult || !costAnalysis || !customerImpact || !crewStatus || !fuelAnalysis) {
+      return;
+    }
+
+    const morData = {
+      flight: flightModel,
+      scenarioResult: simulationResult,
+      costEstimate: costAnalysis,
+      customerImpact,
+      crewStatus,
+      fuelAnalysis,
+      weatherData
+    };
+
+    const report = ReportGenerator.generateMOR(morData);
+    setReportGenerated(report);
   };
 
   const generateOperationalDecisions = (flight: EnhancedFlightData) => {
