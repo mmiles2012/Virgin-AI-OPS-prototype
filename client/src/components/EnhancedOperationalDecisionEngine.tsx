@@ -666,17 +666,7 @@ export default function EnhancedOperationalDecisionEngine() {
 
         {/* Main Content Area */}
         <div className="flex-1 space-y-6">
-          {!flightData ? (
-            <Card className="bg-gray-800/50 border-gray-600">
-              <CardContent className="flex items-center justify-center py-12">
-                <div className="text-center">
-                  <Plane className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-white mb-2">Select a Flight</h3>
-                  <p className="text-gray-400">Choose a flight from the sidebar to begin operational decision analysis</p>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
+          {flightData && (
             <>
               {/* Flight Overview Card */}
               <Card className="bg-gray-800/50 border-gray-600">
