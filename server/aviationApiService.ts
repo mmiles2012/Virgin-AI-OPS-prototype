@@ -423,37 +423,9 @@ export class AviationApiService {
         }
       }
 
-      // If no API data available, generate realistic training simulation data
-      // This provides a consistent experience for training purposes
-      const currentTime = new Date();
-      const baseFlights = [
-        { route: 'LHR-JFK', callsign: 'VIR3', aircraft: 'Boeing 787-9', lat: 51.4700, lon: -0.4543 },
-        { route: 'LHR-LAX', callsign: 'VIR11', aircraft: 'Boeing 787-9', lat: 52.3676, lon: -1.5623 },
-        { route: 'MAN-JFK', callsign: 'VIR45', aircraft: 'Airbus A330-300', lat: 53.3536, lon: -2.2750 },
-        { route: 'LHR-BOS', callsign: 'VIR155', aircraft: 'Boeing 787-9', lat: 51.4700, lon: -0.4543 },
-        { route: 'LGW-MCO', callsign: 'VIR91', aircraft: 'Boeing 747-400', lat: 51.1481, lon: -0.1903 }
-      ];
-
-      return baseFlights.map((flight, index) => {
-        // Simulate flight progression
-        const minutesElapsed = (currentTime.getMinutes() + index * 10) % 60;
-        const progressLon = flight.lon + (minutesElapsed * 0.5);
-        
-        return {
-          callsign: flight.callsign,
-          latitude: flight.lat + (Math.random() - 0.5) * 0.1,
-          longitude: progressLon,
-          altitude: 35000 + Math.floor(Math.random() * 6000),
-          velocity: 450 + Math.floor(Math.random() * 50),
-          heading: 270 + Math.floor(Math.random() * 20),
-          aircraft: flight.aircraft,
-          origin: flight.route.split('-')[0],
-          destination: flight.route.split('-')[1],
-          departureTime: new Date(currentTime.getTime() - (3 * 60 * 60 * 1000)).toISOString(),
-          arrivalTime: new Date(currentTime.getTime() + (5 * 60 * 60 * 1000)).toISOString(),
-          status: 'active'
-        };
-      });
+      // Return empty array if no authentic data is available
+      // This ensures data integrity by only displaying real flight information
+      return [];
     } catch (error: any) {
       console.warn('Flight data error:', error.message);
       throw new Error(`Failed to fetch Virgin Atlantic flights: ${error.message}`);

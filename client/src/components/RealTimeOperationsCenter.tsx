@@ -66,20 +66,34 @@ export default function RealTimeOperationsCenter() {
       
       if (flightsData.success && flightsData.flights) {
         setFlights(flightsData.flights);
+        
+        // Only generate alerts if we have authentic flight data
+        if (flightsData.flights.length > 0) {
+          const generatedAlerts = generateOperationalAlerts(flightsData.flights);
+          setAlerts(generatedAlerts);
+        } else {
+          setAlerts([]);
+        }
+      } else {
+        setFlights([]);
+        setAlerts([]);
       }
 
-      // Generate operational alerts based on flight data
-      const generatedAlerts = generateOperationalAlerts(flightsData.flights || []);
-      setAlerts(generatedAlerts);
-
-      // Generate airport status
-      const airportStatuses = generateAirportStatuses();
-      setAirports(airportStatuses);
+      // Only show airport statuses when we have flight data
+      if (flightsData.flights && flightsData.flights.length > 0) {
+        const airportStatuses = generateAirportStatuses();
+        setAirports(airportStatuses);
+      } else {
+        setAirports([]);
+      }
 
       setLastUpdate(new Date());
       setLoading(false);
     } catch (error) {
       console.error('Error fetching operational data:', error);
+      setFlights([]);
+      setAlerts([]);
+      setAirports([]);
       setLoading(false);
     }
   };
@@ -162,6 +176,51 @@ export default function RealTimeOperationsCenter() {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-white">Loading operations data...</div>
+      </div>
+    );
+  }
+
+  // Show API configuration needed state
+  if (!loading && flights.length === 0) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Virgin Atlantic Operations Center</h1>
+            <p className="text-gray-300">Real-time operational status and alerts</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-center h-96">
+          <Card className="bg-gray-800 border-gray-700 max-w-md">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <span>⚠️</span>
+                Aviation Data Not Available
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Real-time flight data requires valid Aviation Stack API credentials
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-sm text-gray-300">
+                <p>To display live Virgin Atlantic flight data:</p>
+                <ol className="list-decimal list-inside mt-2 space-y-1">
+                  <li>Visit aviationstack.com</li>
+                  <li>Create an account or sign in</li>
+                  <li>Get your API access key</li>
+                  <li>Provide the key using the API Setup button</li>
+                </ol>
+              </div>
+              <Alert className="bg-blue-900/20 border-blue-600">
+                <AlertDescription className="text-blue-300">
+                  Once configured, this dashboard will display real-time Virgin Atlantic flight positions, 
+                  operational alerts, and airport status information.
+                </AlertDescription>
+              </Alert>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }

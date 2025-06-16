@@ -1,0 +1,472 @@
+import React, { useState, useEffect } from 'react';
+import { AlertTriangle, Plane, Globe, TrendingUp, Clock, MapPin, Users, DollarSign, Shield, Navigation } from 'lucide-react';
+
+const AirlineGeopoliticalRisk = () => {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [alerts, setAlerts] = useState([]);
+  const [routes, setRoutes] = useState([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Simulate real-time data updates
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    // Initialize sample data
+    initializeData();
+    
+    return () => clearInterval(timer);
+  }, []);
+
+  const initializeData = () => {
+    const sampleAlerts = [
+      {
+        id: 1,
+        severity: 'critical',
+        type: 'airspace_closure',
+        region: 'Eastern Mediterranean',
+        title: 'Airspace Restriction - Military Activity',
+        description: 'Temporary airspace closure affecting routes to Tel Aviv and Beirut',
+        impact: 'High',
+        affectedRoutes: ['LHR-TLV', 'CDG-BEY', 'FRA-TLV'],
+        timeRemaining: '6 hours',
+        recommendation: 'Reroute via Turkish airspace, expect 45min delay'
+      },
+      {
+        id: 2,
+        severity: 'high',
+        type: 'diplomatic_tension',
+        region: 'South China Sea',
+        title: 'Diplomatic Tensions - Route Monitoring',
+        description: 'Escalating tensions may affect overfly permissions',
+        impact: 'Medium',
+        affectedRoutes: ['LAX-HKG', 'SFO-TPE', 'SEA-MNL'],
+        timeRemaining: 'Ongoing',
+        recommendation: 'Monitor situation, prepare alternate routes'
+      },
+      {
+        id: 3,
+        severity: 'medium',
+        type: 'sanctions',
+        region: 'Eastern Europe',
+        title: 'Sanctions Update - Fuel Restrictions',
+        description: 'New fuel procurement restrictions in affected regions',
+        impact: 'Medium',
+        affectedRoutes: ['LHR-MOW', 'CDG-LED'],
+        timeRemaining: 'Indefinite',
+        recommendation: 'Identify alternative fuel suppliers'
+      }
+    ];
+
+    const sampleRoutes = [
+      {
+        id: 'LHR-TLV',
+        origin: 'London (LHR)',
+        destination: 'Tel Aviv (TLV)',
+        status: 'disrupted',
+        riskLevel: 'critical',
+        passengers: 180,
+        revenue: '$540K',
+        alternateRoute: 'Via Istanbul (IST)',
+        additionalCost: '$45K',
+        delayMinutes: 45
+      },
+      {
+        id: 'LAX-HKG',
+        origin: 'Los Angeles (LAX)',
+        destination: 'Hong Kong (HKG)',
+        status: 'monitoring',
+        riskLevel: 'high',
+        passengers: 350,
+        revenue: '$1.2M',
+        alternateRoute: 'Via Seoul (ICN)',
+        additionalCost: '$30K',
+        delayMinutes: 20
+      },
+      {
+        id: 'JFK-LHR',
+        origin: 'New York (JFK)',
+        destination: 'London (LHR)',
+        status: 'normal',
+        riskLevel: 'low',
+        passengers: 280,
+        revenue: '$980K',
+        alternateRoute: 'N/A',
+        additionalCost: '$0',
+        delayMinutes: 0
+      }
+    ];
+
+    setAlerts(sampleAlerts);
+    setRoutes(sampleRoutes);
+  };
+
+  const getSeverityColor = (severity) => {
+    switch(severity) {
+      case 'critical': return 'bg-red-100 border-red-500 text-red-700';
+      case 'high': return 'bg-orange-100 border-orange-500 text-orange-700';
+      case 'medium': return 'bg-yellow-100 border-yellow-500 text-yellow-700';
+      case 'low': return 'bg-green-100 border-green-500 text-green-700';
+      default: return 'bg-gray-100 border-gray-500 text-gray-700';
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'disrupted': return 'bg-red-500';
+      case 'monitoring': return 'bg-yellow-500';
+      case 'normal': return 'bg-green-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const Dashboard = () => (
+    <div className="space-y-6">
+      {/* Key Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-lg shadow border">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Active Alerts</p>
+              <p className="text-2xl font-bold text-red-600">{alerts.length}</p>
+            </div>
+            <AlertTriangle className="h-8 w-8 text-red-500" />
+          </div>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow border">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Affected Routes</p>
+              <p className="text-2xl font-bold text-orange-600">
+                {routes.filter(r => r.status !== 'normal').length}
+              </p>
+            </div>
+            <Navigation className="h-8 w-8 text-orange-500" />
+          </div>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow border">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Passengers Impacted</p>
+              <p className="text-2xl font-bold text-blue-600">530</p>
+            </div>
+            <Users className="h-8 w-8 text-blue-500" />
+          </div>
+        </div>
+        <div className="bg-white p-4 rounded-lg shadow border">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Estimated Cost Impact</p>
+              <p className="text-2xl font-bold text-purple-600">$75K</p>
+            </div>
+            <DollarSign className="h-8 w-8 text-purple-500" />
+          </div>
+        </div>
+      </div>
+
+      {/* Critical Alerts */}
+      <div className="bg-white rounded-lg shadow border">
+        <div className="p-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold flex items-center">
+            <AlertTriangle className="h-5 w-5 mr-2 text-red-500" />
+            Critical Alerts Requiring Immediate Action
+          </h3>
+        </div>
+        <div className="p-4 space-y-3">
+          {alerts.filter(alert => alert.severity === 'critical').map(alert => (
+            <div key={alert.id} className={`p-4 rounded-lg border-l-4 ${getSeverityColor(alert.severity)}`}>
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h4 className="font-semibold">{alert.title}</h4>
+                  <p className="text-sm mt-1">{alert.description}</p>
+                  <div className="mt-2 flex items-center space-x-4 text-sm">
+                    <span className="flex items-center">
+                      <Globe className="h-4 w-4 mr-1" />
+                      {alert.region}
+                    </span>
+                    <span className="flex items-center">
+                      <Clock className="h-4 w-4 mr-1" />
+                      {alert.timeRemaining}
+                    </span>
+                  </div>
+                  <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
+                    <strong>Recommendation:</strong> {alert.recommendation}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Route Status Overview */}
+      <div className="bg-white rounded-lg shadow border">
+        <div className="p-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold flex items-center">
+            <Plane className="h-5 w-5 mr-2 text-blue-500" />
+            Route Status Overview
+          </h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Route</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Risk Level</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Passengers</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Revenue Impact</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {routes.map(route => (
+                <tr key={route.id}>
+                  <td className="px-4 py-3 text-sm font-medium">{route.id}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(route.status)}`}>
+                      {route.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm">{route.riskLevel}</td>
+                  <td className="px-4 py-3 text-sm">{route.passengers}</td>
+                  <td className="px-4 py-3 text-sm">{route.revenue}</td>
+                  <td className="px-4 py-3 text-sm">
+                    {route.status !== 'normal' && (
+                      <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        View Options
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+
+  const RiskAnalysis = () => (
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg shadow border">
+        <div className="p-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold flex items-center">
+            <TrendingUp className="h-5 w-5 mr-2 text-green-500" />
+            Geopolitical Risk Analysis
+          </h3>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="font-semibold mb-3">Risk Factors by Region</h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center p-3 bg-red-50 rounded">
+                  <span>Middle East</span>
+                  <span className="px-2 py-1 bg-red-500 text-white text-xs rounded">Critical</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-orange-50 rounded">
+                  <span>South China Sea</span>
+                  <span className="px-2 py-1 bg-orange-500 text-white text-xs rounded">High</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-yellow-50 rounded">
+                  <span>Eastern Europe</span>
+                  <span className="px-2 py-1 bg-yellow-500 text-white text-xs rounded">Medium</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-green-50 rounded">
+                  <span>North America</span>
+                  <span className="px-2 py-1 bg-green-500 text-white text-xs rounded">Low</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-3">Predictive Indicators</h4>
+              <div className="space-y-3">
+                <div className="p-3 border rounded">
+                  <div className="flex justify-between">
+                    <span className="text-sm">Diplomatic Relations Index</span>
+                    <span className="text-sm font-medium text-orange-600">Declining</span>
+                  </div>
+                  <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
+                    <div className="bg-orange-500 h-2 rounded-full" style={{width: '35%'}}></div>
+                  </div>
+                </div>
+                <div className="p-3 border rounded">
+                  <div className="flex justify-between">
+                    <span className="text-sm">Military Activity Level</span>
+                    <span className="text-sm font-medium text-red-600">High</span>
+                  </div>
+                  <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
+                    <div className="bg-red-500 h-2 rounded-full" style={{width: '80%'}}></div>
+                  </div>
+                </div>
+                <div className="p-3 border rounded">
+                  <div className="flex justify-between">
+                    <span className="text-sm">Economic Sanctions Risk</span>
+                    <span className="text-sm font-medium text-yellow-600">Medium</span>
+                  </div>
+                  <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
+                    <div className="bg-yellow-500 h-2 rounded-full" style={{width: '50%'}}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow border">
+        <div className="p-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold">Risk Mitigation Strategies</h3>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 border rounded-lg">
+              <h4 className="font-semibold text-blue-600 mb-2">Route Diversification</h4>
+              <p className="text-sm text-gray-600">Maintain multiple route options for high-risk corridors with pre-approved alternates.</p>
+            </div>
+            <div className="p-4 border rounded-lg">
+              <h4 className="font-semibold text-green-600 mb-2">Early Warning System</h4>
+              <p className="text-sm text-gray-600">AI-powered monitoring of diplomatic, military, and economic indicators.</p>
+            </div>
+            <div className="p-4 border rounded-lg">
+              <h4 className="font-semibold text-purple-600 mb-2">Stakeholder Coordination</h4>
+              <p className="text-sm text-gray-600">Real-time communication with aviation authorities and diplomatic channels.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const RouteManagement = () => (
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg shadow border">
+        <div className="p-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold flex items-center">
+            <Navigation className="h-5 w-5 mr-2 text-blue-500" />
+            Route Management & Alternatives
+          </h3>
+        </div>
+        <div className="p-6">
+          {routes.filter(route => route.status !== 'normal').map(route => (
+            <div key={route.id} className="mb-6 p-4 border rounded-lg">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h4 className="font-semibold text-lg">{route.origin} → {route.destination}</h4>
+                  <div className="flex items-center mt-1">
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(route.status)} mr-2`}>
+                      {route.status}
+                    </span>
+                    <span className="text-sm text-gray-600">Risk Level: {route.riskLevel}</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-600">Passengers: {route.passengers}</p>
+                  <p className="text-sm text-gray-600">Revenue: {route.revenue}</p>
+                </div>
+              </div>
+              
+              <div className="bg-yellow-50 p-4 rounded-lg mb-4">
+                <h5 className="font-medium mb-2">Current Situation</h5>
+                <p className="text-sm text-gray-700">
+                  Route affected by geopolitical tensions. Immediate action required to minimize passenger impact.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h5 className="font-medium mb-2 text-blue-700">Recommended Alternative</h5>
+                  <p className="text-sm mb-2"><strong>Route:</strong> {route.alternateRoute}</p>
+                  <p className="text-sm mb-2"><strong>Additional Cost:</strong> {route.additionalCost}</p>
+                  <p className="text-sm mb-2"><strong>Delay:</strong> {route.delayMinutes} minutes</p>
+                  <button className="mt-2 px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
+                    Implement Alternative
+                  </button>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h5 className="font-medium mb-2">Other Options</h5>
+                  <ul className="text-sm space-y-1">
+                    <li>• Delay flight 4 hours (monitor situation)</li>
+                    <li>• Cancel and rebook passengers</li>
+                    <li>• Coordinate with partner airlines</li>
+                  </ul>
+                  <button className="mt-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded hover:bg-gray-100">
+                    View All Options
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center">
+              <Shield className="h-8 w-8 text-blue-600 mr-3" />
+              <h1 className="text-2xl font-bold text-gray-900">Airline Geopolitical Risk Management</h1>
+            </div>
+            <div className="text-sm text-gray-500">
+              Last Updated: {currentTime.toLocaleTimeString()}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex space-x-8">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'dashboard'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => setActiveTab('risk-analysis')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'risk-analysis'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Risk Analysis
+            </button>
+            <button
+              onClick={() => setActiveTab('route-management')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'route-management'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Route Management
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeTab === 'dashboard' && <Dashboard />}
+        {activeTab === 'risk-analysis' && <RiskAnalysis />}
+        {activeTab === 'route-management' && <RouteManagement />}
+      </div>
+    </div>
+  );
+};
+
+export default AirlineGeopoliticalRisk;
