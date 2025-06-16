@@ -16,6 +16,7 @@ import LiveFlightTracker from "./components/LiveFlightTracker";
 import SimpleFlightMap from "./components/SimpleFlightMap";
 import SatelliteWorldMap from "./components/SatelliteWorldMap";
 import SafeAirspaceAlerts from "./components/SafeAirspaceAlerts";
+import RealTimeOperationsCenter from "./components/RealTimeOperationsCenter";
 
 // Flight control mappings
 enum FlightControls {
@@ -53,7 +54,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'airspace';
+type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -177,6 +178,17 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('realtime')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'realtime' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Live Operations
+                  </button>
+                  
+                  <button
                     onClick={() => {
                       console.log('API Setup button clicked');
                       setShowApiWizard(true);
@@ -223,6 +235,12 @@ function App() {
                 <SafeAirspaceAlerts />
               </div>
             )}
+            
+            {viewMode === 'realtime' && !isInterfaceMinimized && (
+              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+                <RealTimeOperationsCenter />
+              </div>
+            )}
 
             {/* Minimized Mode Indicator */}
             {isInterfaceMinimized && viewMode !== 'overview' && (
@@ -233,6 +251,7 @@ function App() {
                     {viewMode === 'operations' && '🏢 Operations Center (Minimized)'}
                     {viewMode === 'decisions' && '🧠 Decision Engine (Minimized)'}
                     {viewMode === 'airspace' && '🛡️ SafeAirspace Alerts (Minimized)'}
+                    {viewMode === 'realtime' && '📊 Live Operations (Minimized)'}
                   </div>
                 </div>
               </div>
