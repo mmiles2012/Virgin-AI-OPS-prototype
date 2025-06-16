@@ -1,0 +1,795 @@
+import requests
+import json
+import time
+import sqlite3
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Tuple
+import re
+from dataclasses import dataclass, field
+from enum import Enum
+import threading
+import schedule
+import math
+import random
+
+# Configuration
+class Config:
+    # API Keys (replace with your actual keys)
+    WEATHER_API_KEY = "your_weather_api_key_here"
+    AVIATION_API_KEY = "your_aviation_api_key_here"
+    
+    # Database
+    DB_NAME = "airline_operations.db"
+    
+    # Monitoring intervals
+    WEATHER_CHECK_INTERVAL = 5  # minutes
+    FLIGHT_CHECK_INTERVAL = 2   # minutes
+    CREW_CHECK_INTERVAL = 10    # minutes
+    
+    # Airline specific
+    AIRLINE_CODE = "AA"  # American Airlines example
+    HUB_AIRPORTS = ["DFW", "LAX", "JFK", "MIA", "PHX"]
+    
+    # Thresholds
+    WEATHER_SEVERITY_THRESHOLD = 3
+    DELAY_THRESHOLD_MINUTES = 30
+    CREW_DUTY_LIMIT_HOURS = 14
+
+# Data Models
+class DisruptionType(Enum):
+    WEATHER = "weather"
+    MECHANICAL = "mechanical"
+    CREW = "crew"
+    AIR_TRAFFIC_CONTROL = "atc"
+    SECURITY = "security"
+    FUEL = "fuel"
+    PASSENGER = "passenger"
+    AIRPORT_CLOSURE = "airport_closure"
+
+class Priority(Enum):
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
+
+class FlightStatus(Enum):
+    SCHEDULED = "scheduled"
+    BOARDING = "boarding"
+    DEPARTED = "departed"
+    EN_ROUTE = "en_route"
+    ARRIVED = "arrived"
+    DELAYED = "delayed"
+    CANCELLED = "cancelled"
+    DIVERTED = "diverted"
+
+class ActionType(Enum):
+    DELAY_FLIGHT = "delay_flight"
+    CANCEL_FLIGHT = "cancel_flight"
+    REROUTE_FLIGHT = "reroute_flight"
+    SWAP_AIRCRAFT = "swap_aircraft"
+    REASSIGN_CREW = "reassign_crew"
+    REACCOMMODATE_PASSENGERS = "reaccommodate_passengers"
+    INCREASE_FUEL = "increase_fuel"
+    GROUND_STOP = "ground_stop"
+    NO_ACTION = "no_action"
+
+@dataclass
+class WeatherData:
+    airport_code: str
+    visibility_km: float
+    wind_speed_kmh: float
+    wind_direction: int
+    temperature_c: float
+    precipitation_mm: float
+    conditions: str
+    timestamp: datetime
+    severity_score: int  # 1-10
+
+@dataclass
+class Flight:
+    flight_id: str
+    flight_number: str
+    aircraft_id: str
+    origin: str
+    destination: str
+    scheduled_departure: datetime
+    scheduled_arrival: datetime
+    actual_departure: Optional[datetime]
+    actual_arrival: Optional[datetime]
+    status: FlightStatus
+    passenger_count: int
+    crew_ids: List[str]
+    gate: Optional[str] = None
+    delay_minutes: int = 0
+    delay_reason: Optional[str] = None
+
+@dataclass
+class CrewMember:
+    crew_id: str
+    name: str
+    role: str  # Captain, First Officer, Flight Attendant
+    base_airport: str
+    current_location: str
+    duty_start: Optional[datetime]
+    duty_hours_today: float
+    next_assignment: Optional[str]
+    certification_expiry: datetime
+    available: bool = True
+
+@dataclass
+class Aircraft:
+    aircraft_id: str
+    aircraft_type: str
+    registration: str
+    current_location: str
+    maintenance_status: str
+    next_maintenance: datetime
+    passenger_capacity: int
+    fuel_capacity: float
+    current_fuel: float
+    available: bool = True
+
+@dataclass
+class OperationalDisruption:
+    disruption_id: str
+    disruption_type: DisruptionType
+    title: str
+    description: str
+    priority: Priority
+    affected_flights: List[str]
+    affected_airports: List[str]
+    start_time: datetime
+    estimated_end_time: Optional[datetime]
+    confidence: float
+    source: str
+
+@dataclass
+class OperationalRecommendation:
+    recommendation_id: str
+    disruption_id: str
+    action_type: ActionType
+    target_flight: str
+    description: str
+    estimated_cost: float
+    passenger_impact: int
+    confidence: float
+    urgency: Priority
+    alternatives: List[str]
+    timestamp: datetime
+
+class DatabaseManager:
+    def __init__(self, db_name: str):
+        self.db_name = db_name
+        self.init_database()
+    
+    def init_database(self):
+        conn = sqlite3.connect(self.db_name)
+        cursor = conn.cursor()
+        
+        # Weather table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS weather (
+                airport_code TEXT,
+                visibility_km REAL,
+                wind_speed_kmh REAL,
+                wind_direction INTEGER,
+                temperature_c REAL,
+                precipitation_mm REAL,
+                conditions TEXT,
+                timestamp TEXT,
+                severity_score INTEGER,
+                PRIMARY KEY (airport_code, timestamp)
+            )
+        ''')
+        
+        # Flights table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS flights (
+                flight_id TEXT PRIMARY KEY,
+                flight_number TEXT,
+                aircraft_id TEXT,
+                origin TEXT,
+                destination TEXT,
+                scheduled_departure TEXT,
+                scheduled_arrival TEXT,
+                actual_departure TEXT,
+                actual_arrival TEXT,
+                status TEXT,
+                passenger_count INTEGER,
+                crew_ids TEXT,
+                gate TEXT,
+                delay_minutes INTEGER,
+                delay_reason TEXT
+            )
+        ''')
+        
+        # Disruptions table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS disruptions (
+                disruption_id TEXT PRIMARY KEY,
+                disruption_type TEXT,
+                title TEXT,
+                description TEXT,
+                priority INTEGER,
+                affected_flights TEXT,
+                affected_airports TEXT,
+                start_time TEXT,
+                estimated_end_time TEXT,
+                confidence REAL,
+                source TEXT
+            )
+        ''')
+        
+        # Recommendations table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS recommendations (
+                recommendation_id TEXT PRIMARY KEY,
+                disruption_id TEXT,
+                action_type TEXT,
+                target_flight TEXT,
+                description TEXT,
+                estimated_cost REAL,
+                passenger_impact INTEGER,
+                confidence REAL,
+                urgency INTEGER,
+                alternatives TEXT,
+                timestamp TEXT,
+                executed BOOLEAN DEFAULT FALSE
+            )
+        ''')
+        
+        conn.commit()
+        conn.close()
+    
+    def save_weather(self, weather: WeatherData):
+        conn = sqlite3.connect(self.db_name)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT OR REPLACE INTO weather 
+            (airport_code, visibility_km, wind_speed_kmh, wind_direction, 
+             temperature_c, precipitation_mm, conditions, timestamp, severity_score)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            weather.airport_code, weather.visibility_km, weather.wind_speed_kmh,
+            weather.wind_direction, weather.temperature_c, weather.precipitation_mm,
+            weather.conditions, weather.timestamp.isoformat(), weather.severity_score
+        ))
+        
+        conn.commit()
+        conn.close()
+    
+    def save_disruption(self, disruption: OperationalDisruption):
+        conn = sqlite3.connect(self.db_name)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT OR REPLACE INTO disruptions 
+            (disruption_id, disruption_type, title, description, priority, 
+             affected_flights, affected_airports, start_time, estimated_end_time, 
+             confidence, source)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            disruption.disruption_id, disruption.disruption_type.value, disruption.title,
+            disruption.description, disruption.priority.value, json.dumps(disruption.affected_flights),
+            json.dumps(disruption.affected_airports), disruption.start_time.isoformat(),
+            disruption.estimated_end_time.isoformat() if disruption.estimated_end_time else None,
+            disruption.confidence, disruption.source
+        ))
+        
+        conn.commit()
+        conn.close()
+    
+    def save_recommendation(self, recommendation: OperationalRecommendation):
+        conn = sqlite3.connect(self.db_name)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT OR REPLACE INTO recommendations 
+            (recommendation_id, disruption_id, action_type, target_flight, 
+             description, estimated_cost, passenger_impact, confidence, 
+             urgency, alternatives, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            recommendation.recommendation_id, recommendation.disruption_id,
+            recommendation.action_type.value, recommendation.target_flight,
+            recommendation.description, recommendation.estimated_cost,
+            recommendation.passenger_impact, recommendation.confidence,
+            recommendation.urgency.value, json.dumps(recommendation.alternatives),
+            recommendation.timestamp.isoformat()
+        ))
+        
+        conn.commit()
+        conn.close()
+
+class WeatherMonitor:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = "http://api.openweathermap.org/data/2.5/weather"
+    
+    def fetch_weather_data(self, airport_code: str) -> Optional[WeatherData]:
+        # In reality, you'd use airport coordinates or ICAO codes
+        params = {
+            'q': f"{airport_code}",  # Simplified - would use lat/lon for airports
+            'appid': self.api_key,
+            'units': 'metric'
+        }
+        
+        try:
+            # Mock weather data for demo (replace with real API call)
+            return self._generate_mock_weather(airport_code)
+        except Exception as e:
+            print(f"Error fetching weather for {airport_code}: {e}")
+            return None
+    
+    def _generate_mock_weather(self, airport_code: str) -> WeatherData:
+        """Generate realistic mock weather data for demo purposes"""
+        conditions_list = ["Clear", "Partly Cloudy", "Cloudy", "Light Rain", "Heavy Rain", "Thunderstorms", "Fog", "Snow"]
+        
+        visibility = random.uniform(0.5, 10.0)
+        wind_speed = random.uniform(0, 50)
+        precipitation = random.uniform(0, 25)
+        conditions = random.choice(conditions_list)
+        
+        # Calculate severity score
+        severity = 1
+        if visibility < 1.0:
+            severity += 3
+        elif visibility < 3.0:
+            severity += 2
+        
+        if wind_speed > 40:
+            severity += 3
+        elif wind_speed > 25:
+            severity += 2
+        
+        if precipitation > 15:
+            severity += 2
+        elif precipitation > 5:
+            severity += 1
+        
+        if "Thunderstorms" in conditions:
+            severity += 3
+        elif "Heavy Rain" in conditions or "Snow" in conditions:
+            severity += 2
+        
+        severity = min(10, severity)
+        
+        return WeatherData(
+            airport_code=airport_code,
+            visibility_km=visibility,
+            wind_speed_kmh=wind_speed,
+            wind_direction=random.randint(0, 360),
+            temperature_c=random.uniform(-10, 35),
+            precipitation_mm=precipitation,
+            conditions=conditions,
+            timestamp=datetime.now(),
+            severity_score=severity
+        )
+
+class FlightDataManager:
+    def __init__(self):
+        self.flights = {}
+        self.aircraft = {}
+        self.crew = {}
+        self._initialize_mock_data()
+    
+    def _initialize_mock_data(self):
+        """Initialize with mock flight data for demo"""
+        # Mock flights
+        for i in range(50):
+            flight_id = f"FL{1000 + i}"
+            flight_number = f"AA{100 + i}"
+            
+            origin = random.choice(Config.HUB_AIRPORTS)
+            destination = random.choice([code for code in Config.HUB_AIRPORTS if code != origin])
+            
+            base_time = datetime.now() + timedelta(hours=random.randint(-2, 12))
+            
+            flight = Flight(
+                flight_id=flight_id,
+                flight_number=flight_number,
+                aircraft_id=f"AC{100 + (i % 20)}",
+                origin=origin,
+                destination=destination,
+                scheduled_departure=base_time,
+                scheduled_arrival=base_time + timedelta(hours=random.uniform(1, 6)),
+                actual_departure=None,
+                actual_arrival=None,
+                status=random.choice(list(FlightStatus)),
+                passenger_count=random.randint(50, 180),
+                crew_ids=[f"CR{j}" for j in range(i*4, i*4 + 4)]
+            )
+            
+            self.flights[flight_id] = flight
+        
+        # Mock aircraft
+        for i in range(20):
+            aircraft_id = f"AC{100 + i}"
+            aircraft = Aircraft(
+                aircraft_id=aircraft_id,
+                aircraft_type=random.choice(["B737", "A320", "B777", "A330"]),
+                registration=f"N{100 + i}AA",
+                current_location=random.choice(Config.HUB_AIRPORTS),
+                maintenance_status="OPERATIONAL",
+                next_maintenance=datetime.now() + timedelta(days=random.randint(1, 30)),
+                passenger_capacity=random.randint(150, 300),
+                fuel_capacity=50000,
+                current_fuel=random.uniform(20000, 50000),
+                available=random.choice([True, True, True, False])  # 75% available
+            )
+            self.aircraft[aircraft_id] = aircraft
+    
+    def get_flights_by_airport(self, airport_code: str) -> List[Flight]:
+        return [f for f in self.flights.values() 
+                if f.origin == airport_code or f.destination == airport_code]
+    
+    def get_delayed_flights(self, threshold_minutes: int = 30) -> List[Flight]:
+        return [f for f in self.flights.values() if f.delay_minutes > threshold_minutes]
+
+class DisruptionAnalyzer:
+    def __init__(self):
+        self.weather_thresholds = {
+            'visibility_min': 1.0,  # km
+            'wind_speed_max': 40,   # kmh
+            'precipitation_max': 10  # mm
+        }
+    
+    def analyze_weather_disruption(self, weather: WeatherData) -> Optional[OperationalDisruption]:
+        if weather.severity_score < Config.WEATHER_SEVERITY_THRESHOLD:
+            return None
+        
+        disruption_id = f"weather_{weather.airport_code}_{int(time.time())}"
+        
+        # Determine impact level
+        if weather.severity_score >= 8:
+            priority = Priority.CRITICAL
+            impact_desc = "Severe weather conditions causing significant operational impact"
+        elif weather.severity_score >= 6:
+            priority = Priority.HIGH
+            impact_desc = "Adverse weather conditions affecting flight operations"
+        else:
+            priority = Priority.MEDIUM
+            impact_desc = "Marginal weather conditions may cause minor delays"
+        
+        # Estimate end time based on weather type
+        if "Thunderstorms" in weather.conditions:
+            end_time = datetime.now() + timedelta(hours=2)
+        elif "Fog" in weather.conditions:
+            end_time = datetime.now() + timedelta(hours=4)
+        else:
+            end_time = datetime.now() + timedelta(hours=1)
+        
+        return OperationalDisruption(
+            disruption_id=disruption_id,
+            disruption_type=DisruptionType.WEATHER,
+            title=f"Weather Alert - {weather.airport_code}",
+            description=f"{impact_desc}. Conditions: {weather.conditions}, "
+                       f"Visibility: {weather.visibility_km:.1f}km, "
+                       f"Wind: {weather.wind_speed_kmh:.0f}kmh",
+            priority=priority,
+            affected_flights=[],  # Will be populated by flight analyzer
+            affected_airports=[weather.airport_code],
+            start_time=datetime.now(),
+            estimated_end_time=end_time,
+            confidence=0.8,
+            source="Weather Service"
+        )
+    
+    def analyze_crew_disruption(self, crew_data: List[CrewMember]) -> List[OperationalDisruption]:
+        disruptions = []
+        
+        # Check for crew duty time violations
+        overtime_crew = [c for c in crew_data if c.duty_hours_today > Config.CREW_DUTY_LIMIT_HOURS]
+        
+        if overtime_crew:
+            disruption_id = f"crew_duty_{int(time.time())}"
+            disruptions.append(OperationalDisruption(
+                disruption_id=disruption_id,
+                disruption_type=DisruptionType.CREW,
+                title="Crew Duty Time Violations",
+                description=f"{len(overtime_crew)} crew members approaching/exceeding duty limits",
+                priority=Priority.HIGH,
+                affected_flights=[],
+                affected_airports=[],
+                start_time=datetime.now(),
+                estimated_end_time=None,
+                confidence=0.9,
+                source="Crew Management System"
+            ))
+        
+        return disruptions
+
+class RecommendationEngine:
+    def __init__(self, flight_manager: FlightDataManager):
+        self.flight_manager = flight_manager
+        self.cost_factors = {
+            ActionType.DELAY_FLIGHT: 100,      # per hour
+            ActionType.CANCEL_FLIGHT: 5000,    # base cost
+            ActionType.SWAP_AIRCRAFT: 2000,    # operational cost
+            ActionType.REASSIGN_CREW: 500,     # per crew change
+            ActionType.REROUTE_FLIGHT: 1500,   # fuel + operational
+        }
+    
+    def generate_recommendations(self, disruption: OperationalDisruption) -> List[OperationalRecommendation]:
+        recommendations = []
+        
+        if disruption.disruption_type == DisruptionType.WEATHER:
+            recommendations.extend(self._handle_weather_disruption(disruption))
+        elif disruption.disruption_type == DisruptionType.CREW:
+            recommendations.extend(self._handle_crew_disruption(disruption))
+        
+        return recommendations
+    
+    def _handle_weather_disruption(self, disruption: OperationalDisruption) -> List[OperationalRecommendation]:
+        recommendations = []
+        affected_airport = disruption.affected_airports[0] if disruption.affected_airports else None
+        
+        if not affected_airport:
+            return recommendations
+        
+        # Get flights affected by weather
+        affected_flights = self.flight_manager.get_flights_by_airport(affected_airport)
+        
+        for flight in affected_flights:
+            if flight.scheduled_departure <= datetime.now() + timedelta(hours=3):
+                
+                if disruption.priority == Priority.CRITICAL:
+                    # Recommend cancellation for severe weather
+                    rec_id = f"rec_{disruption.disruption_id}_{flight.flight_id}_cancel"
+                    recommendations.append(OperationalRecommendation(
+                        recommendation_id=rec_id,
+                        disruption_id=disruption.disruption_id,
+                        action_type=ActionType.CANCEL_FLIGHT,
+                        target_flight=flight.flight_id,
+                        description=f"Cancel {flight.flight_number} due to severe weather at {affected_airport}",
+                        estimated_cost=self._calculate_cancellation_cost(flight),
+                        passenger_impact=flight.passenger_count,
+                        confidence=0.85,
+                        urgency=Priority.HIGH,
+                        alternatives=["Rebook passengers on next available flights"],
+                        timestamp=datetime.now()
+                    ))
+                
+                elif disruption.priority == Priority.HIGH:
+                    # Recommend delay
+                    delay_hours = 2
+                    rec_id = f"rec_{disruption.disruption_id}_{flight.flight_id}_delay"
+                    recommendations.append(OperationalRecommendation(
+                        recommendation_id=rec_id,
+                        disruption_id=disruption.disruption_id,
+                        action_type=ActionType.DELAY_FLIGHT,
+                        target_flight=flight.flight_id,
+                        description=f"Delay {flight.flight_number} by {delay_hours} hours due to weather",
+                        estimated_cost=self.cost_factors[ActionType.DELAY_FLIGHT] * delay_hours,
+                        passenger_impact=flight.passenger_count,
+                        confidence=0.75,
+                        urgency=Priority.MEDIUM,
+                        alternatives=[f"Monitor weather and adjust delay as needed"],
+                        timestamp=datetime.now()
+                    ))
+        
+        return recommendations
+    
+    def _handle_crew_disruption(self, disruption: OperationalDisruption) -> List[OperationalRecommendation]:
+        recommendations = []
+        
+        # This would involve complex crew scheduling logic
+        rec_id = f"rec_{disruption.disruption_id}_crew_swap"
+        recommendations.append(OperationalRecommendation(
+            recommendation_id=rec_id,
+            disruption_id=disruption.disruption_id,
+            action_type=ActionType.REASSIGN_CREW,
+            target_flight="MULTIPLE",
+            description="Reassign available crew to cover duty time violations",
+            estimated_cost=self.cost_factors[ActionType.REASSIGN_CREW] * 4,
+            passenger_impact=0,
+            confidence=0.7,
+            urgency=Priority.HIGH,
+            alternatives=["Use reserve crew", "Delay affected flights"],
+            timestamp=datetime.now()
+        ))
+        
+        return recommendations
+    
+    def _calculate_cancellation_cost(self, flight: Flight) -> float:
+        base_cost = self.cost_factors[ActionType.CANCEL_FLIGHT]
+        passenger_cost = flight.passenger_count * 300  # Average reaccommodation cost
+        return base_cost + passenger_cost
+
+class AirlineOperationsCenter:
+    def __init__(self):
+        self.db = DatabaseManager(Config.DB_NAME)
+        self.weather_monitor = WeatherMonitor(Config.WEATHER_API_KEY)
+        self.flight_manager = FlightDataManager()
+        self.disruption_analyzer = DisruptionAnalyzer()
+        self.recommendation_engine = RecommendationEngine(self.flight_manager)
+        self.running = False
+        self.active_disruptions = {}
+        self.pending_recommendations = []
+    
+    def start(self):
+        print("🛫 Starting AI-Enhanced Airline Operations Center...")
+        self.running = True
+        
+        # Schedule monitoring tasks
+        schedule.every(Config.WEATHER_CHECK_INTERVAL).minutes.do(self.monitor_weather)
+        schedule.every(Config.FLIGHT_CHECK_INTERVAL).minutes.do(self.monitor_flights)
+        
+        # Run initial checks
+        self.monitor_weather()
+        self.monitor_flights()
+        
+        # Main loop
+        while self.running:
+            schedule.run_pending()
+            time.sleep(30)  # Check every 30 seconds
+    
+    def monitor_weather(self):
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] 🌤️  Monitoring weather conditions...")
+        
+        try:
+            disruptions_found = 0
+            
+            for airport in Config.HUB_AIRPORTS:
+                weather = self.weather_monitor.fetch_weather_data(airport)
+                
+                if weather:
+                    self.db.save_weather(weather)
+                    
+                    # Analyze for disruptions
+                    disruption = self.disruption_analyzer.analyze_weather_disruption(weather)
+                    
+                    if disruption:
+                        self.db.save_disruption(disruption)
+                        self.active_disruptions[disruption.disruption_id] = disruption
+                        disruptions_found += 1
+                        
+                        # Generate recommendations
+                        recommendations = self.recommendation_engine.generate_recommendations(disruption)
+                        
+                        for rec in recommendations:
+                            self.db.save_recommendation(rec)
+                            self.pending_recommendations.append(rec)
+                            self.print_recommendation(rec, disruption)
+            
+            if disruptions_found > 0:
+                print(f"⚠️  Found {disruptions_found} weather-related disruptions")
+            
+        except Exception as e:
+            print(f"Error in weather monitoring: {e}")
+    
+    def monitor_flights(self):
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] ✈️  Monitoring flight operations...")
+        
+        try:
+            # Check for delayed flights
+            delayed_flights = self.flight_manager.get_delayed_flights(Config.DELAY_THRESHOLD_MINUTES)
+            
+            if delayed_flights:
+                print(f"⏰ {len(delayed_flights)} flights currently delayed > {Config.DELAY_THRESHOLD_MINUTES} minutes")
+                
+                # Could trigger additional disruption analysis here
+        
+        except Exception as e:
+            print(f"Error in flight monitoring: {e}")
+    
+    def print_recommendation(self, recommendation: OperationalRecommendation, disruption: OperationalDisruption):
+        print(f"\n🚨 OPERATIONAL RECOMMENDATION 🚨")
+        print(f"Action: {recommendation.action_type.value.upper()}")
+        print(f"Flight: {recommendation.target_flight}")
+        print(f"Priority: {recommendation.urgency.name}")
+        print(f"Confidence: {recommendation.confidence:.2f}")
+        print(f"Estimated Cost: ${recommendation.estimated_cost:,.0f}")
+        print(f"Passenger Impact: {recommendation.passenger_impact} passengers")
+        print(f"Description: {recommendation.description}")
+        print(f"Disruption: {disruption.title}")
+        print(f"Alternatives: {', '.join(recommendation.alternatives)}")
+        print(f"Timestamp: {recommendation.timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
+        print("-" * 70)
+    
+    def get_operational_dashboard_data(self) -> Dict:
+        """Get current operational status for dashboard"""
+        conn = sqlite3.connect(self.db.db_name)
+        cursor = conn.cursor()
+        
+        # Get recent disruptions
+        cursor.execute('''
+            SELECT * FROM disruptions 
+            WHERE start_time > ? 
+            ORDER BY priority DESC, start_time DESC
+        ''', ((datetime.now() - timedelta(hours=24)).isoformat(),))
+        
+        disruptions = cursor.fetchall()
+        
+        # Get pending recommendations
+        cursor.execute('''
+            SELECT * FROM recommendations 
+            WHERE timestamp > ? AND executed = FALSE
+            ORDER BY urgency DESC, timestamp DESC
+        ''', ((datetime.now() - timedelta(hours=6)).isoformat(),))
+        
+        recommendations = cursor.fetchall()
+        
+        conn.close()
+        
+        # Flight statistics
+        total_flights = len(self.flight_manager.flights)
+        delayed_flights = len(self.flight_manager.get_delayed_flights())
+        on_time_percentage = ((total_flights - delayed_flights) / total_flights * 100) if total_flights > 0 else 100
+        
+        return {
+            'total_flights': total_flights,
+            'delayed_flights': delayed_flights,
+            'on_time_percentage': on_time_percentage,
+            'active_disruptions': len(disruptions),
+            'pending_recommendations': len(recommendations),
+            'disruptions': disruptions[:10],  # Last 10
+            'recommendations': recommendations[:10]  # Last 10
+        }
+    
+    def execute_recommendation(self, recommendation_id: str) -> bool:
+        """Mark a recommendation as executed"""
+        conn = sqlite3.connect(self.db.db_name)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            UPDATE recommendations 
+            SET executed = TRUE 
+            WHERE recommendation_id = ?
+        ''', (recommendation_id,))
+        
+        success = cursor.rowcount > 0
+        conn.commit()
+        conn.close()
+        
+        if success:
+            print(f"✅ Executed recommendation: {recommendation_id}")
+        
+        return success
+    
+    def stop(self):
+        print("🛑 Stopping Airline Operations Center...")
+        self.running = False
+
+class OperationsDashboard:
+    def __init__(self, ops_center: AirlineOperationsCenter):
+        self.ops_center = ops_center
+    
+    def display_dashboard(self):
+        data = self.ops_center.get_operational_dashboard_data()
+        
+        print("\n" + "="*100)
+        print("✈️  AI-ENHANCED AIRLINE OPERATIONS CENTER DASHBOARD")
+        print("="*100)
+        
+        # Key Metrics
+        print(f"\n📊 OPERATIONAL METRICS")
+        print("-" * 50)
+        print(f"🛫 Total Flights Today: {data['total_flights']}")
+        print(f"⏰ Delayed Flights: {data['delayed_flights']}")
+        print(f"✅ On-Time Performance: {data['on_time_percentage']:.1f}%")
+        print(f"⚠️  Active Disruptions: {data['active_disruptions']}")
+        print(f"🎯 Pending Recommendations: {data['pending_recommendations']}")
+        
+        # Recent Disruptions
+        print(f"\n🚨 RECENT DISRUPTIONS")
+        print("-" * 50)
+        for disruption in data['disruptions'][:5]:
+            priority_emoji = "🔴" if disruption[4] >= 3 else "🟡" if disruption[4] == 2 else "🟢"
+            print(f"{priority_emoji} {disruption[2]} | Type: {disruption[1]} | Confidence: {disruption[9]:.2f}")
+            print(f"   {disruption[3][:80]}...")
+            print(f"   Time: {disruption[7]}")
+            print()
+        
+        # Pending Recommendations
+        print(f"\n💡 PENDING RECOMMENDATIONS")
+        print("-" * 50)
+        for rec in data['recommendations'][:5]:
+            urgency_emoji = "🔴" if rec[8] >= 3 else "🟡" if rec[8] == 2 else "🟢"
+            print(f"{urgency_emoji} {rec[2].upper()} | Flight: {rec[3]} | Cost: ${rec[5]:,.0f}")
+            print(f"   {rec[4][:80]}...")
+            print(f"   Confidence: {rec[7]:.2f} | Passengers Affected: {rec[6]}")
+            print()
+        
+        print("="*100)

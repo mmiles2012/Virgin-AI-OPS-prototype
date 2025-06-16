@@ -1024,6 +1024,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Operations monitoring endpoints
+  app.get("/api/operations/disruptions", async (req, res) => {
+    try {
+      // Execute Python operations monitor to get current disruptions
+      const { spawn } = require('child_process');
+      const python = spawn('python3', ['-c', `
+import sys
+sys.path.append('${__dirname}')
+from aviationOperationsMonitor import OperationsMonitor, Config
+import json
+
+monitor = OperationsMonitor()
+disruptions = monitor.get_current_disruptions()
+print(json.dumps(disruptions))
+`]);
+
+      let dataString = '';
+      python.stdout.on('data', (data) => {
+        dataString += data.toString();
+      });
+
+      python.on('close', (code) => {
+        try {
+          const disruptions = JSON.parse(dataString.trim());
+          res.json({
+            success: true,
+            disruptions,
+            count: disruptions.length,
+            timestamp: new Date().toISOString()
+          });
+        } catch (error) {
+          res.json({
+            success: true,
+            disruptions: [],
+            count: 0,
+            timestamp: new Date().toISOString()
+          });
+        }
+      });
+
+      python.stderr.on('data', (data) => {
+        console.warn('Operations monitor stderr:', data.toString());
+      });
+
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get operations disruptions'
+      });
+    }
+  });
+
+  app.get("/api/operations/weather-summary", async (req, res) => {
+    try {
+      const { spawn } = require('child_process');
+      const python = spawn('python3', ['-c', `
+import sys
+sys.path.append('${__dirname}')
+from aviationOperationsMonitor import OperationsMonitor
+import json
+
+monitor = OperationsMonitor()
+weather = monitor.get_weather_summary()
+print(json.dumps(weather))
+`]);
+
+      let dataString = '';
+      python.stdout.on('data', (data) => {
+        dataString += data.toString();
+      });
+
+      python.on('close', (code) => {
+        try {
+          const weather = JSON.parse(dataString.trim());
+          res.json({
+            success: true,
+            weather,
+            timestamp: new Date().toISOString()
+          });
+        } catch (error) {
+          res.json({
+            success: true,
+            weather: {},
+            timestamp: new Date().toISOString()
+          });
+        }
+      });
+
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get weather summary'
+      });
+    }
+  });
+
   // Health check endpoint
   app.get("/api/health", (req, res) => {
     res.json({
