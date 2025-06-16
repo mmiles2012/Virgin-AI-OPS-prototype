@@ -36,8 +36,8 @@ export default function SatelliteWorldMap() {
 
   // Generate optimized image URL with coordinate rounding and caching
   const generateImageUrl = (lat: number, lon: number, zoom: number, token: string) => {
-    const roundedLat = Math.round(lat * 100) / 100; // Round to 2 decimal places
-    const roundedLon = Math.round(lon * 100) / 100;
+    const roundedLat = Math.round(lat * 1000) / 1000; // Round to 3 decimal places for precision
+    const roundedLon = Math.round(lon * 1000) / 1000;
     const clampedZoom = Math.max(1, Math.min(zoom, 10));
     
     return `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${roundedLon},${roundedLat},${clampedZoom}/1200x800@2x?access_token=${token}`;
@@ -157,15 +157,38 @@ export default function SatelliteWorldMap() {
     return () => clearInterval(interval);
   }, []);
 
-  // Convert lat/lon to pixel coordinates for the map container with proper world coverage
+  // Convert lat/lon to pixel coordinates using Web Mercator projection (EPSG:3857) matching Mapbox
   const latLonToPixel = (lat: number, lon: number, containerWidth: number, containerHeight: number) => {
-    // Mercator-style projection with full world coverage
-    const x = ((lon + 180) / 360) * containerWidth;
-    // Use proper mercator projection for latitude to avoid polar distortion
-    const latRad = (lat * Math.PI) / 180;
-    const mercatorY = Math.log(Math.tan(Math.PI / 4 + latRad / 2));
-    const y = containerHeight / 2 - (mercatorY * containerHeight) / (2 * Math.PI);
-    return { x: Math.max(0, Math.min(containerWidth, x)), y: Math.max(0, Math.min(containerHeight, y)) };
+    // Web Mercator projection calculations
+    const EARTH_RADIUS = 6378137; // Earth's radius in meters
+    const ORIGIN_SHIFT = 2 * Math.PI * EARTH_RADIUS / 2.0;
+    
+    // Convert center coordinates to Web Mercator
+    const centerX = mapCenter.lon * ORIGIN_SHIFT / 180.0;
+    const centerY = Math.log(Math.tan((90 + mapCenter.lat) * Math.PI / 360.0)) / (Math.PI / 180.0);
+    const centerYMercator = centerY * ORIGIN_SHIFT / 180.0;
+    
+    // Convert flight coordinates to Web Mercator
+    const flightX = lon * ORIGIN_SHIFT / 180.0;
+    const flightY = Math.log(Math.tan((90 + lat) * Math.PI / 360.0)) / (Math.PI / 180.0);
+    const flightYMercator = flightY * ORIGIN_SHIFT / 180.0;
+    
+    // Calculate the scale factor based on zoom level
+    const scale = Math.pow(2, zoomLevel);
+    const pixelsPerMeter = scale * 256 / (2 * ORIGIN_SHIFT);
+    
+    // Calculate pixel offsets from center
+    const deltaX = (flightX - centerX) * pixelsPerMeter;
+    const deltaY = (centerYMercator - flightYMercator) * pixelsPerMeter; // Y is inverted in screen coordinates
+    
+    // Convert to screen coordinates
+    const x = containerWidth / 2 + deltaX;
+    const y = containerHeight / 2 + deltaY;
+    
+    return { 
+      x: Math.round(x), 
+      y: Math.round(y) 
+    };
   };
 
   // Mouse drag handlers
@@ -181,10 +204,13 @@ export default function SatelliteWorldMap() {
     const deltaX = event.clientX - dragStart.x;
     const deltaY = event.clientY - dragStart.y;
     
-    // Smoother sensitivity based on zoom level
-    const sensitivity = 0.05 / Math.pow(1.5, zoomLevel - 3);
-    const newLon = mapCenter.lon - deltaX * sensitivity;
-    const newLat = mapCenter.lat + deltaY * sensitivity;
+    // Improved sensitivity calculation based on zoom level and Web Mercator scale
+    const baseScale = Math.pow(2, zoomLevel);
+    const metersPerPixel = (2 * 20037508.34) / (256 * baseScale);
+    const degreesPerPixel = metersPerPixel / 111319.5; // Approximate meters per degree at equator
+    
+    const newLon = mapCenter.lon - deltaX * degreesPerPixel;
+    const newLat = mapCenter.lat + deltaY * degreesPerPixel * Math.cos(mapCenter.lat * Math.PI / 180);
     
     // Allow full global navigation with proper wrapping
     setMapCenter({
