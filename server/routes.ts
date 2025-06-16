@@ -870,6 +870,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/aviation/test-aviation-stack", async (req, res) => {
+    try {
+      const result = await aviationApiService.testAviationStack();
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Aviation Stack test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
   // Real-time Flight Data Routes
   app.get("/api/aviation/virgin-atlantic-flights", async (req, res) => {
     try {
