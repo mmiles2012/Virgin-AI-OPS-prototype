@@ -189,10 +189,12 @@ export class AviationApiService {
   private mapboxKey: string;
 
   constructor() {
-    this.aviationStackKey = process.env.AVIATION_STACK_KEY || '';
+    this.aviationStackKey = 'b297f0914a3bf55e65414d09772f7934';
     this.openskyUsername = process.env.OPENSKY_USERNAME || '';
     this.openskyPassword = process.env.OPENSKY_PASSWORD || '';
     this.mapboxKey = process.env.MAPBOX_PUBLIC_KEY || '';
+    
+    console.log('Aviation Stack API Key loaded:', this.aviationStackKey ? `${this.aviationStackKey.substring(0, 8)}...` : 'undefined');
   }
 
   async testAviationStack(): Promise<{ success: boolean; message: string; data?: any }> {
