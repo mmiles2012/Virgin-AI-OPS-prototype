@@ -398,21 +398,31 @@ export class AviationApiService {
           
           if (response.data && response.data.data) {
             for (const flight of response.data.data) {
-              if (flight.live && flight.live.latitude && flight.live.longitude) {
-                flights.push({
-                  callsign: flight.flight?.iata || flight.flight?.icao || 'VS' + flight.flight?.number || 'Unknown',
-                  latitude: parseFloat(flight.live.latitude),
-                  longitude: parseFloat(flight.live.longitude),
-                  altitude: flight.live.altitude || 0,
-                  velocity: flight.live.speed_horizontal || 0,
-                  heading: flight.live.direction || 0,
-                  aircraft: flight.aircraft?.iata || 'Virgin Atlantic',
-                  origin: flight.departure?.iata || 'Unknown',
-                  destination: flight.arrival?.iata || 'Unknown',
-                  departureTime: flight.departure?.scheduled,
-                  arrivalTime: flight.arrival?.scheduled,
-                  status: flight.flight_status
-                });
+              // Only include Virgin Atlantic operated flights (not codeshares)
+              const isVirginAtlanticOperated = flight.airline?.iata === 'VS' && 
+                                               flight.airline?.icao === 'VIR' &&
+                                               !flight.flight?.codeshared;
+              
+              if (isVirginAtlanticOperated && flight.live && flight.live.latitude && flight.live.longitude) {
+                const callsign = flight.flight?.iata || flight.flight?.icao || `VS${flight.flight?.number}`;
+                
+                // Ensure callsign starts with VS for Virgin Atlantic
+                if (callsign.startsWith('VS')) {
+                  flights.push({
+                    callsign: callsign,
+                    latitude: parseFloat(flight.live.latitude),
+                    longitude: parseFloat(flight.live.longitude),
+                    altitude: flight.live.altitude || 0,
+                    velocity: flight.live.speed_horizontal || 0,
+                    heading: flight.live.direction || 0,
+                    aircraft: flight.aircraft?.iata || flight.aircraft?.icao || 'Unknown',
+                    origin: flight.departure?.iata || 'Unknown',
+                    destination: flight.arrival?.iata || 'Unknown',
+                    departureTime: flight.departure?.scheduled,
+                    arrivalTime: flight.arrival?.scheduled,
+                    status: flight.flight_status
+                  });
+                }
               }
             }
           }
@@ -421,7 +431,11 @@ export class AviationApiService {
             return flights;
           }
         } catch (aviationStackError: any) {
-          console.warn('Aviation Stack API error:', aviationStackError.message);
+          if (aviationStackError.response?.status === 429 || aviationStackError.message.includes('usage_limit_reached')) {
+            console.warn('Aviation Stack API usage limit reached. Upgrade subscription for continued access.');
+          } else {
+            console.warn('Aviation Stack API error:', aviationStackError.message);
+          }
         }
       }
 

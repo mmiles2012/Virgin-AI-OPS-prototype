@@ -204,13 +204,16 @@ export default function RealTimeOperationsCenter() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-sm text-gray-300">
-                <p>To display live Virgin Atlantic flight data:</p>
+                <p>Current API has reached monthly usage limit. To continue with live Virgin Atlantic flight data:</p>
                 <ol className="list-decimal list-inside mt-2 space-y-1">
                   <li>Visit aviationstack.com</li>
-                  <li>Create an account or sign in</li>
-                  <li>Get your API access key</li>
+                  <li>Upgrade to Basic or Professional plan</li>
+                  <li>Get your new API access key</li>
                   <li>Provide the key using the API Setup button</li>
                 </ol>
+                <div className="mt-3 p-2 bg-blue-900/20 rounded text-xs text-blue-300">
+                  System now filters to show only Virgin Atlantic operated flights (VS callsigns), excluding codeshare flights from other operators.
+                </div>
               </div>
               <Alert className="bg-blue-900/20 border-blue-600">
                 <AlertDescription className="text-blue-300">
