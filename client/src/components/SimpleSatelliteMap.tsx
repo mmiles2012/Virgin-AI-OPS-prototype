@@ -92,6 +92,11 @@ export default function SimpleSatelliteMap() {
   const [showWeatherLayer, setShowWeatherLayer] = useState(true);
   const [showFlightPaths, setShowFlightPaths] = useState(true);
   const [weatherData, setWeatherData] = useState<Record<string, WeatherData>>({});
+  const [airports, setAirports] = useState<Airport[]>([]);
+  const [selectedAirport, setSelectedAirport] = useState<Airport | null>(null);
+  const [aviationWeather, setAviationWeather] = useState<AviationWeatherData | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [showAirports, setShowAirports] = useState(true);
   
   // Navigation presets
   const navigationPresets = [
