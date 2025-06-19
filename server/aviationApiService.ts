@@ -1183,46 +1183,68 @@ export class AviationApiService {
    * Estimate fuel burn based on aircraft type, distance, and passenger load
    */
   estimateFuelBurn(aircraftType: string, distanceNm: number, passengers: number = 150): FuelEstimate {
-    // Virgin Atlantic fleet fuel burn rates (gallons per nautical mile)
+    // Virgin Atlantic fleet fuel burn rates (kg per hour at cruise)
+    // TODO: Replace with accurate operational data from Virgin Atlantic fleet performance
     const fuelRates = {
-      'A350-1000': 8.2,
-      'A350-900': 7.8,
-      'A330-300': 9.5,
-      'A330-200': 8.8,
-      '787-9': 6.9,
-      '747-400': 14.2,
-      'A340-600': 12.5,
-      'A340-300': 11.2
+      'A350-1000': 2500, // kg/hr cruise burn rate (placeholder for accurate data)
+      'A350-900': 2350,  // kg/hr cruise burn rate (placeholder for accurate data)
+      'A330-300': 2800,  // kg/hr cruise burn rate (placeholder for accurate data)
+      'A330-200': 2600,  // kg/hr cruise burn rate (placeholder for accurate data)
+      '787-9': 2200,     // kg/hr cruise burn rate (placeholder for accurate data)
+      '747-400': 3800,   // kg/hr cruise burn rate (placeholder for accurate data)
+      'A340-600': 3200,  // kg/hr cruise burn rate (placeholder for accurate data)
+      'A340-300': 3000   // kg/hr cruise burn rate (placeholder for accurate data)
+    };
+
+    // Cruise speeds for flight time calculation (knots)
+    const cruiseSpeeds = {
+      'A350-1000': 490,
+      'A350-900': 488,
+      'A330-300': 470,
+      'A330-200': 470,
+      '787-9': 485,
+      '747-400': 490,
+      'A340-600': 475,
+      'A340-300': 475
     };
 
     // Normalize aircraft type for lookup
-    const normalizedType = aircraftType.replace('-', '-').toUpperCase();
-    let baseRate = fuelRates[normalizedType as keyof typeof fuelRates];
+    const normalizedType = aircraftType.replace(/[^A-Z0-9-]/g, '').toUpperCase();
+    let hourlyBurnRate = fuelRates[normalizedType as keyof typeof fuelRates];
+    let cruiseSpeed = cruiseSpeeds[normalizedType as keyof typeof cruiseSpeeds];
     
-    if (!baseRate) {
-      // Default based on aircraft size category
+    if (!hourlyBurnRate || !cruiseSpeed) {
+      // Default based on aircraft category with realistic values
       if (aircraftType.includes('A350') || aircraftType.includes('787')) {
-        baseRate = 7.5; // Modern wide-body
+        hourlyBurnRate = 2400; // Modern efficient wide-body
+        cruiseSpeed = 485;
       } else if (aircraftType.includes('A330') || aircraftType.includes('777')) {
-        baseRate = 9.0; // Traditional wide-body
+        hourlyBurnRate = 2700; // Traditional wide-body
+        cruiseSpeed = 470;
       } else if (aircraftType.includes('747') || aircraftType.includes('A380')) {
-        baseRate = 15.0; // Very large aircraft
+        hourlyBurnRate = 3600; // Very large aircraft
+        cruiseSpeed = 490;
       } else {
-        baseRate = 6.0; // Default narrow-body
+        hourlyBurnRate = 1200; // Narrow-body default
+        cruiseSpeed = 450;
       }
     }
 
-    // Adjust for passenger load (weight factor)
-    const loadFactor = 1 + (passengers - 150) * 0.0015;
-    const adjustedRate = baseRate * loadFactor;
+    // Calculate flight time in hours
+    const flightTimeHours = distanceNm / cruiseSpeed;
 
-    // Calculate fuel consumption
-    const fuelBurnGallons = distanceNm * adjustedRate;
-    const fuelBurnLiters = fuelBurnGallons * 3.78541;
-    const fuelBurnKg = fuelBurnLiters * 0.8; // Approximate density of jet fuel
+    // Adjust for passenger load and operational factors
+    const loadFactor = 1 + (passengers - 150) * 0.001; // More realistic load adjustment
+    const weatherFactor = 1.15; // Account for non-optimal conditions
+    const adjustedBurnRate = hourlyBurnRate * loadFactor * weatherFactor;
 
-    // Estimate cost at $2.50 per gallon (approximate jet fuel cost)
-    const estimatedCost = fuelBurnGallons * 2.50;
+    // Calculate total fuel consumption
+    const fuelBurnKg = flightTimeHours * adjustedBurnRate;
+    const fuelBurnLiters = fuelBurnKg / 0.8; // Jet fuel density ~0.8 kg/L
+    const fuelBurnGallons = fuelBurnLiters / 3.78541;
+
+    // Realistic fuel cost at $0.82 per kg (current market rates)
+    const estimatedCost = fuelBurnKg * 0.82;
 
     return {
       aircraftType,
@@ -1232,7 +1254,7 @@ export class AviationApiService {
       fuelBurnLiters: Math.round(fuelBurnLiters * 100) / 100,
       fuelBurnKg: Math.round(fuelBurnKg * 100) / 100,
       estimatedCost: Math.round(estimatedCost * 100) / 100,
-      note: 'Estimate based on Virgin Atlantic fleet data. Actual consumption varies with weather, altitude, weight, and operational factors.'
+      note: 'Preliminary estimates - requires Virgin Atlantic operational data for accuracy. Includes weather and load factors.'
     };
   }
 
