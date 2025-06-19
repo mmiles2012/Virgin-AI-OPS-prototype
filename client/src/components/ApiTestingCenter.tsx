@@ -28,22 +28,22 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
 
   const apiEndpoints = [
     {
-      name: 'Aviation Stack',
-      key: 'aviationStack',
-      endpoint: '/api/aviation/test-aviation-stack',
-      description: 'Primary flight tracking API with comprehensive Virgin Atlantic data and global coverage'
-    },
-    {
       name: 'OpenSky Network',
       key: 'opensky',
       endpoint: '/api/aviation/test-opensky',
-      description: 'Global aircraft position tracking for real-time visualization and backup flight data'
+      description: 'Primary source for real-time Virgin Atlantic aircraft positions and global flight tracking'
+    },
+    {
+      name: 'Aviation Stack',
+      key: 'aviationStack',
+      endpoint: '/api/aviation/test-aviation-stack',
+      description: 'Backup flight data source with comprehensive airline information and route details'
     },
     {
       name: 'Mapbox',
       key: 'mapbox',
       endpoint: '/api/aviation/test-mapbox',
-      description: 'Satellite imagery and geospatial mapping services for accurate flight visualization'
+      description: 'Satellite imagery and geospatial mapping services for precise flight visualization'
     }
   ];
 
@@ -270,6 +270,15 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
           with Aviation Stack as backup. The intelligent caching system ensures continuous data availability 
           even when APIs reach usage limits. Mapbox provides satellite imagery for precise flight visualization.
         </p>
+        {(testResults.opensky?.success === false && testResults.aviationStack?.success === false) && (
+          <div className="mt-3 p-2 bg-yellow-900/30 border border-yellow-500/50 rounded text-xs">
+            <div className="text-yellow-400 font-medium mb-1">⚠️ API Rate Limits Detected</div>
+            <div className="text-gray-300">
+              Both aviation APIs are currently rate-limited. The system is serving cached Virgin Atlantic 
+              flight data to maintain training continuity. Fresh data will resume when API limits reset.
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

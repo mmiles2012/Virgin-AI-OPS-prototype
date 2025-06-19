@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { flightDataCache } from './flightDataCache';
+import { demoFlightGenerator } from './demoFlightData';
 
 interface AviationStackResponse {
   data: any[];
@@ -199,6 +200,7 @@ export class AviationApiService {
     
     console.log('Aviation Stack API Key loaded:', this.aviationStackKey ? `${this.aviationStackKey.substring(0, 8)}...` : 'undefined');
     console.log('Aviation Edge API Key loaded:', this.aviationEdgeKey ? `${this.aviationEdgeKey.substring(0, 8)}...` : 'undefined');
+    console.log('OpenSky credentials loaded:', this.openskyUsername ? `${this.openskyUsername.substring(0, 3)}***` : 'not configured');
   }
 
   async testAviationStack(): Promise<{ success: boolean; message: string; data?: any }> {
@@ -526,6 +528,8 @@ export class AviationApiService {
         return lastValidData;
       }
 
+      // Return empty array when no authentic data is available
+      console.warn('No authentic Virgin Atlantic flight data available - APIs and cache unavailable');
       return [];
     } catch (error: any) {
       console.warn('Flight data error:', error.message);
@@ -534,9 +538,22 @@ export class AviationApiService {
   }
 
   private async getOpenSkyVirginAtlanticFlights(): Promise<FlightData[]> {
-    const response = await axios.get('https://opensky-network.org/api/states/all', {
-      timeout: 15000
-    });
+    const config: any = {
+      timeout: 15000,
+      headers: {
+        'User-Agent': 'AINO-Aviation-Training/1.0'
+      }
+    };
+
+    // Use authenticated access if credentials are available for higher rate limits
+    if (this.openskyUsername && this.openskyPassword) {
+      config.auth = {
+        username: this.openskyUsername,
+        password: this.openskyPassword
+      };
+    }
+
+    const response = await axios.get('https://opensky-network.org/api/states/all', config);
 
     const flights: FlightData[] = [];
     
