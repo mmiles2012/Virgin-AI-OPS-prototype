@@ -552,22 +552,26 @@ const GeopoliticalRiskCenter = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-red-900/20 rounded border border-red-600">
-                  <span className="text-gray-300">Middle East</span>
-                  <span className="px-2 py-1 bg-red-500 text-white text-xs rounded">Critical</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-orange-900/20 rounded border border-orange-600">
-                  <span className="text-gray-300">South China Sea</span>
-                  <span className="px-2 py-1 bg-orange-500 text-white text-xs rounded">High</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-yellow-900/20 rounded border border-yellow-600">
-                  <span className="text-gray-300">Eastern Europe</span>
-                  <span className="px-2 py-1 bg-yellow-500 text-white text-xs rounded">Medium</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-green-900/20 rounded border border-green-600">
-                  <span className="text-gray-300">North America</span>
-                  <span className="px-2 py-1 bg-green-500 text-white text-xs rounded">Low</span>
-                </div>
+                {regionalAssessments.map((assessment) => (
+                  <button
+                    key={assessment.region}
+                    onClick={() => {
+                      setSelectedRegion(assessment);
+                      setShowRegionalDetails(true);
+                    }}
+                    className={`w-full flex justify-between items-center p-3 rounded border transition-colors hover:bg-opacity-80 ${getSeverityColor(assessment.overallRisk)}`}
+                  >
+                    <span className="text-gray-300 font-medium">{assessment.region}</span>
+                    <span className={`px-2 py-1 text-white text-xs rounded ${
+                      assessment.overallRisk === 'critical' ? 'bg-red-500' :
+                      assessment.overallRisk === 'high' ? 'bg-orange-500' :
+                      assessment.overallRisk === 'medium' ? 'bg-yellow-500' :
+                      'bg-green-500'
+                    }`}>
+                      {assessment.overallRisk}
+                    </span>
+                  </button>
+                ))}
               </CardContent>
             </Card>
 
@@ -801,6 +805,130 @@ const GeopoliticalRiskCenter = () => {
                   </p>
                 </CardContent>
               </Card>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Regional Risk Details Modal */}
+      {showRegionalDetails && selectedRegion && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-lg border border-gray-600 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-white">{selectedRegion.region} Risk Assessment</h2>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-gray-300">Overall Risk Level:</span>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      selectedRegion.overallRisk === 'critical' ? 'bg-red-500 text-white' :
+                      selectedRegion.overallRisk === 'high' ? 'bg-orange-500 text-white' :
+                      selectedRegion.overallRisk === 'medium' ? 'bg-yellow-500 text-white' :
+                      'bg-green-500 text-white'
+                    }`}>
+                      {selectedRegion.overallRisk.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowRegionalDetails(false)}
+                  className="text-gray-400 hover:text-white p-2"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Risk Factors */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                    Risk Factors
+                  </h3>
+                  <div className="space-y-3">
+                    {selectedRegion.riskFactors.map((factor, index) => (
+                      <div key={index} className="bg-gray-800 rounded-lg border border-gray-600 p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-medium text-white">{factor.category}</h4>
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${
+                            factor.impact === 'high' ? 'bg-red-500 text-white' :
+                            factor.impact === 'medium' ? 'bg-yellow-500 text-white' :
+                            'bg-green-500 text-white'
+                          }`}>
+                            {factor.impact.toUpperCase()}
+                          </span>
+                        </div>
+                        <p className="text-gray-300 text-sm mb-2">{factor.description}</p>
+                        <div className="text-xs text-gray-400">
+                          Last updated: {factor.lastUpdated}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Affected Routes & Recommendations */}
+                <div className="space-y-4">
+                  {/* Affected Routes */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-3">
+                      <Route className="h-5 w-5 text-blue-500" />
+                      Affected Routes
+                    </h3>
+                    <div className="bg-gray-800 rounded-lg border border-gray-600 p-4">
+                      <div className="grid grid-cols-1 gap-2">
+                        {selectedRegion.affectedRoutes.map((route, index) => (
+                          <div key={index} className="flex items-center gap-2 p-2 bg-gray-700 rounded">
+                            <Plane className="h-4 w-4 text-blue-400" />
+                            <span className="text-gray-300 font-mono text-sm">{route}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Operational Recommendations */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-3">
+                      <Shield className="h-5 w-5 text-green-500" />
+                      Operational Recommendations
+                    </h3>
+                    <div className="bg-gray-800 rounded-lg border border-gray-600 p-4">
+                      <ul className="space-y-2">
+                        {selectedRegion.recommendations.map((recommendation, index) => (
+                          <li key={index} className="flex items-start gap-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-300 text-sm">{recommendation}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Economic Impact */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-3">
+                      <DollarSign className="h-5 w-5 text-yellow-500" />
+                      Economic Impact
+                    </h3>
+                    <div className="bg-gray-800 rounded-lg border border-gray-600 p-4">
+                      <p className="text-gray-300 text-sm mb-2">{selectedRegion.economicImpact}</p>
+                      <div className="text-xs text-gray-400">
+                        Assessment timeframe: {selectedRegion.timeframe}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setShowRegionalDetails(false)}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                >
+                  Close Assessment
+                </button>
+              </div>
             </div>
           </div>
         </div>
