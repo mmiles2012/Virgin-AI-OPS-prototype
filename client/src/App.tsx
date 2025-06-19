@@ -19,6 +19,7 @@ import SafeAirspaceAlerts from "./components/SafeAirspaceAlerts";
 import RealTimeOperationsCenter from "./components/RealTimeOperationsCenter";
 import GeopoliticalRiskCenter from "./components/GeopoliticalRiskCenter";
 import DiversionDecisionEngine from "./components/DiversionDecisionEngine";
+import { ApiTestingCenter } from "./components/ApiTestingCenter";
 
 // Flight control mappings
 enum FlightControls {
@@ -56,7 +57,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion';
+type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'api-testing';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -213,6 +214,17 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('api-testing')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'api-testing' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    API Testing
+                  </button>
+                  
+                  <button
                     onClick={() => {
                       console.log('API Setup button clicked');
                       setShowApiWizard(true);
@@ -277,6 +289,12 @@ function App() {
                 <DiversionDecisionEngine />
               </div>
             )}
+            
+            {viewMode === 'api-testing' && !isInterfaceMinimized && (
+              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+                <ApiTestingCenter />
+              </div>
+            )}
 
             {/* Minimized Mode Indicator */}
             {isInterfaceMinimized && viewMode !== 'overview' && (
@@ -290,6 +308,7 @@ function App() {
                     {viewMode === 'realtime' && '📊 Live Operations (Minimized)'}
                     {viewMode === 'geopolitical' && '🌍 Risk Assessment (Minimized)'}
                     {viewMode === 'diversion' && '🧠 AI Diversion (Minimized)'}
+                    {viewMode === 'api-testing' && '🔧 API Testing (Minimized)'}
                   </div>
                 </div>
               </div>

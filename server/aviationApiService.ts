@@ -442,59 +442,7 @@ export class AviationApiService {
 
   async getVirginAtlanticFlights(): Promise<FlightData[]> {
     try {
-      // Try Aviation Edge API first
-      if (this.aviationEdgeKey) {
-        try {
-          const response = await axios.get('http://aviation-edge.com/v2/public/flights', {
-            params: {
-              key: this.aviationEdgeKey,
-              airlineIata: 'VS',
-              status: 'en-route'
-            },
-            timeout: 15000
-          });
-
-          const flights: FlightData[] = [];
-          
-          if (response.data && Array.isArray(response.data)) {
-            for (const flight of response.data) {
-              // Only include Virgin Atlantic operated flights
-              const isVirginAtlanticOperated = flight.airline?.iataCode === 'VS' && 
-                                               flight.airline?.icaoCode === 'VIR';
-              
-              if (isVirginAtlanticOperated && flight.geography && flight.geography.latitude && flight.geography.longitude) {
-                const callsign = flight.flight?.iataNumber || flight.flight?.icaoNumber || `VS${flight.flight?.number}`;
-                
-                if (callsign.startsWith('VS')) {
-                  flights.push({
-                    callsign: callsign,
-                    latitude: parseFloat(flight.geography.latitude),
-                    longitude: parseFloat(flight.geography.longitude),
-                    altitude: flight.geography.altitude || 0,
-                    velocity: flight.speed?.horizontal || 0,
-                    heading: flight.geography.direction || 0,
-                    aircraft: flight.aircraft?.iataType || flight.aircraft?.icaoType || 'Unknown',
-                    origin: flight.departure?.iataCode || 'Unknown',
-                    destination: flight.arrival?.iataCode || 'Unknown',
-                    departureTime: flight.departure?.scheduledTime,
-                    arrivalTime: flight.arrival?.scheduledTime,
-                    status: flight.status || 'active'
-                  });
-                }
-              }
-            }
-          }
-
-          if (flights.length > 0) {
-            console.log(`Retrieved ${flights.length} Virgin Atlantic flights from Aviation Edge API`);
-            return flights;
-          }
-        } catch (aviationEdgeError: any) {
-          console.warn('Aviation Edge API error:', aviationEdgeError.message);
-        }
-      }
-
-      // Fallback to Aviation Stack API if Aviation Edge fails
+      // Use Aviation Stack API with enhanced error handling
       if (this.aviationStackKey) {
         try {
           const response = await axios.get('http://api.aviationstack.com/v1/flights', {
@@ -544,7 +492,9 @@ export class AviationApiService {
           }
         } catch (aviationStackError: any) {
           if (aviationStackError.response?.status === 429 || aviationStackError.message.includes('usage_limit_reached')) {
-            console.warn('Aviation Stack API usage limit reached. Upgrade subscription for continued access.');
+            console.warn('Aviation Stack API usage limit reached. Consider upgrading subscription for continued access.');
+            // Return cached data or indicate service limitation
+            throw new Error('Flight data temporarily unavailable due to API usage limits. Please upgrade Aviation Stack subscription for continuous access.');
           } else {
             console.warn('Aviation Stack API error:', aviationStackError.message);
           }
@@ -554,7 +504,7 @@ export class AviationApiService {
       return [];
     } catch (error: any) {
       console.warn('Flight data error:', error.message);
-      throw new Error(`Failed to fetch Virgin Atlantic flights: ${error.message}`);
+      throw error;
     }
   }
 

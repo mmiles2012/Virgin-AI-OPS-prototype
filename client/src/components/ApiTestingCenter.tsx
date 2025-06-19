@@ -19,25 +19,19 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
       name: 'Aviation Stack',
       key: 'aviationStack',
       endpoint: '/api/aviation/test-aviation-stack',
-      description: 'Primary flight tracking API with comprehensive Virgin Atlantic data'
-    },
-    {
-      name: 'Aviation Edge',
-      key: 'aviationEdge', 
-      endpoint: '/api/aviation/test-aviation-edge',
-      description: 'Alternative flight tracking API for enhanced data coverage'
+      description: 'Primary flight tracking API with comprehensive Virgin Atlantic data and global coverage'
     },
     {
       name: 'OpenSky Network',
       key: 'opensky',
       endpoint: '/api/aviation/test-opensky',
-      description: 'Global aircraft position tracking for real-time visualization'
+      description: 'Global aircraft position tracking for real-time visualization and backup flight data'
     },
     {
       name: 'Mapbox',
       key: 'mapbox',
       endpoint: '/api/aviation/test-mapbox',
-      description: 'Satellite imagery and geospatial mapping services'
+      description: 'Satellite imagery and geospatial mapping services for accurate flight visualization'
     }
   ];
 
@@ -194,9 +188,9 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
           <span className="text-sm font-medium text-blue-400">Aviation Data Sources</span>
         </div>
         <p className="text-xs text-gray-300">
-          AINO uses multiple aviation APIs to ensure comprehensive Virgin Atlantic flight tracking. 
-          Aviation Edge provides primary data with Aviation Stack as backup, while OpenSky Network 
-          delivers real-time aircraft positions for enhanced situational awareness.
+          AINO uses Aviation Stack as the primary source for Virgin Atlantic flight data, with OpenSky Network 
+          providing global aircraft positions for comprehensive situational awareness. Mapbox delivers 
+          high-resolution satellite imagery for accurate geospatial visualization of flight operations.
         </p>
       </div>
     </div>
