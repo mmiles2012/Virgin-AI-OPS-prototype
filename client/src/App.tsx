@@ -58,7 +58,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'api-testing';
+type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'api-testing' | 'news-intelligence';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
