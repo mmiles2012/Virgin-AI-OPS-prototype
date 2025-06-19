@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap, Shield, Wind, Eye, Fuel, Building, Wrench, FileText, BarChart3, CheckCircle, Target, Activity } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
-import { useEnhancedFlightData } from '../hooks/useAviationData';
+import { useEnhancedFlightData, useAviationData } from '../hooks/useAviationData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -105,6 +105,7 @@ const ActiveFlightsList = () => {
 export default function EnhancedOperationalDecisionEngine() {
   const { selectedFlight } = useSelectedFlight();
   const { enhancedData, loading, error } = useEnhancedFlightData(selectedFlight?.callsign);
+  const aviationData = useAviationData();
   
   const getFlightData = (callsign: string) => {
     const flightConfigs = {
@@ -131,6 +132,61 @@ export default function EnhancedOperationalDecisionEngine() {
     passengers: getFlightData(selectedFlight.callsign).passengers,
     eta: '14:30 UTC'
   } : null;
+
+  // Calculate operating costs when flight data is available
+  React.useEffect(() => {
+    if (flightData) {
+      const routeDistance = getRouteDistance(flightData.route);
+      aviationData.fetchOperatingCosts(flightData.aircraft, routeDistance, flightData.passengers);
+    }
+  }, [flightData?.callsign, flightData?.aircraft, aviationData]);
+
+  // Helper function to get route distances (nautical miles)
+  const getRouteDistance = (route: string): number => {
+    const distances = {
+      'LHR-JFK': 3459,    // London Heathrow to JFK
+      'LGW-MCO': 4277,    // London Gatwick to Orlando
+      'LHR-LAX': 5446,    // London Heathrow to LAX
+      'MAN-ATL': 4198,    // Manchester to Atlanta
+      'LHR-BOS': 3255,    // London Heathrow to Boston
+      'LHR-YYZ': 3544,    // London Heathrow to Toronto
+      'LGW-JFK': 3470     // London Gatwick to JFK
+    };
+    return distances[route as keyof typeof distances] || 3500;
+  };
+
+  // Calculate diversion costs using authentic Virgin Atlantic operational data
+  const calculateDiversionCosts = (aircraft: string, delayHours: number, passengers: number) => {
+    const operatingCosts = aviationData.operatingCosts;
+    if (!operatingCosts) {
+      return {
+        operationalCost: delayHours * 7500,
+        fuelCost: 12000,
+        passengerCompensation: passengers * 320,
+        hotelAccommodation: passengers * 180,
+        crewCosts: 9600,
+        handlingFees: 3500,
+        totalCost: 0
+      };
+    }
+
+    const operationalCost = delayHours * operatingCosts.breakdown.hourlyOperatingCost;
+    const fuelCost = operatingCosts.fuelCost * 1.15; // Additional fuel for diversion
+    const passengerCompensation = passengers * 320; // EU261 compensation
+    const hotelAccommodation = passengers * 180; // Overnight accommodation
+    const crewCosts = 9600; // Crew duty time and accommodation
+    const handlingFees = 3500; // Airport handling at diversion airport
+
+    return {
+      operationalCost: Math.round(operationalCost),
+      fuelCost: Math.round(fuelCost),
+      passengerCompensation,
+      hotelAccommodation,
+      crewCosts,
+      handlingFees,
+      totalCost: Math.round(operationalCost + fuelCost + passengerCompensation + hotelAccommodation + crewCosts + handlingFees)
+    };
+  };
 
   return (
     <div className="h-full bg-gradient-to-br from-blue-900/20 via-gray-900 to-gray-800 text-white overflow-hidden">
@@ -356,24 +412,43 @@ export default function EnhancedOperationalDecisionEngine() {
                                 <span className="text-gray-300 font-medium">Cost Analysis</span>
                               </div>
                               <div className="space-y-2 text-sm">
-                                <div className="flex justify-between">
-                                  <span className="text-gray-400">Passenger Care:</span>
-                                  <span className="text-white font-medium">$95,200</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-gray-400">Crew Costs:</span>
-                                  <span className="text-white font-medium">$9,600</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-gray-400">Aircraft Costs:</span>
-                                  <span className="text-white font-medium">$17,800</span>
-                                </div>
-                                <div className="border-t border-gray-600 pt-2 mt-3">
-                                  <div className="flex justify-between text-lg font-semibold">
-                                    <span className="text-blue-400">Total Cost:</span>
-                                    <span className="text-blue-400">$122,600</span>
-                                  </div>
-                                </div>
+                                {(() => {
+                                  const diversionCosts = calculateDiversionCosts(flightData?.aircraft || 'A350-1000', 2.5, flightData?.passengers || 298);
+                                  return (
+                                    <>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Passenger Care:</span>
+                                        <span className="text-white font-medium">${diversionCosts.passengerCompensation.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Hotel Accommodation:</span>
+                                        <span className="text-white font-medium">${diversionCosts.hotelAccommodation.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Crew Costs:</span>
+                                        <span className="text-white font-medium">${diversionCosts.crewCosts.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Aircraft Operating:</span>
+                                        <span className="text-white font-medium">${diversionCosts.operationalCost.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Additional Fuel:</span>
+                                        <span className="text-white font-medium">${diversionCosts.fuelCost.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Handling Fees:</span>
+                                        <span className="text-white font-medium">${diversionCosts.handlingFees.toLocaleString()}</span>
+                                      </div>
+                                      <div className="border-t border-gray-600 pt-2 mt-3">
+                                        <div className="flex justify-between text-lg font-semibold">
+                                          <span className="text-blue-400">Total Cost:</span>
+                                          <span className="text-blue-400">${diversionCosts.totalCost.toLocaleString()}</span>
+                                        </div>
+                                      </div>
+                                    </>
+                                  );
+                                })()}
                               </div>
                             </div>
                           </div>
@@ -449,7 +524,20 @@ export default function EnhancedOperationalDecisionEngine() {
                             <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
                               <span className="text-gray-300">Fuel Cost (Est):</span>
                               <span className="text-white font-medium">
-                                {enhancedData.fuelAnalysis ? `$${enhancedData.fuelAnalysis.estimatedCost.toLocaleString()}` : '$39,000'}
+                                {enhancedData.fuelAnalysis ? `$${enhancedData.fuelAnalysis.estimatedCost.toLocaleString()}` : 
+                                 (aviationData.operatingCosts ? `$${aviationData.operatingCosts.fuelCost.toLocaleString()}` : '$39,000')}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Operating Cost/Hour:</span>
+                              <span className="text-white font-medium">
+                                {aviationData.operatingCosts ? `$${aviationData.operatingCosts.breakdown.hourlyOperatingCost.toLocaleString()}` : '$8,420'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Total Operating Cost:</span>
+                              <span className="text-blue-400 font-medium">
+                                {aviationData.operatingCosts ? `$${aviationData.operatingCosts.totalOperatingCost.toLocaleString()}` : '$58,940'}
                               </span>
                             </div>
                           </div>
