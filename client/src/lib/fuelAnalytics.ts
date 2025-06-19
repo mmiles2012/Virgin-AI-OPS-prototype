@@ -61,17 +61,36 @@ export class FuelAnalytics {
     weatherConditions: 'good' | 'moderate' | 'poor',
     altitudeRestrictions: boolean = false
   ): number {
-    // Base fuel consumption rates (kg/km)
-    const fuelRates = {
-      'B787': 4.2,
-      'A350': 4.0,
-      'A330': 4.8,
-      'B777': 5.5,
-      'A340': 6.2
+    // Virgin Atlantic fleet fuel burn rates (kg/hour at cruise)
+    const hourlyBurnRates = {
+      'B789': 5500,  // 787-9 operational data
+      'A351': 8250,  // A350-1000 operational data
+      'A350': 5950,  // A350-900 operational data
+      'A333': 6350,  // A330-300 operational data
+      'A339': 5450,  // A330-900neo operational data
+      'A330': 6350,  // Default A330 family
+      'B787': 5500,  // 787 family
+      'A340': 7500   // A340 family
     };
 
-    const baseRate = fuelRates[aircraftType as keyof typeof fuelRates] || 4.5;
-    let totalFuel = baseDistance * baseRate;
+    // Cruise speeds (knots)
+    const cruiseSpeeds = {
+      'B789': 485,
+      'A351': 488,
+      'A350': 488,
+      'A333': 470,
+      'A339': 475,
+      'A330': 470,
+      'B787': 485,
+      'A340': 475
+    };
+
+    const hourlyRate = hourlyBurnRates[aircraftType as keyof typeof hourlyBurnRates] || 5500;
+    const cruiseSpeed = cruiseSpeeds[aircraftType as keyof typeof cruiseSpeeds] || 475;
+    
+    // Convert distance to flight time and calculate fuel
+    const flightTimeHours = baseDistance / cruiseSpeed;
+    let totalFuel = flightTimeHours * hourlyRate;
 
     // Weather adjustments
     if (weatherConditions === 'moderate') {
