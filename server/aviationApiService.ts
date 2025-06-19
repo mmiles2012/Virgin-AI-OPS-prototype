@@ -194,6 +194,8 @@ export class AviationApiService {
   private openskyToken: string | null = null;
   private openskyTokenExpiry: number = 0;
   private mapboxKey: string;
+  private lastOpenSkyRequest: number = 0;
+  private readonly OPENSKY_RATE_LIMIT_MS = 10000; // 10 seconds as per documentation
 
   constructor() {
     this.aviationStackKey = 'b297f0914a3bf55e65414d09772f7934';
@@ -545,9 +547,9 @@ export class AviationApiService {
         return lastValidData;
       }
 
-      // Return empty array when no authentic data is available
-      console.warn('No authentic Virgin Atlantic flight data available - APIs and cache unavailable');
-      return [];
+      // Fall back to training simulation when APIs are unavailable
+      console.warn('No authentic Virgin Atlantic flight data available - falling back to training simulation');
+      return demoFlightGenerator.generateVirginAtlanticFlights();
     } catch (error: any) {
       console.warn('Flight data error:', error.message);
       throw error;
@@ -648,7 +650,22 @@ export class AviationApiService {
     return null;
   }
 
+  private async waitForRateLimit(): Promise<void> {
+    const now = Date.now();
+    const timeSinceLastRequest = now - this.lastOpenSkyRequest;
+    
+    if (timeSinceLastRequest < this.OPENSKY_RATE_LIMIT_MS) {
+      const waitTime = this.OPENSKY_RATE_LIMIT_MS - timeSinceLastRequest;
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+    
+    this.lastOpenSkyRequest = Date.now();
+  }
+
   private async getOpenSkyVirginAtlanticFlightsAnonymous(): Promise<FlightData[]> {
+    // Respect OpenSky's 10-second rate limit for anonymous requests
+    await this.waitForRateLimit();
+
     const config: any = {
       timeout: 15000,
       headers: {
@@ -656,12 +673,12 @@ export class AviationApiService {
       }
     };
 
-    // Try OAuth2 authentication first
+    // Try OAuth2 authentication first (no rate limit with auth)
     const token = await this.getOpenSkyOAuth2Token();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     } else if (this.openskyUsername && this.openskyPassword) {
-      // Fallback to basic auth
+      // Fallback to basic auth (authenticated users have no rate limit)
       config.auth = {
         username: this.openskyUsername,
         password: this.openskyPassword
@@ -703,6 +720,214 @@ export class AviationApiService {
     }
 
     return flights;
+  }
+
+  /**
+   * Get flights within time interval - implements OpenSky get_flights_from_interval endpoint
+   * Time interval must not be greater than 2 hours as per OpenSky documentation
+   */
+  async getFlightsFromInterval(beginUnix: number, endUnix: number): Promise<any[]> {
+    // Validate time interval (max 2 hours)
+    const intervalHours = (endUnix - beginUnix) / 3600;
+    if (intervalHours > 2) {
+      throw new Error('Time interval must not be greater than 2 hours');
+    }
+
+    await this.waitForRateLimit();
+
+    try {
+      const config: any = {
+        timeout: 30000,
+        headers: {
+          'User-Agent': 'AINO-Aviation-Training/1.0'
+        },
+        params: {
+          begin: beginUnix,
+          end: endUnix
+        }
+      };
+
+      const token = await this.getOpenSkyOAuth2Token();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else if (this.openskyUsername && this.openskyPassword) {
+        config.auth = {
+          username: this.openskyUsername,
+          password: this.openskyPassword
+        };
+      }
+
+      const response = await axios.get('https://opensky-network.org/api/flights/all', config);
+      return response.data || [];
+    } catch (error: any) {
+      console.error('Error fetching flights from interval:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Get aircraft track - implements OpenSky get_track_by_aircraft endpoint
+   */
+  async getAircraftTrack(icao24: string, time: number = 0): Promise<any> {
+    await this.waitForRateLimit();
+
+    try {
+      const config: any = {
+        timeout: 15000,
+        headers: {
+          'User-Agent': 'AINO-Aviation-Training/1.0'
+        },
+        params: time > 0 ? { time } : {}
+      };
+
+      const token = await this.getOpenSkyOAuth2Token();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else if (this.openskyUsername && this.openskyPassword) {
+        config.auth = {
+          username: this.openskyUsername,
+          password: this.openskyPassword
+        };
+      }
+
+      const response = await axios.get(`https://opensky-network.org/api/tracks/all`, config);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error fetching aircraft track:', error.message);
+      return null;
+    }
+  }
+
+  /**
+   * Get flights by aircraft - implements OpenSky get_flights_by_aircraft endpoint
+   * Time interval must be smaller than 30 days as per OpenSky documentation
+   */
+  async getFlightsByAircraft(icao24: string, beginUnix: number, endUnix: number): Promise<any[]> {
+    // Validate time interval (max 30 days)
+    const intervalDays = (endUnix - beginUnix) / (24 * 3600);
+    if (intervalDays > 30) {
+      throw new Error('Time interval must be smaller than 30 days');
+    }
+
+    await this.waitForRateLimit();
+
+    try {
+      const config: any = {
+        timeout: 30000,
+        headers: {
+          'User-Agent': 'AINO-Aviation-Training/1.0'
+        },
+        params: {
+          icao24: icao24.toLowerCase(),
+          begin: beginUnix,
+          end: endUnix
+        }
+      };
+
+      const token = await this.getOpenSkyOAuth2Token();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else if (this.openskyUsername && this.openskyPassword) {
+        config.auth = {
+          username: this.openskyUsername,
+          password: this.openskyPassword
+        };
+      }
+
+      const response = await axios.get('https://opensky-network.org/api/flights/aircraft', config);
+      return response.data || [];
+    } catch (error: any) {
+      console.error('Error fetching flights by aircraft:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Get arrivals by airport - implements OpenSky get_arrivals_by_airport endpoint
+   * Time interval must be smaller than 7 days as per OpenSky documentation
+   */
+  async getArrivalsByAirport(airport: string, beginUnix: number, endUnix: number): Promise<any[]> {
+    // Validate time interval (max 7 days)
+    const intervalDays = (endUnix - beginUnix) / (24 * 3600);
+    if (intervalDays > 7) {
+      throw new Error('Time interval must be smaller than 7 days');
+    }
+
+    await this.waitForRateLimit();
+
+    try {
+      const config: any = {
+        timeout: 30000,
+        headers: {
+          'User-Agent': 'AINO-Aviation-Training/1.0'
+        },
+        params: {
+          airport: airport.toUpperCase(),
+          begin: beginUnix,
+          end: endUnix
+        }
+      };
+
+      const token = await this.getOpenSkyOAuth2Token();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else if (this.openskyUsername && this.openskyPassword) {
+        config.auth = {
+          username: this.openskyUsername,
+          password: this.openskyPassword
+        };
+      }
+
+      const response = await axios.get('https://opensky-network.org/api/flights/arrival', config);
+      return response.data || [];
+    } catch (error: any) {
+      console.error('Error fetching arrivals by airport:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Get departures by airport - implements OpenSky get_departures_by_airport endpoint
+   * Time interval must be smaller than 7 days as per OpenSky documentation
+   */
+  async getDeparturesByAirport(airport: string, beginUnix: number, endUnix: number): Promise<any[]> {
+    // Validate time interval (max 7 days)
+    const intervalDays = (endUnix - beginUnix) / (24 * 3600);
+    if (intervalDays > 7) {
+      throw new Error('Time interval must be smaller than 7 days');
+    }
+
+    await this.waitForRateLimit();
+
+    try {
+      const config: any = {
+        timeout: 30000,
+        headers: {
+          'User-Agent': 'AINO-Aviation-Training/1.0'
+        },
+        params: {
+          airport: airport.toUpperCase(),
+          begin: beginUnix,
+          end: endUnix
+        }
+      };
+
+      const token = await this.getOpenSkyOAuth2Token();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else if (this.openskyUsername && this.openskyPassword) {
+        config.auth = {
+          username: this.openskyUsername,
+          password: this.openskyPassword
+        };
+      }
+
+      const response = await axios.get('https://opensky-network.org/api/flights/departure', config);
+      return response.data || [];
+    } catch (error: any) {
+      console.error('Error fetching departures by airport:', error.message);
+      return [];
+    }
   }
 
 
