@@ -98,11 +98,16 @@ export default function EnhancedSatelliteMap() {
 
   // Generate enhanced image URL with day/night and weather overlays
   const generateEnhancedImageUrl = useCallback((lat: number, lon: number, zoom: number, token: string, dayNight?: DayNightData) => {
-    const roundedLat = Math.round(lat * 1000) / 1000;
-    const roundedLon = Math.round(lon * 1000) / 1000;
-    const clampedZoom = Math.max(1, Math.min(zoom, 12));
+    // Ensure coordinates are within valid bounds
+    const clampedLat = Math.max(-85, Math.min(85, lat));
+    const clampedLon = Math.max(-180, Math.min(180, lon));
+    const clampedZoom = Math.max(1, Math.min(zoom, 18));
     
-    // Base satellite imagery
+    // Round coordinates for better caching
+    const roundedLat = Math.round(clampedLat * 100) / 100;
+    const roundedLon = Math.round(clampedLon * 100) / 100;
+    
+    // Base satellite imagery style
     let style = 'satellite-v9';
     
     // Adjust style based on day/night if overlay is enabled
@@ -114,7 +119,10 @@ export default function EnhancedSatelliteMap() {
       }
     }
     
-    return `https://api.mapbox.com/styles/v1/mapbox/${style}/static/${roundedLon},${roundedLat},${clampedZoom}/1400x900@2x?access_token=${token}`;
+    // Use standard resolution for better compatibility
+    const url = `https://api.mapbox.com/styles/v1/mapbox/${style}/static/${roundedLon},${roundedLat},${clampedZoom}/1200x800?access_token=${token}`;
+    console.log('Generated Mapbox URL:', url);
+    return url;
   }, [showDayNightOverlay]);
 
   // Enhanced image loading with caching
@@ -124,36 +132,46 @@ export default function EnhancedSatelliteMap() {
     }
     
     debounceTimer.current = setTimeout(() => {
-      const imageUrl = generateEnhancedImageUrl(lat, lon, zoom, token, dayNightData || undefined);
-      const cacheKey = `${lat}_${lon}_${zoom}_${dayNightData?.twilightLevel || 0}`;
-      
-      if (imageCache.current.has(cacheKey)) {
-        setCurrentImageUrl(imageUrl);
-        setImageLoading(false);
-        setImageError(false);
-        return;
-      }
-      
       setImageLoading(true);
       setImageError(false);
       
+      const imageUrl = generateEnhancedImageUrl(lat, lon, zoom, token, dayNightData || undefined);
+      const cacheKey = `${lat.toFixed(3)}_${lon.toFixed(3)}_${zoom}_${dayNightData?.twilightLevel || 0}`;
+      
+      // Check cache first
+      if (imageCache.current.has(cacheKey)) {
+        const cachedImg = imageCache.current.get(cacheKey);
+        if (cachedImg && cachedImg.complete) {
+          setCurrentImageUrl(imageUrl);
+          setImageLoading(false);
+          setImageError(false);
+          return;
+        }
+      }
+      
+      // Load new image with better error handling
       const img = new Image();
-      img.crossOrigin = "anonymous";
+      img.crossOrigin = 'anonymous';
       
       img.onload = () => {
+        console.log('Satellite image loaded successfully');
         imageCache.current.set(cacheKey, img);
         setCurrentImageUrl(imageUrl);
         setImageLoading(false);
         setImageError(false);
       };
       
-      img.onerror = () => {
+      img.onerror = (error) => {
+        console.error('Satellite image failed to load:', error);
+        console.log('Failed URL:', imageUrl);
         setImageError(true);
         setImageLoading(false);
       };
       
+      // Set source to trigger loading
       img.src = imageUrl;
-    }, 300);
+      
+    }, 500); // Increased debounce for better stability
   }, [generateEnhancedImageUrl, dayNightData]);
 
   // Fetch real weather data from API
