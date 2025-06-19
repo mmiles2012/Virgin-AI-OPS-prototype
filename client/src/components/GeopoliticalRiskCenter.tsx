@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Plane, Globe, TrendingUp, Clock, MapPin, Users, DollarSign, Shield, Navigation } from 'lucide-react';
+import { AlertTriangle, Plane, Globe, TrendingUp, Clock, MapPin, Users, DollarSign, Shield, Navigation, X, Route, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -35,6 +35,8 @@ const GeopoliticalRiskCenter = () => {
   const [routes, setRoutes] = useState<RouteRisk[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loading, setLoading] = useState(true);
+  const [selectedRoute, setSelectedRoute] = useState<RouteRisk | null>(null);
+  const [showRouteOptions, setShowRouteOptions] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -344,7 +346,13 @@ const GeopoliticalRiskCenter = () => {
                         <td className="px-4 py-3 text-sm text-gray-300">{route.revenue}</td>
                         <td className="px-4 py-3 text-sm">
                           {route.status !== 'normal' && (
-                            <button className="text-blue-400 hover:text-blue-300 text-sm font-medium">
+                            <button 
+                              onClick={() => {
+                                setSelectedRoute(route);
+                                setShowRouteOptions(true);
+                              }}
+                              className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                            >
                               View Options
                             </button>
                           )}
@@ -426,6 +434,200 @@ const GeopoliticalRiskCenter = () => {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      )}
+
+      {/* Route Options Modal */}
+      {showRouteOptions && selectedRoute && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg border border-gray-600 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-600">
+              <h2 className="text-xl font-bold text-white flex items-center">
+                <Route className="h-6 w-6 mr-2 text-blue-500" />
+                Route Options - {selectedRoute.id} ({selectedRoute.origin} → {selectedRoute.destination})
+              </h2>
+              <button 
+                onClick={() => setShowRouteOptions(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              {/* Current Status */}
+              <Card className="bg-gray-700 border-gray-600">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <AlertCircle className="h-5 w-5 mr-2 text-orange-500" />
+                    Current Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-400">Status</p>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(selectedRoute.status)}`}>
+                        {selectedRoute.status}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">Risk Level</p>
+                      <p className={`font-medium ${getRiskLevelColor(selectedRoute.riskLevel)}`}>
+                        {selectedRoute.riskLevel}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">Passengers</p>
+                      <p className="text-white font-medium">{selectedRoute.passengers}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">Revenue Impact</p>
+                      <p className="text-white font-medium">{selectedRoute.revenue}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Available Options */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Option 1: Continue Current Route */}
+                <Card className="bg-gray-700 border-gray-600">
+                  <CardHeader>
+                    <CardTitle className="text-white text-lg">Continue Current Route</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Proceed with original flight path despite risks
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Additional Cost:</span>
+                        <span className="text-white">$0</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Delay:</span>
+                        <span className="text-white">0 minutes</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Risk Level:</span>
+                        <span className={getRiskLevelColor(selectedRoute.riskLevel)}>
+                          {selectedRoute.riskLevel}
+                        </span>
+                      </div>
+                    </div>
+                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors">
+                      Select This Option
+                    </button>
+                  </CardContent>
+                </Card>
+
+                {/* Option 2: Use Alternate Route */}
+                <Card className="bg-gray-700 border-gray-600">
+                  <CardHeader>
+                    <CardTitle className="text-white text-lg">Alternate Route</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      {selectedRoute.alternateRoute}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Additional Cost:</span>
+                        <span className="text-white">{selectedRoute.additionalCost}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Delay:</span>
+                        <span className="text-white">{selectedRoute.delayMinutes} minutes</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Risk Level:</span>
+                        <span className="text-green-400">Low</span>
+                      </div>
+                    </div>
+                    <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition-colors">
+                      Select This Option
+                    </button>
+                  </CardContent>
+                </Card>
+
+                {/* Option 3: Delay Flight */}
+                <Card className="bg-gray-700 border-gray-600">
+                  <CardHeader>
+                    <CardTitle className="text-white text-lg">Delay Flight</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Wait for improved conditions
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Additional Cost:</span>
+                        <span className="text-white">$2,500</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Delay:</span>
+                        <span className="text-white">240 minutes</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Risk Level:</span>
+                        <span className="text-green-400">Low</span>
+                      </div>
+                    </div>
+                    <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded transition-colors">
+                      Select This Option
+                    </button>
+                  </CardContent>
+                </Card>
+
+                {/* Option 4: Cancel Flight */}
+                <Card className="bg-gray-700 border-gray-600">
+                  <CardHeader>
+                    <CardTitle className="text-white text-lg">Cancel Flight</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Full cancellation with passenger rebooking
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Revenue Loss:</span>
+                        <span className="text-red-400">{selectedRoute.revenue}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Rebooking Cost:</span>
+                        <span className="text-white">$15,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Risk Level:</span>
+                        <span className="text-green-400">None</span>
+                      </div>
+                    </div>
+                    <button className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition-colors">
+                      Select This Option
+                    </button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* AI Recommendation */}
+              <Card className="bg-blue-900/20 border-blue-600">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center">
+                    <Shield className="h-5 w-5 mr-2 text-blue-500" />
+                    AI Recommendation
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-blue-300">
+                    Based on current risk assessment and operational parameters, we recommend using the 
+                    <strong> alternate route</strong>. This option provides the best balance of safety, 
+                    cost efficiency, and passenger experience with minimal delay.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       )}
