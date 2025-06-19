@@ -100,17 +100,26 @@ export default function SimpleSatelliteMap() {
     return null;
   }, []);
 
-  // Load weather grid
+  // Load weather grid - positioned based on zoom level for better coverage
   const loadWeatherGrid = useCallback(async () => {
     if (!showWeatherLayer) return;
     
     const newWeatherData: Record<string, WeatherData> = {};
-    const gridPoints = [
-      { lat: mapCenter.lat + 10, lon: mapCenter.lon - 20 },
-      { lat: mapCenter.lat + 10, lon: mapCenter.lon + 20 },
-      { lat: mapCenter.lat - 10, lon: mapCenter.lon - 20 },
-      { lat: mapCenter.lat - 10, lon: mapCenter.lon + 20 }
-    ];
+    
+    // Calculate grid spacing based on zoom level
+    const latSpacing = Math.max(5, 30 / zoomLevel);
+    const lonSpacing = Math.max(10, 60 / zoomLevel);
+    
+    // Create a 3x3 grid around the current center
+    const gridPoints = [];
+    for (let i = -1; i <= 1; i++) {
+      for (let j = -1; j <= 1; j++) {
+        gridPoints.push({
+          lat: mapCenter.lat + (i * latSpacing),
+          lon: mapCenter.lon + (j * lonSpacing)
+        });
+      }
+    }
     
     for (const point of gridPoints) {
       const key = `${point.lat.toFixed(1)}_${point.lon.toFixed(1)}`;
@@ -123,9 +132,9 @@ export default function SimpleSatelliteMap() {
     }
     
     setWeatherData(prev => ({ ...prev, ...newWeatherData }));
-  }, [mapCenter, showWeatherLayer, weatherData, fetchWeatherData]);
+  }, [mapCenter, zoomLevel, showWeatherLayer, weatherData, fetchWeatherData]);
 
-  // Coordinate conversion utilities
+  // Coordinate conversion utilities - fixed for accurate positioning
   const latLonToPixel = useCallback((lat: number, lon: number) => {
     if (!mapContainerRef.current) return { x: 0, y: 0 };
     
@@ -133,8 +142,24 @@ export default function SimpleSatelliteMap() {
     const width = containerRect.width;
     const height = containerRect.height;
     
-    const x = ((lon - mapCenter.lon) * Math.cos(mapCenter.lat * Math.PI / 180) * zoomLevel * 10) + width / 2 + dragOffset.x;
-    const y = (-(lat - mapCenter.lat) * zoomLevel * 10) + height / 2 + dragOffset.y;
+    // Calculate pixel coordinates based on Mercator projection
+    const scale = Math.pow(2, zoomLevel);
+    const worldWidth = 256 * scale;
+    const worldHeight = 256 * scale;
+    
+    // Convert lat/lon to world coordinates
+    const worldX = (lon + 180) / 360 * worldWidth;
+    const latRad = lat * Math.PI / 180;
+    const worldY = (1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * worldHeight;
+    
+    // Convert map center to world coordinates
+    const centerWorldX = (mapCenter.lon + 180) / 360 * worldWidth;
+    const centerLatRad = mapCenter.lat * Math.PI / 180;
+    const centerWorldY = (1 - Math.log(Math.tan(centerLatRad) + 1 / Math.cos(centerLatRad)) / Math.PI) / 2 * worldHeight;
+    
+    // Calculate screen position
+    const x = (worldX - centerWorldX) + width / 2 + dragOffset.x;
+    const y = (worldY - centerWorldY) + height / 2 + dragOffset.y;
     
     return { x, y };
   }, [mapCenter, zoomLevel, dragOffset]);
