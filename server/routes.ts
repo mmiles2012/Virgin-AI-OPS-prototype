@@ -9,6 +9,7 @@ import { scenarios, medicalEmergencies } from "../client/src/lib/medicalProtocol
 import { airports, findNearestAirports } from "../client/src/lib/airportData";
 import { aviationApiService } from "./aviationApiService";
 import { newsApiService } from "./newsApiService";
+import { weatherApiService } from "./weatherApiService";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 
@@ -1476,6 +1477,81 @@ print(json.dumps(weather))
         success: false,
         error: 'Failed to get geopolitical risk analysis',
         region: req.params.region,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Weather API endpoints
+  app.get('/api/weather/current/:lat/:lon', async (req, res) => {
+    try {
+      const lat = parseFloat(req.params.lat);
+      const lon = parseFloat(req.params.lon);
+      
+      if (isNaN(lat) || isNaN(lon)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid coordinates provided'
+        });
+      }
+      
+      const weather = await weatherApiService.getCurrentWeather(lat, lon);
+      res.json({
+        success: true,
+        weather,
+        location: { lat, lon },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Weather API error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch weather data',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/weather/test-connections', async (req, res) => {
+    try {
+      const results = await weatherApiService.testConnections();
+      res.json({
+        success: true,
+        connections: results,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Weather API connection test failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to test weather API connections',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/weather/alerts', async (req, res) => {
+    try {
+      const { north, south, east, west } = req.query;
+      const bounds = {
+        north: parseFloat(north as string),
+        south: parseFloat(south as string),
+        east: parseFloat(east as string),
+        west: parseFloat(west as string)
+      };
+      
+      const alerts = await weatherApiService.getWeatherAlerts(bounds);
+      res.json({
+        success: true,
+        alerts,
+        bounds,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Weather alerts error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch weather alerts',
         timestamp: new Date().toISOString()
       });
     }

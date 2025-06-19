@@ -15,6 +15,7 @@ import InlineApiTest from "./components/InlineApiTest";
 import LiveFlightTracker from "./components/LiveFlightTracker";
 import SimpleFlightMap from "./components/SimpleFlightMap";
 import SatelliteWorldMap from "./components/SatelliteWorldMap";
+import EnhancedSatelliteMap from "./components/EnhancedSatelliteMap";
 import SafeAirspaceAlerts from "./components/SafeAirspaceAlerts";
 import RealTimeOperationsCenter from "./components/RealTimeOperationsCenter";
 import GeopoliticalRiskCenter from "./components/GeopoliticalRiskCenter";
@@ -304,10 +305,10 @@ function App() {
               </div>
             )}
 
-            {/* Full-Screen Global Operations Satellite Map - Overview Mode */}
+            {/* Full-Screen Enhanced Satellite Map - Overview Mode */}
             {viewMode === 'overview' && (
               <div className="absolute inset-0 pointer-events-auto">
-                <SatelliteWorldMap />
+                <EnhancedSatelliteMap />
               </div>
             )}
 
