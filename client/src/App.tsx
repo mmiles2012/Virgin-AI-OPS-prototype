@@ -17,6 +17,7 @@ import SimpleFlightMap from "./components/SimpleFlightMap";
 import SatelliteWorldMap from "./components/SatelliteWorldMap";
 import EnhancedSatelliteMap from "./components/EnhancedSatelliteMap";
 import SimpleSatelliteMap from "./components/SimpleSatelliteMap";
+import AirportWeatherMap from "./components/AirportWeatherMap";
 import SafeAirspaceAlerts from "./components/SafeAirspaceAlerts";
 import RealTimeOperationsCenter from "./components/RealTimeOperationsCenter";
 import GeopoliticalRiskCenter from "./components/GeopoliticalRiskCenter";
@@ -60,7 +61,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'api-testing' | 'news-intelligence';
+type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');

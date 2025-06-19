@@ -280,66 +280,193 @@ export class WeatherApiService {
   }
 
   /**
-   * Get METAR and TAF data for a specific airport
+   * Get METAR and TAF data for a specific airport using Aviation Weather Center API
    */
   async getAviationWeather(icao: string): Promise<AviationWeatherData | null> {
     try {
-      // Fetch METAR data
-      const metarResponse = await axios.get(`https://aviationweather.gov/cgi-bin/data/metar.php?ids=${icao}&format=json`);
-      
-      // Fetch TAF data
-      const tafResponse = await axios.get(`https://aviationweather.gov/cgi-bin/data/taf.php?ids=${icao}&format=json`);
-      
+      // Try Aviation Weather Center first (most comprehensive)
+      const aviationWeatherResult = await this.getAviationWeatherFromAWC(icao);
+      if (aviationWeatherResult) {
+        return aviationWeatherResult;
+      }
+
+      // Fallback to AVWX API
+      const avwxResult = await this.getAviationWeatherFromAVWX(icao);
+      if (avwxResult) {
+        return avwxResult;
+      }
+
+      console.warn(`No aviation weather data available for ${icao}`);
+      return null;
+    } catch (error) {
+      console.error(`Aviation weather error for ${icao}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Get aviation weather from U.S. Aviation Weather Center API
+   */
+  private async getAviationWeatherFromAWC(icao: string): Promise<AviationWeatherData | null> {
+    try {
+      // Fetch METAR data from AWC
+      const metarUrl = `https://aviationweather.gov/api/data/metar?ids=${icao}&format=json&taf=false&hours=3&bbox=40,-130,45,-60`;
+      const metarResponse = await axios.get(metarUrl, {
+        timeout: 10000,
+        headers: {
+          'User-Agent': 'AINO-Aviation-Training-Platform/1.0'
+        }
+      });
+
+      // Fetch TAF data from AWC  
+      const tafUrl = `https://aviationweather.gov/api/data/taf?ids=${icao}&format=json&metar=false&hours=30&bbox=40,-130,45,-60`;
+      const tafResponse = await axios.get(tafUrl, {
+        timeout: 10000,
+        headers: {
+          'User-Agent': 'AINO-Aviation-Training-Platform/1.0'
+        }
+      });
+
       let metarData = null;
       let tafData = null;
-      
+
       if (metarResponse.data && metarResponse.data.length > 0) {
         metarData = metarResponse.data[0];
       }
-      
+
       if (tafResponse.data && tafResponse.data.length > 0) {
         tafData = tafResponse.data[0];
       }
-      
-      if (!metarData) {
-        // Generate fallback METAR if none available
-        metarData = this.generateFallbackMetar(icao);
+
+      if (metarData || tafData) {
+        return {
+          icao,
+          metar: metarData ? {
+            raw: metarData.rawOb || metarData.raw_text || '',
+            parsed: {
+              temperature: metarData.temp || 15,
+              dewpoint: metarData.dewp || 10,
+              windSpeed: metarData.wspd || 0,
+              windDirection: metarData.wdir || 0,
+              visibility: metarData.visib || 9999,
+              altimeter: metarData.altim || 29.92,
+              conditions: metarData.wxString || metarData.wx_string || 'Clear',
+              clouds: this.parseCloudLayers(metarData.clouds || []),
+              timestamp: metarData.obsTime || metarData.observation_time || new Date().toISOString()
+            }
+          } : this.generateDefaultMetar(icao),
+          taf: tafData ? {
+            raw: tafData.rawTAF || tafData.raw_text || '',
+            parsed: {
+              validFrom: tafData.validTimeFrom || tafData.valid_time_from || new Date().toISOString(),
+              validTo: tafData.validTimeTo || tafData.valid_time_to || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+              forecast: this.parseTafForecast(tafData.forecasts || [])
+            }
+          } : this.generateDefaultTaf(icao)
+        };
       }
-      
-      if (!tafData) {
-        // Generate fallback TAF if none available
-        tafData = this.generateFallbackTaf(icao);
-      }
-      
-      return {
-        icao,
-        metar: {
-          raw: metarData.rawOb || metarData.raw || `${icao} AUTO VRB05KT 9999 FEW020 15/10 Q1013`,
-          parsed: {
-            temperature: metarData.temp || 15,
-            dewpoint: metarData.dewp || 10,
-            windSpeed: metarData.wspd || 5,
-            windDirection: metarData.wdir || 270,
-            visibility: metarData.visib || 9999,
-            altimeter: metarData.altim || 29.92,
-            conditions: metarData.wxString || 'Clear',
-            clouds: this.parseCloudLayers(metarData.clouds || []),
-            timestamp: metarData.reportTime || new Date().toISOString()
-          }
-        },
-        taf: {
-          raw: tafData.rawTAF || tafData.raw || `TAF ${icao} ${this.generateTafTimestamp()} VRB05KT 9999 FEW020`,
-          parsed: {
-            validFrom: tafData.validTimeFrom || new Date().toISOString(),
-            validTo: tafData.validTimeTo || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-            forecast: this.parseTafForecast(tafData.forecasts || [])
-          }
-        }
-      };
+
+      return null;
     } catch (error) {
-      console.error(`Aviation weather error for ${icao}:`, error);
-      return this.generateFallbackAviationWeather(icao);
+      console.error(`AWC API error for ${icao}:`, error);
+      return null;
     }
+  }
+
+  /**
+   * Get aviation weather from AVWX API (fallback)
+   */
+  private async getAviationWeatherFromAVWX(icao: string): Promise<AviationWeatherData | null> {
+    try {
+      const baseUrl = 'https://avwx.rest/api';
+      
+      // Fetch METAR data
+      const metarResponse = await axios.get(`${baseUrl}/metar/${icao}`, {
+        timeout: 8000,
+        headers: {
+          'User-Agent': 'AINO-Aviation-Training-Platform/1.0'
+        }
+      });
+
+      // Fetch TAF data
+      const tafResponse = await axios.get(`${baseUrl}/taf/${icao}`, {
+        timeout: 8000,
+        headers: {
+          'User-Agent': 'AINO-Aviation-Training-Platform/1.0'
+        }
+      });
+
+      if (metarResponse.data || tafResponse.data) {
+        return {
+          icao,
+          metar: metarResponse.data ? {
+            raw: metarResponse.data.raw || '',
+            parsed: {
+              temperature: metarResponse.data.data?.temperature?.value || 15,
+              dewpoint: metarResponse.data.data?.dewpoint?.value || 10,
+              windSpeed: metarResponse.data.data?.wind_speed?.value || 0,
+              windDirection: metarResponse.data.data?.wind_direction?.value || 0,
+              visibility: metarResponse.data.data?.visibility?.value || 9999,
+              altimeter: metarResponse.data.data?.altimeter?.value || 29.92,
+              conditions: metarResponse.data.data?.wx_codes?.join(', ') || 'Clear',
+              clouds: metarResponse.data.data?.clouds?.map((c: any) => `${c.type}${c.altitude}`) || [],
+              timestamp: metarResponse.data.time?.dt || new Date().toISOString()
+            }
+          } : this.generateDefaultMetar(icao),
+          taf: tafResponse.data ? {
+            raw: tafResponse.data.raw || '',
+            parsed: {
+              validFrom: tafResponse.data.start_time?.dt || new Date().toISOString(),
+              validTo: tafResponse.data.end_time?.dt || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+              forecast: tafResponse.data.forecast?.map((f: any) => ({
+                time: f.start_time?.dt || new Date().toISOString(),
+                windSpeed: f.wind_speed?.value || 0,
+                windDirection: f.wind_direction?.value || 0,
+                visibility: f.visibility?.value || 9999,
+                conditions: f.wx_codes?.join(', ') || 'Clear',
+                clouds: f.clouds?.map((c: any) => `${c.type}${c.altitude}`) || []
+              })) || []
+            }
+          } : this.generateDefaultTaf(icao)
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.error(`AVWX API error for ${icao}:`, error);
+      return null;
+    }
+  }
+
+  private generateDefaultMetar(icao: string) {
+    return {
+      raw: `${icao} AUTO VRB05KT 9999 FEW020 15/10 Q1013`,
+      parsed: {
+        temperature: 15,
+        dewpoint: 10,
+        windSpeed: 5,
+        windDirection: 270,
+        visibility: 9999,
+        altimeter: 29.92,
+        conditions: 'Clear',
+        clouds: ['FEW020'],
+        timestamp: new Date().toISOString()
+      }
+    };
+  }
+
+  private generateDefaultTaf(icao: string) {
+    const now = new Date();
+    const validTo = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    
+    return {
+      raw: `TAF ${icao} ${this.generateTafTimestamp()} VRB05KT 9999 FEW020`,
+      parsed: {
+        validFrom: now.toISOString(),
+        validTo: validTo.toISOString(),
+        forecast: []
+      }
+    };
   }
 
   private generateFallbackMetar(icao: string): any {
