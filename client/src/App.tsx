@@ -20,6 +20,7 @@ import RealTimeOperationsCenter from "./components/RealTimeOperationsCenter";
 import GeopoliticalRiskCenter from "./components/GeopoliticalRiskCenter";
 import DiversionDecisionEngine from "./components/DiversionDecisionEngine";
 import { ApiTestingCenter } from "./components/ApiTestingCenter";
+import { NewsIntelligenceDashboard } from "./components/NewsIntelligenceDashboard";
 
 // Flight control mappings
 enum FlightControls {
@@ -215,6 +216,17 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('news-intelligence')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'news-intelligence' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    News Intelligence
+                  </button>
+                  
+                  <button
                     onClick={() => {
                       console.log('API Setup button clicked');
                       setShowApiWizard(true);
@@ -283,6 +295,12 @@ function App() {
             {viewMode === 'api-testing' && (
               <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <ApiTestingCenter />
+              </div>
+            )}
+            
+            {viewMode === 'news-intelligence' && (
+              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
+                <NewsIntelligenceDashboard />
               </div>
             )}
 

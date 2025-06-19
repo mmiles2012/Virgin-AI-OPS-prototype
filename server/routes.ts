@@ -1441,6 +1441,46 @@ print(json.dumps(weather))
     };
   }
 
+  // News API testing endpoint
+  app.get('/api/news/test-connections', async (req, res) => {
+    try {
+      const results = await newsApiService.testConnections();
+      res.json({
+        success: true,
+        connections: results,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('News API connection test failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to test news API connections',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Geopolitical risk analysis endpoint
+  app.get('/api/news/geopolitical-risk/:region', async (req, res) => {
+    try {
+      const { region } = req.params;
+      const analysis = await newsApiService.getGeopoliticalRiskAnalysis(region);
+      res.json({
+        success: true,
+        analysis,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Geopolitical risk analysis failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get geopolitical risk analysis',
+        region: req.params.region,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
   return httpServer;
 }
 

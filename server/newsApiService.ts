@@ -734,6 +734,76 @@ export class NewsApiService {
       results.guardian = { success: false, message: error.message };
     }
 
+    // Test NewsData.io API
+    try {
+      if (!this.newsdataApiKey) {
+        results.newsdata = { success: false, message: 'API key not configured' };
+      } else {
+        await axios.get('https://newsdata.io/api/1/news', {
+          params: { apikey: this.newsdataApiKey, size: 1 }
+        });
+        results.newsdata = { success: true, message: 'Connection successful' };
+      }
+    } catch (error: any) {
+      results.newsdata = { success: false, message: error.message };
+    }
+
+    // Test Mediastack API
+    try {
+      if (!this.mediastackApiKey) {
+        results.mediastack = { success: false, message: 'API key not configured' };
+      } else {
+        await axios.get('http://api.mediastack.com/v1/news', {
+          params: { access_key: this.mediastackApiKey, limit: 1 }
+        });
+        results.mediastack = { success: true, message: 'Connection successful' };
+      }
+    } catch (error: any) {
+      results.mediastack = { success: false, message: error.message };
+    }
+
+    // Test GNews API
+    try {
+      if (!this.gnewsApiKey) {
+        results.gnews = { success: false, message: 'API key not configured' };
+      } else {
+        await axios.get('https://gnews.io/api/v4/top-headlines', {
+          params: { token: this.gnewsApiKey, lang: 'en', max: 1 }
+        });
+        results.gnews = { success: true, message: 'Connection successful' };
+      }
+    } catch (error: any) {
+      results.gnews = { success: false, message: error.message };
+    }
+
+    // Test World News API
+    try {
+      if (!this.worldNewsApiKey) {
+        results.worldnews = { success: false, message: 'API key not configured' };
+      } else {
+        await axios.get('https://api.worldnewsapi.com/search-news', {
+          params: { 'api-key': this.worldNewsApiKey, text: 'news', number: 1 }
+        });
+        results.worldnews = { success: true, message: 'Connection successful' };
+      }
+    } catch (error: any) {
+      results.worldnews = { success: false, message: error.message };
+    }
+
+    // Test New York Times API
+    try {
+      if (!this.nytApiKey) {
+        results.nyt = { success: false, message: 'API key not configured' };
+      } else {
+        await axios.get('https://api.nytimes.com/svc/search/v2/articlesearch.json', {
+          params: { 'api-key': this.nytApiKey, rows: 1 }
+        });
+        results.nyt = { success: true, message: 'Connection successful' };
+      }
+    } catch (error: any) {
+      results.nyt = { success: false, message: error.message };
+    }
+
     return results;
   }
 }
