@@ -62,7 +62,6 @@ type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'a
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
   const [isEmergencyActive, setIsEmergencyActive] = useState(false);
-  const [isInterfaceMinimized, setIsInterfaceMinimized] = useState(false);
   const [showApiWizard, setShowApiWizard] = useState(false);
 
   return (
@@ -115,15 +114,6 @@ function App() {
                 </div>
                 
                 <div className="space-y-2">
-                  {viewMode !== 'overview' && (
-                    <button
-                      onClick={() => setIsInterfaceMinimized(!isInterfaceMinimized)}
-                      className="w-full px-3 py-2 rounded transition-colors bg-gray-600 text-white hover:bg-gray-500 text-sm"
-                      title={isInterfaceMinimized ? "Maximize Interface" : "Minimize Interface"}
-                    >
-                      {isInterfaceMinimized ? 'Maximize' : 'Minimize'}
-                    </button>
-                  )}
                   
                   <button
                     onClick={() => setViewMode('cockpit')}
@@ -248,95 +238,58 @@ function App() {
             )}
 
             {/* Mode-specific Interfaces - Adjusted for right sidebar */}
-            {viewMode === 'cockpit' && !isInterfaceMinimized && (
+            {viewMode === 'cockpit' && (
               <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <CockpitInterface onEmergencyToggle={setIsEmergencyActive} />
               </div>
             )}
             
-            {viewMode === 'operations' && !isInterfaceMinimized && (
+            {viewMode === 'operations' && (
               <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <OperationsCenter />
               </div>
             )}
             
-            {viewMode === 'decisions' && !isInterfaceMinimized && (
+            {viewMode === 'decisions' && (
               <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <EnhancedOperationalDecisionEngine />
               </div>
             )}
             
-            {viewMode === 'airspace' && !isInterfaceMinimized && (
+            {viewMode === 'airspace' && (
               <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <SafeAirspaceAlerts />
               </div>
             )}
             
-            {viewMode === 'realtime' && !isInterfaceMinimized && (
+            {viewMode === 'realtime' && (
               <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <RealTimeOperationsCenter />
               </div>
             )}
             
-            {viewMode === 'geopolitical' && !isInterfaceMinimized && (
+            {viewMode === 'geopolitical' && (
               <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <GeopoliticalRiskCenter />
               </div>
             )}
             
-            {viewMode === 'diversion' && !isInterfaceMinimized && (
+            {viewMode === 'diversion' && (
               <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <DiversionDecisionEngine />
               </div>
             )}
             
-            {viewMode === 'api-testing' && !isInterfaceMinimized && (
+            {viewMode === 'api-testing' && (
               <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <ApiTestingCenter />
               </div>
             )}
 
-            {/* Minimized Mode Indicator */}
-            {isInterfaceMinimized && viewMode !== 'overview' && (
-              <div className="absolute top-20 left-4 pointer-events-auto">
-                <div className="bg-black/70 backdrop-blur-sm rounded-lg border border-gray-600 p-2">
-                  <div className="text-white text-sm">
-                    {viewMode === 'cockpit' && '✈️ Cockpit View (Minimized)'}
-                    {viewMode === 'operations' && '🏢 Operations Center (Minimized)'}
-                    {viewMode === 'decisions' && '🧠 Decision Engine (Minimized)'}
-                    {viewMode === 'airspace' && '🛡️ SafeAirspace Alerts (Minimized)'}
-                    {viewMode === 'realtime' && '📊 Live Operations (Minimized)'}
-                    {viewMode === 'geopolitical' && '🌍 Risk Assessment (Minimized)'}
-                    {viewMode === 'diversion' && '🧠 AI Diversion (Minimized)'}
-                    {viewMode === 'api-testing' && '🔧 API Testing (Minimized)'}
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Full-Screen Global Operations Satellite Map - Overview Mode */}
-            {viewMode === 'overview' && !isInterfaceMinimized && (
+            {viewMode === 'overview' && (
               <div className="absolute inset-0 pointer-events-auto">
                 <SatelliteWorldMap />
-              </div>
-            )}
-
-
-
-            {/* Minimized status bar */}
-            {isInterfaceMinimized && (
-              <div className="absolute bottom-4 left-4 right-4 z-40 pointer-events-auto">
-                <div className="bg-black/60 backdrop-blur-sm rounded-lg border border-gray-600/50 px-4 py-2">
-                  <div className="flex justify-between items-center text-white text-sm">
-                    <span className="text-blue-300">AINO - Augmented Intelligent Network Operations</span>
-                    <div className="flex gap-6 text-xs text-gray-300">
-                      <span>Fuel: 75,234kg</span>
-                      <span>Alt: 35,000ft</span>
-                      <span>Speed: 450kts</span>
-                      <span className="text-orange-400">Warnings: 2</span>
-                    </div>
-                  </div>
-                </div>
               </div>
             )}
 
