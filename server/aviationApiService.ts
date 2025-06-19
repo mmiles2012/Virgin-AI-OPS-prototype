@@ -323,7 +323,7 @@ export class AviationApiService {
 
   async testOpenSky(): Promise<{ success: boolean; message: string; data?: any }> {
     try {
-      const response = await axios.get('https://opensky-network.org/api/states/all', {
+      const config: any = {
         params: {
           lamin: 40.0,
           lamax: 41.0,
@@ -332,9 +332,19 @@ export class AviationApiService {
         },
         timeout: 15000,
         headers: {
-          'User-Agent': 'AINO-Aviation-Operations/1.0'
+          'User-Agent': 'AINO-Aviation-Training/1.0'
         }
-      });
+      };
+
+      // Add authentication if credentials are available
+      if (this.openskyUsername && this.openskyPassword) {
+        config.auth = {
+          username: this.openskyUsername,
+          password: this.openskyPassword
+        };
+      }
+
+      const response = await axios.get('https://opensky-network.org/api/states/all', config);
 
       if (response.data && response.data.states) {
         const aircraftCount = response.data.states.length;
@@ -451,9 +461,9 @@ export class AviationApiService {
         return cachedFlights;
       }
 
-      // Try OpenSky Network first (more reliable for real-time data)
+      // Try OpenSky Network first (anonymous access)
       try {
-        const openSkyFlights = await this.getOpenSkyVirginAtlanticFlights();
+        const openSkyFlights = await this.getOpenSkyVirginAtlanticFlightsAnonymous();
         if (openSkyFlights.length > 0) {
           flightDataCache.setVirginAtlanticFlights(openSkyFlights, 'OpenSky Network');
           console.log(`Retrieved and cached ${openSkyFlights.length} Virgin Atlantic flights from OpenSky Network`);
@@ -578,6 +588,50 @@ export class AviationApiService {
               velocity: velocity || 0,
               heading: true_track || 0,
               aircraft: 'Unknown', // OpenSky doesn't provide aircraft type
+              origin: 'Unknown',
+              destination: 'Unknown',
+              status: 'en-route'
+            });
+          }
+        }
+      }
+    }
+
+    return flights;
+  }
+
+  private async getOpenSkyVirginAtlanticFlightsAnonymous(): Promise<FlightData[]> {
+    // Use anonymous access without authentication
+    const response = await axios.get('https://opensky-network.org/api/states/all', {
+      timeout: 15000,
+      headers: {
+        'User-Agent': 'AINO-Aviation-Training/1.0'
+      }
+    });
+
+    const flights: FlightData[] = [];
+    
+    if (response.data && response.data.states) {
+      for (const state of response.data.states) {
+        const [icao24, callsign, origin_country, time_position, last_contact, longitude, latitude, 
+               baro_altitude, on_ground, velocity, true_track, vertical_rate, sensors, 
+               geo_altitude, squawk, spi, position_source] = state;
+        
+        if (callsign && typeof callsign === 'string') {
+          const cleanCallsign = callsign.trim();
+          
+          // Filter for Virgin Atlantic flights (VS callsign and VIR prefix)
+          if ((cleanCallsign.startsWith('VS') || cleanCallsign.startsWith('VIR')) && 
+              latitude && longitude && !on_ground) {
+            
+            flights.push({
+              callsign: cleanCallsign,
+              latitude: parseFloat(latitude),
+              longitude: parseFloat(longitude),
+              altitude: baro_altitude || geo_altitude || 0,
+              velocity: velocity || 0,
+              heading: true_track || 0,
+              aircraft: 'Unknown',
               origin: 'Unknown',
               destination: 'Unknown',
               status: 'en-route'

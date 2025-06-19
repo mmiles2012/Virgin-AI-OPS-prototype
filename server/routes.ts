@@ -9,6 +9,7 @@ import { scenarios, medicalEmergencies } from "../client/src/lib/medicalProtocol
 import { airports, findNearestAirports } from "../client/src/lib/airportData";
 import { aviationApiService } from "./aviationApiService";
 import { flightDataCache } from "./flightDataCache";
+import { demoFlightGenerator } from "./demoFlightData";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -944,11 +945,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/aviation/virgin-atlantic-flights", async (req, res) => {
     try {
       const flights = await aviationApiService.getVirginAtlanticFlights();
+      
+      // If no authentic data available but training mode is requested
+      if (flights.length === 0 && req.query.training_mode === 'true') {
+        const trainingFlights = demoFlightGenerator.getVirginAtlanticFlights();
+        res.json({
+          success: true,
+          flights: trainingFlights,
+          count: trainingFlights.length,
+          timestamp: new Date().toISOString(),
+          source: 'training_simulation',
+          note: 'Training simulation data - not live flights'
+        });
+        return;
+      }
+      
       res.json({
         success: true,
         flights,
         count: flights.length,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        source: flights.length > 0 ? 'live_data' : 'no_data'
       });
     } catch (error) {
       res.status(500).json({

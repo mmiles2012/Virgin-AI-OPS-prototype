@@ -120,8 +120,8 @@ export default function SatelliteWorldMap() {
   useEffect(() => {
     const fetchFlightData = async () => {
       try {
-        // First try Virgin Atlantic flights
-        const response = await fetch('/api/aviation/virgin-atlantic-flights');
+        // Try Virgin Atlantic flights with training mode fallback
+        const response = await fetch('/api/aviation/virgin-atlantic-flights?training_mode=true');
         const data = await response.json();
         
         if (data.success && data.flights && data.flights.length > 0) {
