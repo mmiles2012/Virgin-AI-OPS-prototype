@@ -549,7 +549,7 @@ export class AviationApiService {
 
       // Fall back to training simulation when APIs are unavailable
       console.warn('No authentic Virgin Atlantic flight data available - falling back to training simulation');
-      return demoFlightGenerator.generateVirginAtlanticFlights();
+      return demoFlightGenerator.getVirginAtlanticFlights();
     } catch (error: any) {
       console.warn('Flight data error:', error.message);
       throw error;
