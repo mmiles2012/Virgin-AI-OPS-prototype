@@ -1,0 +1,360 @@
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import datetime, timedelta
+import warnings
+warnings.filterwarnings('ignore')
+
+# Generate synthetic training data for Virgin Atlantic diversion scenarios
+np.random.seed(42)
+
+def generate_va_diversion_data(n_samples=5000):
+    """Generate synthetic diversion data for Virgin Atlantic operations"""
+    
+    # Virgin Atlantic fleet types
+    aircraft_types = ['A339', 'B789', 'A351', 'A333']
+    
+    # Common diversion airports for Virgin Atlantic routes
+    diversion_airports = [
+        'EGLL',  # London Heathrow (main hub)
+        'KJFK',  # New York JFK
+        'KBOS',  # Boston
+        'CYYZ',  # Toronto
+        'EDDF',  # Frankfurt
+        'EHAM',  # Amsterdam
+        'LFPG',  # Paris CDG
+        'BIKF',  # Reykjavik (common for transatlantic)
+        'CYQX',  # Gander (emergency Atlantic crossing)
+        'LPPT',  # Lisbon
+        'LEMD',  # Madrid
+        'LIMC',  # Milan Malpensa
+        'EGKK',  # London Gatwick
+        'KORD',  # Chicago O'Hare
+        'KLAX'   # Los Angeles
+    ]
+    
+    # Diversion reasons
+    diversion_reasons = ['medical_emergency', 'weather', 'technical', 'fuel', 'security', 'atc_delay']
+    
+    data = []
+    
+    for i in range(n_samples):
+        # Basic flight info
+        aircraft = np.random.choice(aircraft_types)
+        reason = np.random.choice(diversion_reasons)
+        
+        # Flight characteristics based on aircraft type
+        if aircraft == 'A339':
+            max_range = 7200  # nautical miles
+            fuel_capacity = 24210  # gallons
+            pax_capacity = 299
+        elif aircraft == 'B789':
+            max_range = 7635
+            fuel_capacity = 26896
+            pax_capacity = 280
+        elif aircraft == 'A351':
+            max_range = 8700
+            fuel_capacity = 37464
+            pax_capacity = 331
+        else:  # A333
+            max_range = 6350
+            fuel_capacity = 36740
+            pax_capacity = 299
+        
+        # Current flight state
+        remaining_fuel = np.random.uniform(0.15, 0.95) * fuel_capacity
+        passengers_onboard = np.random.randint(int(pax_capacity * 0.4), pax_capacity)
+        flight_duration_so_far = np.random.uniform(0.5, 10)  # hours
+        
+        # Distance to potential airports (simplified - in practice would use great circle)
+        distances = {airport: np.random.uniform(50, 2000) for airport in diversion_airports}
+        
+        # Weather conditions at potential airports
+        weather_scores = {airport: np.random.uniform(1, 10) for airport in diversion_airports}
+        
+        # Airport capabilities
+        runway_lengths = {
+            'EGLL': 12800, 'KJFK': 14511, 'KBOS': 10081, 'CYYZ': 11120,
+            'EDDF': 13123, 'EHAM': 12467, 'LFPG': 13780, 'BIKF': 10019,
+            'CYQX': 10500, 'LPPT': 12484, 'LEMD': 14108, 'LIMC': 12887,
+            'EGKK': 10879, 'KORD': 13000, 'KLAX': 12091
+        }
+        
+        # Medical facilities (1-10 scale)
+        medical_facilities = {
+            'EGLL': 10, 'KJFK': 10, 'KBOS': 9, 'CYYZ': 9, 'EDDF': 9,
+            'EHAM': 9, 'LFPG': 10, 'BIKF': 6, 'CYQX': 4, 'LPPT': 8,
+            'LEMD': 9, 'LIMC': 8, 'EGKK': 8, 'KORD': 9, 'KLAX': 10
+        }
+        
+        # VA maintenance capabilities (1-10 scale)
+        va_maintenance = {
+            'EGLL': 10, 'KJFK': 8, 'KBOS': 6, 'CYYZ': 5, 'EDDF': 4,
+            'EHAM': 3, 'LFPG': 4, 'BIKF': 2, 'CYQX': 2, 'LPPT': 3,
+            'LEMD': 3, 'LIMC': 3, 'EGKK': 7, 'KORD': 5, 'KLAX': 6
+        }
+        
+        # Time of day effect (some airports better at night/day)
+        time_of_day = np.random.choice(['morning', 'afternoon', 'evening', 'night'])
+        
+        # Create records for each potential airport
+        for airport in diversion_airports:
+            # Skip if distance > remaining fuel range (simplified fuel calculation)
+            fuel_range = (remaining_fuel / fuel_capacity) * max_range
+            if distances[airport] > fuel_range * 0.8:  # Safety margin
+                continue
+                
+            # Aircraft-airport compatibility
+            runway_suitable = runway_lengths[airport] >= (12000 if aircraft in ['A351', 'B789'] else 10000)
+            
+            # Priority scoring based on diversion reason
+            priority_score = 0
+            if reason == 'medical_emergency':
+                priority_score = medical_facilities[airport] * 0.4 + (10 - distances[airport]/200) * 0.6
+            elif reason == 'technical':
+                priority_score = va_maintenance[airport] * 0.5 + runway_suitable * 3 + weather_scores[airport] * 0.3
+            elif reason == 'weather':
+                priority_score = weather_scores[airport] * 0.6 + runway_suitable * 2
+            elif reason == 'fuel':
+                priority_score = (10 - distances[airport]/200) * 0.8 + runway_suitable * 2
+            else:  # security, atc_delay
+                priority_score = runway_suitable * 3 + va_maintenance[airport] * 0.3 + weather_scores[airport] * 0.4
+            
+            # Add some randomness
+            priority_score += np.random.normal(0, 1)
+            
+            data.append({
+                'flight_id': f'VS{i:04d}',
+                'aircraft_type': aircraft,
+                'diversion_reason': reason,
+                'airport': airport,
+                'distance_nm': distances[airport],
+                'remaining_fuel_gallons': remaining_fuel,
+                'passengers_onboard': passengers_onboard,
+                'flight_duration_hours': flight_duration_so_far,
+                'weather_score': weather_scores[airport],
+                'runway_length_ft': runway_lengths[airport],
+                'medical_facilities_score': medical_facilities[airport],
+                'va_maintenance_score': va_maintenance[airport],
+                'time_of_day': time_of_day,
+                'runway_suitable': runway_suitable,
+                'fuel_range_nm': fuel_range,
+                'priority_score': priority_score
+            })
+    
+    df = pd.DataFrame(data)
+    
+    # Create target variable - select the airport with highest priority score for each flight
+    df['selected'] = 0
+    for flight_id in df['flight_id'].unique():
+        flight_data = df[df['flight_id'] == flight_id]
+        if len(flight_data) > 0:
+            best_airport_idx = flight_data['priority_score'].idxmax()
+            df.loc[best_airport_idx, 'selected'] = 1
+    
+    return df
+
+# Generate training data
+print("Generating Virgin Atlantic diversion training data...")
+df = generate_va_diversion_data(5000)
+print(f"Generated {len(df)} airport-flight combinations")
+print(f"Covering {df['flight_id'].nunique()} diversion scenarios")
+
+# Display sample data
+print("\nSample of training data:")
+print(df.head(10))
+
+# Prepare features for modeling
+print("\nPreparing features for Random Forest model...")
+
+# Encode categorical variables
+le_aircraft = LabelEncoder()
+le_reason = LabelEncoder()
+le_airport = LabelEncoder()
+le_time = LabelEncoder()
+
+df['aircraft_encoded'] = le_aircraft.fit_transform(df['aircraft_type'])
+df['reason_encoded'] = le_reason.fit_transform(df['diversion_reason'])
+df['airport_encoded'] = le_airport.fit_transform(df['airport'])
+df['time_encoded'] = le_time.fit_transform(df['time_of_day'])
+
+# Feature columns
+feature_columns = [
+    'aircraft_encoded', 'reason_encoded', 'distance_nm', 'remaining_fuel_gallons',
+    'passengers_onboard', 'flight_duration_hours', 'weather_score', 
+    'runway_length_ft', 'medical_facilities_score', 'va_maintenance_score',
+    'time_encoded', 'runway_suitable', 'fuel_range_nm'
+]
+
+X = df[feature_columns]
+y = df['selected']
+
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, 
+                                                    random_state=42, stratify=y)
+
+print(f"Training set: {len(X_train)} samples")
+print(f"Test set: {len(X_test)} samples")
+print(f"Positive class ratio: {y.mean():.3f}")
+
+# Train Random Forest model
+print("\nTraining Random Forest model...")
+rf_model = RandomForestClassifier(
+    n_estimators=200,
+    max_depth=15,
+    min_samples_split=10,
+    min_samples_leaf=5,
+    random_state=42,
+    class_weight='balanced'  # Handle class imbalance
+)
+
+rf_model.fit(X_train, y_train)
+
+# Model evaluation
+print("\nModel Performance:")
+train_score = rf_model.score(X_train, y_train)
+test_score = rf_model.score(X_test, y_test)
+print(f"Training Accuracy: {train_score:.3f}")
+print(f"Test Accuracy: {test_score:.3f}")
+
+# Cross-validation
+cv_scores = cross_val_score(rf_model, X_train, y_train, cv=5)
+print(f"Cross-validation scores: {cv_scores}")
+print(f"Mean CV score: {cv_scores.mean():.3f} (+/- {cv_scores.std() * 2:.3f})")
+
+# Predictions and detailed evaluation
+y_pred = rf_model.predict(X_test)
+print(f"\nDetailed Test Set Performance:")
+print(f"Accuracy: {accuracy_score(y_test, y_pred):.3f}")
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+# Feature importance analysis
+feature_importance = pd.DataFrame({
+    'feature': feature_columns,
+    'importance': rf_model.feature_importances_
+}).sort_values('importance', ascending=False)
+
+print("\nFeature Importance Rankings:")
+for idx, row in feature_importance.iterrows():
+    print(f"{row['feature']}: {row['importance']:.4f}")
+
+# Create visualization
+plt.figure(figsize=(12, 8))
+plt.subplot(2, 2, 1)
+sns.barplot(data=feature_importance.head(10), x='importance', y='feature')
+plt.title('Top 10 Feature Importances')
+plt.xlabel('Importance Score')
+
+plt.subplot(2, 2, 2)
+conf_matrix = confusion_matrix(y_test, y_pred)
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+plt.title('Confusion Matrix')
+plt.ylabel('True Label')
+plt.xlabel('Predicted Label')
+
+plt.subplot(2, 2, 3)
+diversion_counts = df['diversion_reason'].value_counts()
+plt.pie(diversion_counts.values, labels=diversion_counts.index, autopct='%1.1f%%')
+plt.title('Distribution of Diversion Reasons')
+
+plt.subplot(2, 2, 4)
+aircraft_counts = df['aircraft_type'].value_counts()
+plt.bar(aircraft_counts.index, aircraft_counts.values)
+plt.title('Aircraft Type Distribution')
+plt.xticks(rotation=45)
+
+plt.tight_layout()
+plt.show()
+
+# Prediction function for new diversion scenarios
+def predict_best_airport(aircraft_type, diversion_reason, remaining_fuel, passengers, 
+                        flight_duration, available_airports=None):
+    """
+    Predict the best diversion airport for a given scenario
+    """
+    if available_airports is None:
+        available_airports = ['EGLL', 'KJFK', 'KBOS', 'CYYZ', 'EDDF', 'EHAM', 'LFPG']
+    
+    predictions = []
+    
+    # Get aircraft specs
+    aircraft_specs = {
+        'A339': {'max_range': 7200, 'fuel_capacity': 24210},
+        'B789': {'max_range': 7635, 'fuel_capacity': 26896},
+        'A351': {'max_range': 8700, 'fuel_capacity': 37464},
+        'A333': {'max_range': 6350, 'fuel_capacity': 36740}
+    }
+    
+    fuel_range = (remaining_fuel / aircraft_specs[aircraft_type]['fuel_capacity']) * aircraft_specs[aircraft_type]['max_range']
+    
+    for airport in available_airports:
+        # Create feature vector (simplified for example)
+        sample_data = pd.DataFrame({
+            'aircraft_encoded': [le_aircraft.transform([aircraft_type])[0]],
+            'reason_encoded': [le_reason.transform([diversion_reason])[0]],
+            'distance_nm': [500],  # Would be calculated in real system
+            'remaining_fuel_gallons': [remaining_fuel],
+            'passengers_onboard': [passengers],
+            'flight_duration_hours': [flight_duration],
+            'weather_score': [7],  # Would be fetched from weather API
+            'runway_length_ft': [12000],  # Would be from airport database
+            'medical_facilities_score': [8],
+            'va_maintenance_score': [6],
+            'time_encoded': [1],  # Would be calculated from current time
+            'runway_suitable': [1],
+            'fuel_range_nm': [fuel_range]
+        })
+        
+        probability = rf_model.predict_proba(sample_data)[0][1]
+        predictions.append((airport, probability))
+    
+    # Sort by probability
+    predictions.sort(key=lambda x: x[1], reverse=True)
+    return predictions
+
+# Example usage
+print("\n" + "="*60)
+print("EXAMPLE DIVERSION SCENARIO")
+print("="*60)
+
+example_scenario = {
+    'aircraft_type': 'B789',
+    'diversion_reason': 'medical_emergency',
+    'remaining_fuel': 15000,
+    'passengers': 245,
+    'flight_duration': 4.5
+}
+
+print(f"Aircraft: {example_scenario['aircraft_type']}")
+print(f"Reason: {example_scenario['diversion_reason']}")
+print(f"Remaining Fuel: {example_scenario['remaining_fuel']} gallons")
+print(f"Passengers: {example_scenario['passengers']}")
+print(f"Flight Duration: {example_scenario['flight_duration']} hours")
+
+recommendations = predict_best_airport(**example_scenario)
+print(f"\nRecommended airports (ranked by suitability):")
+for i, (airport, prob) in enumerate(recommendations[:5], 1):
+    print(f"{i}. {airport}: {prob:.3f} probability")
+
+print("\n" + "="*60)
+print("MODEL SUMMARY FOR VIRGIN ATLANTIC OPERATIONS")
+print("="*60)
+print(f"• Trained on {len(df)} airport-flight combinations")
+print(f"• Covers {len(df['aircraft_type'].unique())} aircraft types: {', '.join(df['aircraft_type'].unique())}")
+print(f"• Handles {len(df['diversion_reason'].unique())} diversion reasons")
+print(f"• Considers {len(df['airport'].unique())} potential airports")
+print(f"• Test accuracy: {test_score:.3f}")
+print(f"• Most important factors: {', '.join(feature_importance.head(3)['feature'].values)}")
+
+print("\nKey insights:")
+print("• Distance and fuel range are critical factors")
+print("• Medical facilities matter most for medical emergencies")
+print("• VA maintenance capabilities influence technical diversions")
+print("• Weather conditions significantly impact all decisions")
+print("• Aircraft type affects runway and fuel requirements")

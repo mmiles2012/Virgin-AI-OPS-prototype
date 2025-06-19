@@ -18,6 +18,7 @@ import SatelliteWorldMap from "./components/SatelliteWorldMap";
 import SafeAirspaceAlerts from "./components/SafeAirspaceAlerts";
 import RealTimeOperationsCenter from "./components/RealTimeOperationsCenter";
 import GeopoliticalRiskCenter from "./components/GeopoliticalRiskCenter";
+import DiversionDecisionEngine from "./components/DiversionDecisionEngine";
 
 // Flight control mappings
 enum FlightControls {
@@ -55,7 +56,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical';
+type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -201,6 +202,17 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('diversion')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'diversion' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    AI Diversion
+                  </button>
+                  
+                  <button
                     onClick={() => {
                       console.log('API Setup button clicked');
                       setShowApiWizard(true);
@@ -259,6 +271,12 @@ function App() {
                 <GeopoliticalRiskCenter />
               </div>
             )}
+            
+            {viewMode === 'diversion' && !isInterfaceMinimized && (
+              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+                <DiversionDecisionEngine />
+              </div>
+            )}
 
             {/* Minimized Mode Indicator */}
             {isInterfaceMinimized && viewMode !== 'overview' && (
@@ -271,6 +289,7 @@ function App() {
                     {viewMode === 'airspace' && '🛡️ SafeAirspace Alerts (Minimized)'}
                     {viewMode === 'realtime' && '📊 Live Operations (Minimized)'}
                     {viewMode === 'geopolitical' && '🌍 Risk Assessment (Minimized)'}
+                    {viewMode === 'diversion' && '🧠 AI Diversion (Minimized)'}
                   </div>
                 </div>
               </div>
