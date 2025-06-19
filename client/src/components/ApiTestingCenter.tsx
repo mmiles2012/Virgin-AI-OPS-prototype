@@ -73,17 +73,51 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
     }
   };
 
+  const fetchCacheStats = async () => {
+    try {
+      const response = await fetch('/api/aviation/cache-stats');
+      const result = await response.json();
+      if (result.success) {
+        setCacheStats(result.cache);
+      }
+    } catch (error) {
+      console.warn('Failed to fetch cache stats:', error);
+    }
+  };
+
+  const clearCache = async () => {
+    setIsClearingCache(true);
+    try {
+      const response = await fetch('/api/aviation/clear-cache', { method: 'POST' });
+      const result = await response.json();
+      if (result.success) {
+        await fetchCacheStats(); // Refresh stats after clearing
+      }
+    } catch (error) {
+      console.warn('Failed to clear cache:', error);
+    } finally {
+      setIsClearingCache(false);
+    }
+  };
+
   const testAllApis = async () => {
     setIsTestingAll(true);
     
     for (const api of apiEndpoints) {
       await testApi(api.endpoint, api.key);
-      // Add small delay between tests to avoid overwhelming the server
       await new Promise(resolve => setTimeout(resolve, 500));
     }
     
+    await fetchCacheStats(); // Update cache stats after testing
     setIsTestingAll(false);
   };
+
+  // Fetch cache stats on component mount and periodically
+  React.useEffect(() => {
+    fetchCacheStats();
+    const interval = setInterval(fetchCacheStats, 10000); // Update every 10 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   const getStatusIcon = (result: ApiTestResult | undefined, isLoading: boolean) => {
     if (isLoading) {
@@ -194,15 +228,47 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
         })}
       </div>
 
+      {cacheStats && (
+        <div className="mt-6 p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Database className="w-4 h-4 text-green-400" />
+              <span className="text-sm font-medium text-green-400">Flight Data Cache</span>
+            </div>
+            <button
+              onClick={clearCache}
+              disabled={isClearingCache}
+              className={`flex items-center gap-1 px-2 py-1 bg-red-600 hover:bg-red-700 disabled:bg-red-800 
+                         text-white rounded text-xs transition-colors ${isClearingCache ? 'cursor-not-allowed' : ''}`}
+            >
+              <Trash2 className={`w-3 h-3 ${isClearingCache ? 'animate-pulse' : ''}`} />
+              {isClearingCache ? 'Clearing...' : 'Clear'}
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-4 text-xs">
+            <div>
+              <div className="text-gray-300">Total Requests: <span className="text-white">{cacheStats.totalRequests}</span></div>
+              <div className="text-gray-300">Cache Hits: <span className="text-green-400">{cacheStats.cacheHits}</span></div>
+              <div className="text-gray-300">Cache Misses: <span className="text-red-400">{cacheStats.cacheMisses}</span></div>
+            </div>
+            <div>
+              <div className="text-gray-300">Hit Rate: <span className="text-blue-400">{cacheStats.hitRate}%</span></div>
+              <div className="text-gray-300">Cache Size: <span className="text-white">{cacheStats.cacheSize}</span></div>
+              <div className="text-gray-300">API Calls Today: <span className="text-yellow-400">{cacheStats.apiCallsToday}</span></div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mt-6 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
         <div className="flex items-center gap-2 mb-2">
           <Plane className="w-4 h-4 text-blue-400" />
           <span className="text-sm font-medium text-blue-400">Aviation Data Sources</span>
         </div>
         <p className="text-xs text-gray-300">
-          AINO uses Aviation Stack as the primary source for Virgin Atlantic flight data, with OpenSky Network 
-          providing global aircraft positions for comprehensive situational awareness. Mapbox delivers 
-          high-resolution satellite imagery for accurate geospatial visualization of flight operations.
+          AINO uses OpenSky Network as the primary source for real-time Virgin Atlantic flight tracking, 
+          with Aviation Stack as backup. The intelligent caching system ensures continuous data availability 
+          even when APIs reach usage limits. Mapbox provides satellite imagery for precise flight visualization.
         </p>
       </div>
     </div>

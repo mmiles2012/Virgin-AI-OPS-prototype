@@ -449,7 +449,19 @@ export class AviationApiService {
         return cachedFlights;
       }
 
-      // Use Aviation Stack API with enhanced error handling
+      // Try OpenSky Network first (more reliable for real-time data)
+      try {
+        const openSkyFlights = await this.getOpenSkyVirginAtlanticFlights();
+        if (openSkyFlights.length > 0) {
+          flightDataCache.setVirginAtlanticFlights(openSkyFlights, 'OpenSky Network');
+          console.log(`Retrieved and cached ${openSkyFlights.length} Virgin Atlantic flights from OpenSky Network`);
+          return openSkyFlights;
+        }
+      } catch (openSkyError: any) {
+        console.warn('OpenSky Network error:', openSkyError.message);
+      }
+
+      // Fallback to Aviation Stack API
       if (this.aviationStackKey) {
         try {
           const response = await axios.get('http://api.aviationstack.com/v1/flights', {
@@ -494,26 +506,24 @@ export class AviationApiService {
           }
 
           if (flights.length > 0) {
-            flightDataCache.setVirginAtlanticFlights(flights, 'Aviation Stack API');
+            flightDataCache.setVirginAtlanticFlights(flights, 'Aviation Stack API (backup)');
             console.log(`Retrieved and cached ${flights.length} Virgin Atlantic flights from Aviation Stack API`);
             return flights;
           }
         } catch (aviationStackError: any) {
           if (aviationStackError.response?.status === 429 || aviationStackError.message.includes('usage_limit_reached')) {
             console.warn('Aviation Stack API usage limit reached. Attempting to serve cached data.');
-            
-            // Try to return last valid cached data
-            const lastValidData = flightDataCache.getLastVirginAtlanticData();
-            if (lastValidData && lastValidData.length > 0) {
-              console.log(`Serving ${lastValidData.length} Virgin Atlantic flights from cache due to API limits`);
-              return lastValidData;
-            }
-            
-            throw new Error('Flight data temporarily unavailable due to API usage limits. Please upgrade Aviation Stack subscription for continuous access.');
           } else {
             console.warn('Aviation Stack API error:', aviationStackError.message);
           }
         }
+      }
+
+      // Try to return last valid cached data if APIs fail
+      const lastValidData = flightDataCache.getLastVirginAtlanticData();
+      if (lastValidData && lastValidData.length > 0) {
+        console.log(`Serving ${lastValidData.length} Virgin Atlantic flights from cache due to API unavailability`);
+        return lastValidData;
       }
 
       return [];
@@ -521,6 +531,46 @@ export class AviationApiService {
       console.warn('Flight data error:', error.message);
       throw error;
     }
+  }
+
+  private async getOpenSkyVirginAtlanticFlights(): Promise<FlightData[]> {
+    const response = await axios.get('https://opensky-network.org/api/states/all', {
+      timeout: 15000
+    });
+
+    const flights: FlightData[] = [];
+    
+    if (response.data && response.data.states) {
+      for (const state of response.data.states) {
+        const [icao24, callsign, origin_country, time_position, last_contact, longitude, latitude, 
+               baro_altitude, on_ground, velocity, true_track, vertical_rate, sensors, 
+               geo_altitude, squawk, spi, position_source] = state;
+        
+        if (callsign && typeof callsign === 'string') {
+          const cleanCallsign = callsign.trim();
+          
+          // Filter for Virgin Atlantic flights (VS callsign and VIR prefix)
+          if ((cleanCallsign.startsWith('VS') || cleanCallsign.startsWith('VIR')) && 
+              latitude && longitude && !on_ground) {
+            
+            flights.push({
+              callsign: cleanCallsign,
+              latitude: parseFloat(latitude),
+              longitude: parseFloat(longitude),
+              altitude: baro_altitude || geo_altitude || 0,
+              velocity: velocity || 0,
+              heading: true_track || 0,
+              aircraft: 'Unknown', // OpenSky doesn't provide aircraft type
+              origin: 'Unknown',
+              destination: 'Unknown',
+              status: 'en-route'
+            });
+          }
+        }
+      }
+    }
+
+    return flights;
   }
 
 
