@@ -134,7 +134,7 @@ export default function SimpleSatelliteMap() {
     setWeatherData(prev => ({ ...prev, ...newWeatherData }));
   }, [mapCenter, zoomLevel, showWeatherLayer, weatherData, fetchWeatherData]);
 
-  // Coordinate conversion utilities - fixed for accurate positioning
+  // Accurate coordinate conversion for Mapbox static images
   const latLonToPixel = useCallback((lat: number, lon: number) => {
     if (!mapContainerRef.current) return { x: 0, y: 0 };
     
@@ -142,24 +142,28 @@ export default function SimpleSatelliteMap() {
     const width = containerRect.width;
     const height = containerRect.height;
     
-    // Calculate pixel coordinates based on Mercator projection
-    const scale = Math.pow(2, zoomLevel);
-    const worldWidth = 256 * scale;
-    const worldHeight = 256 * scale;
+    // Mapbox static image dimensions and zoom calculation
+    const imageWidth = 1200;
+    const imageHeight = 800;
     
-    // Convert lat/lon to world coordinates
-    const worldX = (lon + 180) / 360 * worldWidth;
-    const latRad = lat * Math.PI / 180;
-    const worldY = (1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * worldHeight;
+    // Calculate the degree span shown in the static image
+    const degreesPerTile = 360 / Math.pow(2, zoomLevel);
+    const imageDegreesLon = degreesPerTile * (imageWidth / 256);
+    const imageDegreesLat = degreesPerTile * (imageHeight / 256);
     
-    // Convert map center to world coordinates
-    const centerWorldX = (mapCenter.lon + 180) / 360 * worldWidth;
-    const centerLatRad = mapCenter.lat * Math.PI / 180;
-    const centerWorldY = (1 - Math.log(Math.tan(centerLatRad) + 1 / Math.cos(centerLatRad)) / Math.PI) / 2 * worldHeight;
+    // Calculate position relative to image bounds
+    const leftBound = mapCenter.lon - imageDegreesLon / 2;
+    const rightBound = mapCenter.lon + imageDegreesLon / 2;
+    const topBound = mapCenter.lat + imageDegreesLat / 2;
+    const bottomBound = mapCenter.lat - imageDegreesLat / 2;
     
-    // Calculate screen position
-    const x = (worldX - centerWorldX) + width / 2 + dragOffset.x;
-    const y = (worldY - centerWorldY) + height / 2 + dragOffset.y;
+    // Convert to pixel coordinates within the displayed image
+    const xRatio = (lon - leftBound) / (rightBound - leftBound);
+    const yRatio = (topBound - lat) / (topBound - bottomBound);
+    
+    // Map to screen coordinates
+    const x = xRatio * width + dragOffset.x;
+    const y = yRatio * height + dragOffset.y;
     
     return { x, y };
   }, [mapCenter, zoomLevel, dragOffset]);
@@ -435,8 +439,13 @@ export default function SimpleSatelliteMap() {
           const lon = parseFloat(lonStr);
           const pixel = latLonToPixel(lat, lon);
           
-          if (pixel.x < 0 || pixel.x > (mapContainerRef.current?.clientWidth || 0) || 
-              pixel.y < 0 || pixel.y > (mapContainerRef.current?.clientHeight || 0)) {
+          // Debug logging
+          console.log(`Weather point: ${lat}, ${lon} -> pixel: ${pixel.x}, ${pixel.y}`);
+          console.log(`Map center: ${mapCenter.lat}, ${mapCenter.lon}, zoom: ${zoomLevel}`);
+          
+          // Only render if within reasonable bounds (allow some off-screen for debugging)
+          if (pixel.x < -100 || pixel.x > (mapContainerRef.current?.clientWidth || 0) + 100 || 
+              pixel.y < -100 || pixel.y > (mapContainerRef.current?.clientHeight || 0) + 100) {
             return null;
           }
           
