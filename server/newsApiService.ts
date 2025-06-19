@@ -31,13 +31,23 @@ interface GeopoliticalNewsAnalysis {
 export class NewsApiService {
   private newsApiKey: string;
   private guardianApiKey: string;
+  private newsdataApiKey: string;
+  private mediastackApiKey: string;
+  private gnewsApiKey: string;
+  private worldNewsApiKey: string;
+  private nytApiKey: string;
   private reutersEndpoint: string;
   private cache: Map<string, GeopoliticalNewsAnalysis> = new Map();
   private readonly CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
 
   constructor() {
-    this.newsApiKey = process.env.NEWS_API_KEY || '';
+    this.newsApiKey = process.env.NEWS_API_KEY || process.env.NEWSAPI_ORG_KEY || '';
     this.guardianApiKey = process.env.GUARDIAN_API_KEY || '';
+    this.newsdataApiKey = process.env.NEWSDATA_API_KEY || process.env.NEWSDATA_IO_KEY || '';
+    this.mediastackApiKey = process.env.MEDIASTACK_API_KEY || '';
+    this.gnewsApiKey = process.env.GNEWS_API_KEY || '';
+    this.worldNewsApiKey = process.env.WORLD_NEWS_API_KEY || '';
+    this.nytApiKey = process.env.NYT_API_KEY || process.env.NYTIMES_API_KEY || '';
     this.reutersEndpoint = 'https://api.reuters.com/v1';
   }
 
@@ -160,11 +170,15 @@ export class NewsApiService {
     }
 
     try {
-      // Fetch from multiple news sources including free RSS feeds
-      const [newsApiArticles, guardianArticles, reutersArticles, openSourceArticles] = await Promise.allSettled([
+      // Fetch from multiple news sources including free APIs and RSS feeds
+      const [newsApiArticles, guardianArticles, newsdataArticles, mediastackArticles, gnewsArticles, worldNewsArticles, nytArticles, openSourceArticles] = await Promise.allSettled([
         this.fetchFromNewsApi(region),
         this.fetchFromGuardian(region),
-        this.fetchFromReuters(region),
+        this.fetchFromNewsData(region),
+        this.fetchFromMediastack(region),
+        this.fetchFromGNews(region),
+        this.fetchFromWorldNews(region),
+        this.fetchFromNYT(region),
         this.fetchFromOpenSources(region)
       ]);
 
@@ -179,8 +193,24 @@ export class NewsApiService {
         allArticles.push(...guardianArticles.value);
       }
       
-      if (reutersArticles.status === 'fulfilled') {
-        allArticles.push(...reutersArticles.value);
+      if (newsdataArticles.status === 'fulfilled') {
+        allArticles.push(...newsdataArticles.value);
+      }
+      
+      if (mediastackArticles.status === 'fulfilled') {
+        allArticles.push(...mediastackArticles.value);
+      }
+      
+      if (gnewsArticles.status === 'fulfilled') {
+        allArticles.push(...gnewsArticles.value);
+      }
+      
+      if (worldNewsArticles.status === 'fulfilled') {
+        allArticles.push(...worldNewsArticles.value);
+      }
+      
+      if (nytArticles.status === 'fulfilled') {
+        allArticles.push(...nytArticles.value);
       }
       
       if (openSourceArticles.status === 'fulfilled') {
@@ -272,12 +302,179 @@ export class NewsApiService {
   }
 
   /**
-   * Fetch from Reuters (placeholder - requires Reuters API access)
+   * Fetch from NewsData.io API
    */
-  private async fetchFromReuters(region: string): Promise<NewsArticle[]> {
-    // Reuters requires special API access - placeholder implementation
-    // In production, this would connect to Reuters Connect API
-    return [];
+  private async fetchFromNewsData(region: string): Promise<NewsArticle[]> {
+    if (!this.newsdataApiKey) {
+      throw new Error('NewsData API key not configured');
+    }
+
+    const keywords = this.getRegionKeywords(region);
+    const query = keywords.join(' OR ');
+
+    const response = await axios.get('https://newsdata.io/api/1/news', {
+      params: {
+        apikey: this.newsdataApiKey,
+        q: query,
+        category: 'world,politics',
+        language: 'en',
+        size: 20
+      }
+    });
+
+    return response.data.results.map((article: any, index: number) => ({
+      id: `newsdata_${index}_${Date.now()}`,
+      title: article.title,
+      description: article.description || '',
+      url: article.link,
+      publishedAt: article.pubDate,
+      source: article.source_id,
+      category: this.categorizeArticle(article.title + ' ' + (article.description || '')),
+      riskRelevance: this.assessRiskRelevance(article.title + ' ' + (article.description || '')),
+      affectedRegions: [region],
+      keywords: this.extractKeywords(article.title + ' ' + (article.description || ''))
+    }));
+  }
+
+  /**
+   * Fetch from Mediastack API
+   */
+  private async fetchFromMediastack(region: string): Promise<NewsArticle[]> {
+    if (!this.mediastackApiKey) {
+      throw new Error('Mediastack API key not configured');
+    }
+
+    const keywords = this.getRegionKeywords(region);
+    const query = keywords.join(',');
+
+    const response = await axios.get('http://api.mediastack.com/v1/news', {
+      params: {
+        access_key: this.mediastackApiKey,
+        keywords: query,
+        categories: 'general,politics',
+        languages: 'en',
+        limit: 20
+      }
+    });
+
+    return response.data.data.map((article: any, index: number) => ({
+      id: `mediastack_${index}_${Date.now()}`,
+      title: article.title,
+      description: article.description || '',
+      url: article.url,
+      publishedAt: article.published_at,
+      source: article.source,
+      category: this.categorizeArticle(article.title + ' ' + (article.description || '')),
+      riskRelevance: this.assessRiskRelevance(article.title + ' ' + (article.description || '')),
+      affectedRegions: [region],
+      keywords: this.extractKeywords(article.title + ' ' + (article.description || ''))
+    }));
+  }
+
+  /**
+   * Fetch from GNews API
+   */
+  private async fetchFromGNews(region: string): Promise<NewsArticle[]> {
+    if (!this.gnewsApiKey) {
+      throw new Error('GNews API key not configured');
+    }
+
+    const keywords = this.getRegionKeywords(region);
+    const query = keywords.join(' OR ');
+
+    const response = await axios.get('https://gnews.io/api/v4/search', {
+      params: {
+        q: query,
+        token: this.gnewsApiKey,
+        lang: 'en',
+        country: 'us',
+        max: 20
+      }
+    });
+
+    return response.data.articles.map((article: any, index: number) => ({
+      id: `gnews_${index}_${Date.now()}`,
+      title: article.title,
+      description: article.description || '',
+      url: article.url,
+      publishedAt: article.publishedAt,
+      source: article.source.name,
+      category: this.categorizeArticle(article.title + ' ' + (article.description || '')),
+      riskRelevance: this.assessRiskRelevance(article.title + ' ' + (article.description || '')),
+      affectedRegions: [region],
+      keywords: this.extractKeywords(article.title + ' ' + (article.description || ''))
+    }));
+  }
+
+  /**
+   * Fetch from World News API
+   */
+  private async fetchFromWorldNews(region: string): Promise<NewsArticle[]> {
+    if (!this.worldNewsApiKey) {
+      throw new Error('World News API key not configured');
+    }
+
+    const keywords = this.getRegionKeywords(region);
+    const query = keywords.join(' ');
+
+    const response = await axios.get('https://api.worldnewsapi.com/search-news', {
+      params: {
+        'api-key': this.worldNewsApiKey,
+        text: query,
+        language: 'en',
+        number: 20,
+        'earliest-publish-date': new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // Last 7 days
+      }
+    });
+
+    return response.data.news.map((article: any, index: number) => ({
+      id: `worldnews_${index}_${Date.now()}`,
+      title: article.title,
+      description: article.text || '',
+      url: article.url,
+      publishedAt: article.publish_date,
+      source: article.source_country,
+      category: this.categorizeArticle(article.title + ' ' + (article.text || '')),
+      riskRelevance: this.assessRiskRelevance(article.title + ' ' + (article.text || '')),
+      affectedRegions: [region],
+      keywords: this.extractKeywords(article.title + ' ' + (article.text || ''))
+    }));
+  }
+
+  /**
+   * Fetch from New York Times API
+   */
+  private async fetchFromNYT(region: string): Promise<NewsArticle[]> {
+    if (!this.nytApiKey) {
+      throw new Error('New York Times API key not configured');
+    }
+
+    const keywords = this.getRegionKeywords(region);
+    const query = keywords.join(' ');
+
+    const response = await axios.get('https://api.nytimes.com/svc/search/v2/articlesearch.json', {
+      params: {
+        'api-key': this.nytApiKey,
+        q: query,
+        sort: 'newest',
+        fl: 'web_url,snippet,lead_paragraph,headline,pub_date,source,byline',
+        fq: 'section_name:("World" OR "Politics" OR "Business")',
+        rows: 20
+      }
+    });
+
+    return response.data.response.docs.map((article: any, index: number) => ({
+      id: `nyt_${index}_${Date.now()}`,
+      title: article.headline.main,
+      description: article.snippet || article.lead_paragraph || '',
+      url: article.web_url,
+      publishedAt: article.pub_date,
+      source: 'New York Times',
+      category: this.categorizeArticle(article.headline.main + ' ' + (article.snippet || '')),
+      riskRelevance: this.assessRiskRelevance(article.headline.main + ' ' + (article.snippet || '')),
+      affectedRegions: [region],
+      keywords: this.extractKeywords(article.headline.main + ' ' + (article.snippet || ''))
+    }));
   }
 
   /**
