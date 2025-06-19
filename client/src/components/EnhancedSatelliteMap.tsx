@@ -306,55 +306,92 @@ export default function EnhancedSatelliteMap() {
     }
   }, [mapCenter, zoomLevel, mapboxToken, loadEnhancedImage]);
 
+  // Load weather data for current view
+  const loadWeatherForView = useCallback(async () => {
+    if (!showWeatherLayer) return;
+    
+    const newWeatherData: Record<string, WeatherData> = {};
+    const gridSize = 4; // 4x4 grid of weather points
+    
+    for (let i = 0; i < gridSize; i++) {
+      for (let j = 0; j < gridSize; j++) {
+        const lat = mapCenter.lat + ((i - gridSize/2) * (20 / zoomLevel));
+        const lon = mapCenter.lon + ((j - gridSize/2) * (40 / zoomLevel));
+        const key = `${lat.toFixed(1)}_${lon.toFixed(1)}`;
+        
+        if (!weatherData[key]) {
+          try {
+            const weather = await fetchWeatherData(lat, lon);
+            newWeatherData[key] = weather;
+          } catch (error) {
+            console.error('Failed to load weather for', lat, lon, error);
+          }
+        }
+      }
+    }
+    
+    setWeatherData(prev => ({ ...prev, ...newWeatherData }));
+  }, [mapCenter, zoomLevel, showWeatherLayer, weatherData, fetchWeatherData]);
+
+  useEffect(() => {
+    if (showWeatherLayer) {
+      loadWeatherForView();
+    }
+  }, [mapCenter, zoomLevel, showWeatherLayer, loadWeatherForView]);
+
   // Generate weather overlay with real data
   const renderWeatherOverlay = () => {
     if (!showWeatherLayer || !mapContainerRef.current) return null;
     
-    const weatherPoints = Object.values(weatherData).map((weather, index) => {
-      // Create a grid of weather stations based on map view
-      const gridLat = mapCenter.lat + ((index % 4) - 2) * (10 / zoomLevel);
-      const gridLon = mapCenter.lon + (Math.floor(index / 4) - 2) * (20 / zoomLevel);
-      const pixel = latLonToPixel(gridLat, gridLon);
+    const weatherPoints = Object.entries(weatherData).map(([key, weather]) => {
+      const [latStr, lonStr] = key.split('_');
+      const lat = parseFloat(latStr);
+      const lon = parseFloat(lonStr);
+      const pixel = latLonToPixel(lat, lon);
       
       if (pixel.x > 0 && pixel.x < mapContainerRef.current.clientWidth && 
           pixel.y > 0 && pixel.y < mapContainerRef.current.clientHeight) {
-        return { lat: gridLat, lon: gridLon, pixel, weather, key: `weather_${index}` };
+        return { lat, lon, pixel, weather, key };
       }
       return null;
     }).filter(Boolean);
     
-    return weatherPoints.map((point) => (
-      <div
-        key={point.key}
-        className="absolute pointer-events-auto cursor-pointer"
-        style={{
-          left: point.pixel.x - 12,
-          top: point.pixel.y - 12,
-          transform: 'translate(-50%, -50%)'
-        }}
-        title={`${point.weather.conditions} • ${point.weather.temperature}°C • Wind ${point.weather.windSpeed}kt • Vis ${point.weather.visibility}km`}
-      >
-        <div className="relative bg-black/60 rounded-full p-1">
-          {point.weather.precipitation > 0 && (
-            <CloudRain className="h-6 w-6 text-blue-400" />
-          )}
-          {point.weather.cloudCover > 70 && point.weather.precipitation === 0 && (
-            <Cloud className="h-6 w-6 text-gray-400" />
-          )}
-          {point.weather.windSpeed > 15 && (
-            <Wind className="h-4 w-4 text-white absolute -top-1 -right-1" />
-          )}
-          {point.weather.precipitation === 0 && point.weather.cloudCover < 30 && (
-            <Sun className="h-6 w-6 text-yellow-400" />
-          )}
-          
-          {/* Temperature display */}
-          <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-black/75 text-white text-xs px-1 rounded whitespace-nowrap">
-            {point.weather.temperature}°C
+    return weatherPoints.map((point) => {
+      if (!point) return null;
+      
+      return (
+        <div
+          key={point.key}
+          className="absolute pointer-events-auto cursor-pointer"
+          style={{
+            left: point.pixel.x - 12,
+            top: point.pixel.y - 12,
+            transform: 'translate(-50%, -50%)'
+          }}
+          title={`${point.weather.conditions} • ${point.weather.temperature}°C • Wind ${point.weather.windSpeed}kt • Vis ${point.weather.visibility}km`}
+        >
+          <div className="relative bg-black/60 rounded-full p-1">
+            {point.weather.precipitation > 0 && (
+              <CloudRain className="h-6 w-6 text-blue-400" />
+            )}
+            {point.weather.cloudCover > 70 && point.weather.precipitation === 0 && (
+              <Cloud className="h-6 w-6 text-gray-400" />
+            )}
+            {point.weather.windSpeed > 15 && (
+              <Wind className="h-4 w-4 text-white absolute -top-1 -right-1" />
+            )}
+            {point.weather.precipitation === 0 && point.weather.cloudCover < 30 && (
+              <Sun className="h-6 w-6 text-yellow-400" />
+            )}
+            
+            {/* Temperature display */}
+            <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-black/75 text-white text-xs px-1 rounded whitespace-nowrap">
+              {point.weather.temperature}°C
+            </div>
           </div>
         </div>
-      </div>
-    ));
+      );
+    }).filter(Boolean);
   };
 
   // Render day/night overlay
