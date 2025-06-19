@@ -82,6 +82,9 @@ export class WeatherApiService {
   private openWeatherApiKey: string;
   private aviationWeatherApiKey: string;
   private meteoBlueApiKey: string;
+  private sentinelHubClientId: string;
+  private sentinelHubClientSecret: string;
+  private nasaEarthdataToken: string;
   private weatherApiKey: string;
   private cache: Map<string, { data: any; timestamp: number }> = new Map();
   private readonly CACHE_DURATION = 10 * 60 * 1000; // 10 minutes for weather data
@@ -91,6 +94,15 @@ export class WeatherApiService {
     this.aviationWeatherApiKey = process.env.AVIATION_WEATHER_API_KEY || '';
     this.meteoBlueApiKey = process.env.METEOBLUE_API_KEY || '';
     this.weatherApiKey = process.env.WEATHER_API_KEY || '';
+    this.sentinelHubClientId = process.env.SENTINEL_HUB_CLIENT_ID || '';
+    this.sentinelHubClientSecret = process.env.SENTINEL_HUB_CLIENT_SECRET || '';
+    this.nasaEarthdataToken = process.env.NASA_EARTHDATA_TOKEN || '';
+    
+    console.log('Enhanced Weather & Satellite API Service initialized');
+    console.log('Weather radar integration ready');
+    console.log('Aviation weather APIs configured');
+    console.log('Sentinel Hub satellite integration available');
+    console.log('NASA Earthdata integration available');
   }
 
   /**
@@ -550,6 +562,123 @@ export class WeatherApiService {
     const day = String(now.getUTCDate()).padStart(2, '0');
     const hour = String(Math.floor(now.getUTCHours() / 6) * 6).padStart(2, '0');
     return `${day}${hour}00Z`;
+  }
+
+  /**
+   * Get weather radar data from RainViewer API (free)
+   */
+  async getWeatherRadar(bounds: { north: number; south: number; east: number; west: number }): Promise<any> {
+    try {
+      // Get available radar timestamps
+      const timestampsResponse = await axios.get('https://api.rainviewer.com/public/weather-maps.json');
+      
+      if (!timestampsResponse.data || !timestampsResponse.data.radar || !timestampsResponse.data.radar.past) {
+        throw new Error('No radar data available');
+      }
+
+      const radarData = timestampsResponse.data.radar;
+      const latestTimestamp = radarData.past[radarData.past.length - 1];
+
+      return {
+        timestamp: latestTimestamp.time * 1000, // Convert to milliseconds
+        tileUrl: `https://tilecache.rainviewer.com/v2/radar/${latestTimestamp.path}/256/{z}/{x}/{y}/2/1_1.png`,
+        bounds,
+        source: 'RainViewer',
+        coverage: 'Global weather radar',
+        updateInterval: '10 minutes'
+      };
+    } catch (error) {
+      console.error('RainViewer radar error:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get satellite imagery from NASA GIBS API (free)
+   */
+  async getNasaSatelliteLayer(layer: string = 'MODIS_Terra_CorrectedReflectance_TrueColor'): Promise<any> {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      
+      return {
+        tileUrl: `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/${layer}/default/${today}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,
+        layer,
+        date: today,
+        source: 'NASA GIBS',
+        coverage: 'Global satellite imagery',
+        resolution: 'Up to 250m',
+        available_layers: [
+          'MODIS_Terra_CorrectedReflectance_TrueColor',
+          'MODIS_Aqua_CorrectedReflectance_TrueColor',
+          'VIIRS_SNPP_CorrectedReflectance_TrueColor',
+          'Landsat_WELD_CorrectedReflectance_TrueColor_Global_Annual'
+        ]
+      };
+    } catch (error) {
+      console.error('NASA GIBS error:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get Sentinel Hub satellite imagery (requires authentication)
+   */
+  async getSentinelHubImagery(bounds: { north: number; south: number; east: number; west: number }): Promise<any> {
+    if (!this.sentinelHubClientId || !this.sentinelHubClientSecret) {
+      console.warn('Sentinel Hub credentials not configured');
+      return null;
+    }
+
+    try {
+      // Get OAuth token
+      const tokenResponse = await axios.post('https://services.sentinel-hub.com/oauth/token', 
+        'grant_type=client_credentials',
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': `Basic ${Buffer.from(`${this.sentinelHubClientId}:${this.sentinelHubClientSecret}`).toString('base64')}`
+          }
+        }
+      );
+
+      const accessToken = tokenResponse.data.access_token;
+      
+      return {
+        accessToken,
+        baseUrl: 'https://services.sentinel-hub.com/api/v1/process',
+        source: 'Sentinel Hub',
+        coverage: 'Global high-resolution satellite imagery',
+        resolution: '10m for Sentinel-2',
+        available_collections: ['sentinel-2-l2a', 'sentinel-1-grd', 'landsat-8-l2a']
+      };
+    } catch (error) {
+      console.error('Sentinel Hub authentication error:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get comprehensive weather and satellite data package
+   */
+  async getComprehensiveWeatherData(bounds: { north: number; south: number; east: number; west: number }): Promise<any> {
+    const results = await Promise.allSettled([
+      this.getWeatherRadar(bounds),
+      this.getNasaSatelliteLayer(),
+      this.getSentinelHubImagery(bounds)
+    ]);
+
+    return {
+      timestamp: new Date().toISOString(),
+      bounds,
+      radar: results[0].status === 'fulfilled' ? results[0].value : null,
+      nasaSatellite: results[1].status === 'fulfilled' ? results[1].value : null,
+      sentinelHub: results[2].status === 'fulfilled' ? results[2].value : null,
+      sources: {
+        radar: 'RainViewer API (free)',
+        satellite: 'NASA GIBS API (free)',
+        highRes: 'Sentinel Hub ESA Copernicus (auth required)'
+      }
+    };
   }
 
   /**

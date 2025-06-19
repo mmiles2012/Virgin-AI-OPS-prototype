@@ -1564,6 +1564,66 @@ print(json.dumps(weather))
       console.error('Airport bounds error:', error);
       res.status(500).json({ success: false, error: 'Airport data unavailable' });
     }
+  });
+
+  // Weather radar endpoint
+  app.get('/api/weather/radar', async (req, res) => {
+    try {
+      const { north, south, east, west } = req.query;
+      
+      if (!north || !south || !east || !west) {
+        return res.status(400).json({ success: false, error: 'Missing bounds parameters' });
+      }
+      
+      const bounds = {
+        north: parseFloat(north as string),
+        south: parseFloat(south as string),
+        east: parseFloat(east as string),
+        west: parseFloat(west as string)
+      };
+      
+      const radarData = await weatherApiService.getWeatherRadar(bounds);
+      res.json({ success: true, radar: radarData });
+    } catch (error) {
+      console.error('Weather radar error:', error);
+      res.status(500).json({ success: false, error: 'Weather radar unavailable' });
+    }
+  });
+
+  // NASA satellite imagery endpoint
+  app.get('/api/weather/satellite/nasa', async (req, res) => {
+    try {
+      const { layer } = req.query;
+      const satelliteData = await weatherApiService.getNasaSatelliteLayer(layer as string);
+      res.json({ success: true, satellite: satelliteData });
+    } catch (error) {
+      console.error('NASA satellite error:', error);
+      res.status(500).json({ success: false, error: 'NASA satellite imagery unavailable' });
+    }
+  });
+
+  // Comprehensive weather data endpoint
+  app.get('/api/weather/comprehensive', async (req, res) => {
+    try {
+      const { north, south, east, west } = req.query;
+      
+      if (!north || !south || !east || !west) {
+        return res.status(400).json({ success: false, error: 'Missing bounds parameters' });
+      }
+      
+      const bounds = {
+        north: parseFloat(north as string),
+        south: parseFloat(south as string),
+        east: parseFloat(east as string),
+        west: parseFloat(west as string)
+      };
+      
+      const comprehensiveData = await weatherApiService.getComprehensiveWeatherData(bounds);
+      res.json({ success: true, data: comprehensiveData });
+    } catch (error) {
+      console.error('Comprehensive weather data error:', error);
+      res.status(500).json({ success: false, error: 'Comprehensive weather data unavailable' });
+    }
   });;
 
   app.get('/api/weather/test-connections', async (req, res) => {

@@ -230,6 +230,28 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('satellite')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'satellite' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Satellite Map
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('airport-weather')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'airport-weather' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Airport Weather
+                  </button>
+                  
+                  <button
                     onClick={() => {
                       console.log('API Setup button clicked');
                       setShowApiWizard(true);
@@ -304,6 +326,18 @@ function App() {
             {viewMode === 'news-intelligence' && (
               <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
                 <NewsIntelligenceDashboard />
+              </div>
+            )}
+            
+            {viewMode === 'satellite' && (
+              <div className="absolute inset-0 pointer-events-auto">
+                <SimpleSatelliteMap />
+              </div>
+            )}
+            
+            {viewMode === 'airport-weather' && (
+              <div className="absolute top-4 left-4 right-56 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-auto">
+                <AirportWeatherMap />
               </div>
             )}
 
