@@ -42,6 +42,109 @@ export class NewsApiService {
   }
 
   /**
+   * Fetch from free RSS feeds and open news sources
+   */
+  private async fetchFromOpenSources(region: string): Promise<NewsArticle[]> {
+    const articles: NewsArticle[] = [];
+    
+    try {
+      // BBC News RSS (no API key required)
+      const bbcResponse = await axios.get('https://feeds.bbci.co.uk/news/world/rss.xml');
+      const bbcArticles = this.parseRSSFeed(bbcResponse.data, 'BBC News', region);
+      articles.push(...bbcArticles);
+    } catch (error) {
+      console.log('BBC RSS feed unavailable');
+    }
+
+    try {
+      // Reuters RSS (no API key required) 
+      const reutersResponse = await axios.get('https://feeds.reuters.com/reuters/worldNews');
+      const reutersArticles = this.parseRSSFeed(reutersResponse.data, 'Reuters', region);
+      articles.push(...reutersArticles);
+    } catch (error) {
+      console.log('Reuters RSS feed unavailable');
+    }
+
+    try {
+      // Associated Press RSS
+      const apResponse = await axios.get('https://feeds.apnews.com/rss/apf-intlnews.rss');
+      const apArticles = this.parseRSSFeed(apResponse.data, 'Associated Press', region);
+      articles.push(...apArticles);
+    } catch (error) {
+      console.log('AP RSS feed unavailable');
+    }
+
+    return articles.slice(0, 15); // Limit to 15 articles from open sources
+  }
+
+  /**
+   * Parse RSS feed XML data
+   */
+  private parseRSSFeed(xmlData: string, source: string, region: string): NewsArticle[] {
+    // Simple XML parsing for RSS feeds
+    const articles: NewsArticle[] = [];
+    
+    try {
+      // Basic regex parsing for RSS items
+      const itemRegex = /<item>(.*?)<\/item>/gs;
+      const items = xmlData.match(itemRegex) || [];
+      
+      items.forEach((item, index) => {
+        const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/) || item.match(/<title>(.*?)<\/title>/);
+        const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/) || item.match(/<description>(.*?)<\/description>/);
+        const linkMatch = item.match(/<link>(.*?)<\/link>/);
+        const pubDateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/);
+        
+        if (titleMatch && linkMatch) {
+          const title = titleMatch[1].trim();
+          const description = descMatch ? descMatch[1].trim().replace(/<[^>]*>/g, '') : '';
+          const content = title + ' ' + description;
+          
+          // Only include if relevant to region or aviation
+          if (this.isRelevantToRegion(content, region) || this.isAviationRelated(content)) {
+            articles.push({
+              id: `${source.toLowerCase()}_${index}_${Date.now()}`,
+              title,
+              description,
+              url: linkMatch[1].trim(),
+              publishedAt: pubDateMatch ? new Date(pubDateMatch[1]).toISOString() : new Date().toISOString(),
+              source,
+              category: this.categorizeArticle(content),
+              riskRelevance: this.assessRiskRelevance(content),
+              affectedRegions: [region],
+              keywords: this.extractKeywords(content)
+            });
+          }
+        }
+      });
+    } catch (error) {
+      console.error(`Error parsing RSS feed from ${source}:`, error);
+    }
+    
+    return articles;
+  }
+
+  /**
+   * Check if content is relevant to the specified region
+   */
+  private isRelevantToRegion(content: string, region: string): boolean {
+    const keywords = this.getRegionKeywords(region);
+    const lowerContent = content.toLowerCase();
+    
+    return keywords.some(keyword => lowerContent.includes(keyword.toLowerCase()));
+  }
+
+  /**
+   * Check if content is aviation-related
+   */
+  private isAviationRelated(content: string): boolean {
+    const aviationTerms = ['aircraft', 'airline', 'airport', 'flight', 'aviation', 'airspace', 'pilot', 'crew'];
+    const lowerContent = content.toLowerCase();
+    
+    return aviationTerms.some(term => lowerContent.includes(term));
+  }
+
+  /**
    * Get comprehensive geopolitical risk analysis from multiple news sources
    */
   async getGeopoliticalRiskAnalysis(region: string): Promise<GeopoliticalNewsAnalysis> {
@@ -57,11 +160,12 @@ export class NewsApiService {
     }
 
     try {
-      // Fetch from multiple news sources
-      const [newsApiArticles, guardianArticles, reutersArticles] = await Promise.allSettled([
+      // Fetch from multiple news sources including free RSS feeds
+      const [newsApiArticles, guardianArticles, reutersArticles, openSourceArticles] = await Promise.allSettled([
         this.fetchFromNewsApi(region),
         this.fetchFromGuardian(region),
-        this.fetchFromReuters(region)
+        this.fetchFromReuters(region),
+        this.fetchFromOpenSources(region)
       ]);
 
       // Combine and analyze articles
@@ -77,6 +181,10 @@ export class NewsApiService {
       
       if (reutersArticles.status === 'fulfilled') {
         allArticles.push(...reutersArticles.value);
+      }
+      
+      if (openSourceArticles.status === 'fulfilled') {
+        allArticles.push(...openSourceArticles.value);
       }
 
       // Generate risk analysis
