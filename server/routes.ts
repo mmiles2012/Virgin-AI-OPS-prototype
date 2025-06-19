@@ -327,6 +327,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/aviation/operating-costs", async (req, res) => {
+    try {
+      const { aircraftType, distance, passengers } = req.query;
+      
+      if (!aircraftType || !distance) {
+        return res.status(400).json({ 
+          error: "aircraftType and distance parameters required" 
+        });
+      }
+
+      const costAnalysis = aviationApiService.calculateOperatingCosts(
+        String(aircraftType),
+        Number(distance),
+        passengers ? Number(passengers) : undefined
+      );
+
+      res.json(costAnalysis);
+    } catch (error) {
+      console.error('Operating cost calculation error:', error);
+      res.status(500).json({ 
+        error: "Failed to calculate operating costs" 
+      });
+    }
+  });
+
   // Training scenario endpoints
   app.get("/api/scenarios", (req, res) => {
     res.json(scenarios);

@@ -12,6 +12,23 @@ interface FuelEstimate {
   note: string;
 }
 
+interface OperatingCostAnalysis {
+  aircraftType: string;
+  flightTimeHours: number;
+  totalOperatingCost: number;
+  fuelCost: number;
+  nonFuelOperatingCost: number;
+  costPerSeat: number;
+  costPerSeatHour: number;
+  passengers: number;
+  breakdown: {
+    hourlyOperatingCost: number;
+    costPerSeatHour: number;
+    fuelCostPerHour: number;
+    totalSeats: number;
+  };
+}
+
 interface AirportData {
   iata: string;
   icao: string;
@@ -67,6 +84,7 @@ interface OperationsSummary {
 
 export function useAviationData() {
   const [fuelEstimate, setFuelEstimate] = useState<FuelEstimate | null>(null);
+  const [operatingCosts, setOperatingCosts] = useState<OperatingCostAnalysis | null>(null);
   const [airportData, setAirportData] = useState<AirportData | null>(null);
   const [operationsSummary, setOperationsSummary] = useState<OperationsSummary | null>(null);
   const [loading, setLoading] = useState(false);
@@ -102,6 +120,22 @@ export function useAviationData() {
     }
   };
 
+  const fetchOperatingCosts = async (aircraftType: string, distance: number, passengers?: number) => {
+    try {
+      setLoading(true);
+      const response = await axios.get('/api/aviation/operating-costs', {
+        params: { aircraftType, distance, passengers }
+      });
+      setOperatingCosts(response.data);
+      setError(null);
+    } catch (err) {
+      console.error('Operating costs fetch error:', err);
+      setError('Failed to fetch operating costs');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchOperationsSummary = async (iataCode: string, flightNumber?: string) => {
     try {
       setLoading(true);
@@ -120,11 +154,13 @@ export function useAviationData() {
 
   return {
     fuelEstimate,
+    operatingCosts,
     airportData,
     operationsSummary,
     loading,
     error,
     fetchFuelEstimate,
+    fetchOperatingCosts,
     fetchAirportData,
     fetchOperationsSummary
   };
