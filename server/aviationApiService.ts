@@ -189,6 +189,10 @@ export class AviationApiService {
   private aviationEdgeKey: string;
   private openskyUsername: string;
   private openskyPassword: string;
+  private openskyClientId: string;
+  private openskyClientSecret: string;
+  private openskyToken: string | null = null;
+  private openskyTokenExpiry: number = 0;
   private mapboxKey: string;
 
   constructor() {
@@ -196,11 +200,14 @@ export class AviationApiService {
     this.aviationEdgeKey = process.env.AVIATION_EDGE_KEY || '';
     this.openskyUsername = process.env.OPENSKY_USERNAME || '';
     this.openskyPassword = process.env.OPENSKY_PASSWORD || '';
+    this.openskyClientId = process.env.OPENSKY_CLIENT_ID || '';
+    this.openskyClientSecret = process.env.OPENSKY_CLIENT_SECRET || '';
     this.mapboxKey = process.env.MAPBOX_PUBLIC_KEY || '';
     
     console.log('Aviation Stack API Key loaded:', this.aviationStackKey ? `${this.aviationStackKey.substring(0, 8)}...` : 'undefined');
     console.log('Aviation Edge API Key loaded:', this.aviationEdgeKey ? `${this.aviationEdgeKey.substring(0, 8)}...` : 'undefined');
-    console.log('OpenSky credentials loaded:', this.openskyUsername ? `${this.openskyUsername.substring(0, 3)}***` : 'not configured');
+    console.log('OpenSky OAuth2 configured:', this.openskyClientId ? `Client ID: ${this.openskyClientId.substring(0, 3)}***` : 'not configured');
+    console.log('OpenSky Basic Auth configured:', this.openskyUsername ? `Username: ${this.openskyUsername.substring(0, 3)}***` : 'not configured');
   }
 
   async testAviationStack(): Promise<{ success: boolean; message: string; data?: any }> {
@@ -600,14 +607,68 @@ export class AviationApiService {
     return flights;
   }
 
+  private async getOpenSkyOAuth2Token(): Promise<string | null> {
+    if (!this.openskyClientId || !this.openskyClientSecret) {
+      return null;
+    }
+
+    // Check if current token is still valid
+    if (this.openskyToken && Date.now() < this.openskyTokenExpiry) {
+      return this.openskyToken;
+    }
+
+    try {
+      const response = await axios.post(
+        'https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token',
+        new URLSearchParams({
+          grant_type: 'client_credentials',
+          client_id: this.openskyClientId,
+          client_secret: this.openskyClientSecret
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          timeout: 10000
+        }
+      );
+
+      if (response.data && response.data.access_token) {
+        this.openskyToken = response.data.access_token;
+        // Set expiry to 90% of token lifetime for safety margin
+        const expiresIn = response.data.expires_in || 3600;
+        this.openskyTokenExpiry = Date.now() + (expiresIn * 900);
+        console.log('OpenSky OAuth2 token acquired successfully');
+        return this.openskyToken;
+      }
+    } catch (error: any) {
+      console.warn('OpenSky OAuth2 token acquisition failed:', error.message);
+    }
+
+    return null;
+  }
+
   private async getOpenSkyVirginAtlanticFlightsAnonymous(): Promise<FlightData[]> {
-    // Use anonymous access without authentication
-    const response = await axios.get('https://opensky-network.org/api/states/all', {
+    const config: any = {
       timeout: 15000,
       headers: {
         'User-Agent': 'AINO-Aviation-Training/1.0'
       }
-    });
+    };
+
+    // Try OAuth2 authentication first
+    const token = await this.getOpenSkyOAuth2Token();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else if (this.openskyUsername && this.openskyPassword) {
+      // Fallback to basic auth
+      config.auth = {
+        username: this.openskyUsername,
+        password: this.openskyPassword
+      };
+    }
+
+    const response = await axios.get('https://opensky-network.org/api/states/all', config);
 
     const flights: FlightData[] = [];
     
