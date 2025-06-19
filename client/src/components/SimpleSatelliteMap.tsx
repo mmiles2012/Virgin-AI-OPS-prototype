@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MapPin, Satellite, Plane, Sun, Moon, Cloud, CloudRain, Wind, Navigation, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { MapPin, Satellite, Plane, Sun, Moon, Cloud, CloudRain, Wind, Navigation, ZoomIn, ZoomOut, RotateCcw, Info, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -307,6 +307,42 @@ export default function SimpleSatelliteMap() {
     }
   }, [mapCenter, showWeatherLayer, loadWeatherGrid]);
 
+  // Load airports
+  useEffect(() => {
+    const fetchAirports = async () => {
+      try {
+        const response = await fetch('/api/airports/major');
+        const data = await response.json();
+        if (data.success && data.airports) {
+          setAirports(data.airports);
+        }
+      } catch (error) {
+        console.error('Failed to fetch airports:', error);
+      }
+    };
+
+    fetchAirports();
+  }, []);
+
+  // Handle airport selection for METAR/TAF data
+  const handleAirportClick = async (airport: Airport) => {
+    setSelectedAirport(airport);
+    setWeatherLoading(true);
+    setAviationWeather(null);
+
+    try {
+      const response = await fetch(`/api/weather/aviation/${airport.icao}`);
+      const data = await response.json();
+      if (data.success && data.data) {
+        setAviationWeather(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to load aviation weather:', error);
+    } finally {
+      setWeatherLoading(false);
+    }
+  };
+
   const dayNight = calculateDayNight();
   const currentImageUrl = mapboxToken ? generateMapboxUrl(mapCenter.lat, mapCenter.lon, zoomLevel, mapboxToken) : '';
 
@@ -388,6 +424,17 @@ export default function SimpleSatelliteMap() {
                 <Switch 
                   checked={showWeatherLayer} 
                   onCheckedChange={setShowWeatherLayer}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <label className="text-white text-sm flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  Major Airports
+                </label>
+                <Switch 
+                  checked={showAirports} 
+                  onCheckedChange={setShowAirports}
                 />
               </div>
               
@@ -564,7 +611,128 @@ export default function SimpleSatelliteMap() {
             </div>
           );
         })}
+
+        {/* Airport Markers */}
+        {showAirports && airports.map((airport) => {
+          const pixel = latLonToPixel(airport.latitude, airport.longitude);
+          const isVisible = pixel.x >= -50 && pixel.x <= (mapContainerRef.current?.clientWidth || 0) + 50 &&
+                          pixel.y >= -50 && pixel.y <= (mapContainerRef.current?.clientHeight || 0) + 50;
+
+          if (!isVisible) return null;
+
+          return (
+            <div
+              key={airport.icao}
+              className="absolute cursor-pointer z-30 group"
+              style={{
+                left: pixel.x,
+                top: pixel.y,
+                transform: 'translate(-50%, -50%)'
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAirportClick(airport);
+              }}
+              title={`${airport.name} (${airport.icao})`}
+            >
+              <div className={`relative ${selectedAirport?.icao === airport.icao ? 'scale-125' : ''} transition-transform`}>
+                <div className={`w-3 h-3 rounded-full border-2 ${
+                  selectedAirport?.icao === airport.icao 
+                    ? 'bg-yellow-400 border-yellow-300' 
+                    : 'bg-blue-500 border-blue-400'
+                } drop-shadow-lg group-hover:scale-110 transition-transform`}>
+                  <MapPin className="h-2 w-2 text-white absolute top-0.5 left-0.5" />
+                </div>
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/75 text-white text-xs px-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                  {airport.iata} - {airport.city}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
+
+      {/* Airport Weather Panel */}
+      {selectedAirport && (
+        <div className="absolute bottom-4 right-4 z-20 w-96">
+          <Card className="bg-black/90 backdrop-blur-sm border-gray-600">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-white flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  {selectedAirport.name} ({selectedAirport.icao})
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedAirport(null);
+                    setAviationWeather(null);
+                  }}
+                  className="text-white hover:bg-gray-700"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Airport Info */}
+              <div className="grid grid-cols-2 gap-2 text-sm text-gray-300">
+                <div>City: {selectedAirport.city}</div>
+                <div>Country: {selectedAirport.country}</div>
+                <div>Elevation: {selectedAirport.elevation} ft</div>
+                <div>Runways: {selectedAirport.runways.join(', ')}</div>
+              </div>
+
+              {/* Weather Loading */}
+              {weatherLoading && (
+                <div className="flex items-center gap-2 text-blue-400">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
+                  Loading aviation weather data...
+                </div>
+              )}
+
+              {/* METAR and TAF Data */}
+              {aviationWeather && (
+                <div className="space-y-3">
+                  {/* METAR */}
+                  <div>
+                    <h4 className="text-white font-medium mb-2 flex items-center gap-2">
+                      <Cloud className="h-4 w-4" />
+                      METAR
+                    </h4>
+                    <div className="bg-gray-900/50 p-2 rounded text-xs font-mono text-gray-300 mb-2">
+                      {aviationWeather.metar.raw || 'No METAR data available'}
+                    </div>
+                    {aviationWeather.metar.parsed && (
+                      <div className="grid grid-cols-2 gap-2 text-xs text-gray-400">
+                        <div className="flex items-center gap-1">
+                          <Wind className="h-3 w-3" />
+                          {aviationWeather.metar.parsed.windDirection}° {aviationWeather.metar.parsed.windSpeed} kt
+                        </div>
+                        <div>Temp: {aviationWeather.metar.parsed.temperature}°C</div>
+                        <div>Visibility: {aviationWeather.metar.parsed.visibility}m</div>
+                        <div>Altimeter: {aviationWeather.metar.parsed.altimeter}" Hg</div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* TAF */}
+                  <div>
+                    <h4 className="text-white font-medium mb-2 flex items-center gap-2">
+                      <Info className="h-4 w-4" />
+                      TAF
+                    </h4>
+                    <div className="bg-gray-900/50 p-2 rounded text-xs font-mono text-gray-300">
+                      {aviationWeather.taf.raw || 'No TAF data available'}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
