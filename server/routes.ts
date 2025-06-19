@@ -8,6 +8,7 @@ import { boeing787Specs, FlightEnvelope } from "../client/src/lib/boeing787Specs
 import { scenarios, medicalEmergencies } from "../client/src/lib/medicalProtocols";
 import { airports, findNearestAirports } from "../client/src/lib/airportData";
 import { aviationApiService } from "./aviationApiService";
+import { newsApiService } from "./newsApiService";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 
@@ -348,6 +349,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Operating cost calculation error:', error);
       res.status(500).json({ 
         error: "Failed to calculate operating costs" 
+      });
+    }
+  });
+
+  // News and geopolitical intelligence endpoints
+  app.get("/api/news/geopolitical-risk/:region", async (req, res) => {
+    try {
+      const { region } = req.params;
+      
+      if (!region) {
+        return res.status(400).json({ 
+          error: "Region parameter required" 
+        });
+      }
+
+      const analysis = await newsApiService.getGeopoliticalRiskAnalysis(region);
+      res.json(analysis);
+    } catch (error) {
+      console.error('Geopolitical risk analysis error:', error);
+      res.status(500).json({ 
+        error: "Failed to generate geopolitical risk analysis" 
+      });
+    }
+  });
+
+  app.get("/api/news/test-connections", async (req, res) => {
+    try {
+      const results = await newsApiService.testConnections();
+      res.json({ success: true, results });
+    } catch (error) {
+      console.error('News API test error:', error);
+      res.status(500).json({ 
+        error: "Failed to test news API connections" 
       });
     }
   });

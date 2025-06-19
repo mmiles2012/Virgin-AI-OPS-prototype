@@ -29,14 +29,34 @@ interface RouteRisk {
   delayMinutes: number;
 }
 
+interface RegionalRiskFactor {
+  category: string;
+  impact: 'high' | 'medium' | 'low';
+  description: string;
+  lastUpdated: string;
+}
+
+interface RegionalRiskAssessment {
+  region: string;
+  overallRisk: 'critical' | 'high' | 'medium' | 'low';
+  riskFactors: RegionalRiskFactor[];
+  affectedRoutes: string[];
+  recommendations: string[];
+  economicImpact: string;
+  timeframe: string;
+}
+
 const GeopoliticalRiskCenter = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [alerts, setAlerts] = useState<GeopoliticalAlert[]>([]);
   const [routes, setRoutes] = useState<RouteRisk[]>([]);
+  const [regionalAssessments, setRegionalAssessments] = useState<RegionalRiskAssessment[]>([]);
+  const [selectedRegion, setSelectedRegion] = useState<RegionalRiskAssessment | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loading, setLoading] = useState(true);
   const [selectedRoute, setSelectedRoute] = useState<RouteRisk | null>(null);
   const [showRouteOptions, setShowRouteOptions] = useState(false);
+  const [showRegionalDetails, setShowRegionalDetails] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -133,8 +153,162 @@ const GeopoliticalRiskCenter = () => {
         }
       ];
 
+      const regionalRiskAssessments: RegionalRiskAssessment[] = [
+        {
+          region: 'Eastern Mediterranean',
+          overallRisk: 'critical',
+          riskFactors: [
+            {
+              category: 'Military Operations',
+              impact: 'high',
+              description: 'Active military exercises restricting civilian airspace corridors',
+              lastUpdated: '2 hours ago'
+            },
+            {
+              category: 'Diplomatic Relations',
+              impact: 'high',
+              description: 'Deteriorating diplomatic ties affecting overflight permissions',
+              lastUpdated: '6 hours ago'
+            },
+            {
+              category: 'Air Traffic Control',
+              impact: 'medium',
+              description: 'Reduced ATC capacity due to security protocols',
+              lastUpdated: '4 hours ago'
+            },
+            {
+              category: 'Insurance Costs',
+              impact: 'high',
+              description: 'War risk insurance premiums increased by 300%',
+              lastUpdated: '1 day ago'
+            }
+          ],
+          affectedRoutes: ['LHR-TLV', 'CDG-BEY', 'FRA-TLV', 'MXP-CAI'],
+          recommendations: [
+            'Reroute via Turkish or Greek airspace',
+            'Increase fuel reserves for longer routings',
+            'Monitor NOTAM updates every 2 hours',
+            'Prepare passenger rebooking protocols'
+          ],
+          economicImpact: '$2.8M daily revenue at risk',
+          timeframe: 'Ongoing - reassess in 6 hours'
+        },
+        {
+          region: 'South China Sea',
+          overallRisk: 'high',
+          riskFactors: [
+            {
+              category: 'Maritime Disputes',
+              impact: 'high',
+              description: 'Territorial disputes affecting international aviation corridors',
+              lastUpdated: '3 hours ago'
+            },
+            {
+              category: 'Naval Activities',
+              impact: 'medium',
+              description: 'Increased naval patrols in key flight paths',
+              lastUpdated: '5 hours ago'
+            },
+            {
+              category: 'Regulatory Changes',
+              impact: 'medium',
+              description: 'Frequent changes to airspace restrictions and reporting requirements',
+              lastUpdated: '1 day ago'
+            },
+            {
+              category: 'Emergency Protocols',
+              impact: 'medium',
+              description: 'Enhanced security screening for flights over disputed areas',
+              lastUpdated: '2 days ago'
+            }
+          ],
+          affectedRoutes: ['LAX-HKG', 'SFO-TPE', 'SEA-MNL', 'LHR-SIN'],
+          recommendations: [
+            'File flight plans 24 hours in advance',
+            'Maintain real-time contact with regional ATC',
+            'Prepare alternative Pacific routings',
+            'Brief crew on emergency diversion procedures'
+          ],
+          economicImpact: '$1.5M potential additional costs',
+          timeframe: 'Monitoring - review weekly'
+        },
+        {
+          region: 'Eastern Europe',
+          overallRisk: 'medium',
+          riskFactors: [
+            {
+              category: 'Economic Sanctions',
+              impact: 'high',
+              description: 'Fuel procurement restrictions and payment processing delays',
+              lastUpdated: '1 day ago'
+            },
+            {
+              category: 'Airspace Closures',
+              impact: 'medium',
+              description: 'Partial closures affecting northern European routes',
+              lastUpdated: '8 hours ago'
+            },
+            {
+              category: 'Currency Fluctuations',
+              impact: 'medium',
+              description: 'Volatile exchange rates impacting operational costs',
+              lastUpdated: '6 hours ago'
+            },
+            {
+              category: 'Supply Chain',
+              impact: 'low',
+              description: 'Limited impact on catering and ground services',
+              lastUpdated: '2 days ago'
+            }
+          ],
+          affectedRoutes: ['LHR-MOW', 'CDG-LED', 'FRA-KBP'],
+          recommendations: [
+            'Secure alternative fuel suppliers',
+            'Hedge currency exposure for operational costs',
+            'Monitor sanctions list updates daily',
+            'Establish contingency payment methods'
+          ],
+          economicImpact: '$800K additional operational costs',
+          timeframe: 'Long-term monitoring required'
+        },
+        {
+          region: 'North Atlantic',
+          overallRisk: 'low',
+          riskFactors: [
+            {
+              category: 'Weather Systems',
+              impact: 'medium',
+              description: 'Seasonal storm patterns affecting routing efficiency',
+              lastUpdated: '2 hours ago'
+            },
+            {
+              category: 'Air Traffic Density',
+              impact: 'low',
+              description: 'High traffic volumes during peak travel periods',
+              lastUpdated: '4 hours ago'
+            },
+            {
+              category: 'Regulatory Compliance',
+              impact: 'low',
+              description: 'Standard ICAO regulations with periodic updates',
+              lastUpdated: '1 week ago'
+            }
+          ],
+          affectedRoutes: ['LHR-JFK', 'LHR-BOS', 'LGW-BWI', 'MAN-JFK'],
+          recommendations: [
+            'Monitor weather routing updates',
+            'Optimize departure slots for efficiency',
+            'Maintain standard fuel reserves',
+            'Continue normal operations'
+          ],
+          economicImpact: 'Minimal operational impact',
+          timeframe: 'Routine monitoring'
+        }
+      ];
+
       setAlerts(sampleAlerts);
       setRoutes(sampleRoutes);
+      setRegionalAssessments(regionalRiskAssessments);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching risk data:', error);
