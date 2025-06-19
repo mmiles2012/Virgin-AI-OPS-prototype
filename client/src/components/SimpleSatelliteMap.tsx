@@ -29,6 +29,53 @@ interface WeatherData {
   precipitation: number;
 }
 
+interface Airport {
+  icao: string;
+  iata: string;
+  name: string;
+  city: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+  elevation: number;
+  timezone: string;
+  runways: string[];
+  category: 'major' | 'international' | 'regional';
+}
+
+interface AviationWeatherData {
+  icao: string;
+  metar: {
+    raw: string;
+    parsed: {
+      temperature: number;
+      dewpoint: number;
+      windSpeed: number;
+      windDirection: number;
+      visibility: number;
+      altimeter: number;
+      conditions: string;
+      clouds: string[];
+      timestamp: string;
+    };
+  };
+  taf: {
+    raw: string;
+    parsed: {
+      validFrom: string;
+      validTo: string;
+      forecast: Array<{
+        time: string;
+        windSpeed: number;
+        windDirection: number;
+        visibility: number;
+        conditions: string;
+        clouds: string[];
+      }>;
+    };
+  };
+}
+
 export default function SimpleSatelliteMap() {
   const [flightData, setFlightData] = useState<FlightPosition[]>([]);
   const [mapCenter, setMapCenter] = useState({ lat: 40, lon: 0 });

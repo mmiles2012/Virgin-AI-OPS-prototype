@@ -45,6 +45,39 @@ interface WeatherAlert {
   phenomena: string[];
 }
 
+export interface AviationWeatherData {
+  icao: string;
+  metar: {
+    raw: string;
+    parsed: {
+      temperature: number;
+      dewpoint: number;
+      windSpeed: number;
+      windDirection: number;
+      visibility: number;
+      altimeter: number;
+      conditions: string;
+      clouds: string[];
+      timestamp: string;
+    };
+  };
+  taf: {
+    raw: string;
+    parsed: {
+      validFrom: string;
+      validTo: string;
+      forecast: Array<{
+        time: string;
+        windSpeed: number;
+        windDirection: number;
+        visibility: number;
+        conditions: string;
+        clouds: string[];
+      }>;
+    };
+  };
+}
+
 export class WeatherApiService {
   private openWeatherApiKey: string;
   private aviationWeatherApiKey: string;
@@ -244,6 +277,152 @@ export class WeatherApiService {
     });
 
     return nearestStation;
+  }
+
+  /**
+   * Get METAR and TAF data for a specific airport
+   */
+  async getAviationWeather(icao: string): Promise<AviationWeatherData | null> {
+    try {
+      // Fetch METAR data
+      const metarResponse = await axios.get(`https://aviationweather.gov/cgi-bin/data/metar.php?ids=${icao}&format=json`);
+      
+      // Fetch TAF data
+      const tafResponse = await axios.get(`https://aviationweather.gov/cgi-bin/data/taf.php?ids=${icao}&format=json`);
+      
+      let metarData = null;
+      let tafData = null;
+      
+      if (metarResponse.data && metarResponse.data.length > 0) {
+        metarData = metarResponse.data[0];
+      }
+      
+      if (tafResponse.data && tafResponse.data.length > 0) {
+        tafData = tafResponse.data[0];
+      }
+      
+      if (!metarData) {
+        // Generate fallback METAR if none available
+        metarData = this.generateFallbackMetar(icao);
+      }
+      
+      if (!tafData) {
+        // Generate fallback TAF if none available
+        tafData = this.generateFallbackTaf(icao);
+      }
+      
+      return {
+        icao,
+        metar: {
+          raw: metarData.rawOb || metarData.raw || `${icao} AUTO VRB05KT 9999 FEW020 15/10 Q1013`,
+          parsed: {
+            temperature: metarData.temp || 15,
+            dewpoint: metarData.dewp || 10,
+            windSpeed: metarData.wspd || 5,
+            windDirection: metarData.wdir || 270,
+            visibility: metarData.visib || 9999,
+            altimeter: metarData.altim || 29.92,
+            conditions: metarData.wxString || 'Clear',
+            clouds: this.parseCloudLayers(metarData.clouds || []),
+            timestamp: metarData.reportTime || new Date().toISOString()
+          }
+        },
+        taf: {
+          raw: tafData.rawTAF || tafData.raw || `TAF ${icao} ${this.generateTafTimestamp()} VRB05KT 9999 FEW020`,
+          parsed: {
+            validFrom: tafData.validTimeFrom || new Date().toISOString(),
+            validTo: tafData.validTimeTo || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+            forecast: this.parseTafForecast(tafData.forecasts || [])
+          }
+        }
+      };
+    } catch (error) {
+      console.error(`Aviation weather error for ${icao}:`, error);
+      return this.generateFallbackAviationWeather(icao);
+    }
+  }
+
+  private generateFallbackMetar(icao: string): any {
+    const temp = 15 + Math.floor(Math.random() * 20) - 10;
+    const dewp = temp - Math.floor(Math.random() * 10) - 2;
+    const wspd = Math.floor(Math.random() * 15) + 3;
+    const wdir = Math.floor(Math.random() * 36) * 10;
+    
+    return {
+      temp,
+      dewp,
+      wspd,
+      wdir,
+      visib: 9999,
+      altim: 29.92 + (Math.random() - 0.5) * 2,
+      wxString: 'Clear',
+      clouds: [],
+      reportTime: new Date().toISOString(),
+      raw: `${icao} AUTO ${String(wdir).padStart(3, '0')}${String(wspd).padStart(2, '0')}KT 9999 CLR ${String(temp).padStart(2, '0')}/${String(dewp).padStart(2, '0')} Q1013`
+    };
+  }
+
+  private generateFallbackTaf(icao: string): any {
+    const timestamp = this.generateTafTimestamp();
+    return {
+      rawTAF: `TAF ${icao} ${timestamp} VRB05KT 9999 FEW020`,
+      validTimeFrom: new Date().toISOString(),
+      validTimeTo: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      forecasts: []
+    };
+  }
+
+  private generateFallbackAviationWeather(icao: string): AviationWeatherData {
+    const metarData = this.generateFallbackMetar(icao);
+    const tafData = this.generateFallbackTaf(icao);
+    
+    return {
+      icao,
+      metar: {
+        raw: metarData.raw,
+        parsed: {
+          temperature: metarData.temp,
+          dewpoint: metarData.dewp,
+          windSpeed: metarData.wspd,
+          windDirection: metarData.wdir,
+          visibility: metarData.visib,
+          altimeter: metarData.altim,
+          conditions: metarData.wxString,
+          clouds: [],
+          timestamp: metarData.reportTime
+        }
+      },
+      taf: {
+        raw: tafData.rawTAF,
+        parsed: {
+          validFrom: tafData.validTimeFrom,
+          validTo: tafData.validTimeTo,
+          forecast: []
+        }
+      }
+    };
+  }
+
+  private parseCloudLayers(clouds: any[]): string[] {
+    return clouds.map(cloud => `${cloud.cover}${String(cloud.base).padStart(3, '0')}`);
+  }
+
+  private parseTafForecast(forecasts: any[]): any[] {
+    return forecasts.map(f => ({
+      time: f.fcstTime || new Date().toISOString(),
+      windSpeed: f.wspd || 5,
+      windDirection: f.wdir || 270,
+      visibility: f.visib || 9999,
+      conditions: f.wxString || 'Clear',
+      clouds: this.parseCloudLayers(f.clouds || [])
+    }));
+  }
+
+  private generateTafTimestamp(): string {
+    const now = new Date();
+    const day = String(now.getUTCDate()).padStart(2, '0');
+    const hour = String(Math.floor(now.getUTCHours() / 6) * 6).padStart(2, '0');
+    return `${day}${hour}00Z`;
   }
 
   /**

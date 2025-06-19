@@ -1510,7 +1510,61 @@ print(json.dumps(weather))
         timestamp: new Date().toISOString()
       });
     }
+  })
+
+  // Aviation weather endpoints
+  app.get('/api/weather/aviation/:icao', async (req, res) => {
+    try {
+      const icao = req.params.icao.toUpperCase();
+      
+      if (!/^[A-Z]{4}$/.test(icao)) {
+        return res.status(400).json({ success: false, error: 'Invalid ICAO code' });
+      }
+      
+      const aviationWeather = await weatherApiService.getAviationWeather(icao);
+      res.json({ success: true, data: aviationWeather });
+    } catch (error) {
+      console.error('Aviation weather API error:', error);
+      res.status(500).json({ success: false, error: 'Aviation weather service unavailable' });
+    }
   });
+
+  // Major airports endpoint
+  app.get('/api/airports/major', (req, res) => {
+    try {
+      const { majorAirports } = require('../shared/airportData');
+      res.json({ success: true, airports: majorAirports });
+    } catch (error) {
+      console.error('Airport data error:', error);
+      res.status(500).json({ success: false, error: 'Airport data unavailable' });
+    }
+  });
+
+  // Airports in bounds endpoint
+  app.get('/api/airports/bounds', (req, res) => {
+    try {
+      const { north, south, east, west } = req.query;
+      
+      if (!north || !south || !east || !west) {
+        return res.status(400).json({ success: false, error: 'Missing bounds parameters' });
+      }
+      
+      const bounds = {
+        north: parseFloat(north as string),
+        south: parseFloat(south as string),
+        east: parseFloat(east as string),
+        west: parseFloat(west as string)
+      };
+      
+      const { getAirportsInBounds } = require('../shared/airportData');
+      const airports = getAirportsInBounds(bounds);
+      
+      res.json({ success: true, airports });
+    } catch (error) {
+      console.error('Airport bounds error:', error);
+      res.status(500).json({ success: false, error: 'Airport data unavailable' });
+    }
+  });;
 
   app.get('/api/weather/test-connections', async (req, res) => {
     try {
