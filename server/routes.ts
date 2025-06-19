@@ -8,6 +8,7 @@ import { boeing787Specs, FlightEnvelope } from "../client/src/lib/boeing787Specs
 import { scenarios, medicalEmergencies } from "../client/src/lib/medicalProtocols";
 import { airports, findNearestAirports } from "../client/src/lib/airportData";
 import { aviationApiService } from "./aviationApiService";
+import { flightDataCache } from "./flightDataCache";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -902,6 +903,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         success: false,
         message: `Aviation Edge test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
+  // Flight data cache statistics
+  app.get("/api/aviation/cache-stats", (req, res) => {
+    try {
+      const stats = flightDataCache.getStats();
+      res.json({
+        success: true,
+        cache: stats,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Cache stats error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
+  // Clear flight data cache
+  app.post("/api/aviation/clear-cache", (req, res) => {
+    try {
+      flightDataCache.clear();
+      res.json({
+        success: true,
+        message: 'Flight data cache cleared successfully'
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Cache clear error: ${error instanceof Error ? error.message : 'Unknown error'}`
       });
     }
   });

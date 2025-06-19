@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { flightDataCache } from './flightDataCache';
 
 interface AviationStackResponse {
   data: any[];
@@ -15,7 +16,7 @@ interface OpenSkyResponse {
   states: any[][];
 }
 
-interface FlightData {
+export interface FlightData {
   callsign: string;
   latitude: number;
   longitude: number;
@@ -442,6 +443,12 @@ export class AviationApiService {
 
   async getVirginAtlanticFlights(): Promise<FlightData[]> {
     try {
+      // Check cache first
+      const cachedFlights = flightDataCache.getVirginAtlanticFlights();
+      if (cachedFlights) {
+        return cachedFlights;
+      }
+
       // Use Aviation Stack API with enhanced error handling
       if (this.aviationStackKey) {
         try {
@@ -487,13 +494,21 @@ export class AviationApiService {
           }
 
           if (flights.length > 0) {
-            console.log(`Retrieved ${flights.length} Virgin Atlantic flights from Aviation Stack API`);
+            flightDataCache.setVirginAtlanticFlights(flights, 'Aviation Stack API');
+            console.log(`Retrieved and cached ${flights.length} Virgin Atlantic flights from Aviation Stack API`);
             return flights;
           }
         } catch (aviationStackError: any) {
           if (aviationStackError.response?.status === 429 || aviationStackError.message.includes('usage_limit_reached')) {
-            console.warn('Aviation Stack API usage limit reached. Consider upgrading subscription for continued access.');
-            // Return cached data or indicate service limitation
+            console.warn('Aviation Stack API usage limit reached. Attempting to serve cached data.');
+            
+            // Try to return last valid cached data
+            const lastValidData = flightDataCache.getLastVirginAtlanticData();
+            if (lastValidData && lastValidData.length > 0) {
+              console.log(`Serving ${lastValidData.length} Virgin Atlantic flights from cache due to API limits`);
+              return lastValidData;
+            }
+            
             throw new Error('Flight data temporarily unavailable due to API usage limits. Please upgrade Aviation Stack subscription for continuous access.');
           } else {
             console.warn('Aviation Stack API error:', aviationStackError.message);

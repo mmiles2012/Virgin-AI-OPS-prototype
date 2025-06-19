@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, CheckCircle, XCircle, RefreshCw, Zap, Plane } from 'lucide-react';
+import { AlertTriangle, CheckCircle, XCircle, RefreshCw, Zap, Plane, Database, Trash2 } from 'lucide-react';
 
 interface ApiTestResult {
   success: boolean;
   message: string;
   data?: any;
+}
+
+interface CacheStats {
+  totalRequests: number;
+  cacheHits: number;
+  cacheMisses: number;
+  lastApiCall: number;
+  apiCallsToday: number;
+  cacheSize: number;
+  hitRate: number;
 }
 
 interface ApiTestingCenterProps {}
@@ -13,6 +23,8 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
   const [testResults, setTestResults] = useState<Record<string, ApiTestResult>>({});
   const [isTestingAll, setIsTestingAll] = useState(false);
   const [testingStates, setTestingStates] = useState<Record<string, boolean>>({});
+  const [cacheStats, setCacheStats] = useState<CacheStats | null>(null);
+  const [isClearingCache, setIsClearingCache] = useState(false);
 
   const apiEndpoints = [
     {
