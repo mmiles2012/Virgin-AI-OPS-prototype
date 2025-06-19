@@ -184,17 +184,20 @@ interface SafeAirspaceAlert {
 
 export class AviationApiService {
   private aviationStackKey: string;
+  private aviationEdgeKey: string;
   private openskyUsername: string;
   private openskyPassword: string;
   private mapboxKey: string;
 
   constructor() {
     this.aviationStackKey = 'b297f0914a3bf55e65414d09772f7934';
+    this.aviationEdgeKey = process.env.AVIATION_EDGE_KEY || '';
     this.openskyUsername = process.env.OPENSKY_USERNAME || '';
     this.openskyPassword = process.env.OPENSKY_PASSWORD || '';
     this.mapboxKey = process.env.MAPBOX_PUBLIC_KEY || '';
     
     console.log('Aviation Stack API Key loaded:', this.aviationStackKey ? `${this.aviationStackKey.substring(0, 8)}...` : 'undefined');
+    console.log('Aviation Edge API Key loaded:', this.aviationEdgeKey ? `${this.aviationEdgeKey.substring(0, 8)}...` : 'undefined');
   }
 
   async testAviationStack(): Promise<{ success: boolean; message: string; data?: any }> {
@@ -252,6 +255,64 @@ export class AviationApiService {
         return {
           success: false,
           message: `AviationStack API error: ${error.message}`
+        };
+      }
+    }
+  }
+
+  async testAviationEdge(): Promise<{ success: boolean; message: string; data?: any }> {
+    if (!this.aviationEdgeKey) {
+      return {
+        success: false,
+        message: 'Aviation Edge API key not configured'
+      };
+    }
+
+    try {
+      const response = await axios.get('http://aviation-edge.com/v2/public/flights', {
+        params: {
+          key: this.aviationEdgeKey,
+          limit: 5
+        },
+        timeout: 10000
+      });
+
+      if (response.data && Array.isArray(response.data)) {
+        return {
+          success: true,
+          message: `Successfully retrieved ${response.data.length} flights from Aviation Edge`,
+          data: {
+            flights_found: response.data.length,
+            sample_flight: response.data[0] ? {
+              flight_number: response.data[0].flight?.iataNumber,
+              aircraft: response.data[0].aircraft?.iataType,
+              departure: response.data[0].departure?.iataCode,
+              arrival: response.data[0].arrival?.iataCode,
+              status: response.data[0].status
+            } : null
+          }
+        };
+      } else {
+        return {
+          success: false,
+          message: 'No flight data received from Aviation Edge API'
+        };
+      }
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        return {
+          success: false,
+          message: 'Invalid Aviation Edge API key - please check credentials'
+        };
+      } else if (error.response?.status === 403) {
+        return {
+          success: false,
+          message: 'Aviation Edge API access denied - check subscription status'
+        };
+      } else {
+        return {
+          success: false,
+          message: `Aviation Edge API error: ${error.message}`
         };
       }
     }
@@ -381,13 +442,65 @@ export class AviationApiService {
 
   async getVirginAtlanticFlights(): Promise<FlightData[]> {
     try {
-      // Try Aviation Stack API first
+      // Try Aviation Edge API first
+      if (this.aviationEdgeKey) {
+        try {
+          const response = await axios.get('http://aviation-edge.com/v2/public/flights', {
+            params: {
+              key: this.aviationEdgeKey,
+              airlineIata: 'VS',
+              status: 'en-route'
+            },
+            timeout: 15000
+          });
+
+          const flights: FlightData[] = [];
+          
+          if (response.data && Array.isArray(response.data)) {
+            for (const flight of response.data) {
+              // Only include Virgin Atlantic operated flights
+              const isVirginAtlanticOperated = flight.airline?.iataCode === 'VS' && 
+                                               flight.airline?.icaoCode === 'VIR';
+              
+              if (isVirginAtlanticOperated && flight.geography && flight.geography.latitude && flight.geography.longitude) {
+                const callsign = flight.flight?.iataNumber || flight.flight?.icaoNumber || `VS${flight.flight?.number}`;
+                
+                if (callsign.startsWith('VS')) {
+                  flights.push({
+                    callsign: callsign,
+                    latitude: parseFloat(flight.geography.latitude),
+                    longitude: parseFloat(flight.geography.longitude),
+                    altitude: flight.geography.altitude || 0,
+                    velocity: flight.speed?.horizontal || 0,
+                    heading: flight.geography.direction || 0,
+                    aircraft: flight.aircraft?.iataType || flight.aircraft?.icaoType || 'Unknown',
+                    origin: flight.departure?.iataCode || 'Unknown',
+                    destination: flight.arrival?.iataCode || 'Unknown',
+                    departureTime: flight.departure?.scheduledTime,
+                    arrivalTime: flight.arrival?.scheduledTime,
+                    status: flight.status || 'active'
+                  });
+                }
+              }
+            }
+          }
+
+          if (flights.length > 0) {
+            console.log(`Retrieved ${flights.length} Virgin Atlantic flights from Aviation Edge API`);
+            return flights;
+          }
+        } catch (aviationEdgeError: any) {
+          console.warn('Aviation Edge API error:', aviationEdgeError.message);
+        }
+      }
+
+      // Fallback to Aviation Stack API if Aviation Edge fails
       if (this.aviationStackKey) {
         try {
           const response = await axios.get('http://api.aviationstack.com/v1/flights', {
             params: {
               access_key: this.aviationStackKey,
-              airline_iata: 'VS', // Virgin Atlantic IATA code
+              airline_iata: 'VS',
               flight_status: 'active',
               limit: 50
             },
@@ -398,7 +511,6 @@ export class AviationApiService {
           
           if (response.data && response.data.data) {
             for (const flight of response.data.data) {
-              // Only include Virgin Atlantic operated flights (not codeshares)
               const isVirginAtlanticOperated = flight.airline?.iata === 'VS' && 
                                                flight.airline?.icao === 'VIR' &&
                                                !flight.flight?.codeshared;
@@ -406,7 +518,6 @@ export class AviationApiService {
               if (isVirginAtlanticOperated && flight.live && flight.live.latitude && flight.live.longitude) {
                 const callsign = flight.flight?.iata || flight.flight?.icao || `VS${flight.flight?.number}`;
                 
-                // Ensure callsign starts with VS for Virgin Atlantic
                 if (callsign.startsWith('VS')) {
                   flights.push({
                     callsign: callsign,
@@ -428,6 +539,7 @@ export class AviationApiService {
           }
 
           if (flights.length > 0) {
+            console.log(`Retrieved ${flights.length} Virgin Atlantic flights from Aviation Stack API`);
             return flights;
           }
         } catch (aviationStackError: any) {
@@ -439,8 +551,6 @@ export class AviationApiService {
         }
       }
 
-      // Return empty array if no authentic data is available
-      // This ensures data integrity by only displaying real flight information
       return [];
     } catch (error: any) {
       console.warn('Flight data error:', error.message);

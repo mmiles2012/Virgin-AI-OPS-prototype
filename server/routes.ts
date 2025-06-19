@@ -882,6 +882,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/aviation/test-aviation-edge", async (req, res) => {
+    try {
+      const result = await aviationApiService.testAviationEdge();
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Aviation Edge test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
+  app.get("/api/aviation/test-aviation-edge", async (req, res) => {
+    try {
+      const result = await aviationApiService.testAviationEdge();
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Aviation Edge test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
   // Real-time Flight Data Routes
   app.get("/api/aviation/virgin-atlantic-flights", async (req, res) => {
     try {
