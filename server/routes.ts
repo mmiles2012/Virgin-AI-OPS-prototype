@@ -7,6 +7,7 @@ import { DecisionEngine } from "./decisionEngine";
 import { boeing787Specs, FlightEnvelope } from "../client/src/lib/boeing787Specs";
 import { scenarios, medicalEmergencies } from "../client/src/lib/medicalProtocols";
 import { airports, findNearestAirports } from "../client/src/lib/airportData";
+import { majorAirports } from "../shared/airportData";
 import { aviationApiService } from "./aviationApiService";
 import { newsApiService } from "./newsApiService";
 import { weatherApiService } from "./weatherApiService";
@@ -1532,88 +1533,6 @@ print(json.dumps(weather))
   // Major airports endpoint
   app.get('/api/airports/major', (req, res) => {
     try {
-      // Import airport data directly to avoid module resolution issues
-      const majorAirports = [
-        {
-          icao: 'EGLL',
-          iata: 'LHR',
-          name: 'London Heathrow Airport',
-          city: 'London',
-          country: 'United Kingdom',
-          latitude: 51.4706,
-          longitude: -0.4619,
-          elevation: 83,
-          timezone: 'Europe/London',
-          runways: ['09L/27R', '09R/27L'],
-          category: 'major'
-        },
-        {
-          icao: 'KJFK',
-          iata: 'JFK',
-          name: 'John F. Kennedy International Airport',
-          city: 'New York',
-          country: 'United States',
-          latitude: 40.6413,
-          longitude: -73.7781,
-          elevation: 13,
-          timezone: 'America/New_York',
-          runways: ['04L/22R', '04R/22L', '08L/26R', '08R/26L'],
-          category: 'major'
-        },
-        {
-          icao: 'KLAX',
-          iata: 'LAX',
-          name: 'Los Angeles International Airport',
-          city: 'Los Angeles',
-          country: 'United States',
-          latitude: 33.9425,
-          longitude: -118.4081,
-          elevation: 125,
-          timezone: 'America/Los_Angeles',
-          runways: ['06L/24R', '06R/24L', '07L/25R', '07R/25L'],
-          category: 'major'
-        },
-        {
-          icao: 'LFPG',
-          iata: 'CDG',
-          name: 'Charles de Gaulle Airport',
-          city: 'Paris',
-          country: 'France',
-          latitude: 49.0097,
-          longitude: 2.5479,
-          elevation: 392,
-          timezone: 'Europe/Paris',
-          runways: ['08L/26R', '08R/26L', '09L/27R', '09R/27L'],
-          category: 'major'
-        },
-        {
-          icao: 'EDDF',
-          iata: 'FRA',
-          name: 'Frankfurt Airport',
-          city: 'Frankfurt',
-          country: 'Germany',
-          latitude: 50.0264,
-          longitude: 8.5431,
-          elevation: 364,
-          timezone: 'Europe/Berlin',
-          runways: ['07L/25R', '07C/25C', '07R/25L', '18/36'],
-          category: 'major'
-        },
-        {
-          icao: 'RJTT',
-          iata: 'NRT',
-          name: 'Narita International Airport',
-          city: 'Tokyo',
-          country: 'Japan',
-          latitude: 35.7647,
-          longitude: 140.3864,
-          elevation: 141,
-          timezone: 'Asia/Tokyo',
-          runways: ['04/22', '16L/34R', '16R/34L'],
-          category: 'major'
-        }
-      ];
-      
       res.json({ success: true, airports: majorAirports });
     } catch (error) {
       console.error('Airport data error:', error);
