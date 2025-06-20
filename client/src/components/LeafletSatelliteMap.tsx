@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 
-// Custom CSS for dark theme Leaflet popups
+// Custom CSS for dark theme Leaflet popups and professional controls
 const leafletStyles = `
   .leaflet-popup-content-wrapper {
     background: #2c2c2c !important;
@@ -33,6 +33,57 @@ const leafletStyles = `
   .leaflet-popup-close-button:hover {
     background: rgba(255,255,255,0.1) !important;
     border-radius: 4px !important;
+  }
+  
+  .leaflet-control-container .leaflet-control {
+    background: rgba(42, 42, 42, 0.95) !important;
+    border: 1px solid #555 !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    backdrop-filter: blur(10px) !important;
+  }
+  
+  .leaflet-control-layers-toggle {
+    background-color: rgba(42, 42, 42, 0.95) !important;
+    border: 1px solid #555 !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+  }
+  
+  .leaflet-control-layers {
+    background: rgba(42, 42, 42, 0.95) !important;
+    border: 1px solid #555 !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    backdrop-filter: blur(10px) !important;
+  }
+  
+  .leaflet-control-layers-expanded {
+    background: rgba(42, 42, 42, 0.95) !important;
+    border: 1px solid #555 !important;
+    color: #fff !important;
+  }
+  
+  .leaflet-control-zoom a {
+    background-color: rgba(42, 42, 42, 0.95) !important;
+    border: 1px solid #555 !important;
+    color: #fff !important;
+  }
+  
+  .leaflet-control-zoom a:hover {
+    background-color: rgba(60, 60, 60, 0.95) !important;
+    border-color: #4CAF50 !important;
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 `;
 
@@ -167,6 +218,112 @@ function CoordinateDisplay() {
     <div className="absolute bottom-4 left-4 z-[1000] bg-black/80 backdrop-blur-sm border border-gray-600 px-3 py-2 rounded-lg text-white text-sm font-mono">
       Lat: {coordinates.lat.toFixed(6)}, Lng: {coordinates.lng.toFixed(6)}
     </div>
+  );
+}
+
+// Professional Weather Controls Component
+function WeatherControls() {
+  const [showWeatherPanel, setShowWeatherPanel] = useState(false);
+  const [weatherLayers, setWeatherLayers] = useState({
+    clouds: false,
+    precipitation: false,
+    wind: false,
+    pressure: false,
+    temperature: false,
+    turbulence: false
+  });
+  const [weatherOpacity, setWeatherOpacity] = useState(0.6);
+
+  const weatherLayerData = {
+    clouds: { icon: '☁️', label: 'Clouds' },
+    precipitation: { icon: '🌧️', label: 'Precipitation' },
+    wind: { icon: '💨', label: 'Wind Speed' },
+    pressure: { icon: '📊', label: 'Pressure' },
+    temperature: { icon: '🌡️', label: 'Temperature' },
+    turbulence: { icon: '⚡', label: 'Turbulence' }
+  };
+
+  return (
+    <>
+      <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
+        <button
+          onClick={() => setShowWeatherPanel(!showWeatherPanel)}
+          className={`px-3 py-2 rounded-lg border transition-all duration-300 backdrop-blur-sm ${
+            showWeatherPanel 
+              ? 'bg-green-600/30 border-green-500 text-white' 
+              : 'bg-black/80 border-gray-600 text-white hover:bg-gray-700/80'
+          }`}
+          style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
+        >
+          ☁️ Weather
+        </button>
+        
+        <button
+          className="px-3 py-2 bg-black/80 border border-gray-600 text-white rounded-lg hover:bg-gray-700/80 transition-all duration-300 backdrop-blur-sm"
+          style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
+          onClick={() => {
+            // Center on London Heathrow
+            if (typeof window !== 'undefined' && (window as any).mapInstance) {
+              (window as any).mapInstance.setView([51.4700, -0.4543], 6);
+            }
+          }}
+        >
+          📍 Center
+        </button>
+      </div>
+
+      {showWeatherPanel && (
+        <div 
+          className="absolute top-4 right-32 z-[1000] bg-black/90 border border-gray-600 rounded-lg p-4 min-w-[200px] backdrop-blur-sm"
+          style={{ 
+            boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+            animation: 'slideIn 0.3s ease'
+          }}
+        >
+          <div className="text-green-400 font-bold mb-3 text-sm">Aviation Weather</div>
+          
+          <div className="space-y-2 mb-4">
+            {Object.entries(weatherLayerData).map(([key, data]) => (
+              <label
+                key={key}
+                className="flex items-center cursor-pointer p-1 rounded hover:bg-white/10 transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  checked={weatherLayers[key as keyof typeof weatherLayers]}
+                  onChange={(e) => {
+                    setWeatherLayers(prev => ({
+                      ...prev,
+                      [key]: e.target.checked
+                    }));
+                  }}
+                  className="mr-2 accent-green-500"
+                />
+                <span className="text-xs text-white select-none">
+                  {data.icon} {data.label}
+                </span>
+              </label>
+            ))}
+          </div>
+          
+          <div className="border-t border-gray-600 pt-3">
+            <label className="block text-xs text-gray-300 mb-2">Opacity</label>
+            <input
+              type="range"
+              min="0.1"
+              max="1"
+              step="0.1"
+              value={weatherOpacity}
+              onChange={(e) => setWeatherOpacity(parseFloat(e.target.value))}
+              className="w-full mb-1 accent-green-500"
+            />
+            <span className="text-xs text-gray-400">
+              {Math.round(weatherOpacity * 100)}%
+            </span>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -391,6 +548,9 @@ export default function LeafletSatelliteMap() {
         {/* Coordinate Display */}
         <CoordinateDisplay />
       </MapContainer>
+
+      {/* Professional Weather Controls */}
+      <WeatherControls />
     </div>
   );
 }
