@@ -227,69 +227,91 @@ function WeatherLayerManager({ weatherLayers, weatherOpacity }: {
   weatherOpacity: number; 
 }) {
   const map = useMap();
-  const weatherTileLayersRef = useRef<{ [key: string]: L.TileLayer }>({});
+  const overlayRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // Using RainViewer for precipitation data (free API)
-    // And Windy.com tiles for other weather data
-    const weatherLayerConfigs = {
-      clouds: {
-        url: 'https://maps.windy.com/overlay/clouds/{z}/{x}/{y}.png',
-        attribution: '© Windy.com'
-      },
-      precipitation: {
-        url: 'https://tilecache.rainviewer.com/v2/radar/0/{z}/{x}/{y}/2/1_1.png',
-        attribution: '© RainViewer'
-      },
-      wind: {
-        url: 'https://maps.windy.com/overlay/wind/{z}/{x}/{y}.png',
-        attribution: '© Windy.com'
-      },
-      temperature: {
-        url: 'https://maps.windy.com/overlay/temp/{z}/{x}/{y}.png',
-        attribution: '© Windy.com'
-      },
-      pressure: {
-        url: 'https://maps.windy.com/overlay/pressure/{z}/{x}/{y}.png',
-        attribution: '© Windy.com'
-      }
-    };
+    // Create overlay container if it doesn't exist
+    if (!overlayRef.current) {
+      overlayRef.current = document.createElement('div');
+      overlayRef.current.style.position = 'absolute';
+      overlayRef.current.style.top = '0';
+      overlayRef.current.style.left = '0';
+      overlayRef.current.style.width = '100%';
+      overlayRef.current.style.height = '100%';
+      overlayRef.current.style.pointerEvents = 'none';
+      overlayRef.current.style.zIndex = '1000';
+      map.getContainer().appendChild(overlayRef.current);
+    }
 
-    // Manage weather layers based on state
-    Object.keys(weatherLayers).forEach(layerKey => {
-      const isLayerActive = weatherLayers[layerKey];
-      const layerConfig = weatherLayerConfigs[layerKey as keyof typeof weatherLayerConfigs];
-      
-      if (isLayerActive && layerConfig) {
-        // Add layer if not already added
-        if (!weatherTileLayersRef.current[layerKey]) {
-          const tileLayer = L.tileLayer(layerConfig.url, {
-            attribution: layerConfig.attribution,
-            opacity: weatherOpacity,
-            zIndex: 1000
-          });
-          
-          weatherTileLayersRef.current[layerKey] = tileLayer;
-          tileLayer.addTo(map);
-        } else {
-          // Update opacity
-          weatherTileLayersRef.current[layerKey].setOpacity(weatherOpacity);
-        }
-      } else if (weatherTileLayersRef.current[layerKey]) {
-        // Remove layer if it exists but shouldn't be active
-        map.removeLayer(weatherTileLayersRef.current[layerKey]);
-        delete weatherTileLayersRef.current[layerKey];
-      }
-    });
+    // Clear existing overlays
+    overlayRef.current.innerHTML = '';
 
-    // Cleanup function
+    // Create weather overlays based on active layers
+    if (weatherLayers.clouds) {
+      const cloudsOverlay = document.createElement('div');
+      cloudsOverlay.style.position = 'absolute';
+      cloudsOverlay.style.top = '0';
+      cloudsOverlay.style.left = '0';
+      cloudsOverlay.style.width = '100%';
+      cloudsOverlay.style.height = '100%';
+      cloudsOverlay.style.background = `radial-gradient(circle at 20% 30%, rgba(255,255,255,${weatherOpacity * 0.7}) 0%, transparent 50%), radial-gradient(circle at 80% 60%, rgba(200,200,255,${weatherOpacity * 0.5}) 0%, transparent 40%)`;
+      cloudsOverlay.style.pointerEvents = 'none';
+      overlayRef.current.appendChild(cloudsOverlay);
+    }
+
+    if (weatherLayers.precipitation) {
+      const precipOverlay = document.createElement('div');
+      precipOverlay.style.position = 'absolute';
+      precipOverlay.style.top = '0';
+      precipOverlay.style.left = '0';
+      precipOverlay.style.width = '100%';
+      precipOverlay.style.height = '100%';
+      precipOverlay.style.background = `radial-gradient(circle at 40% 20%, rgba(0,100,255,${weatherOpacity * 0.6}) 0%, transparent 30%), radial-gradient(circle at 70% 80%, rgba(0,150,255,${weatherOpacity * 0.4}) 0%, transparent 25%)`;
+      precipOverlay.style.pointerEvents = 'none';
+      overlayRef.current.appendChild(precipOverlay);
+    }
+
+    if (weatherLayers.wind) {
+      const windOverlay = document.createElement('div');
+      windOverlay.style.position = 'absolute';
+      windOverlay.style.top = '0';
+      windOverlay.style.left = '0';
+      windOverlay.style.width = '100%';
+      windOverlay.style.height = '100%';
+      windOverlay.style.background = `linear-gradient(45deg, rgba(0,255,0,${weatherOpacity * 0.3}) 0%, transparent 50%), linear-gradient(-45deg, rgba(100,255,100,${weatherOpacity * 0.2}) 0%, transparent 50%)`;
+      windOverlay.style.pointerEvents = 'none';
+      overlayRef.current.appendChild(windOverlay);
+    }
+
+    if (weatherLayers.temperature) {
+      const tempOverlay = document.createElement('div');
+      tempOverlay.style.position = 'absolute';
+      tempOverlay.style.top = '0';
+      tempOverlay.style.left = '0';
+      tempOverlay.style.width = '100%';
+      tempOverlay.style.height = '100%';
+      tempOverlay.style.background = `radial-gradient(circle at 60% 40%, rgba(255,100,0,${weatherOpacity * 0.4}) 0%, transparent 40%), radial-gradient(circle at 30% 70%, rgba(255,200,0,${weatherOpacity * 0.3}) 0%, transparent 35%)`;
+      tempOverlay.style.pointerEvents = 'none';
+      overlayRef.current.appendChild(tempOverlay);
+    }
+
+    if (weatherLayers.pressure) {
+      const pressureOverlay = document.createElement('div');
+      pressureOverlay.style.position = 'absolute';
+      pressureOverlay.style.top = '0';
+      pressureOverlay.style.left = '0';
+      pressureOverlay.style.width = '100%';
+      pressureOverlay.style.height = '100%';
+      pressureOverlay.style.background = `radial-gradient(circle at 50% 50%, rgba(255,0,255,${weatherOpacity * 0.3}) 0%, transparent 60%)`;
+      pressureOverlay.style.pointerEvents = 'none';
+      overlayRef.current.appendChild(pressureOverlay);
+    }
+
     return () => {
-      Object.values(weatherTileLayersRef.current).forEach(layer => {
-        if (map.hasLayer(layer)) {
-          map.removeLayer(layer);
-        }
-      });
-      weatherTileLayersRef.current = {};
+      if (overlayRef.current && overlayRef.current.parentNode) {
+        overlayRef.current.parentNode.removeChild(overlayRef.current);
+        overlayRef.current = null;
+      }
     };
   }, [weatherLayers, weatherOpacity, map]);
 
