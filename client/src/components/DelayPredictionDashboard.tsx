@@ -70,11 +70,14 @@ interface DelayStatistics {
 }
 
 const DelayPredictionDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'predict' | 'holding' | 'seasonal'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'predict' | 'holding' | 'seasonal' | 'heathrow'>('overview');
   const [statistics, setStatistics] = useState<DelayStatistics | null>(null);
   const [seasonalPatterns, setSeasonalPatterns] = useState<SeasonalPattern[]>([]);
   const [prediction, setPrediction] = useState<DelayPrediction | null>(null);
   const [holdingAnalysis, setHoldingAnalysis] = useState<HoldingPatternAnalysis | null>(null);
+  const [heathrowMetrics, setHeathrowMetrics] = useState<any>(null);
+  const [heathrowPrediction, setHeathrowPrediction] = useState<any>(null);
+  const [heathrowAirlines, setHeathrowAirlines] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Flight prediction form state
@@ -96,10 +99,22 @@ const DelayPredictionDashboard: React.FC = () => {
     runwayStatus: 'full'
   });
 
+  // UK CAA Heathrow form state
+  const [heathrowForm, setHeathrowForm] = useState({
+    flightNumber: 'BA001',
+    airline: 'British Airways',
+    route: 'Sydney',
+    operationType: 'scheduled'
+  });
+
   useEffect(() => {
     loadStatistics();
     loadSeasonalPatterns();
-  }, []);
+    if (activeTab === 'heathrow') {
+      loadHeathrowMetrics();
+      loadHeathrowAirlines();
+    }
+  }, [activeTab]);
 
   const loadStatistics = async () => {
     try {

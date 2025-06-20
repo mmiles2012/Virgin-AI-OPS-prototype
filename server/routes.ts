@@ -16,6 +16,7 @@ import { sustainableFuelService } from "./sustainableFuelService";
 import { openDataSoftService } from "./openDataSoftService";
 import { weatherApiService } from "./weatherApiService";
 import { delayPredictionService } from "./delayPredictionService";
+import { ukCaaDelayService } from "./ukCaaDelayService";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 
@@ -1348,6 +1349,86 @@ print(json.dumps(weather))
       res.status(500).json({
         success: false,
         error: 'Failed to get delay statistics'
+      });
+    }
+  });
+
+  // UK CAA Heathrow Delay Analysis Routes
+  app.get('/api/delays/heathrow/metrics', (req, res) => {
+    try {
+      const metrics = ukCaaDelayService.getHeathrowMetrics();
+      res.json({
+        success: true,
+        metrics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get Heathrow metrics'
+      });
+    }
+  });
+
+  app.post('/api/delays/heathrow/predict', (req, res) => {
+    try {
+      const { flightNumber, airline, route, operationType } = req.body;
+      
+      if (!flightNumber || !airline || !route) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required parameters: flightNumber, airline, route'
+        });
+      }
+
+      const prediction = ukCaaDelayService.predictFlightPerformance(
+        flightNumber,
+        airline,
+        route,
+        operationType || 'scheduled'
+      );
+
+      res.json({
+        success: true,
+        prediction,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to predict flight performance'
+      });
+    }
+  });
+
+  app.get('/api/delays/heathrow/airlines', (req, res) => {
+    try {
+      const airlines = ukCaaDelayService.getAirlineComparison();
+      res.json({
+        success: true,
+        airlines,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get airline comparison'
+      });
+    }
+  });
+
+  app.get('/api/delays/heathrow/routes', (req, res) => {
+    try {
+      const routes = ukCaaDelayService.getRouteAnalysis();
+      res.json({
+        success: true,
+        routes,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get route analysis'
       });
     }
   });
