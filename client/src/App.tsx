@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@fontsource/inter";
 
 import Aircraft from "./components/Aircraft";
-import CockpitInterface from "./components/CockpitInterface";
+
 import OperationsCenter from "./components/OperationsCenter";
 import EnhancedOperationalDecisionEngine from "./components/EnhancedOperationalDecisionEngine";
 import FlightMap from "./components/FlightMap";
@@ -61,7 +61,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'cockpit' | 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -119,16 +119,7 @@ function App() {
                 
                 <div className="space-y-2">
                   
-                  <button
-                    onClick={() => setViewMode('cockpit')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'cockpit' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Cockpit View
-                  </button>
+
                   
                   <button
                     onClick={() => setViewMode('operations')}
@@ -254,12 +245,7 @@ function App() {
               </div>
             )}
 
-            {/* Mode-specific Interfaces - Adjusted for right sidebar */}
-            {viewMode === 'cockpit' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
-                <CockpitInterface onEmergencyToggle={setIsEmergencyActive} />
-              </div>
-            )}
+            {/* Mode-specific Interfaces - Adjusted for left sidebar */}
             
             {viewMode === 'operations' && (
               <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
