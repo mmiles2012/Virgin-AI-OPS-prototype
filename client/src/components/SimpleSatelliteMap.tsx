@@ -186,7 +186,7 @@ export default function SimpleSatelliteMap() {
     setWeatherData(prev => ({ ...prev, ...newWeatherData }));
   }, [mapCenter, zoomLevel, showWeatherLayer, weatherData, fetchWeatherData]);
 
-  // Accurate coordinate conversion for Mapbox static images
+  // Simplified coordinate conversion for accurate positioning
   const latLonToPixel = useCallback((lat: number, lon: number) => {
     if (!mapContainerRef.current) return { x: 0, y: 0 };
     
@@ -194,27 +194,28 @@ export default function SimpleSatelliteMap() {
     const width = containerRect.width;
     const height = containerRect.height;
     
-    // Calculate the geographic bounds of the current view
-    // Mapbox static images show a rectangular geographic area
-    const pixelsPerDegree = Math.pow(2, zoomLevel) * 256 / 360;
+    // Simple linear mapping based on geographic bounds
+    // Calculate approximate degrees per pixel at current zoom
+    const zoomFactor = Math.pow(2, zoomLevel - 1);
+    const degreesPerPixelLon = 360 / (256 * zoomFactor);
+    const degreesPerPixelLat = 180 / (256 * zoomFactor);
     
-    // Calculate the geographic extent of the 1200x800 image
-    const degreesLon = 1200 / pixelsPerDegree;
-    const degreesLat = 800 / pixelsPerDegree;
+    // Calculate bounds of the 1200x800 image
+    const halfWidthDegrees = (1200 / 2) * degreesPerPixelLon;
+    const halfHeightDegrees = (800 / 2) * degreesPerPixelLat;
     
-    // Calculate the bounds
-    const westBound = mapCenter.lon - degreesLon / 2;
-    const eastBound = mapCenter.lon + degreesLon / 2;
-    const northBound = mapCenter.lat + degreesLat / 2;
-    const southBound = mapCenter.lat - degreesLat / 2;
+    const westBound = mapCenter.lon - halfWidthDegrees;
+    const eastBound = mapCenter.lon + halfWidthDegrees;
+    const northBound = mapCenter.lat + halfHeightDegrees;
+    const southBound = mapCenter.lat - halfHeightDegrees;
     
-    // Calculate pixel position
+    // Convert to pixel coordinates
     const xRatio = (lon - westBound) / (eastBound - westBound);
     const yRatio = (northBound - lat) / (northBound - southBound);
     
-    // Map to screen coordinates with drag offset
-    const x = xRatio * width + dragOffset.x;
-    const y = yRatio * height + dragOffset.y;
+    // Apply to screen coordinates with drag offset
+    const x = Math.max(0, Math.min(width, xRatio * width)) + dragOffset.x;
+    const y = Math.max(0, Math.min(height, yRatio * height)) + dragOffset.y;
     
     return { x, y };
   }, [mapCenter, zoomLevel, dragOffset]);
