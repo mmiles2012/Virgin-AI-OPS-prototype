@@ -9,7 +9,7 @@ import { scenarios, medicalEmergencies } from "../client/src/lib/medicalProtocol
 import { airports, findNearestAirports } from "../client/src/lib/airportData";
 import { majorAirports } from "../shared/airportData";
 import { aviationApiService } from "./aviationApiService";
-import { newsApiService } from "./newsApiService";
+import { newsApiService } from "./newsApiService_simplified";
 import { weatherApiService } from "./weatherApiService";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
