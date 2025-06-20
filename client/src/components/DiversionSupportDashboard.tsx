@@ -168,7 +168,8 @@ export default function DiversionSupportDashboard() {
           {[
             { id: 'initiate', label: 'Initiate Diversion', icon: AlertTriangle },
             { id: 'status', label: 'Diversion Status', icon: CheckCircle },
-            { id: 'services', label: 'Available Services', icon: MapPin }
+            { id: 'services', label: 'Available Services', icon: MapPin },
+            { id: 'fuel', label: 'Fuel Analysis', icon: Plane }
           ].map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -654,6 +655,160 @@ export default function DiversionSupportDashboard() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Fuel Analysis Tab */}
+        {activeTab === 'fuel' && (
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">
+              Comprehensive Fuel Analysis
+            </h2>
+            
+            <div className="mb-6">
+              <div className="flex items-center space-x-4">
+                <input
+                  type="text"
+                  placeholder="Enter airport code (e.g., KJFK)"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  id="fuelAirportCode"
+                />
+                <button
+                  onClick={async () => {
+                    const input = document.getElementById('fuelAirportCode') as HTMLInputElement;
+                    const airportCode = input.value.toUpperCase();
+                    if (airportCode) {
+                      try {
+                        const response = await fetch(`/api/fuel/sustainable/${airportCode}`);
+                        const data = await response.json();
+                        if (data.success) {
+                          const fuelData = data.fuelAnalysis;
+                          
+                          // Display comprehensive fuel analysis
+                          const resultsDiv = document.getElementById('fuelResults');
+                          if (resultsDiv) {
+                            resultsDiv.innerHTML = `
+                              <div class="space-y-6">
+                                <!-- Cost Comparison -->
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                  <h3 class="font-semibold text-blue-900 mb-3">Fuel Cost Comparison</h3>
+                                  <div class="grid grid-cols-3 gap-4">
+                                    <div class="text-center">
+                                      <div class="text-2xl font-bold text-blue-600">$${fuelData.costComparison.traditional.toFixed(2)}</div>
+                                      <div class="text-sm text-gray-600">Traditional Jet-A1</div>
+                                    </div>
+                                    <div class="text-center">
+                                      <div class="text-2xl font-bold text-green-600">$${fuelData.costComparison.sustainable.toFixed(2)}</div>
+                                      <div class="text-sm text-gray-600">Sustainable Aviation Fuel</div>
+                                    </div>
+                                    <div class="text-center">
+                                      <div class="text-2xl font-bold text-red-600">$${fuelData.costComparison.emergency.toFixed(2)}</div>
+                                      <div class="text-sm text-gray-600">Emergency Supply</div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <!-- Environmental Impact -->
+                                <div class="bg-green-50 p-4 rounded-lg">
+                                  <h3 class="font-semibold text-green-900 mb-3">Environmental Impact</h3>
+                                  <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <div class="text-2xl font-bold text-green-600">${fuelData.environmentalImpact.co2ReductionPercent}%</div>
+                                      <div class="text-sm text-gray-600">CO₂ Reduction with SAF</div>
+                                    </div>
+                                    <div>
+                                      <div class="text-2xl font-bold text-green-600">${fuelData.environmentalImpact.sustainabilityScore}/100</div>
+                                      <div class="text-sm text-gray-600">Sustainability Score</div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <!-- Traditional Fuel Suppliers -->
+                                <div>
+                                  <h3 class="font-semibold text-gray-900 mb-3">Traditional Fuel Suppliers</h3>
+                                  <div class="space-y-3">
+                                    ${fuelData.traditionalFuel.map(supplier => `
+                                      <div class="border border-gray-200 rounded-lg p-4">
+                                        <div class="flex justify-between items-start">
+                                          <div>
+                                            <h4 class="font-medium text-gray-900">${supplier.name}</h4>
+                                            <p class="text-sm text-gray-600">${supplier.contact}</p>
+                                            <p class="text-sm text-gray-600">${supplier.location.address}</p>
+                                          </div>
+                                          <div class="text-right">
+                                            <div class="text-lg font-semibold text-blue-600">$${supplier.pricing.jetA1PerGallon.toFixed(2)}/gal</div>
+                                            <div class="text-sm text-gray-600">${supplier.capacity.deliveryTimeMinutes} min delivery</div>
+                                          </div>
+                                        </div>
+                                        <div class="mt-3 flex flex-wrap gap-2">
+                                          ${supplier.services.twentyFourSeven ? '<span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">24/7 Available</span>' : ''}
+                                          ${supplier.services.emergencySupply ? '<span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">Emergency Supply</span>' : ''}
+                                          ${supplier.fuelTypes.sustainableAviationFuel ? '<span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">SAF Available</span>' : ''}
+                                        </div>
+                                      </div>
+                                    `).join('')}
+                                  </div>
+                                </div>
+
+                                <!-- Emergency Options -->
+                                <div>
+                                  <h3 class="font-semibold text-gray-900 mb-3">Emergency Fuel Options</h3>
+                                  <div class="space-y-3">
+                                    ${fuelData.emergencyOptions.map(supplier => `
+                                      <div class="border border-red-200 bg-red-50 rounded-lg p-4">
+                                        <div class="flex justify-between items-start">
+                                          <div>
+                                            <h4 class="font-medium text-red-900">${supplier.name}</h4>
+                                            <p class="text-sm text-red-700">${supplier.contact}</p>
+                                            <p class="text-sm text-red-600">Emergency Rate: ${supplier.pricing.emergencyRateMultiplier}x standard</p>
+                                          </div>
+                                          <div class="text-right">
+                                            <div class="text-lg font-semibold text-red-600">$${(supplier.pricing.jetA1PerGallon * supplier.pricing.emergencyRateMultiplier).toFixed(2)}/gal</div>
+                                            <div class="text-sm text-red-600">${supplier.capacity.deliveryTimeMinutes} min delivery</div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    `).join('')}
+                                  </div>
+                                </div>
+
+                                <!-- Recommendations -->
+                                <div class="bg-yellow-50 p-4 rounded-lg">
+                                  <h3 class="font-semibold text-yellow-900 mb-3">Fuel Recommendations</h3>
+                                  <ul class="space-y-2">
+                                    ${fuelData.recommendations.map(rec => `
+                                      <li class="flex items-start space-x-2">
+                                        <div class="w-2 h-2 bg-yellow-600 rounded-full mt-2 flex-shrink-0"></div>
+                                        <span class="text-yellow-800">${rec}</span>
+                                      </li>
+                                    `).join('')}
+                                  </ul>
+                                </div>
+                              </div>
+                            `;
+                          }
+                        }
+                      } catch (error) {
+                        console.error('Failed to fetch fuel analysis:', error);
+                        const resultsDiv = document.getElementById('fuelResults');
+                        if (resultsDiv) {
+                          resultsDiv.innerHTML = '<div class="text-red-600 p-4">Failed to load fuel analysis. Please try again.</div>';
+                        }
+                      }
+                    }
+                  }}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  Analyze Fuel Options
+                </button>
+              </div>
+            </div>
+
+            <div id="fuelResults" className="mt-6">
+              <div className="text-center text-gray-500 py-8">
+                Enter an airport code to view comprehensive fuel analysis including traditional, sustainable, and emergency fuel options
+              </div>
+            </div>
           </div>
         )}
       </div>
