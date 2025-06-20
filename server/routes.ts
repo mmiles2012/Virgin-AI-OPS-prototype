@@ -13,6 +13,7 @@ import { newsApiService } from "./newsApiService_simplified";
 import { enhancedNewsMonitor } from "./enhancedNewsMonitor";
 import { diversionSupport } from "./diversionSupport";
 import { sustainableFuelService } from "./sustainableFuelService";
+import { openDataSoftService } from "./openDataSoftService";
 import { weatherApiService } from "./weatherApiService";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
@@ -1739,6 +1740,97 @@ print(json.dumps(weather))
       res.status(500).json({
         success: false,
         error: 'Failed to find SAF stations',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // OpenDataSoft comprehensive airport data endpoints
+  app.get('/api/airports/comprehensive/:airportCode', async (req, res) => {
+    try {
+      const { airportCode } = req.params;
+      const comprehensiveData = await openDataSoftService.getComprehensiveAirportData(airportCode);
+      
+      res.json({
+        success: true,
+        airportCode,
+        data: comprehensiveData,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Comprehensive airport data failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve comprehensive airport data',
+        airportCode: req.params.airportCode,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/airports/search/:searchTerm', async (req, res) => {
+    try {
+      const { searchTerm } = req.params;
+      const searchResults = await openDataSoftService.getAirportInformation(searchTerm);
+      
+      res.json({
+        success: true,
+        searchTerm,
+        results: searchResults,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Airport search failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to search airports',
+        searchTerm: req.params.searchTerm,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/airports/statistics/:airportCode', async (req, res) => {
+    try {
+      const { airportCode } = req.params;
+      const year = req.query.year ? parseInt(req.query.year as string) : undefined;
+      const statistics = await openDataSoftService.getAirportStatistics(airportCode, year);
+      
+      res.json({
+        success: true,
+        airportCode,
+        year: year || new Date().getFullYear() - 1,
+        statistics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Airport statistics failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve airport statistics',
+        airportCode: req.params.airportCode,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/airports/airlines/:airportCode', async (req, res) => {
+    try {
+      const { airportCode } = req.params;
+      const airlinesData = await openDataSoftService.getAirportAirlines(airportCode);
+      
+      res.json({
+        success: true,
+        airportCode,
+        airlines: airlinesData,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Airport airlines failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve airport airlines',
+        airportCode: req.params.airportCode,
         timestamp: new Date().toISOString()
       });
     }
