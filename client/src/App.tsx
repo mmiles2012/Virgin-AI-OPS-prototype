@@ -325,6 +325,12 @@ function App() {
               </div>
             )}
             
+            {viewMode === 'delay-prediction' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+                <DelayPredictionDashboard />
+              </div>
+            )}
+            
 
 
             {/* Full-Screen Enhanced Satellite Map - Overview Mode */}
