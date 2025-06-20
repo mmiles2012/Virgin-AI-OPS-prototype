@@ -194,26 +194,25 @@ export default function SimpleSatelliteMap() {
     const width = containerRect.width;
     const height = containerRect.height;
     
-    // Mapbox static image dimensions and zoom calculation
-    const imageWidth = 1200;
-    const imageHeight = 800;
+    // Calculate the geographic bounds of the current view
+    // Mapbox static images show a rectangular geographic area
+    const pixelsPerDegree = Math.pow(2, zoomLevel) * 256 / 360;
     
-    // Calculate the degree span shown in the static image
-    const degreesPerTile = 360 / Math.pow(2, zoomLevel);
-    const imageDegreesLon = degreesPerTile * (imageWidth / 256);
-    const imageDegreesLat = degreesPerTile * (imageHeight / 256);
+    // Calculate the geographic extent of the 1200x800 image
+    const degreesLon = 1200 / pixelsPerDegree;
+    const degreesLat = 800 / pixelsPerDegree;
     
-    // Calculate position relative to image bounds
-    const leftBound = mapCenter.lon - imageDegreesLon / 2;
-    const rightBound = mapCenter.lon + imageDegreesLon / 2;
-    const topBound = mapCenter.lat + imageDegreesLat / 2;
-    const bottomBound = mapCenter.lat - imageDegreesLat / 2;
+    // Calculate the bounds
+    const westBound = mapCenter.lon - degreesLon / 2;
+    const eastBound = mapCenter.lon + degreesLon / 2;
+    const northBound = mapCenter.lat + degreesLat / 2;
+    const southBound = mapCenter.lat - degreesLat / 2;
     
-    // Convert to pixel coordinates within the displayed image
-    const xRatio = (lon - leftBound) / (rightBound - leftBound);
-    const yRatio = (topBound - lat) / (topBound - bottomBound);
+    // Calculate pixel position
+    const xRatio = (lon - westBound) / (eastBound - westBound);
+    const yRatio = (northBound - lat) / (northBound - southBound);
     
-    // Map to screen coordinates
+    // Map to screen coordinates with drag offset
     const x = xRatio * width + dragOffset.x;
     const y = yRatio * height + dragOffset.y;
     
@@ -538,13 +537,12 @@ export default function SimpleSatelliteMap() {
           const lon = parseFloat(lonStr);
           const pixel = latLonToPixel(lat, lon);
           
-          // Debug logging
-          console.log(`Weather point: ${lat}, ${lon} -> pixel: ${pixel.x}, ${pixel.y}`);
-          console.log(`Map center: ${mapCenter.lat}, ${mapCenter.lon}, zoom: ${zoomLevel}`);
+          // Only render if within visible bounds
+          const containerWidth = mapContainerRef.current?.clientWidth || 0;
+          const containerHeight = mapContainerRef.current?.clientHeight || 0;
           
-          // Only render if within reasonable bounds (allow some off-screen for debugging)
-          if (pixel.x < -100 || pixel.x > (mapContainerRef.current?.clientWidth || 0) + 100 || 
-              pixel.y < -100 || pixel.y > (mapContainerRef.current?.clientHeight || 0) + 100) {
+          if (pixel.x < -50 || pixel.x > containerWidth + 50 || 
+              pixel.y < -50 || pixel.y > containerHeight + 50) {
             return null;
           }
           
