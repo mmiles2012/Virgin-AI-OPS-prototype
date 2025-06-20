@@ -109,8 +109,8 @@ function App() {
 
           {/* UI Overlay */}
           <div className="absolute inset-0 pointer-events-none">
-            {/* Right Sidebar Navigation */}
-            <div className="absolute top-4 right-4 z-50 pointer-events-auto">
+            {/* Left Sidebar Navigation */}
+            <div className="absolute top-4 left-4 z-50 pointer-events-auto">
               <div className="aviation-panel p-4 rounded-lg space-y-3 w-48">
                 <div className="text-center mb-4">
                   <h1 className="text-white font-bold text-lg">AINO</h1>
@@ -256,55 +256,55 @@ function App() {
 
             {/* Mode-specific Interfaces - Adjusted for right sidebar */}
             {viewMode === 'cockpit' && (
-              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <CockpitInterface onEmergencyToggle={setIsEmergencyActive} />
               </div>
             )}
             
             {viewMode === 'operations' && (
-              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <OperationsCenter />
               </div>
             )}
             
             {viewMode === 'decisions' && (
-              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <EnhancedOperationalDecisionEngine />
               </div>
             )}
             
             {viewMode === 'airspace' && (
-              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <SafeAirspaceAlerts />
               </div>
             )}
             
             {viewMode === 'realtime' && (
-              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <RealTimeOperationsCenter />
               </div>
             )}
             
             {viewMode === 'geopolitical' && (
-              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <GeopoliticalRiskCenter />
               </div>
             )}
             
             {viewMode === 'diversion' && (
-              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <DiversionDecisionEngine />
               </div>
             )}
             
             {viewMode === 'api-testing' && (
-              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <ApiTestingCenter />
               </div>
             )}
             
             {viewMode === 'news-intelligence' && (
-              <div className="absolute top-4 left-4 right-56 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
                 <NewsIntelligenceDashboard />
               </div>
             )}
@@ -313,7 +313,7 @@ function App() {
 
             {/* Full-Screen Enhanced Satellite Map - Overview Mode */}
             {viewMode === 'overview' && (
-              <div className="absolute inset-0 pointer-events-auto">
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
                 <LeafletSatelliteMap />
               </div>
             )}
