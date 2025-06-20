@@ -12,12 +12,7 @@ interface NewsAPIConnection {
 
 interface NewsAPITestResults {
   newsapi: NewsAPIConnection;
-  guardian: NewsAPIConnection;
-  newsdata: NewsAPIConnection;
-  mediastack: NewsAPIConnection;
-  gnews: NewsAPIConnection;
-  worldnews: NewsAPIConnection;
-  nyt: NewsAPIConnection;
+  rssFeeds: NewsAPIConnection;
 }
 
 interface GeopoliticalRiskFactor {
@@ -65,12 +60,6 @@ export function NewsIntelligenceDashboard() {
               success: connections.newsapi?.status === 'connected',
               message: connections.newsapi?.status === 'connected' ? 'Connected to NewsAPI.org' : 'Not configured'
             },
-            guardian: { success: false, message: 'Not configured' },
-            newsdata: { success: false, message: 'Not configured' },
-            mediastack: { success: false, message: 'Not configured' },
-            gnews: { success: false, message: 'Not configured' },
-            worldnews: { success: false, message: 'Not configured' },
-            nyt: { success: false, message: 'Not configured' },
             rssFeeds: {
               success: connections.rssFeeds?.status === 'available',
               message: connections.rssFeeds?.status === 'available' ? 'RSS feeds available' : 'Not available'
@@ -225,8 +214,9 @@ export function NewsIntelligenceDashboard() {
         </TabsContent>
 
         <TabsContent value="analysis" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {regions.map(region => {
+          <div className="max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {regions.map(region => {
               const analysis = geopoliticalData[region];
               return (
                 <Card key={region}>
@@ -301,6 +291,7 @@ export function NewsIntelligenceDashboard() {
                 </Card>
               );
             })}
+            </div>
           </div>
         </TabsContent>
 
@@ -313,9 +304,10 @@ export function NewsIntelligenceDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {Object.entries(geopoliticalData).map(([region, analysis]) => (
-                  <div key={region} className="border-l-4 border-blue-500 pl-4">
+              <div className="max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+                <div className="space-y-4">
+                  {Object.entries(geopoliticalData).map(([region, analysis]) => (
+                    <div key={region} className="border-l-4 border-blue-500 pl-4">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium">{region}</h4>
                       <Badge className={getRiskLevelColor(analysis.riskLevel)}>
@@ -344,6 +336,7 @@ export function NewsIntelligenceDashboard() {
                     <p className="text-gray-600">Load geopolitical analysis to view live intelligence feed</p>
                   </div>
                 )}
+                </div>
               </div>
             </CardContent>
           </Card>
