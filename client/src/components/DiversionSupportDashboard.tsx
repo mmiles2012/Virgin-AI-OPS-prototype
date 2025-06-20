@@ -188,7 +188,7 @@ export default function DiversionSupportDashboard() {
 
         {/* Initiate Diversion Tab */}
         {activeTab === 'initiate' && (
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-lg p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">
               Initiate Diversion Support
             </h2>
@@ -370,7 +370,7 @@ export default function DiversionSupportDashboard() {
 
         {/* Diversion Status Tab */}
         {activeTab === 'status' && diversionResponse && (
-          <div className="space-y-6">
+          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
             {/* Status Overview */}
             <div className="bg-white rounded-xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-4">
@@ -593,7 +593,7 @@ export default function DiversionSupportDashboard() {
 
         {/* Services Tab */}
         {activeTab === 'services' && (
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-lg p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">
               Available Services by Airport
             </h2>
@@ -660,7 +660,7 @@ export default function DiversionSupportDashboard() {
 
         {/* Fuel Analysis Tab */}
         {activeTab === 'fuel' && (
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <div className="bg-white rounded-xl shadow-lg p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">
               Comprehensive Fuel Analysis
             </h2>
