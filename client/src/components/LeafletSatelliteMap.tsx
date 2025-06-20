@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -221,26 +221,104 @@ function CoordinateDisplay() {
   );
 }
 
-// Professional Weather Controls Component
-function WeatherControls() {
-  const [showWeatherPanel, setShowWeatherPanel] = useState(false);
-  const [weatherLayers, setWeatherLayers] = useState({
-    clouds: false,
-    precipitation: false,
-    wind: false,
-    pressure: false,
-    temperature: false,
-    turbulence: false
-  });
-  const [weatherOpacity, setWeatherOpacity] = useState(0.6);
+// Weather Layer Manager Component
+function WeatherLayerManager({ weatherLayers, weatherOpacity }: { 
+  weatherLayers: any; 
+  weatherOpacity: number; 
+}) {
+  const map = useMap();
+  const weatherTileLayersRef = useRef<{ [key: string]: L.TileLayer }>({});
 
+  useEffect(() => {
+    // Using RainViewer for precipitation data (free API)
+    // And Windy.com tiles for other weather data
+    const weatherLayerConfigs = {
+      clouds: {
+        url: 'https://maps.windy.com/overlay/clouds/{z}/{x}/{y}.png',
+        attribution: '© Windy.com'
+      },
+      precipitation: {
+        url: 'https://tilecache.rainviewer.com/v2/radar/0/{z}/{x}/{y}/2/1_1.png',
+        attribution: '© RainViewer'
+      },
+      wind: {
+        url: 'https://maps.windy.com/overlay/wind/{z}/{x}/{y}.png',
+        attribution: '© Windy.com'
+      },
+      temperature: {
+        url: 'https://maps.windy.com/overlay/temp/{z}/{x}/{y}.png',
+        attribution: '© Windy.com'
+      },
+      pressure: {
+        url: 'https://maps.windy.com/overlay/pressure/{z}/{x}/{y}.png',
+        attribution: '© Windy.com'
+      }
+    };
+
+    // Manage weather layers based on state
+    Object.keys(weatherLayers).forEach(layerKey => {
+      const isLayerActive = weatherLayers[layerKey];
+      const layerConfig = weatherLayerConfigs[layerKey as keyof typeof weatherLayerConfigs];
+      
+      if (isLayerActive && layerConfig) {
+        // Add layer if not already added
+        if (!weatherTileLayersRef.current[layerKey]) {
+          const tileLayer = L.tileLayer(layerConfig.url, {
+            attribution: layerConfig.attribution,
+            opacity: weatherOpacity,
+            zIndex: 1000
+          });
+          
+          weatherTileLayersRef.current[layerKey] = tileLayer;
+          tileLayer.addTo(map);
+        } else {
+          // Update opacity
+          weatherTileLayersRef.current[layerKey].setOpacity(weatherOpacity);
+        }
+      } else if (weatherTileLayersRef.current[layerKey]) {
+        // Remove layer if it exists but shouldn't be active
+        map.removeLayer(weatherTileLayersRef.current[layerKey]);
+        delete weatherTileLayersRef.current[layerKey];
+      }
+    });
+
+    // Cleanup function
+    return () => {
+      Object.values(weatherTileLayersRef.current).forEach(layer => {
+        if (map.hasLayer(layer)) {
+          map.removeLayer(layer);
+        }
+      });
+      weatherTileLayersRef.current = {};
+    };
+  }, [weatherLayers, weatherOpacity, map]);
+
+  return null;
+}
+
+// Professional Weather Controls Component
+function WeatherControlsPanel({ 
+  showWeatherPanel, 
+  setShowWeatherPanel, 
+  weatherLayers, 
+  setWeatherLayers, 
+  weatherOpacity, 
+  setWeatherOpacity 
+}: {
+  showWeatherPanel: boolean;
+  setShowWeatherPanel: (show: boolean) => void;
+  weatherLayers: any;
+  setWeatherLayers: (layers: any) => void;
+  weatherOpacity: number;
+  setWeatherOpacity: (opacity: number) => void;
+}) {
   const weatherLayerData = {
     clouds: { icon: '☁️', label: 'Clouds' },
     precipitation: { icon: '🌧️', label: 'Precipitation' },
     wind: { icon: '💨', label: 'Wind Speed' },
     pressure: { icon: '📊', label: 'Pressure' },
     temperature: { icon: '🌡️', label: 'Temperature' },
-    turbulence: { icon: '⚡', label: 'Turbulence' }
+    turbulence: { icon: '⚡', label: 'Turbulence (Simulated)' }
   };
 
   return (
@@ -292,7 +370,7 @@ function WeatherControls() {
                   type="checkbox"
                   checked={weatherLayers[key as keyof typeof weatherLayers]}
                   onChange={(e) => {
-                    setWeatherLayers(prev => ({
+                    setWeatherLayers((prev: any) => ({
                       ...prev,
                       [key]: e.target.checked
                     }));
@@ -335,6 +413,18 @@ export default function LeafletSatelliteMap() {
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [showAirports, setShowAirports] = useState(true);
   const [showFlights, setShowFlights] = useState(true);
+  
+  // Weather controls state
+  const [showWeatherPanel, setShowWeatherPanel] = useState(false);
+  const [weatherLayers, setWeatherLayers] = useState({
+    clouds: false,
+    precipitation: false,
+    wind: false,
+    pressure: false,
+    temperature: false,
+    turbulence: false
+  });
+  const [weatherOpacity, setWeatherOpacity] = useState(0.6);
 
   // Load airports
   useEffect(() => {
@@ -545,12 +635,45 @@ export default function LeafletSatelliteMap() {
           </Marker>
         ))}
 
+        {/* Weather Layer Manager */}
+        <WeatherLayerManager weatherLayers={weatherLayers} weatherOpacity={weatherOpacity} />
+
         {/* Coordinate Display */}
         <CoordinateDisplay />
       </MapContainer>
 
       {/* Professional Weather Controls */}
-      <WeatherControls />
+      <WeatherControlsPanel 
+        showWeatherPanel={showWeatherPanel}
+        setShowWeatherPanel={setShowWeatherPanel}
+        weatherLayers={weatherLayers}
+        setWeatherLayers={setWeatherLayers}
+        weatherOpacity={weatherOpacity}
+        setWeatherOpacity={setWeatherOpacity}
+      />
     </div>
   );
+}
+
+// Weather Controls Hook for sharing state
+function useWeatherControls() {
+  const [showWeatherPanel, setShowWeatherPanel] = useState(false);
+  const [weatherLayers, setWeatherLayers] = useState({
+    clouds: false,
+    precipitation: false,
+    wind: false,
+    pressure: false,
+    temperature: false,
+    turbulence: false
+  });
+  const [weatherOpacity, setWeatherOpacity] = useState(0.6);
+
+  return {
+    showWeatherPanel,
+    setShowWeatherPanel,
+    weatherLayers,
+    setWeatherLayers,
+    weatherOpacity,
+    setWeatherOpacity
+  };
 }
