@@ -12,6 +12,7 @@ import { aviationApiService } from "./aviationApiService";
 import { newsApiService } from "./newsApiService_simplified";
 import { enhancedNewsMonitor } from "./enhancedNewsMonitor";
 import { diversionSupport } from "./diversionSupport";
+import { sustainableFuelService } from "./sustainableFuelService";
 import { weatherApiService } from "./weatherApiService";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
@@ -1686,6 +1687,60 @@ print(json.dumps(weather))
     } catch (error) {
       console.error('Aviation weather API error:', error);
       res.status(500).json({ success: false, error: 'Aviation weather service unavailable' });
+    }
+  });
+
+  // Sustainable Aviation Fuel endpoints
+  app.get('/api/fuel/sustainable/:airportCode', async (req, res) => {
+    try {
+      const { airportCode } = req.params;
+      const analysis = await sustainableFuelService.getComprehensiveFuelAnalysis(airportCode);
+      
+      res.json({
+        success: true,
+        airportCode,
+        fuelAnalysis: analysis,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Sustainable fuel analysis failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to analyze sustainable fuel availability',
+        airportCode: req.params.airportCode,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/fuel/saf-stations/:lat/:lon', async (req, res) => {
+    try {
+      const lat = parseFloat(req.params.lat);
+      const lon = parseFloat(req.params.lon);
+      const radius = req.query.radius ? parseInt(req.query.radius as string) : 50;
+      
+      if (isNaN(lat) || isNaN(lon)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid coordinates provided'
+        });
+      }
+      
+      const safData = await sustainableFuelService.getSAFStationsNearAirport(lat, lon, radius);
+      
+      res.json({
+        success: true,
+        location: { latitude: lat, longitude: lon, radius },
+        safData,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('SAF stations lookup failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to find SAF stations',
+        timestamp: new Date().toISOString()
+      });
     }
   });
 
