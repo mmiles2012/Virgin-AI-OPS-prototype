@@ -16,7 +16,7 @@ import LiveFlightTracker from "./components/LiveFlightTracker";
 import SimpleFlightMap from "./components/SimpleFlightMap";
 import SatelliteWorldMap from "./components/SatelliteWorldMap";
 import EnhancedSatelliteMap from "./components/EnhancedSatelliteMap";
-import SimpleSatelliteMap from "./components/SimpleSatelliteMap";
+import LeafletSatelliteMap from "./components/LeafletSatelliteMap";
 import AirportWeatherMap from "./components/AirportWeatherMap";
 import SafeAirspaceAlerts from "./components/SafeAirspaceAlerts";
 import RealTimeOperationsCenter from "./components/RealTimeOperationsCenter";
@@ -314,7 +314,7 @@ function App() {
             {/* Full-Screen Enhanced Satellite Map - Overview Mode */}
             {viewMode === 'overview' && (
               <div className="absolute inset-0 pointer-events-auto">
-                <SimpleSatelliteMap />
+                <LeafletSatelliteMap />
               </div>
             )}
 
