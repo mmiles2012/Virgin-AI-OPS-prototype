@@ -2,12 +2,47 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Plane, Info, X } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 
-// Custom CSS for dark theme Leaflet popups and professional controls
+// Import types and data
+interface Airport {
+  icao: string;
+  iata: string;
+  name: string;
+  city: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+  elevation: number;
+  timezone: string;
+  runways: string[];
+  category: 'major' | 'international' | 'regional';
+}
+
+interface FlightPosition {
+  callsign: string;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  velocity: number;
+  heading: number;
+  aircraft: string;
+  origin?: string;
+  destination?: string;
+}
+
+interface AviationWeatherData {
+  icao: string;
+  metar: {
+    raw: string;
+  };
+  taf: {
+    raw: string;
+  };
+}
+
+// Leaflet styles for dark theme
 const leafletStyles = `
   .leaflet-popup-content-wrapper {
     background: #2c2c2c !important;
@@ -43,27 +78,6 @@ const leafletStyles = `
     backdrop-filter: blur(10px) !important;
   }
   
-  .leaflet-control-layers-toggle {
-    background-color: rgba(42, 42, 42, 0.95) !important;
-    border: 1px solid #555 !important;
-    border-radius: 8px !important;
-    color: #fff !important;
-  }
-  
-  .leaflet-control-layers {
-    background: rgba(42, 42, 42, 0.95) !important;
-    border: 1px solid #555 !important;
-    border-radius: 8px !important;
-    color: #fff !important;
-    backdrop-filter: blur(10px) !important;
-  }
-  
-  .leaflet-control-layers-expanded {
-    background: rgba(42, 42, 42, 0.95) !important;
-    border: 1px solid #555 !important;
-    color: #fff !important;
-  }
-  
   .leaflet-control-zoom a {
     background-color: rgba(42, 42, 42, 0.95) !important;
     border: 1px solid #555 !important;
@@ -92,73 +106,6 @@ if (typeof document !== 'undefined') {
   const styleElement = document.createElement('style');
   styleElement.textContent = leafletStyles;
   document.head.appendChild(styleElement);
-}
-
-// Fix leaflet default markers
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjUiIGhlaWdodD0iNDEiIHZpZXdCb3g9IjAgMCAyNSA0MSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjUgMEMxOS40MDM2IDAgMjUgNS41OTY0NCAyNSAxMi41QzI1IDE5LjQwMzYgMTkuNDAzNiAyNSAxMi41IDI1QzUuNTk2NDQgMjUgMCAxOS40MDM2IDAgMTIuNUMwIDUuNTk2NDQgNS41OTY0NCAwIDEyLjUgMFoiIGZpbGw9IiMzMTY2ZjAiLz4KPHBhdGggZD0iTTEyLjUgMTZDMTQuNDMzMSAxNiAxNiAxNC40MzMxIDE2IDEyLjVDMTYgMTAuNTY2OSAxNC40MzMxIDkgMTIuNSA5QzEwLjU2NjkgOSA5IDEwLjU2NjkgOSAxMi41QzkgMTQuNDMzMSAxMC41NjY5IDE2IDEyLjUgMTZaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K',
-  iconUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjUiIGhlaWdodD0iNDEiIHZpZXdCb3g9IjAgMCAyNSA0MSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyLjUgMEMxOS40MDM2IDAgMjUgNS41OTY0NCAyNSAxMi41QzI1IDE5LjQwMzYgMTkuNDAzNiAyNSAxMi41IDI1QzUuNTk2NDQgMjUgMCAxOS40MDM2IDAgMTIuNUMwIDUuNTk2NDQgNS41OTY0NCAwIDEyLjUgMFoiIGZpbGw9IiMzMTY2ZjAiLz4KPHBhdGggZD0iTTEyLjUgMTZDMTQuNDMzMSAxNiAxNiAxNC40MzMxIDE2IDEyLjVDMTYgMTAuNTY2OSAxNC40MzMxIDkgMTIuNSA5QzEwLjU2NjkgOSA5IDEwLjU2NjkgOSAxMi41QzkgMTQuNDMzMSAxMC41NjY5IDE2IDEyLjUgMTZaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K',
-  shadowUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDEiIGhlaWdodD0iNDEiIHZpZXdCb3g9IjAgMCA0MSA0MSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGVsbGlwc2UgY3g9IjIwLjUiIGN5PSIzNy41IiByeD0iMjAuNSIgcnk9IjMuNSIgZmlsbD0iYmxhY2siIGZpbGwtb3BhY2l0eT0iMC4zIi8+Cjwvc3ZnPgo=',
-});
-
-interface Airport {
-  icao: string;
-  iata: string;
-  name: string;
-  city: string;
-  country: string;
-  latitude: number;
-  longitude: number;
-  elevation: number;
-  timezone: string;
-  runways: string[];
-  category: 'major' | 'international' | 'regional';
-}
-
-interface FlightPosition {
-  callsign: string;
-  latitude: number;
-  longitude: number;
-  altitude: number;
-  velocity: number;
-  heading: number;
-  aircraft: string;
-  origin?: string;
-  destination?: string;
-}
-
-interface AviationWeatherData {
-  icao: string;
-  metar: {
-    raw: string;
-    parsed: {
-      temperature: number;
-      dewpoint: number;
-      windSpeed: number;
-      windDirection: number;
-      visibility: number;
-      altimeter: number;
-      conditions: string;
-      clouds: string[];
-      timestamp: string;
-    };
-  };
-  taf: {
-    raw: string;
-    parsed: {
-      validFrom: string;
-      validTo: string;
-      forecast: Array<{
-        time: string;
-        windSpeed: number;
-        windDirection: number;
-        visibility: number;
-        conditions: string;
-        clouds: string[];
-      }>;
-    };
-  };
 }
 
 // Custom airport icon
@@ -200,10 +147,9 @@ const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
   iconAnchor: [8, 8],
 });
 
-// Custom map event handler for coordinate display
+// Coordinate display component
 function CoordinateDisplay() {
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
-  const map = useMap();
 
   useMapEvents({
     mousemove: (e) => {
@@ -427,7 +373,7 @@ function WeatherControlsPanel({
   );
 }
 
-export default function LeafletSatelliteMap() {
+export default function ProfessionalSatelliteMap() {
   const [airports, setAirports] = useState<Airport[]>([]);
   const [flightData, setFlightData] = useState<FlightPosition[]>([]);
   const [selectedAirport, setSelectedAirport] = useState<Airport | null>(null);
@@ -435,6 +381,7 @@ export default function LeafletSatelliteMap() {
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [showAirports, setShowAirports] = useState(true);
   const [showFlights, setShowFlights] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   
   // Weather controls state
   const [showWeatherPanel, setShowWeatherPanel] = useState(false);
@@ -447,7 +394,6 @@ export default function LeafletSatelliteMap() {
     turbulence: false
   });
   const [weatherOpacity, setWeatherOpacity] = useState(0.6);
-  const [searchTerm, setSearchTerm] = useState('');
 
   // Filter airports based on search term
   const filteredAirports = airports.filter(airport =>
@@ -494,7 +440,6 @@ export default function LeafletSatelliteMap() {
     return () => clearInterval(interval);
   }, []);
 
-  // Handle airport click for weather data
   const handleAirportClick = async (airport: Airport) => {
     setSelectedAirport(airport);
     setWeatherLoading(true);
@@ -514,198 +459,179 @@ export default function LeafletSatelliteMap() {
   };
 
   return (
-    <div className="relative w-full h-full">
-      {/* Control Panel */}
-      <div className="absolute top-4 left-4 z-[1000] space-y-4">
-        <Card className="w-80 bg-black/80 backdrop-blur-sm border-gray-600">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-white flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
-              Satellite Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <h4 className="text-white text-sm font-medium">Display Layers</h4>
-              
-              <div className="flex items-center justify-between">
-                <label className="text-white text-sm flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  Major Airports
-                </label>
-                <Switch 
-                  checked={showAirports} 
-                  onCheckedChange={setShowAirports}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <label className="text-white text-sm flex items-center gap-2">
-                  <Plane className="h-4 w-4" />
-                  Flight Paths
-                </label>
-                <Switch 
-                  checked={showFlights} 
-                  onCheckedChange={setShowFlights}
-                />
-              </div>
+    <div className="flex w-full h-full bg-gray-900">
+      {/* Professional Airport Sidebar */}
+      <div className="w-80 bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-600 p-5 overflow-y-auto shadow-2xl">
+        <h1 className="text-green-400 text-2xl font-light mb-5">Airport Navigator</h1>
+        
+        {/* Search Container */}
+        <div className="mb-5">
+          <input
+            type="text"
+            placeholder="Search airports..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-3 bg-white/10 border border-gray-600 rounded-lg text-white text-sm placeholder-gray-400 focus:outline-none focus:border-green-400 focus:shadow-lg transition-all duration-300"
+          />
+        </div>
+        
+        {/* Airport List */}
+        <div className="space-y-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
+          {filteredAirports.map((airport) => (
+            <div
+              key={airport.icao}
+              onClick={() => handleAirportClick(airport)}
+              className={`p-3 rounded-lg border cursor-pointer transition-all duration-300 hover:transform hover:translate-x-1 ${
+                selectedAirport?.icao === airport.icao
+                  ? 'bg-white/20 border-green-400'
+                  : 'bg-white/5 border-gray-600 hover:bg-white/10 hover:border-green-400'
+              }`}
+            >
+              <div className="font-bold text-green-400 text-base">{airport.icao}</div>
+              <div className="text-gray-300 text-sm mt-1">{airport.name}</div>
+              <div className="text-gray-500 text-xs mt-1">{airport.city}, {airport.country}</div>
             </div>
-          </CardContent>
-        </Card>
+          ))}
+        </div>
+
+        {/* Selected Airport Details */}
+        {selectedAirport && (
+          <div className="mt-5 p-4 bg-black/40 rounded-lg border border-gray-600">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-white font-semibold">{selectedAirport.icao}</h3>
+              <button
+                onClick={() => {
+                  setSelectedAirport(null);
+                  setAviationWeather(null);
+                }}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2 text-xs text-gray-300 mb-3">
+              <div>Elevation: {selectedAirport.elevation} ft</div>
+              <div>Runways: {selectedAirport.runways.length}</div>
+            </div>
+
+            {weatherLoading && (
+              <div className="flex items-center gap-2 text-blue-400 text-sm">
+                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-400"></div>
+                Loading weather...
+              </div>
+            )}
+
+            {aviationWeather && (
+              <div className="space-y-2">
+                <div>
+                  <h4 className="text-white font-medium text-sm mb-1">METAR</h4>
+                  <div className="bg-gray-900/50 p-2 rounded text-xs font-mono text-gray-300 max-h-16 overflow-y-auto">
+                    {aviationWeather.metar.raw || 'No METAR data'}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Layer Controls */}
+        <div className="mt-5 p-4 bg-black/20 rounded-lg border border-gray-700">
+          <h4 className="text-white text-sm font-medium mb-3">Display Layers</h4>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-300 text-sm">Airports</span>
+              <Switch checked={showAirports} onCheckedChange={setShowAirports} />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-300 text-sm">Flights</span>
+              <Switch checked={showFlights} onCheckedChange={setShowFlights} />
+            </div>
+          </div>
+          
+          <div className="mt-3 pt-3 border-t border-gray-600 text-center">
+            <div className="text-gray-400 text-xs">
+              {airports.length} airports • {flightData.length} flights
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Weather Panel */}
-      {selectedAirport && (
-        <div className="absolute bottom-4 right-4 z-[1000] w-96">
-          <Card className="bg-black/90 backdrop-blur-sm border-gray-600">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-white flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
-                  {selectedAirport.name} ({selectedAirport.icao})
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedAirport(null);
-                    setAviationWeather(null);
-                  }}
-                  className="text-white hover:bg-gray-700"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-2 text-sm text-gray-300">
-                <div>City: {selectedAirport.city}</div>
-                <div>Country: {selectedAirport.country}</div>
-                <div>Elevation: {selectedAirport.elevation} ft</div>
-                <div>Runways: {selectedAirport.runways.join(', ')}</div>
-              </div>
+      {/* Map Container */}
+      <div className="flex-1 relative">
+        <MapContainer
+          center={[40, 0]}
+          zoom={3}
+          style={{ height: '100%', width: '100%' }}
+          zoomControl={true}
+          scrollWheelZoom={true}
+          attributionControl={false}
+        >
+          {/* Esri Satellite Imagery */}
+          <TileLayer
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            attribution="© Esri"
+            maxZoom={18}
+          />
 
-              {weatherLoading && (
-                <div className="flex items-center gap-2 text-blue-400">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
-                  Loading aviation weather data...
-                </div>
-              )}
-
-              {aviationWeather && (
-                <div className="space-y-3">
-                  <div>
-                    <h4 className="text-white font-medium mb-2">METAR</h4>
-                    <div className="bg-gray-900/50 p-2 rounded text-xs font-mono text-gray-300">
-                      {aviationWeather.metar.raw || 'No METAR data available'}
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="text-white font-medium mb-2">TAF</h4>
-                    <div className="bg-gray-900/50 p-2 rounded text-xs font-mono text-gray-300">
-                      {aviationWeather.taf.raw || 'No TAF data available'}
-                    </div>
+          {/* Airport markers */}
+          {showAirports && airports.map((airport) => (
+            <Marker
+              key={airport.icao}
+              position={[airport.latitude, airport.longitude]}
+              icon={createAirportIcon(selectedAirport?.icao === airport.icao)}
+              eventHandlers={{
+                click: () => handleAirportClick(airport),
+              }}
+            >
+              <Popup>
+                <div className="text-center p-2">
+                  <h3 className="text-green-500 font-bold text-lg mb-2">{airport.icao}</h3>
+                  <div className="text-white text-sm mb-1">{airport.name}</div>
+                  <div className="text-gray-400 text-xs">{airport.city}, {airport.country}</div>
+                  <div className="text-gray-500 text-xs mt-2">
+                    {airport.latitude.toFixed(4)}, {airport.longitude.toFixed(4)}
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      )}
+              </Popup>
+            </Marker>
+          ))}
 
-      {/* Map */}
-      <MapContainer
-        center={[40, 0]}
-        zoom={3}
-        style={{ height: '100%', width: '100%' }}
-        zoomControl={true}
-        scrollWheelZoom={true}
-      >
-        <TileLayer
-          attribution='© Esri, Maxar, Earthstar Geographics'
-          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-          maxZoom={18}
+          {/* Flight markers */}
+          {showFlights && flightData.map((flight, index) => (
+            <Marker
+              key={`${flight.callsign}-${index}`}
+              position={[flight.latitude, flight.longitude]}
+              icon={createFlightIcon(flight.heading, false)}
+            >
+              <Popup>
+                <div className="text-sm">
+                  <div className="font-medium">{flight.callsign}</div>
+                  <div className="text-gray-600">{flight.aircraft}</div>
+                  <div className="text-gray-600">{flight.altitude}ft - {flight.velocity}kts</div>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+
+          {/* Weather Layer Manager */}
+          <WeatherLayerManager weatherLayers={weatherLayers} weatherOpacity={weatherOpacity} />
+
+          {/* Coordinate Display */}
+          <CoordinateDisplay />
+        </MapContainer>
+
+        {/* Professional Weather Controls */}
+        <WeatherControlsPanel 
+          showWeatherPanel={showWeatherPanel}
+          setShowWeatherPanel={setShowWeatherPanel}
+          weatherLayers={weatherLayers}
+          setWeatherLayers={setWeatherLayers}
+          weatherOpacity={weatherOpacity}
+          setWeatherOpacity={setWeatherOpacity}
         />
-
-        {/* Airport Markers */}
-        {showAirports && airports.map((airport) => (
-          <Marker
-            key={airport.icao}
-            position={[airport.latitude, airport.longitude]}
-            icon={createAirportIcon(selectedAirport?.icao === airport.icao)}
-            eventHandlers={{
-              click: () => handleAirportClick(airport),
-            }}
-          >
-            <Popup>
-              <div className="text-center p-2">
-                <h3 className="text-green-500 font-bold text-lg mb-2">{airport.icao}</h3>
-                <div className="text-white text-sm mb-1">{airport.name}</div>
-                <div className="text-gray-400 text-xs">{airport.city}, {airport.country}</div>
-                <div className="text-gray-500 text-xs mt-2">
-                  {airport.latitude.toFixed(4)}, {airport.longitude.toFixed(4)}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-
-        {/* Flight Markers */}
-        {showFlights && flightData.map((flight) => (
-          <Marker
-            key={flight.callsign}
-            position={[flight.latitude, flight.longitude]}
-            icon={createFlightIcon(flight.heading, false)}
-          >
-            <Popup>
-              <div className="text-sm">
-                <div className="font-medium">{flight.callsign}</div>
-                <div className="text-gray-600">{flight.aircraft}</div>
-                <div className="text-gray-600">{flight.altitude}ft - {flight.velocity}kts</div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-
-        {/* Weather Layer Manager */}
-        <WeatherLayerManager weatherLayers={weatherLayers} weatherOpacity={weatherOpacity} />
-
-        {/* Coordinate Display */}
-        <CoordinateDisplay />
-      </MapContainer>
-
-      {/* Professional Weather Controls */}
-      <WeatherControlsPanel 
-        showWeatherPanel={showWeatherPanel}
-        setShowWeatherPanel={setShowWeatherPanel}
-        weatherLayers={weatherLayers}
-        setWeatherLayers={setWeatherLayers}
-        weatherOpacity={weatherOpacity}
-        setWeatherOpacity={setWeatherOpacity}
-      />
+      </div>
     </div>
   );
-}
-
-// Weather Controls Hook for sharing state
-function useWeatherControls() {
-  const [showWeatherPanel, setShowWeatherPanel] = useState(false);
-  const [weatherLayers, setWeatherLayers] = useState({
-    clouds: false,
-    precipitation: false,
-    wind: false,
-    pressure: false,
-    temperature: false,
-    turbulence: false
-  });
-  const [weatherOpacity, setWeatherOpacity] = useState(0.6);
-
-  return {
-    showWeatherPanel,
-    setShowWeatherPanel,
-    weatherLayers,
-    setWeatherLayers,
-    weatherOpacity,
-    setWeatherOpacity
-  };
 }
