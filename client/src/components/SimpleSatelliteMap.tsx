@@ -186,7 +186,7 @@ export default function SimpleSatelliteMap() {
     setWeatherData(prev => ({ ...prev, ...newWeatherData }));
   }, [mapCenter, zoomLevel, showWeatherLayer, weatherData, fetchWeatherData]);
 
-  // Direct geographic coordinate mapping based on Mapbox static image coverage
+  // Exact Mapbox Static API coordinate transformation
   const latLonToPixel = useCallback((lat: number, lon: number) => {
     if (!mapContainerRef.current) return { x: 0, y: 0 };
     
@@ -194,37 +194,42 @@ export default function SimpleSatelliteMap() {
     const width = containerRect.width;
     const height = containerRect.height;
     
-    // Calculate the geographic bounds covered by the static image
-    // Based on Mapbox static API documentation and zoom level calculations
-    const earthCircumference = 40075017; // meters at equator
-    const metersPerPixel = earthCircumference * Math.cos(mapCenter.lat * Math.PI / 180) / Math.pow(2, zoomLevel + 8);
+    // Mapbox uses exact Web Mercator projection
+    // Convert lat/lon to Web Mercator tile coordinates
+    const mercatorLat = lat * Math.PI / 180;
+    const mercatorLon = lon * Math.PI / 180;
+    const centerMercatorLat = mapCenter.lat * Math.PI / 180;
+    const centerMercatorLon = mapCenter.lon * Math.PI / 180;
     
-    // Image dimensions in meters
-    const imageWidthMeters = 1200 * metersPerPixel;
-    const imageHeightMeters = 800 * metersPerPixel;
+    // Web Mercator Y calculation (accounts for latitude distortion)
+    const mercatorY = Math.log(Math.tan(Math.PI / 4 + mercatorLat / 2));
+    const centerMercatorY = Math.log(Math.tan(Math.PI / 4 + centerMercatorLat / 2));
     
-    // Convert meters to degrees (approximate)
-    const metersPerDegreeLon = 111320 * Math.cos(mapCenter.lat * Math.PI / 180);
-    const metersPerDegreeLat = 110540;
+    // Scale factor at this zoom level
+    const scale = Math.pow(2, zoomLevel);
     
-    const imageWidthDegrees = imageWidthMeters / metersPerDegreeLon;
-    const imageHeightDegrees = imageHeightMeters / metersPerDegreeLat;
+    // Convert to tile units (256px per tile)
+    const tileX = (mercatorLon + Math.PI) / (2 * Math.PI) * scale;
+    const tileY = (Math.PI - mercatorY) / (2 * Math.PI) * scale;
+    const centerTileX = (centerMercatorLon + Math.PI) / (2 * Math.PI) * scale;
+    const centerTileY = (Math.PI - centerMercatorY) / (2 * Math.PI) * scale;
     
-    // Calculate bounds
-    const westBound = mapCenter.lon - imageWidthDegrees / 2;
-    const eastBound = mapCenter.lon + imageWidthDegrees / 2;
-    const northBound = mapCenter.lat + imageHeightDegrees / 2;
-    const southBound = mapCenter.lat - imageHeightDegrees / 2;
+    // Calculate offset in tile units
+    const offsetTileX = tileX - centerTileX;
+    const offsetTileY = tileY - centerTileY;
     
-    // Calculate pixel position
-    const xRatio = (lon - westBound) / (eastBound - westBound);
-    const yRatio = (northBound - lat) / (northBound - southBound);
+    // Convert tile offset to pixels (1200x800 image = 4.69 x 3.125 tiles)
+    const pixelOffsetX = offsetTileX * 256;
+    const pixelOffsetY = offsetTileY * 256;
     
-    // Convert to screen coordinates
-    const x = xRatio * width + dragOffset.x;
-    const y = yRatio * height + dragOffset.y;
+    // Scale to fit the actual screen/container size
+    const screenX = (width / 2) + (pixelOffsetX * width / 1200);
+    const screenY = (height / 2) + (pixelOffsetY * height / 800);
     
-    return { x, y };
+    return { 
+      x: screenX + dragOffset.x, 
+      y: screenY + dragOffset.y 
+    };
   }, [mapCenter, zoomLevel, dragOffset]);
 
   // Navigation functions
@@ -565,6 +570,15 @@ export default function SimpleSatelliteMap() {
         {/* Airport Markers */}
         {showAirports && airports.map((airport) => {
           const pixel = latLonToPixel(airport.latitude, airport.longitude);
+          
+          // Debug output for Heathrow specifically
+          if (airport.icao === 'EGLL') {
+            console.log(`EGLL Debug: lat=${airport.latitude}, lon=${airport.longitude}`);
+            console.log(`Map center: lat=${mapCenter.lat}, lon=${mapCenter.lon}, zoom=${zoomLevel}`);
+            console.log(`Calculated pixel: x=${pixel.x}, y=${pixel.y}`);
+            console.log(`Container dimensions: ${mapContainerRef.current?.clientWidth}x${mapContainerRef.current?.clientHeight}`);
+          }
+          
           const isVisible = pixel.x >= -50 && pixel.x <= (mapContainerRef.current?.clientWidth || 0) + 50 &&
                           pixel.y >= -50 && pixel.y <= (mapContainerRef.current?.clientHeight || 0) + 50;
 
