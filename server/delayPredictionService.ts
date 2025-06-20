@@ -61,6 +61,8 @@ interface DelayPrediction {
     lateAircraftRisk: number;
   };
   recommendations: string[];
+  riskExplanations?: any;
+  operationalGuidance?: any;
 }
 
 interface HoldingPatternAnalysis {
@@ -212,7 +214,14 @@ export class DelayPredictionService {
         carrierRisk: Math.round(carrierRisk * 100) / 100,
         lateAircraftRisk: 0.3 // Average based on historical data
       },
-      recommendations
+      recommendations,
+      riskExplanations: this.generateRiskExplanations({
+        seasonalRisk,
+        weatherRisk,
+        trafficRisk,
+        carrierRisk
+      }),
+      operationalGuidance: this.generateOperationalGuidance(delayProbability, expectedDelayMinutes, holdingProbability)
     };
   }
 
@@ -376,6 +385,285 @@ export class DelayPredictionService {
     }
 
     return alternates;
+  }
+
+  /**
+   * Generate detailed risk explanations for each factor
+   */
+  private generateRiskExplanations(factors: any): any {
+    return {
+      seasonalRisk: {
+        level: this.getRiskLevel(factors.seasonalRisk),
+        explanation: this.getSeasonalExplanation(factors.seasonalRisk),
+        mitigationSteps: this.getSeasonalMitigation(factors.seasonalRisk)
+      },
+      weatherRisk: {
+        level: this.getRiskLevel(factors.weatherRisk),
+        explanation: this.getWeatherExplanation(factors.weatherRisk),
+        mitigationSteps: this.getWeatherMitigation(factors.weatherRisk)
+      },
+      trafficRisk: {
+        level: this.getRiskLevel(factors.trafficRisk),
+        explanation: this.getTrafficExplanation(factors.trafficRisk),
+        mitigationSteps: this.getTrafficMitigation(factors.trafficRisk)
+      },
+      carrierRisk: {
+        level: this.getRiskLevel(factors.carrierRisk),
+        explanation: this.getCarrierExplanation(factors.carrierRisk),
+        mitigationSteps: this.getCarrierMitigation(factors.carrierRisk)
+      }
+    };
+  }
+
+  /**
+   * Generate operational guidance based on prediction results
+   */
+  private generateOperationalGuidance(delayProbability: number, expectedDelayMinutes: number, holdingProbability: number): any {
+    return {
+      flightPlanning: this.getFlightPlanningGuidance(delayProbability, expectedDelayMinutes),
+      fuelStrategy: this.getFuelStrategyGuidance(holdingProbability, expectedDelayMinutes),
+      passengerCommunication: this.getPassengerCommGuidance(delayProbability, expectedDelayMinutes),
+      crewConsiderations: this.getCrewGuidance(delayProbability, expectedDelayMinutes),
+      alternateOptions: this.getAlternateOptionsGuidance(delayProbability, holdingProbability)
+    };
+  }
+
+  private getRiskLevel(value: number): string {
+    if (value > 0.7) return 'HIGH';
+    if (value > 0.4) return 'MEDIUM';
+    return 'LOW';
+  }
+
+  private getSeasonalExplanation(risk: number): string {
+    if (risk > 0.7) {
+      return "Peak delay season with historical patterns showing 30%+ higher delay rates. Weather systems, holiday travel, and airport congestion typically combine during this period.";
+    } else if (risk > 0.4) {
+      return "Moderate seasonal impact with 15-30% increase in typical delay rates. Some weather or traffic pattern influence expected but manageable.";
+    }
+    return "Low seasonal risk period with historical delay rates near baseline. Weather patterns and traffic volumes typically favorable for on-time operations.";
+  }
+
+  private getSeasonalMitigation(risk: number): string[] {
+    if (risk > 0.7) {
+      return [
+        "Plan departure 15-20 minutes earlier than normal",
+        "Monitor weather forecasts 24-48 hours in advance",
+        "Coordinate with operations for priority handling",
+        "Brief passengers about potential seasonal delays"
+      ];
+    } else if (risk > 0.4) {
+      return [
+        "Plan departure 10-15 minutes earlier",
+        "Monitor real-time weather conditions",
+        "Have contingency plans ready"
+      ];
+    }
+    return ["Proceed with standard departure planning", "Normal weather monitoring sufficient"];
+  }
+
+  private getWeatherExplanation(risk: number): string {
+    if (risk > 0.7) {
+      return "Significant weather impact expected. Historical data shows severe weather systems causing 45+ minute average delays with high holding pattern likelihood.";
+    } else if (risk > 0.4) {
+      return "Moderate weather influence possible. Conditions may cause 15-30 minute delays with some holding patterns expected.";
+    }
+    return "Minimal weather impact anticipated. Current conditions and forecasts show favorable flying weather with minimal delay risk.";
+  }
+
+  private getWeatherMitigation(risk: number): string[] {
+    if (risk > 0.7) {
+      return [
+        "Load additional holding fuel (minimum 1 hour extra)",
+        "File alternate airport plans",
+        "Monitor real-time weather radar",
+        "Coordinate with dispatch for route alternatives",
+        "Brief crew on potential turbulence and delays"
+      ];
+    } else if (risk > 0.4) {
+      return [
+        "Load moderate additional fuel (30 minutes extra)",
+        "Monitor weather updates hourly",
+        "Review alternate airport options"
+      ];
+    }
+    return ["Standard fuel planning sufficient", "Normal weather monitoring"];
+  }
+
+  private getTrafficExplanation(risk: number): string {
+    if (risk > 0.7) {
+      return "High airport congestion expected. Air traffic control delays, ground stops, and extended taxi times likely due to volume or operational constraints.";
+    } else if (risk > 0.4) {
+      return "Moderate traffic density anticipated. Some ATC delays possible with potentially longer taxi times than normal.";
+    }
+    return "Normal traffic levels expected. Standard ATC handling with minimal ground delays anticipated.";
+  }
+
+  private getTrafficMitigation(risk: number): string[] {
+    if (risk > 0.7) {
+      return [
+        "Request early taxi clearance",
+        "Monitor ground stop procedures",
+        "Coordinate with ramp for efficient pushback",
+        "Consider alternate departure times if flexible"
+      ];
+    } else if (risk > 0.4) {
+      return [
+        "Monitor ATC delays",
+        "Plan for slightly extended taxi time",
+        "Communicate with operations"
+      ];
+    }
+    return ["Standard taxi and departure procedures", "Normal ATC coordination"];
+  }
+
+  private getCarrierExplanation(risk: number): string {
+    if (risk > 0.7) {
+      return "Significant carrier operational challenges detected. Aircraft positioning, crew scheduling, or maintenance issues contributing to higher delay probability.";
+    } else if (risk > 0.4) {
+      return "Some carrier operational factors present. Minor scheduling or operational constraints may cause delays but within manageable limits.";
+    }
+    return "Optimal carrier operations. Aircraft, crew, and scheduling factors all favorable for on-time departure and arrival.";
+  }
+
+  private getCarrierMitigation(risk: number): string[] {
+    if (risk > 0.7) {
+      return [
+        "Verify aircraft readiness early",
+        "Confirm crew duty time compliance",
+        "Coordinate with maintenance for priority",
+        "Have backup aircraft plans if available"
+      ];
+    } else if (risk > 0.4) {
+      return [
+        "Standard pre-flight checks",
+        "Monitor crew scheduling",
+        "Normal maintenance coordination"
+      ];
+    }
+    return ["Standard operational procedures", "Normal carrier coordination"];
+  }
+
+  private getFlightPlanningGuidance(delayProbability: number, expectedDelayMinutes: number): any {
+    if (delayProbability > 0.7) {
+      return {
+        recommendation: "Proactive planning required",
+        actions: [
+          "File alternate routes and airports",
+          "Request preferred departure slot early",
+          "Coordinate with crew scheduling for duty time limits",
+          "Plan buffer time for connections"
+        ]
+      };
+    } else if (delayProbability > 0.4) {
+      return {
+        recommendation: "Enhanced monitoring recommended",
+        actions: [
+          "Review alternate airport options",
+          "Monitor slot availability",
+          "Standard crew briefing with delay awareness"
+        ]
+      };
+    }
+    return {
+      recommendation: "Standard planning procedures",
+      actions: ["Normal flight planning", "Standard crew briefing"]
+    };
+  }
+
+  private getFuelStrategyGuidance(holdingProbability: number, expectedDelayMinutes: number): any {
+    if (holdingProbability > 0.6) {
+      return {
+        strategy: "Conservative fuel loading",
+        fuelAddition: "Load holding fuel: 60-90 minutes additional",
+        reasoning: "High probability of extended holding patterns due to traffic or weather congestion"
+      };
+    } else if (holdingProbability > 0.3) {
+      return {
+        strategy: "Moderate fuel buffer",
+        fuelAddition: "Load additional fuel: 30-45 minutes",
+        reasoning: "Some holding possible, maintain operational flexibility"
+      };
+    }
+    return {
+      strategy: "Standard fuel planning",
+      fuelAddition: "Normal reserves adequate",
+      reasoning: "Low holding probability, standard fuel sufficient"
+    };
+  }
+
+  private getPassengerCommGuidance(delayProbability: number, expectedDelayMinutes: number): any {
+    if (delayProbability > 0.7) {
+      return {
+        timing: "Early and frequent communication",
+        message: "Proactive delay notification with regular updates",
+        channels: ["Gate announcements", "Mobile app notifications", "Email updates"]
+      };
+    } else if (delayProbability > 0.4) {
+      return {
+        timing: "Standard communication with readiness for updates",
+        message: "Monitor and communicate any changes promptly",
+        channels: ["Standard announcements", "App notifications as needed"]
+      };
+    }
+    return {
+      timing: "Normal communication schedule",
+      message: "Standard boarding and departure announcements",
+      channels: ["Regular gate announcements"]
+    };
+  }
+
+  private getCrewGuidance(delayProbability: number, expectedDelayMinutes: number): any {
+    if (delayProbability > 0.7) {
+      return {
+        briefingFocus: "Delay management and passenger service",
+        considerations: [
+          "Review duty time limits carefully",
+          "Prepare for extended ground time",
+          "Plan cabin service adjustments",
+          "Coordinate with ground crew for efficiency"
+        ]
+      };
+    } else if (delayProbability > 0.4) {
+      return {
+        briefingFocus: "Standard operations with delay awareness",
+        considerations: [
+          "Monitor duty times",
+          "Standard delay procedures",
+          "Normal passenger service planning"
+        ]
+      };
+    }
+    return {
+      briefingFocus: "Normal operations briefing",
+      considerations: ["Standard procedures", "Normal service planning"]
+    };
+  }
+
+  private getAlternateOptionsGuidance(delayProbability: number, holdingProbability: number): any {
+    if (delayProbability > 0.7 || holdingProbability > 0.6) {
+      return {
+        priority: "High - file alternates immediately",
+        options: [
+          "File primary and secondary alternate airports",
+          "Consider earlier departure slots if available",
+          "Review alternate routing options",
+          "Coordinate with operations for priority handling"
+        ]
+      };
+    } else if (delayProbability > 0.4 || holdingProbability > 0.3) {
+      return {
+        priority: "Medium - prepare alternate options",
+        options: [
+          "Review alternate airport weather",
+          "Monitor slot availability",
+          "Have backup plans ready"
+        ]
+      };
+    }
+    return {
+      priority: "Standard - normal procedures",
+      options: ["Standard alternate airport filing", "Normal operational procedures"]
+    };
   }
 }
 

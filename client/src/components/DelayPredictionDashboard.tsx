@@ -30,6 +30,52 @@ interface DelayPrediction {
     lateAircraftRisk: number;
   };
   recommendations: string[];
+  riskExplanations?: {
+    seasonalRisk: {
+      level: string;
+      explanation: string;
+      mitigationSteps: string[];
+    };
+    weatherRisk: {
+      level: string;
+      explanation: string;
+      mitigationSteps: string[];
+    };
+    trafficRisk: {
+      level: string;
+      explanation: string;
+      mitigationSteps: string[];
+    };
+    carrierRisk: {
+      level: string;
+      explanation: string;
+      mitigationSteps: string[];
+    };
+  };
+  operationalGuidance?: {
+    flightPlanning: {
+      recommendation: string;
+      actions: string[];
+    };
+    fuelStrategy: {
+      strategy: string;
+      fuelAddition: string;
+      reasoning: string;
+    };
+    passengerCommunication: {
+      timing: string;
+      message: string;
+      channels: string[];
+    };
+    crewConsiderations: {
+      briefingFocus: string;
+      considerations: string[];
+    };
+    alternateOptions: {
+      priority: string;
+      options: string[];
+    };
+  };
 }
 
 interface HoldingPatternAnalysis {
