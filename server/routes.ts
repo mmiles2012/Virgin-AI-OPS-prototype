@@ -11,6 +11,7 @@ import { majorAirports } from "../shared/airportData";
 import { aviationApiService } from "./aviationApiService";
 import { newsApiService } from "./newsApiService_simplified";
 import { enhancedNewsMonitor } from "./enhancedNewsMonitor";
+import { diversionSupportService } from "./diversionSupportService";
 import { weatherApiService } from "./weatherApiService";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
