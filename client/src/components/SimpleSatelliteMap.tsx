@@ -89,7 +89,7 @@ export default function SimpleSatelliteMap() {
   // Enhanced features state
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showDayNightOverlay, setShowDayNightOverlay] = useState(true);
-  const [showWeatherLayer, setShowWeatherLayer] = useState(true);
+  const [showWeatherLayer, setShowWeatherLayer] = useState(false);
   const [showFlightPaths, setShowFlightPaths] = useState(true);
   const [weatherData, setWeatherData] = useState<Record<string, WeatherData>>({});
   const [airports, setAirports] = useState<Airport[]>([]);
@@ -186,7 +186,7 @@ export default function SimpleSatelliteMap() {
     setWeatherData(prev => ({ ...prev, ...newWeatherData }));
   }, [mapCenter, zoomLevel, showWeatherLayer, weatherData, fetchWeatherData]);
 
-  // Simplified coordinate conversion for accurate positioning
+  // Exact Mapbox Web Mercator coordinate conversion
   const latLonToPixel = useCallback((lat: number, lon: number) => {
     if (!mapContainerRef.current) return { x: 0, y: 0 };
     
@@ -194,28 +194,31 @@ export default function SimpleSatelliteMap() {
     const width = containerRect.width;
     const height = containerRect.height;
     
-    // Simple linear mapping based on geographic bounds
-    // Calculate approximate degrees per pixel at current zoom
-    const zoomFactor = Math.pow(2, zoomLevel - 1);
-    const degreesPerPixelLon = 360 / (256 * zoomFactor);
-    const degreesPerPixelLat = 180 / (256 * zoomFactor);
+    // Convert to Web Mercator coordinates (0-1 range)
+    const pointX = (lon + 180) / 360;
+    const pointY = (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2;
     
-    // Calculate bounds of the 1200x800 image
-    const halfWidthDegrees = (1200 / 2) * degreesPerPixelLon;
-    const halfHeightDegrees = (800 / 2) * degreesPerPixelLat;
+    const centerX = (mapCenter.lon + 180) / 360;
+    const centerY = (1 - Math.log(Math.tan(mapCenter.lat * Math.PI / 180) + 1 / Math.cos(mapCenter.lat * Math.PI / 180)) / Math.PI) / 2;
     
-    const westBound = mapCenter.lon - halfWidthDegrees;
-    const eastBound = mapCenter.lon + halfWidthDegrees;
-    const northBound = mapCenter.lat + halfHeightDegrees;
-    const southBound = mapCenter.lat - halfHeightDegrees;
+    // Scale to tile coordinates
+    const scale = Math.pow(2, zoomLevel);
+    const pointTileX = pointX * scale;
+    const pointTileY = pointY * scale;
+    const centerTileX = centerX * scale;
+    const centerTileY = centerY * scale;
     
-    // Convert to pixel coordinates
-    const xRatio = (lon - westBound) / (eastBound - westBound);
-    const yRatio = (northBound - lat) / (northBound - southBound);
+    // Calculate image bounds in tiles (1200x800 at 256px per tile)
+    const imageTilesWide = 1200 / 256;
+    const imageTilesHigh = 800 / 256;
     
-    // Apply to screen coordinates with drag offset
-    const x = Math.max(0, Math.min(width, xRatio * width)) + dragOffset.x;
-    const y = Math.max(0, Math.min(height, yRatio * height)) + dragOffset.y;
+    // Calculate relative position within the image
+    const relativeX = (pointTileX - centerTileX) / imageTilesWide + 0.5;
+    const relativeY = (pointTileY - centerTileY) / imageTilesHigh + 0.5;
+    
+    // Convert to screen pixels
+    const x = relativeX * width + dragOffset.x;
+    const y = relativeY * height + dragOffset.y;
     
     return { x, y };
   }, [mapCenter, zoomLevel, dragOffset]);
@@ -416,16 +419,7 @@ export default function SimpleSatelliteMap() {
                 />
               </div>
               
-              <div className="flex items-center justify-between">
-                <label className="text-white text-sm flex items-center gap-2">
-                  <Cloud className="h-4 w-4" />
-                  Weather Data
-                </label>
-                <Switch 
-                  checked={showWeatherLayer} 
-                  onCheckedChange={setShowWeatherLayer}
-                />
-              </div>
+
               
               <div className="flex items-center justify-between">
                 <label className="text-white text-sm flex items-center gap-2">
@@ -531,54 +525,7 @@ export default function SimpleSatelliteMap() {
           </div>
         )}
         
-        {/* Weather Overlay */}
-        {showWeatherLayer && Object.entries(weatherData).map(([key, weather]) => {
-          const [latStr, lonStr] = key.split('_');
-          const lat = parseFloat(latStr);
-          const lon = parseFloat(lonStr);
-          const pixel = latLonToPixel(lat, lon);
-          
-          // Only render if within visible bounds
-          const containerWidth = mapContainerRef.current?.clientWidth || 0;
-          const containerHeight = mapContainerRef.current?.clientHeight || 0;
-          
-          if (pixel.x < -50 || pixel.x > containerWidth + 50 || 
-              pixel.y < -50 || pixel.y > containerHeight + 50) {
-            return null;
-          }
-          
-          return (
-            <div
-              key={key}
-              className="absolute pointer-events-auto cursor-pointer"
-              style={{
-                left: pixel.x - 12,
-                top: pixel.y - 12,
-                transform: 'translate(-50%, -50%)'
-              }}
-              title={`${weather.conditions} • ${weather.temperature}°C • Wind ${weather.windSpeed}kt`}
-            >
-              <div className="relative bg-black/60 rounded-full p-1">
-                {weather.precipitation > 0 && (
-                  <CloudRain className="h-6 w-6 text-blue-400" />
-                )}
-                {weather.cloudCover > 70 && weather.precipitation === 0 && (
-                  <Cloud className="h-6 w-6 text-gray-400" />
-                )}
-                {weather.precipitation === 0 && weather.cloudCover < 30 && (
-                  <Sun className="h-6 w-6 text-yellow-400" />
-                )}
-                {weather.windSpeed > 15 && (
-                  <Wind className="h-4 w-4 text-white absolute -top-1 -right-1" />
-                )}
-                
-                <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-black/75 text-white text-xs px-1 rounded whitespace-nowrap">
-                  {weather.temperature}°C
-                </div>
-              </div>
-            </div>
-          );
-        })}
+
         
         {/* Flight Data Overlay */}
         {showFlightPaths && flightData.map((flight) => {
