@@ -7,6 +7,42 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 
+// Custom CSS for dark theme Leaflet popups
+const leafletStyles = `
+  .leaflet-popup-content-wrapper {
+    background: #2c2c2c !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+  }
+  
+  .leaflet-popup-content {
+    margin: 12px !important;
+  }
+  
+  .leaflet-popup-tip {
+    background: #2c2c2c !important;
+  }
+  
+  .leaflet-popup-close-button {
+    color: #fff !important;
+    font-size: 18px !important;
+    padding: 4px 8px !important;
+  }
+  
+  .leaflet-popup-close-button:hover {
+    background: rgba(255,255,255,0.1) !important;
+    border-radius: 4px !important;
+  }
+`;
+
+// Inject styles
+if (typeof document !== 'undefined') {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = leafletStyles;
+  document.head.appendChild(styleElement);
+}
+
 // Fix leaflet default markers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -79,21 +115,22 @@ const createAirportIcon = (selected: boolean) => L.divIcon({
   className: 'custom-airport-marker',
   html: `
     <div style="
-      width: 12px; 
-      height: 12px; 
-      background: ${selected ? '#fbbf24' : '#3b82f6'}; 
-      border: 2px solid ${selected ? '#f59e0b' : '#1d4ed8'};
+      width: 16px; 
+      height: 16px; 
+      background: ${selected ? '#10b981' : '#3b82f6'}; 
+      border: 2px solid ${selected ? '#059669' : '#1d4ed8'};
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      transition: all 0.3s ease;
     ">
-      <div style="color: white; font-size: 8px;">✈</div>
+      <div style="color: white; font-size: 10px; font-weight: bold;">✈</div>
     </div>
   `,
-  iconSize: [16, 16],
-  iconAnchor: [8, 8],
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
 });
 
 // Custom flight icon
@@ -111,6 +148,27 @@ const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
   iconSize: [16, 16],
   iconAnchor: [8, 8],
 });
+
+// Custom map event handler for coordinate display
+function CoordinateDisplay() {
+  const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
+  const map = useMap();
+
+  useMapEvents({
+    mousemove: (e) => {
+      setCoordinates({
+        lat: e.latlng.lat,
+        lng: e.latlng.lng
+      });
+    },
+  });
+
+  return (
+    <div className="absolute bottom-4 left-4 z-[1000] bg-black/80 backdrop-blur-sm border border-gray-600 px-3 py-2 rounded-lg text-white text-sm font-mono">
+      Lat: {coordinates.lat.toFixed(6)}, Lng: {coordinates.lng.toFixed(6)}
+    </div>
+  );
+}
 
 export default function LeafletSatelliteMap() {
   const [airports, setAirports] = useState<Airport[]>([]);
@@ -285,8 +343,9 @@ export default function LeafletSatelliteMap() {
         scrollWheelZoom={true}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          attribution='© Esri, Maxar, Earthstar Geographics'
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+          maxZoom={18}
         />
 
         {/* Airport Markers */}
@@ -300,9 +359,13 @@ export default function LeafletSatelliteMap() {
             }}
           >
             <Popup>
-              <div className="text-sm">
-                <div className="font-medium">{airport.name}</div>
-                <div className="text-gray-600">{airport.icao} - {airport.city}</div>
+              <div className="text-center p-2">
+                <h3 className="text-green-500 font-bold text-lg mb-2">{airport.icao}</h3>
+                <div className="text-white text-sm mb-1">{airport.name}</div>
+                <div className="text-gray-400 text-xs">{airport.city}, {airport.country}</div>
+                <div className="text-gray-500 text-xs mt-2">
+                  {airport.latitude.toFixed(4)}, {airport.longitude.toFixed(4)}
+                </div>
               </div>
             </Popup>
           </Marker>
@@ -324,6 +387,9 @@ export default function LeafletSatelliteMap() {
             </Popup>
           </Marker>
         ))}
+
+        {/* Coordinate Display */}
+        <CoordinateDisplay />
       </MapContainer>
     </div>
   );
