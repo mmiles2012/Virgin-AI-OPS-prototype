@@ -186,7 +186,7 @@ export default function SimpleSatelliteMap() {
     setWeatherData(prev => ({ ...prev, ...newWeatherData }));
   }, [mapCenter, zoomLevel, showWeatherLayer, weatherData, fetchWeatherData]);
 
-  // Exact Mapbox Web Mercator coordinate conversion
+  // Corrected Mapbox coordinate conversion with proper scale matching
   const latLonToPixel = useCallback((lat: number, lon: number) => {
     if (!mapContainerRef.current) return { x: 0, y: 0 };
     
@@ -194,31 +194,34 @@ export default function SimpleSatelliteMap() {
     const width = containerRect.width;
     const height = containerRect.height;
     
-    // Convert to Web Mercator coordinates (0-1 range)
+    // Convert to Web Mercator normalized coordinates (0-1)
     const pointX = (lon + 180) / 360;
     const pointY = (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2;
     
     const centerX = (mapCenter.lon + 180) / 360;
     const centerY = (1 - Math.log(Math.tan(mapCenter.lat * Math.PI / 180) + 1 / Math.cos(mapCenter.lat * Math.PI / 180)) / Math.PI) / 2;
     
-    // Scale to tile coordinates
+    // Calculate the scale at the current zoom level
     const scale = Math.pow(2, zoomLevel);
-    const pointTileX = pointX * scale;
-    const pointTileY = pointY * scale;
-    const centerTileX = centerX * scale;
-    const centerTileY = centerY * scale;
     
-    // Calculate image bounds in tiles (1200x800 at 256px per tile)
-    const imageTilesWide = 1200 / 256;
-    const imageTilesHigh = 800 / 256;
+    // Convert to pixel coordinates in the global Web Mercator space
+    const worldPixelX = pointX * scale * 256;
+    const worldPixelY = pointY * scale * 256;
+    const centerWorldPixelX = centerX * scale * 256;
+    const centerWorldPixelY = centerY * scale * 256;
     
-    // Calculate relative position within the image
-    const relativeX = (pointTileX - centerTileX) / imageTilesWide + 0.5;
-    const relativeY = (pointTileY - centerTileY) / imageTilesHigh + 0.5;
+    // Calculate offset from center in world pixels
+    const offsetX = worldPixelX - centerWorldPixelX;
+    const offsetY = worldPixelY - centerWorldPixelY;
     
-    // Convert to screen pixels
-    const x = relativeX * width + dragOffset.x;
-    const y = relativeY * height + dragOffset.y;
+    // Convert to screen coordinates
+    // The static image is 1200x800, so we scale the offset proportionally
+    const screenX = (width / 2) + (offsetX * width / 1200);
+    const screenY = (height / 2) + (offsetY * height / 800);
+    
+    // Apply drag offset
+    const x = screenX + dragOffset.x;
+    const y = screenY + dragOffset.y;
     
     return { x, y };
   }, [mapCenter, zoomLevel, dragOffset]);
