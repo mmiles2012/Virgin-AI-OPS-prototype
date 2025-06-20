@@ -11,7 +11,7 @@ import { majorAirports } from "../shared/airportData";
 import { aviationApiService } from "./aviationApiService";
 import { newsApiService } from "./newsApiService_simplified";
 import { enhancedNewsMonitor } from "./enhancedNewsMonitor";
-import { diversionSupportService } from "./diversionSupportService";
+import { diversionSupport } from "./diversionSupport";
 import { weatherApiService } from "./weatherApiService";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
@@ -1533,6 +1533,89 @@ print(json.dumps(weather))
         success: false,
         error: 'Failed to filter news by region',
         region: req.params.region,
+        timestamp: new Date().toISOString()
+      });
+    }
+  })
+
+  // Diversion Support API Endpoints
+  
+  // Initiate comprehensive diversion support
+  app.post('/api/diversion/initiate', async (req, res) => {
+    try {
+      const diversionRequest = req.body;
+      
+      // Validate required fields
+      const requiredFields = ['flightNumber', 'aircraftType', 'diversionAirport', 'originalDestination', 'passengerCount', 'crewCount', 'diversionReason', 'estimatedDelayHours', 'urgencyLevel'];
+      const missingFields = requiredFields.filter(field => !diversionRequest[field]);
+      
+      if (missingFields.length > 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required fields',
+          missingFields,
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      const diversionResponse = await diversionSupport.initiateDiversionSupport(diversionRequest);
+      
+      res.json({
+        success: true,
+        diversion: diversionResponse,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Diversion initiation failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to initiate diversion support',
+        timestamp: new Date().toISOString()
+      });
+    }
+  })
+
+  // Get available services at an airport
+  app.get('/api/diversion/services/:airportCode', async (req, res) => {
+    try {
+      const { airportCode } = req.params;
+      const services = await diversionSupport.getAvailableServices(airportCode);
+      
+      res.json({
+        success: true,
+        airport: airportCode,
+        services,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error(`Failed to get services for ${req.params.airportCode}:`, error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve available services',
+        airport: req.params.airportCode,
+        timestamp: new Date().toISOString()
+      });
+    }
+  })
+
+  // Cancel diversion support
+  app.post('/api/diversion/cancel/:diversionId', async (req, res) => {
+    try {
+      const { diversionId } = req.params;
+      const cancellationResult = await diversionSupport.cancelDiversionSupport(diversionId);
+      
+      res.json({
+        success: true,
+        diversionId,
+        cancellation: cancellationResult,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error(`Failed to cancel diversion ${req.params.diversionId}:`, error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to cancel diversion support',
+        diversionId: req.params.diversionId,
         timestamp: new Date().toISOString()
       });
     }

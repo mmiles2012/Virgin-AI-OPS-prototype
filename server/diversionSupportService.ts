@@ -221,38 +221,51 @@ export interface DiversionSupportResponse {
 }
 
 class DiversionSupportService {
-  private readonly HOTEL_PARTNERS = {
+  private readonly HOTEL_PARTNERS: { [key: string]: {
+    name: string;
+    contact: string;
+    email: string;
+    shuttleAvailable: boolean;
+    ratesPerNight: { economy: number; standard: number; premium: number };
+  }} = {
     'EGLL': { // Heathrow
       name: 'Hilton London Heathrow',
       contact: '+44-20-8759-7755',
       email: 'reservations.heathrow@hilton.com',
       shuttleAvailable: true,
-      ratesPer Night: { economy: 120, standard: 180, premium: 280 }
+      ratesPerNight: { economy: 120, standard: 180, premium: 280 }
     },
     'KJFK': { // JFK
       name: 'TWA Hotel at JFK',
       contact: '+1-212-856-4300',
       email: 'reservations@twahotel.com',
       shuttleAvailable: true,
-      ratesPer Night: { economy: 180, standard: 250, premium: 400 }
+      ratesPerNight: { economy: 180, standard: 250, premium: 400 }
     },
     'EDDF': { // Frankfurt
       name: 'Sheraton Frankfurt Airport',
       contact: '+49-69-697-70',
       email: 'reservations@sheraton-frankfurt.com',
       shuttleAvailable: true,
-      ratesPer Night: { economy: 140, standard: 200, premium: 320 }
+      ratesPerNight: { economy: 140, standard: 200, premium: 320 }
     },
     'LFPG': { // Charles de Gaulle
       name: 'Hilton Paris Charles de Gaulle',
       contact: '+33-1-49-19-77-77',
       email: 'paris_cdg@hilton.com',
       shuttleAvailable: true,
-      ratesPer Night: { economy: 160, standard: 220, premium: 350 }
+      ratesPerNight: { economy: 160, standard: 220, premium: 350 }
     }
   };
 
-  private readonly FUEL_SUPPLIERS = {
+  private readonly FUEL_SUPPLIERS: { [key: string]: {
+    name: string;
+    contact: string;
+    emergencyHotline: string;
+    email: string;
+    pricePerGallon: number;
+    deliveryTime: string;
+  }} = {
     'EGLL': {
       name: 'BP Aviation Heathrow',
       contact: '+44-20-8745-6000',
@@ -279,7 +292,13 @@ class DiversionSupportService {
     }
   };
 
-  private readonly GROUND_HANDLERS = {
+  private readonly GROUND_HANDLERS: { [key: string]: {
+    name: string;
+    contact: string;
+    email: string;
+    services: string[];
+    baseRate: number;
+  }} = {
     'EGLL': {
       name: 'Swissport Heathrow',
       contact: '+44-20-8745-7000',
@@ -361,7 +380,7 @@ class DiversionSupportService {
     const crewRooms = request.crewCount; // 1 crew member per room
     
     const rateCategory = request.urgencyLevel === 'emergency' ? 'premium' : 'standard';
-    const roomRate = hotel.ratesPer Night[rateCategory];
+    const roomRate = hotel.ratesPerNight[rateCategory];
     const totalCost = (passengerRooms + crewRooms) * roomRate * Math.ceil(request.estimatedDelayHours / 24);
 
     return {
