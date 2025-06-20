@@ -38,7 +38,18 @@ export function NewsIntelligenceDashboard() {
   const [loading, setLoading] = useState(false);
   const [testingAPIs, setTestingAPIs] = useState(false);
 
-  const regions = ['Eastern Mediterranean', 'South China Sea', 'Eastern Europe', 'North Atlantic'];
+  const regions = [
+    'Eastern Mediterranean', 
+    'South China Sea', 
+    'Eastern Europe', 
+    'North Atlantic',
+    'Middle East',
+    'India Pakistan',
+    'Caribbean',
+    'Africa',
+    'Indian Ocean',
+    'North America'
+  ];
 
   // Test all news API connections
   const testNewsAPIConnections = async () => {

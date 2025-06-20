@@ -178,17 +178,37 @@ export class NewsApiService {
 
     // Add region-specific feeds
     const regionFeeds: { [key: string]: { url: string; source: string }[] } = {
-      'Europe': [
-        { url: 'https://feeds.bbci.co.uk/news/world/europe/rss.xml', source: 'BBC Europe' }
+      'Eastern Mediterranean': [
+        { url: 'https://feeds.bbci.co.uk/news/world/europe/rss.xml', source: 'BBC Europe' },
+        { url: 'https://feeds.bbci.co.uk/news/world/middle_east/rss.xml', source: 'BBC Middle East' }
       ],
-      'Asia': [
+      'Middle East': [
+        { url: 'https://feeds.bbci.co.uk/news/world/middle_east/rss.xml', source: 'BBC Middle East' }
+      ],
+      'India Pakistan': [
         { url: 'https://feeds.bbci.co.uk/news/world/asia/rss.xml', source: 'BBC Asia' }
+      ],
+      'Caribbean': [
+        { url: 'https://feeds.bbci.co.uk/news/world/latin_america/rss.xml', source: 'BBC Americas' }
       ],
       'Africa': [
         { url: 'https://feeds.bbci.co.uk/news/world/africa/rss.xml', source: 'BBC Africa' }
       ],
-      'Middle East': [
-        { url: 'https://feeds.bbci.co.uk/news/world/middle_east/rss.xml', source: 'BBC Middle East' }
+      'Indian Ocean': [
+        { url: 'https://feeds.bbci.co.uk/news/world/asia/rss.xml', source: 'BBC Asia' }
+      ],
+      'North America': [
+        { url: 'https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml', source: 'BBC Americas' }
+      ],
+      'Eastern Europe': [
+        { url: 'https://feeds.bbci.co.uk/news/world/europe/rss.xml', source: 'BBC Europe' }
+      ],
+      'South China Sea': [
+        { url: 'https://feeds.bbci.co.uk/news/world/asia/rss.xml', source: 'BBC Asia' }
+      ],
+      'North Atlantic': [
+        { url: 'https://feeds.bbci.co.uk/news/world/europe/rss.xml', source: 'BBC Europe' },
+        { url: 'https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml', source: 'BBC Americas' }
       ]
     };
 
@@ -239,12 +259,16 @@ export class NewsApiService {
 
   private getRegionSearchTerms(region: string): string {
     const terms: { [key: string]: string } = {
-      'Europe': 'Europe OR European OR EU OR Brexit OR NATO',
-      'Asia': 'Asia OR China OR Japan OR Korea OR Taiwan OR Thailand OR Vietnam',
-      'Middle East': 'Middle East OR Syria OR Iraq OR Iran OR Israel OR Palestine OR Saudi Arabia',
-      'Africa': 'Africa OR Nigeria OR Kenya OR South Africa OR Egypt OR Morocco',
-      'North America': 'United States OR Canada OR Mexico OR NAFTA',
-      'South America': 'Brazil OR Argentina OR Chile OR Colombia OR Venezuela'
+      'Eastern Mediterranean': 'Mediterranean OR Cyprus OR Turkey OR Greece OR Syria OR Lebanon OR Israel',
+      'South China Sea': 'South China Sea OR Taiwan OR Philippines OR Vietnam OR China maritime',
+      'Eastern Europe': 'Ukraine OR Poland OR Hungary OR Romania OR Belarus OR Moldova OR Baltic',
+      'North Atlantic': 'North Atlantic OR Iceland OR Greenland OR Faroe OR maritime security',
+      'Middle East': 'Middle East OR Iran OR Iraq OR Syria OR Yemen OR Saudi Arabia OR UAE OR Qatar OR Kuwait',
+      'India Pakistan': 'India OR Pakistan OR Kashmir OR Bangladesh OR Sri Lanka OR Afghanistan',
+      'Caribbean': 'Caribbean OR Cuba OR Jamaica OR Haiti OR Dominican Republic OR Puerto Rico OR Bahamas',
+      'Africa': 'Africa OR Nigeria OR Egypt OR South Africa OR Libya OR Sudan OR Somalia OR Ethiopia OR Congo',
+      'Indian Ocean': 'Indian Ocean OR Maldives OR Seychelles OR Mauritius OR Madagascar OR Diego Garcia',
+      'North America': 'United States OR Canada OR Mexico OR USMCA OR border security OR Arctic'
     };
 
     return terms[region] || region;
@@ -259,12 +283,16 @@ export class NewsApiService {
 
   private getRegionKeywords(region: string): string[] {
     const keywords: { [key: string]: string[] } = {
-      'Europe': ['europe', 'european', 'eu', 'brexit', 'nato', 'germany', 'france', 'uk', 'britain', 'italy', 'spain'],
-      'Asia': ['asia', 'china', 'japan', 'korea', 'taiwan', 'thailand', 'vietnam', 'singapore', 'malaysia', 'indonesia'],
-      'Middle East': ['middle east', 'syria', 'iraq', 'iran', 'israel', 'palestine', 'saudi arabia', 'uae', 'qatar'],
-      'Africa': ['africa', 'nigeria', 'kenya', 'south africa', 'egypt', 'morocco', 'ethiopia', 'ghana'],
-      'North America': ['united states', 'canada', 'mexico', 'nafta', 'america', 'american'],
-      'South America': ['brazil', 'argentina', 'chile', 'colombia', 'venezuela', 'peru', 'ecuador']
+      'Eastern Mediterranean': ['mediterranean', 'cyprus', 'turkey', 'greece', 'syria', 'lebanon', 'israel', 'gaza', 'aegean'],
+      'South China Sea': ['south china sea', 'taiwan', 'philippines', 'vietnam', 'china maritime', 'spratly', 'paracel', 'scarborough'],
+      'Eastern Europe': ['ukraine', 'poland', 'hungary', 'romania', 'belarus', 'moldova', 'baltic', 'czech', 'slovakia', 'bulgaria'],
+      'North Atlantic': ['north atlantic', 'iceland', 'greenland', 'faroe', 'maritime security', 'nato', 'arctic', 'newfoundland'],
+      'Middle East': ['middle east', 'iran', 'iraq', 'syria', 'yemen', 'saudi arabia', 'uae', 'qatar', 'kuwait', 'oman', 'bahrain'],
+      'India Pakistan': ['india', 'pakistan', 'kashmir', 'bangladesh', 'sri lanka', 'afghanistan', 'mumbai', 'delhi', 'karachi', 'lahore'],
+      'Caribbean': ['caribbean', 'cuba', 'jamaica', 'haiti', 'dominican republic', 'puerto rico', 'bahamas', 'barbados', 'trinidad'],
+      'Africa': ['africa', 'nigeria', 'egypt', 'south africa', 'libya', 'sudan', 'somalia', 'ethiopia', 'congo', 'morocco', 'tunisia'],
+      'Indian Ocean': ['indian ocean', 'maldives', 'seychelles', 'mauritius', 'madagascar', 'diego garcia', 'comoros', 'reunion'],
+      'North America': ['united states', 'canada', 'mexico', 'usmca', 'border security', 'arctic', 'america', 'american', 'washington', 'ottawa']
     };
 
     return keywords[region] || [region.toLowerCase()];
