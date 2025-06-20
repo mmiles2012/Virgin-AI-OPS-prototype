@@ -22,6 +22,7 @@ import SafeAirspaceAlerts from "./components/SafeAirspaceAlerts";
 import RealTimeOperationsCenter from "./components/RealTimeOperationsCenter";
 import GeopoliticalRiskCenter from "./components/GeopoliticalRiskCenter";
 import DiversionDecisionEngine from "./components/DiversionDecisionEngine";
+import DiversionSupportDashboard from "./components/DiversionSupportDashboard";
 import { ApiTestingCenter } from "./components/ApiTestingCenter";
 import { NewsIntelligenceDashboard } from "./components/NewsIntelligenceDashboard";
 
@@ -61,7 +62,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -199,6 +200,17 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('diversion-support')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'diversion-support' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Diversion Support
+                  </button>
+                  
+                  <button
                     onClick={() => setViewMode('api-testing')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'api-testing' 
@@ -292,6 +304,12 @@ function App() {
             {viewMode === 'news-intelligence' && (
               <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
                 <NewsIntelligenceDashboard />
+              </div>
+            )}
+            
+            {viewMode === 'diversion-support' && (
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
+                <DiversionSupportDashboard />
               </div>
             )}
             
