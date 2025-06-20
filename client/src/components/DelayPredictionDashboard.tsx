@@ -601,6 +601,129 @@ const DelayPredictionDashboard: React.FC = () => {
                       </ul>
                     </div>
                   </div>
+
+                  {/* Risk Factor Explanations */}
+                  {prediction.riskExplanations && (
+                    <div className="mt-6">
+                      <h4 className="font-semibold mb-4">Risk Factor Analysis</h4>
+                      <div className="space-y-4">
+                        {Object.entries(prediction.riskExplanations).map(([riskType, riskData]: [string, any]) => (
+                          <div key={riskType} className="border rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <h5 className="font-medium capitalize">{riskType.replace('Risk', ' Risk')}</h5>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                riskData.level === 'HIGH' ? 'bg-red-100 text-red-800' :
+                                riskData.level === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-green-100 text-green-800'
+                              }`}>
+                                {riskData.level} RISK
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-700 mb-3">{riskData.explanation}</p>
+                            <div>
+                              <h6 className="font-medium text-sm mb-1">Mitigation Steps:</h6>
+                              <ul className="space-y-1">
+                                {riskData.mitigationSteps.map((step: string, stepIndex: number) => (
+                                  <li key={stepIndex} className="flex items-start space-x-2">
+                                    <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-xs text-gray-600">{step}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Operational Guidance */}
+                  {prediction.operationalGuidance && (
+                    <div className="mt-6">
+                      <h4 className="font-semibold mb-4">Operational Guidance</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Flight Planning */}
+                        <div className="border rounded-lg p-4">
+                          <h5 className="font-medium mb-2">Flight Planning</h5>
+                          <p className="text-sm font-medium text-blue-600 mb-2">
+                            {prediction.operationalGuidance.flightPlanning.recommendation}
+                          </p>
+                          <ul className="space-y-1">
+                            {prediction.operationalGuidance.flightPlanning.actions.map((action: string, index: number) => (
+                              <li key={index} className="text-xs text-gray-600 flex items-start space-x-1">
+                                <span className="text-blue-500">•</span>
+                                <span>{action}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {/* Fuel Strategy */}
+                        <div className="border rounded-lg p-4">
+                          <h5 className="font-medium mb-2">Fuel Strategy</h5>
+                          <p className="text-sm font-medium text-orange-600 mb-1">
+                            {prediction.operationalGuidance.fuelStrategy.strategy}
+                          </p>
+                          <p className="text-sm font-semibold mb-2">
+                            {prediction.operationalGuidance.fuelStrategy.fuelAddition}
+                          </p>
+                          <p className="text-xs text-gray-600">
+                            {prediction.operationalGuidance.fuelStrategy.reasoning}
+                          </p>
+                        </div>
+
+                        {/* Passenger Communication */}
+                        <div className="border rounded-lg p-4">
+                          <h5 className="font-medium mb-2">Passenger Communication</h5>
+                          <p className="text-sm font-medium text-green-600 mb-1">
+                            {prediction.operationalGuidance.passengerCommunication.timing}
+                          </p>
+                          <p className="text-sm mb-2">
+                            {prediction.operationalGuidance.passengerCommunication.message}
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {prediction.operationalGuidance.passengerCommunication.channels.map((channel: string, index: number) => (
+                              <span key={index} className="px-2 py-1 bg-gray-100 text-xs rounded">
+                                {channel}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Crew Considerations */}
+                        <div className="border rounded-lg p-4">
+                          <h5 className="font-medium mb-2">Crew Considerations</h5>
+                          <p className="text-sm font-medium text-purple-600 mb-2">
+                            {prediction.operationalGuidance.crewConsiderations.briefingFocus}
+                          </p>
+                          <ul className="space-y-1">
+                            {prediction.operationalGuidance.crewConsiderations.considerations.map((consideration: string, index: number) => (
+                              <li key={index} className="text-xs text-gray-600 flex items-start space-x-1">
+                                <span className="text-purple-500">•</span>
+                                <span>{consideration}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+
+                      {/* Alternate Options */}
+                      <div className="mt-4 border rounded-lg p-4">
+                        <h5 className="font-medium mb-2">Alternate Options</h5>
+                        <p className="text-sm font-medium text-red-600 mb-2">
+                          Priority: {prediction.operationalGuidance.alternateOptions.priority}
+                        </p>
+                        <ul className="space-y-1">
+                          {prediction.operationalGuidance.alternateOptions.options.map((option: string, index: number) => (
+                            <li key={index} className="text-sm text-gray-700 flex items-start space-x-2">
+                              <span className="text-red-500">▶</span>
+                              <span>{option}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
