@@ -51,9 +51,13 @@ export function NewsIntelligenceDashboard() {
     try {
       const response = await fetch('/api/news/test-connections');
       const data = await response.json();
+      console.log('API connections response:', data);
       
       if (data.success) {
-        setApiConnections(data.connections);
+        // Handle nested results structure from API
+        const connections = data.results?.results || data.results || data.connections;
+        console.log('Setting connections:', connections);
+        setApiConnections(connections);
       }
     } catch (error) {
       console.error('Failed to test news API connections:', error);
@@ -68,11 +72,15 @@ export function NewsIntelligenceDashboard() {
     try {
       const response = await fetch(`/api/news/geopolitical-risk/${encodeURIComponent(region)}`);
       const data = await response.json();
+      console.log(`Geopolitical analysis for ${region}:`, data);
       
-      if (data.success) {
+      if (data.success || data.region) {
+        // Handle direct analysis data structure
+        const analysisData = data.analysis || data;
+        console.log(`Setting analysis data for ${region}:`, analysisData);
         setGeopoliticalData(prev => ({
           ...prev,
-          [region]: data.analysis
+          [region]: analysisData
         }));
       }
     } catch (error) {
