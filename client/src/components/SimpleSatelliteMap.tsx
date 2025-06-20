@@ -186,7 +186,7 @@ export default function SimpleSatelliteMap() {
     setWeatherData(prev => ({ ...prev, ...newWeatherData }));
   }, [mapCenter, zoomLevel, showWeatherLayer, weatherData, fetchWeatherData]);
 
-  // Corrected Mapbox coordinate conversion with proper scale matching
+  // Direct geographic coordinate mapping based on Mapbox static image coverage
   const latLonToPixel = useCallback((lat: number, lon: number) => {
     if (!mapContainerRef.current) return { x: 0, y: 0 };
     
@@ -194,34 +194,35 @@ export default function SimpleSatelliteMap() {
     const width = containerRect.width;
     const height = containerRect.height;
     
-    // Convert to Web Mercator normalized coordinates (0-1)
-    const pointX = (lon + 180) / 360;
-    const pointY = (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2;
+    // Calculate the geographic bounds covered by the static image
+    // Based on Mapbox static API documentation and zoom level calculations
+    const earthCircumference = 40075017; // meters at equator
+    const metersPerPixel = earthCircumference * Math.cos(mapCenter.lat * Math.PI / 180) / Math.pow(2, zoomLevel + 8);
     
-    const centerX = (mapCenter.lon + 180) / 360;
-    const centerY = (1 - Math.log(Math.tan(mapCenter.lat * Math.PI / 180) + 1 / Math.cos(mapCenter.lat * Math.PI / 180)) / Math.PI) / 2;
+    // Image dimensions in meters
+    const imageWidthMeters = 1200 * metersPerPixel;
+    const imageHeightMeters = 800 * metersPerPixel;
     
-    // Calculate the scale at the current zoom level
-    const scale = Math.pow(2, zoomLevel);
+    // Convert meters to degrees (approximate)
+    const metersPerDegreeLon = 111320 * Math.cos(mapCenter.lat * Math.PI / 180);
+    const metersPerDegreeLat = 110540;
     
-    // Convert to pixel coordinates in the global Web Mercator space
-    const worldPixelX = pointX * scale * 256;
-    const worldPixelY = pointY * scale * 256;
-    const centerWorldPixelX = centerX * scale * 256;
-    const centerWorldPixelY = centerY * scale * 256;
+    const imageWidthDegrees = imageWidthMeters / metersPerDegreeLon;
+    const imageHeightDegrees = imageHeightMeters / metersPerDegreeLat;
     
-    // Calculate offset from center in world pixels
-    const offsetX = worldPixelX - centerWorldPixelX;
-    const offsetY = worldPixelY - centerWorldPixelY;
+    // Calculate bounds
+    const westBound = mapCenter.lon - imageWidthDegrees / 2;
+    const eastBound = mapCenter.lon + imageWidthDegrees / 2;
+    const northBound = mapCenter.lat + imageHeightDegrees / 2;
+    const southBound = mapCenter.lat - imageHeightDegrees / 2;
+    
+    // Calculate pixel position
+    const xRatio = (lon - westBound) / (eastBound - westBound);
+    const yRatio = (northBound - lat) / (northBound - southBound);
     
     // Convert to screen coordinates
-    // The static image is 1200x800, so we scale the offset proportionally
-    const screenX = (width / 2) + (offsetX * width / 1200);
-    const screenY = (height / 2) + (offsetY * height / 800);
-    
-    // Apply drag offset
-    const x = screenX + dragOffset.x;
-    const y = screenY + dragOffset.y;
+    const x = xRatio * width + dragOffset.x;
+    const y = yRatio * height + dragOffset.y;
     
     return { x, y };
   }, [mapCenter, zoomLevel, dragOffset]);
