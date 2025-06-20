@@ -54,10 +54,30 @@ export function NewsIntelligenceDashboard() {
       console.log('API connections response:', data);
       
       if (data.success) {
-        // Handle nested results structure from API
+        // Handle nested results structure from API: data.results.results contains the actual connection data
         const connections = data.results?.results || data.results || data.connections;
         console.log('Setting connections:', connections);
-        setApiConnections(connections);
+        
+        // Transform the connection data to match expected interface
+        if (connections && typeof connections === 'object') {
+          const transformedConnections = {
+            newsapi: {
+              success: connections.newsapi?.status === 'connected',
+              message: connections.newsapi?.status === 'connected' ? 'Connected to NewsAPI.org' : 'Not configured'
+            },
+            guardian: { success: false, message: 'Not configured' },
+            newsdata: { success: false, message: 'Not configured' },
+            mediastack: { success: false, message: 'Not configured' },
+            gnews: { success: false, message: 'Not configured' },
+            worldnews: { success: false, message: 'Not configured' },
+            nyt: { success: false, message: 'Not configured' },
+            rssFeeds: {
+              success: connections.rssFeeds?.status === 'available',
+              message: connections.rssFeeds?.status === 'available' ? 'RSS feeds available' : 'Not available'
+            }
+          };
+          setApiConnections(transformedConnections);
+        }
       }
     } catch (error) {
       console.error('Failed to test news API connections:', error);
