@@ -15,6 +15,7 @@ import { diversionSupport } from "./diversionSupport";
 import { sustainableFuelService } from "./sustainableFuelService";
 import { openDataSoftService } from "./openDataSoftService";
 import { weatherApiService } from "./weatherApiService";
+import { delayPredictionService } from "./delayPredictionService";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 
@@ -1256,6 +1257,97 @@ print(json.dumps(weather))
       res.status(500).json({
         success: false,
         error: 'Failed to get weather summary'
+      });
+    }
+  });
+
+  // Delay Prediction and Holding Pattern Analysis Routes
+  app.get('/api/delays/seasonal-patterns', (req, res) => {
+    try {
+      const patterns = delayPredictionService.getSeasonalPatterns();
+      res.json({
+        success: true,
+        patterns,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get seasonal patterns'
+      });
+    }
+  });
+
+  app.post('/api/delays/predict-flight', (req, res) => {
+    try {
+      const { flightNumber, route, departureTime, arrivalTime, conditions } = req.body;
+      
+      if (!flightNumber || !route || !departureTime || !arrivalTime || !conditions) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required parameters'
+        });
+      }
+
+      const prediction = delayPredictionService.predictFlightDelays(
+        flightNumber,
+        route,
+        departureTime,
+        arrivalTime,
+        conditions
+      );
+
+      res.json({
+        success: true,
+        prediction,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to predict flight delays'
+      });
+    }
+  });
+
+  app.post('/api/delays/holding-analysis', (req, res) => {
+    try {
+      const { airport, conditions } = req.body;
+      
+      if (!airport || !conditions) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required parameters'
+        });
+      }
+
+      const analysis = delayPredictionService.analyzeHoldingPatterns(airport, conditions);
+
+      res.json({
+        success: true,
+        analysis,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to analyze holding patterns'
+      });
+    }
+  });
+
+  app.get('/api/delays/statistics', (req, res) => {
+    try {
+      const statistics = delayPredictionService.getDelayStatistics();
+      res.json({
+        success: true,
+        statistics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get delay statistics'
       });
     }
   });

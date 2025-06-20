@@ -23,6 +23,7 @@ import RealTimeOperationsCenter from "./components/RealTimeOperationsCenter";
 import GeopoliticalRiskCenter from "./components/GeopoliticalRiskCenter";
 import DiversionDecisionEngine from "./components/DiversionDecisionEngine";
 import DiversionSupportDashboard from "./components/DiversionSupportDashboard";
+import DelayPredictionDashboard from "./components/DelayPredictionDashboard";
 import { ApiTestingCenter } from "./components/ApiTestingCenter";
 import { NewsIntelligenceDashboard } from "./components/NewsIntelligenceDashboard";
 
@@ -62,7 +63,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -230,6 +231,17 @@ function App() {
                     }`}
                   >
                     News Intelligence
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('delay-prediction')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'delay-prediction' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Delay Prediction
                   </button>
                   
 
