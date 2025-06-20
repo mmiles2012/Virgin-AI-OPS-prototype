@@ -85,6 +85,25 @@ export default function DiversionSupportDashboard() {
   const [diversionResponse, setDiversionResponse] = useState<DiversionSupportResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [availableServices, setAvailableServices] = useState<any>(null);
+  const [airportIntelligenceData, setAirportIntelligenceData] = useState<any>(null);
+  const [airportIntelligenceLoading, setAirportIntelligenceLoading] = useState(false);
+
+  const handleAirportIntelligenceSearch = async (airportCode: string) => {
+    setAirportIntelligenceLoading(true);
+    try {
+      const response = await fetch(`/api/airports/comprehensive/${airportCode}`);
+      const data = await response.json();
+      if (data.success) {
+        setAirportIntelligenceData(data.data);
+      } else {
+        setAirportIntelligenceData(null);
+      }
+    } catch (error) {
+      console.error('Failed to fetch airport intelligence:', error);
+      setAirportIntelligenceData(null);
+    }
+    setAirportIntelligenceLoading(false);
+  };
 
   const handleInitiateDiversion = async () => {
     setIsLoading(true);
@@ -829,170 +848,11 @@ export default function DiversionSupportDashboard() {
                   id="airportIntelligenceCode"
                 />
                 <button
-                  onClick={async () => {
+                  onClick={() => {
                     const input = document.getElementById('airportIntelligenceCode') as HTMLInputElement;
                     const airportCode = input.value.toUpperCase();
                     if (airportCode) {
-                      try {
-                        const response = await fetch(`/api/airports/comprehensive/${airportCode}`);
-                        const data = await response.json();
-                        if (data.success) {
-                          const airportData = data.data;
-                          
-                          const resultsDiv = document.getElementById('airportIntelligenceResults');
-                          if (resultsDiv) {
-                            resultsDiv.innerHTML = `
-                              <div class="space-y-6">
-                                <!-- Basic Airport Information -->
-                                ${airportData.basicInfo ? `
-                                  <div class="bg-blue-50 p-6 rounded-lg">
-                                    <h3 class="text-xl font-bold text-blue-900 mb-4">${airportData.basicInfo.airport_name}</h3>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                      <div>
-                                        <div class="text-sm text-gray-600">IATA/ICAO</div>
-                                        <div class="font-semibold">${airportData.basicInfo.iata_code}/${airportData.basicInfo.icao_code}</div>
-                                      </div>
-                                      <div>
-                                        <div class="text-sm text-gray-600">Location</div>
-                                        <div class="font-semibold">${airportData.basicInfo.city}, ${airportData.basicInfo.country}</div>
-                                      </div>
-                                      <div>
-                                        <div class="text-sm text-gray-600">Type</div>
-                                        <div class="font-semibold capitalize">${airportData.basicInfo.type.replace('_', ' ')}</div>
-                                      </div>
-                                      <div>
-                                        <div class="text-sm text-gray-600">Elevation</div>
-                                        <div class="font-semibold">${airportData.basicInfo.elevation} ft</div>
-                                      </div>
-                                      <div>
-                                        <div class="text-sm text-gray-600">Timezone</div>
-                                        <div class="font-semibold">${airportData.basicInfo.timezone}</div>
-                                      </div>
-                                      <div>
-                                        <div class="text-sm text-gray-600">Coordinates</div>
-                                        <div class="font-semibold">${airportData.basicInfo.latitude.toFixed(4)}, ${airportData.basicInfo.longitude.toFixed(4)}</div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ` : ''}
-
-                                <!-- Operational Metrics -->
-                                <div class="bg-green-50 p-6 rounded-lg">
-                                  <h3 class="text-lg font-bold text-green-900 mb-4">Operational Capabilities</h3>
-                                  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div class="text-center">
-                                      <div class="text-2xl font-bold text-green-600">${airportData.operationalMetrics.capacity.runways}</div>
-                                      <div class="text-sm text-gray-600">Runways</div>
-                                    </div>
-                                    <div class="text-center">
-                                      <div class="text-2xl font-bold text-green-600">${airportData.operationalMetrics.capacity.terminals}</div>
-                                      <div class="text-sm text-gray-600">Terminals</div>
-                                    </div>
-                                    <div class="text-center">
-                                      <div class="text-2xl font-bold text-green-600">${airportData.operationalMetrics.capacity.gates}</div>
-                                      <div class="text-sm text-gray-600">Gates</div>
-                                    </div>
-                                    <div class="text-center">
-                                      <div class="text-2xl font-bold text-green-600">${airportData.operationalMetrics.capacity.hourlyCapacity}</div>
-                                      <div class="text-sm text-gray-600">Hourly Capacity</div>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <!-- Performance Metrics -->
-                                <div class="bg-yellow-50 p-6 rounded-lg">
-                                  <h3 class="text-lg font-bold text-yellow-900 mb-4">Performance Metrics</h3>
-                                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div class="text-center">
-                                      <div class="text-2xl font-bold text-yellow-600">${airportData.operationalMetrics.efficiency.onTimePerformance.toFixed(1)}%</div>
-                                      <div class="text-sm text-gray-600">On-Time Performance</div>
-                                    </div>
-                                    <div class="text-center">
-                                      <div class="text-2xl font-bold text-yellow-600">${airportData.operationalMetrics.efficiency.averageDelay.toFixed(0)} min</div>
-                                      <div class="text-sm text-gray-600">Average Delay</div>
-                                    </div>
-                                    <div class="text-center">
-                                      <div class="text-2xl font-bold text-yellow-600">${airportData.operationalMetrics.efficiency.capacity_utilization.toFixed(1)}%</div>
-                                      <div class="text-sm text-gray-600">Capacity Utilization</div>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <!-- Operating Airlines -->
-                                <div class="bg-purple-50 p-6 rounded-lg">
-                                  <h3 class="text-lg font-bold text-purple-900 mb-4">Operating Airlines (${airportData.airlines.length} carriers)</h3>
-                                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
-                                    ${airportData.airlines.slice(0, 12).map(airline => `
-                                      <div class="bg-white p-3 rounded border">
-                                        <div class="font-medium text-purple-900">${airline.airline_name}</div>
-                                        <div class="text-sm text-gray-600">${airline.iata_code}/${airline.icao_code}</div>
-                                        <div class="text-xs text-gray-500">${airline.country}</div>
-                                      </div>
-                                    `).join('')}
-                                  </div>
-                                  ${airportData.airlines.length > 12 ? `<div class="text-sm text-gray-600 mt-3">... and ${airportData.airlines.length - 12} more carriers</div>` : ''}
-                                </div>
-
-                                <!-- Services Available -->
-                                <div class="bg-indigo-50 p-6 rounded-lg">
-                                  <h3 class="text-lg font-bold text-indigo-900 mb-4">Available Services</h3>
-                                  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    <div class="flex items-center space-x-2">
-                                      <div class="w-3 h-3 rounded-full ${airportData.operationalMetrics.services.cargoFacilities ? 'bg-green-500' : 'bg-red-500'}"></div>
-                                      <span class="text-sm">Cargo Facilities</span>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                      <div class="w-3 h-3 rounded-full ${airportData.operationalMetrics.services.customsFacilities ? 'bg-green-500' : 'bg-red-500'}"></div>
-                                      <span class="text-sm">Customs Facilities</span>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                      <div class="w-3 h-3 rounded-full ${airportData.operationalMetrics.services.emergencyServices ? 'bg-green-500' : 'bg-red-500'}"></div>
-                                      <span class="text-sm">Emergency Services</span>
-                                    </div>
-                                  </div>
-                                  
-                                  <div class="mt-4">
-                                    <div class="text-sm font-medium text-indigo-900 mb-2">Fuel Suppliers:</div>
-                                    <div class="flex flex-wrap gap-2">
-                                      ${airportData.operationalMetrics.services.fuelSuppliers.map(supplier => `
-                                        <span class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded">${supplier}</span>
-                                      `).join('')}
-                                    </div>
-                                  </div>
-                                  
-                                  <div class="mt-4">
-                                    <div class="text-sm font-medium text-indigo-900 mb-2">Ground Handlers:</div>
-                                    <div class="flex flex-wrap gap-2">
-                                      ${airportData.operationalMetrics.services.groundHandlers.map(handler => `
-                                        <span class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded">${handler}</span>
-                                      `).join('')}
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <!-- Operational Recommendations -->
-                                <div class="bg-orange-50 p-6 rounded-lg">
-                                  <h3 class="text-lg font-bold text-orange-900 mb-4">Operational Recommendations</h3>
-                                  <ul class="space-y-2">
-                                    ${airportData.recommendations.map(rec => `
-                                      <li class="flex items-start space-x-2">
-                                        <div class="w-2 h-2 bg-orange-600 rounded-full mt-2 flex-shrink-0"></div>
-                                        <span class="text-orange-800">${rec}</span>
-                                      </li>
-                                    `).join('')}
-                                  </ul>
-                                </div>
-                              </div>
-                            `;
-                          }
-                        }
-                      } catch (error) {
-                        console.error('Failed to fetch airport intelligence:', error);
-                        const resultsDiv = document.getElementById('airportIntelligenceResults');
-                        if (resultsDiv) {
-                          resultsDiv.innerHTML = '<div class="text-red-600 p-4">Failed to load airport intelligence. Please try again.</div>';
-                        }
-                      }
+                      handleAirportIntelligenceSearch(airportCode);
                     }
                   }}
                   className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -1002,10 +862,204 @@ export default function DiversionSupportDashboard() {
               </div>
             </div>
 
-            <div id="airportIntelligenceResults" className="mt-6">
-              <div className="text-center text-gray-500 py-8">
-                Enter an airport code to view comprehensive operational intelligence including capacity, performance metrics, operating airlines, and service availability
-              </div>
+            <div className="mt-6">
+              {airportIntelligenceLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                  <span className="ml-3 text-gray-600">Loading airport intelligence...</span>
+                </div>
+              ) : airportIntelligenceData ? (
+                <div className="space-y-6">
+                  {/* Basic Airport Information */}
+                  {airportIntelligenceData.basicInfo && (
+                    <div className="bg-blue-50 p-6 rounded-lg">
+                      <h3 className="text-xl font-bold text-blue-900 mb-4">
+                        {airportIntelligenceData.basicInfo.airport_name}
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <div className="text-sm text-gray-600">IATA/ICAO</div>
+                          <div className="font-semibold">
+                            {airportIntelligenceData.basicInfo.iata_code}/{airportIntelligenceData.basicInfo.icao_code}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-600">Location</div>
+                          <div className="font-semibold">
+                            {airportIntelligenceData.basicInfo.city}, {airportIntelligenceData.basicInfo.country}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-600">Type</div>
+                          <div className="font-semibold capitalize">
+                            {airportIntelligenceData.basicInfo.type?.replace('_', ' ')}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-600">Elevation</div>
+                          <div className="font-semibold">{airportIntelligenceData.basicInfo.elevation} ft</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-600">Timezone</div>
+                          <div className="font-semibold">{airportIntelligenceData.basicInfo.timezone}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-600">Coordinates</div>
+                          <div className="font-semibold">
+                            {airportIntelligenceData.basicInfo.latitude?.toFixed(4)}, {airportIntelligenceData.basicInfo.longitude?.toFixed(4)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Operational Metrics */}
+                  <div className="bg-green-50 p-6 rounded-lg">
+                    <h3 className="text-lg font-bold text-green-900 mb-4">Operational Capabilities</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">
+                          {airportIntelligenceData.operationalMetrics.capacity.runways}
+                        </div>
+                        <div className="text-sm text-gray-600">Runways</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">
+                          {airportIntelligenceData.operationalMetrics.capacity.terminals}
+                        </div>
+                        <div className="text-sm text-gray-600">Terminals</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">
+                          {airportIntelligenceData.operationalMetrics.capacity.gates}
+                        </div>
+                        <div className="text-sm text-gray-600">Gates</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">
+                          {airportIntelligenceData.operationalMetrics.capacity.hourlyCapacity}
+                        </div>
+                        <div className="text-sm text-gray-600">Hourly Capacity</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Performance Metrics */}
+                  <div className="bg-yellow-50 p-6 rounded-lg">
+                    <h3 className="text-lg font-bold text-yellow-900 mb-4">Performance Metrics</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-yellow-600">
+                          {airportIntelligenceData.operationalMetrics.efficiency.onTimePerformance?.toFixed(1)}%
+                        </div>
+                        <div className="text-sm text-gray-600">On-Time Performance</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-yellow-600">
+                          {airportIntelligenceData.operationalMetrics.efficiency.averageDelay?.toFixed(0)} min
+                        </div>
+                        <div className="text-sm text-gray-600">Average Delay</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-yellow-600">
+                          {airportIntelligenceData.operationalMetrics.efficiency.capacity_utilization ? 
+                            `${airportIntelligenceData.operationalMetrics.efficiency.capacity_utilization.toFixed(1)}%` : 
+                            'N/A'
+                          }
+                        </div>
+                        <div className="text-sm text-gray-600">Capacity Utilization</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Operating Airlines */}
+                  {airportIntelligenceData.airlines && airportIntelligenceData.airlines.length > 0 && (
+                    <div className="bg-purple-50 p-6 rounded-lg">
+                      <h3 className="text-lg font-bold text-purple-900 mb-4">
+                        Operating Airlines ({airportIntelligenceData.airlines.length} carriers)
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
+                        {airportIntelligenceData.airlines.slice(0, 12).map((airline: any, index: number) => (
+                          <div key={index} className="bg-white p-3 rounded border">
+                            <div className="font-medium text-purple-900">{airline.airline_name}</div>
+                            <div className="text-sm text-gray-600">{airline.iata_code}/{airline.icao_code}</div>
+                            <div className="text-xs text-gray-500">{airline.country}</div>
+                          </div>
+                        ))}
+                      </div>
+                      {airportIntelligenceData.airlines.length > 12 && (
+                        <div className="text-sm text-gray-600 mt-3">
+                          ... and {airportIntelligenceData.airlines.length - 12} more carriers
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Services Available */}
+                  <div className="bg-indigo-50 p-6 rounded-lg">
+                    <h3 className="text-lg font-bold text-indigo-900 mb-4">Available Services</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${
+                          airportIntelligenceData.operationalMetrics.services.cargoFacilities ? 'bg-green-500' : 'bg-red-500'
+                        }`}></div>
+                        <span className="text-sm">Cargo Facilities</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${
+                          airportIntelligenceData.operationalMetrics.services.customsFacilities ? 'bg-green-500' : 'bg-red-500'
+                        }`}></div>
+                        <span className="text-sm">Customs Facilities</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${
+                          airportIntelligenceData.operationalMetrics.services.emergencyServices ? 'bg-green-500' : 'bg-red-500'
+                        }`}></div>
+                        <span className="text-sm">Emergency Services</span>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4">
+                      <div className="text-sm font-medium text-indigo-900 mb-2">Fuel Suppliers:</div>
+                      <div className="flex flex-wrap gap-2">
+                        {airportIntelligenceData.operationalMetrics.services.fuelSuppliers.map((supplier: string, index: number) => (
+                          <span key={index} className="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded">
+                            {supplier}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4">
+                      <div className="text-sm font-medium text-indigo-900 mb-2">Ground Handlers:</div>
+                      <div className="flex flex-wrap gap-2">
+                        {airportIntelligenceData.operationalMetrics.services.groundHandlers.map((handler: string, index: number) => (
+                          <span key={index} className="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded">
+                            {handler}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Operational Recommendations */}
+                  <div className="bg-orange-50 p-6 rounded-lg">
+                    <h3 className="text-lg font-bold text-orange-900 mb-4">Operational Recommendations</h3>
+                    <ul className="space-y-2">
+                      {airportIntelligenceData.recommendations.map((rec: string, index: number) => (
+                        <li key={index} className="flex items-start space-x-2">
+                          <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 flex-shrink-0"></div>
+                          <span className="text-orange-800">{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center text-gray-500 py-8">
+                  Enter an airport code to view comprehensive operational intelligence including capacity, performance metrics, operating airlines, and service availability
+                </div>
+              )}
             </div>
           </div>
         )}
