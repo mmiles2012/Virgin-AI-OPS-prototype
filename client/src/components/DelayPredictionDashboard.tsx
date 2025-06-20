@@ -197,6 +197,55 @@ const DelayPredictionDashboard: React.FC = () => {
     setLoading(false);
   };
 
+  const loadHeathrowMetrics = async () => {
+    try {
+      const response = await fetch('/api/delays/heathrow/metrics');
+      const data = await response.json();
+      if (data.success) {
+        setHeathrowMetrics(data.metrics);
+      }
+    } catch (error) {
+      console.error('Failed to load Heathrow metrics:', error);
+    }
+  };
+
+  const loadHeathrowAirlines = async () => {
+    try {
+      const response = await fetch('/api/delays/heathrow/airlines');
+      const data = await response.json();
+      if (data.success) {
+        setHeathrowAirlines(data.airlines);
+      }
+    } catch (error) {
+      console.error('Failed to load Heathrow airlines:', error);
+    }
+  };
+
+  const predictHeathrowFlight = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/delays/heathrow/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          flightNumber: heathrowForm.flightNumber,
+          airline: heathrowForm.airline,
+          route: heathrowForm.route,
+          operationType: heathrowForm.operationType
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setHeathrowPrediction(data.prediction);
+      }
+    } catch (error) {
+      console.error('Failed to predict Heathrow flight:', error);
+    }
+    setLoading(false);
+  };
+
   const pieChartColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1'];
 
   const causesData = useMemo(() => {
@@ -231,7 +280,8 @@ const DelayPredictionDashboard: React.FC = () => {
                 { id: 'overview', label: 'Overview & Statistics' },
                 { id: 'predict', label: 'Flight Prediction' },
                 { id: 'holding', label: 'Holding Analysis' },
-                { id: 'seasonal', label: 'Seasonal Patterns' }
+                { id: 'seasonal', label: 'Seasonal Patterns' },
+                { id: 'heathrow', label: 'Heathrow Analysis' }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -705,6 +755,303 @@ const DelayPredictionDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Heathrow Analysis Tab */}
+        {activeTab === 'heathrow' && (
+          <div className="space-y-6">
+            {/* Heathrow Overview */}
+            {heathrowMetrics && (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-white p-6 rounded-lg shadow">
+                  <h3 className="text-sm font-medium text-gray-900">Total Flights</h3>
+                  <p className="text-3xl font-bold text-blue-600 mt-2">
+                    {heathrowMetrics.overview.totalFlights.toLocaleString()}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">{heathrowMetrics.overview.dataSource}</p>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow">
+                  <h3 className="text-sm font-medium text-gray-900">Punctuality Rate</h3>
+                  <p className="text-3xl font-bold text-green-600 mt-2">
+                    {heathrowMetrics.overview.punctualityRate}%
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">0-15 min late or better</p>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow">
+                  <h3 className="text-sm font-medium text-gray-900">Average Delay</h3>
+                  <p className="text-3xl font-bold text-orange-600 mt-2">
+                    {heathrowMetrics.overview.averageDelay} min
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">When delays occur</p>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow">
+                  <h3 className="text-sm font-medium text-gray-900">Cancellation Rate</h3>
+                  <p className="text-3xl font-bold text-red-600 mt-2">
+                    {heathrowMetrics.overview.cancellationRate}%
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">Flight cancellations</p>
+                </div>
+              </div>
+            )}
+
+            {/* Flight Prediction Form */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4">Heathrow Flight Performance Prediction</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Flight Number
+                    </label>
+                    <input
+                      type="text"
+                      value={heathrowForm.flightNumber}
+                      onChange={(e) => setHeathrowForm({...heathrowForm, flightNumber: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Airline
+                    </label>
+                    <select
+                      value={heathrowForm.airline}
+                      onChange={(e) => setHeathrowForm({...heathrowForm, airline: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="British Airways">British Airways</option>
+                      <option value="Virgin Atlantic">Virgin Atlantic</option>
+                      <option value="Lufthansa">Lufthansa</option>
+                      <option value="Air France">Air France</option>
+                      <option value="KLM">KLM</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Route/Destination
+                    </label>
+                    <select
+                      value={heathrowForm.route}
+                      onChange={(e) => setHeathrowForm({...heathrowForm, route: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="Sydney">Sydney (Australia)</option>
+                      <option value="New York">New York (USA)</option>
+                      <option value="Frankfurt">Frankfurt (Germany)</option>
+                      <option value="Paris">Paris (France)</option>
+                      <option value="Amsterdam">Amsterdam (Netherlands)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Operation Type
+                    </label>
+                    <select
+                      value={heathrowForm.operationType}
+                      onChange={(e) => setHeathrowForm({...heathrowForm, operationType: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="scheduled">Scheduled</option>
+                      <option value="charter">Charter</option>
+                    </select>
+                  </div>
+                  <button
+                    onClick={predictHeathrowFlight}
+                    disabled={loading}
+                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {loading ? 'Analyzing...' : 'Predict Performance'}
+                  </button>
+                </div>
+
+                {heathrowPrediction && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Prediction Results for {heathrowPrediction.flightNumber}</h3>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-green-50 p-3 rounded">
+                        <h4 className="font-semibold text-green-900">Punctuality</h4>
+                        <p className="text-2xl font-bold text-green-600">
+                          {heathrowPrediction.predictions.punctualityProbability}%
+                        </p>
+                        <p className="text-sm text-green-700">On-time probability</p>
+                      </div>
+                      <div className="bg-orange-50 p-3 rounded">
+                        <h4 className="font-semibold text-orange-900">Expected Delay</h4>
+                        <p className="text-2xl font-bold text-orange-600">
+                          {heathrowPrediction.predictions.expectedDelayMinutes} min
+                        </p>
+                        <p className="text-sm text-orange-700">Average delay time</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-50 p-4 rounded">
+                      <h4 className="font-semibold text-blue-900 mb-2">Performance Factors</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Airline Performance</span>
+                          <span className="text-sm font-medium">{(heathrowPrediction.factors.airlinePerformance * 100).toFixed(0)}%</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Route Complexity</span>
+                          <span className="text-sm font-medium">{heathrowPrediction.factors.routeComplexity.toFixed(1)}x</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Airport Congestion</span>
+                          <span className="text-sm font-medium">{(heathrowPrediction.factors.airportCongestion * 100).toFixed(0)}%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Recommendations</h4>
+                      <ul className="space-y-1">
+                        {heathrowPrediction.recommendations.map((rec: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-sm">{rec}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Airline Performance Comparison */}
+            {heathrowAirlines.length > 0 && (
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h2 className="text-xl font-semibold mb-4">Airline Performance Comparison</h2>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Airline
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Grade
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Punctuality Rate
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Avg Delay
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Total Flights
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Cancellation Rate
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {heathrowAirlines.map((airline: any, index: number) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {airline.airline}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              airline.performanceGrade === 'A' ? 'bg-green-100 text-green-800' :
+                              airline.performanceGrade === 'B' ? 'bg-blue-100 text-blue-800' :
+                              airline.performanceGrade === 'C' ? 'bg-yellow-100 text-yellow-800' :
+                              airline.performanceGrade === 'D' ? 'bg-orange-100 text-orange-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {airline.performanceGrade}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {airline.punctualityRate}%
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {airline.averageDelay} min
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {airline.totalFlights.toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {airline.cancellationRate}%
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Delay Distribution */}
+            {heathrowMetrics && (
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h2 className="text-xl font-semibold mb-4">Delay Distribution at Heathrow</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">
+                      {heathrowMetrics.delayCategories.on_time}%
+                    </div>
+                    <div className="text-sm text-gray-600">On Time</div>
+                    <div className="text-xs text-gray-500">0-15 min late</div>
+                  </div>
+                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                    <div className="text-2xl font-bold text-yellow-600">
+                      {heathrowMetrics.delayCategories.moderate_delay}%
+                    </div>
+                    <div className="text-sm text-gray-600">Moderate Delay</div>
+                    <div className="text-xs text-gray-500">16-60 min late</div>
+                  </div>
+                  <div className="text-center p-4 bg-orange-50 rounded-lg">
+                    <div className="text-2xl font-bold text-orange-600">
+                      {heathrowMetrics.delayCategories.severe_delay}%
+                    </div>
+                    <div className="text-sm text-gray-600">Severe Delay</div>
+                    <div className="text-xs text-gray-500">61-180 min late</div>
+                  </div>
+                  <div className="text-center p-4 bg-red-50 rounded-lg">
+                    <div className="text-2xl font-bold text-red-600">
+                      {heathrowMetrics.delayCategories.extreme_delay}%
+                    </div>
+                    <div className="text-sm text-gray-600">Extreme Delay</div>
+                    <div className="text-xs text-gray-500">180+ min late</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Operational Insights */}
+            {heathrowMetrics && (
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h2 className="text-xl font-semibold mb-4">Operational Insights</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="font-semibold text-green-900 mb-3">Best Performing Airlines</h3>
+                    <ul className="space-y-2">
+                      {heathrowMetrics.operationalInsights.bestPerformingAirlines.map((airline: string, index: number) => (
+                        <li key={index} className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                          <span className="text-sm">{airline}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-red-900 mb-3">Performance Challenges</h3>
+                    <ul className="space-y-2">
+                      {heathrowMetrics.operationalInsights.worstPerformingAirlines.map((airline: string, index: number) => (
+                        <li key={index} className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                          <span className="text-sm">{airline}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
