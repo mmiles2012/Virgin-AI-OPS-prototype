@@ -10,6 +10,7 @@ import { airports, findNearestAirports } from "../client/src/lib/airportData";
 import { majorAirports } from "../shared/airportData";
 import { aviationApiService } from "./aviationApiService";
 import { newsApiService } from "./newsApiService_simplified";
+import { enhancedNewsMonitor } from "./enhancedNewsMonitor";
 import { weatherApiService } from "./weatherApiService";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
@@ -1457,6 +1458,80 @@ print(json.dumps(weather))
       res.status(500).json({
         success: false,
         error: 'Failed to test news API connections',
+        timestamp: new Date().toISOString()
+      });
+    }
+  })
+
+  // Enhanced aviation news monitoring endpoint
+  app.get('/api/news/enhanced-aviation', async (req, res) => {
+    try {
+      const articles = await enhancedNewsMonitor.fetchEnhancedAviationNews();
+      const summary = enhancedNewsMonitor.generateAdvancedSummary(articles);
+      const trendingTopics = enhancedNewsMonitor.getTrendingTopics(articles);
+
+      res.json({
+        success: true,
+        articles,
+        summary,
+        trendingTopics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Enhanced aviation news fetch failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch enhanced aviation news',
+        timestamp: new Date().toISOString()
+      });
+    }
+  })
+
+  // Enhanced news filtering by category
+  app.get('/api/news/enhanced-aviation/category/:category', async (req, res) => {
+    try {
+      const { category } = req.params;
+      const allArticles = await enhancedNewsMonitor.fetchEnhancedAviationNews();
+      const filteredArticles = enhancedNewsMonitor.filterByCategory(allArticles, category);
+      
+      res.json({
+        success: true,
+        category,
+        articles: filteredArticles,
+        count: filteredArticles.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error(`Enhanced news category filter failed for ${req.params.category}:`, error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to filter news by category',
+        category: req.params.category,
+        timestamp: new Date().toISOString()
+      });
+    }
+  })
+
+  // Enhanced news filtering by region
+  app.get('/api/news/enhanced-aviation/region/:region', async (req, res) => {
+    try {
+      const { region } = req.params;
+      const allArticles = await enhancedNewsMonitor.fetchEnhancedAviationNews();
+      const filteredArticles = enhancedNewsMonitor.filterByRegion(allArticles, region);
+      
+      res.json({
+        success: true,
+        region,
+        articles: filteredArticles,
+        count: filteredArticles.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error(`Enhanced news region filter failed for ${req.params.region}:`, error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to filter news by region',
+        region: req.params.region,
         timestamp: new Date().toISOString()
       });
     }
