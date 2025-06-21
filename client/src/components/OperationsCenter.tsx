@@ -50,8 +50,8 @@ export default function OperationsCenter() {
   };
 
   return (
-    <div className="absolute inset-4 pointer-events-auto">
-      <div className="h-full grid grid-cols-3 gap-4">
+    <div className="absolute inset-4 pointer-events-auto overflow-auto">
+      <div className="min-h-full grid grid-cols-3 gap-4">
         {/* Live Flight Tracker */}
         <div className="col-span-2">
           <LiveFlightTracker />
@@ -107,15 +107,40 @@ export default function OperationsCenter() {
             )}
 
             <div className="space-y-2">
-              <Badge variant={fuelRemaining > 50000 ? "default" : "destructive"} className="w-full justify-center">
-                Fuel: {fuelRemaining.toFixed(0)} lbs
-              </Badge>
-              <Badge variant={Math.max(...engineTemps) < 850 ? "default" : "destructive"} className="w-full justify-center">
-                Engines: Normal
-              </Badge>
-              <Badge variant="default" className="w-full justify-center">
-                Systems: All Normal
-              </Badge>
+              {selectedFlight ? (
+                <>
+                  <Badge 
+                    variant={selectedFlight.fuel > 15000 ? "default" : selectedFlight.fuel > 8000 ? "secondary" : "destructive"} 
+                    className="w-full justify-center"
+                  >
+                    Fuel: {selectedFlight.fuel.toLocaleString()} kg
+                  </Badge>
+                  <Badge 
+                    variant={selectedFlight.engineStatus === 'normal' ? "default" : "destructive"} 
+                    className="w-full justify-center"
+                  >
+                    Engines: {selectedFlight.engineStatus}
+                  </Badge>
+                  <Badge 
+                    variant={selectedFlight.systemsStatus === 'normal' ? "default" : "destructive"} 
+                    className="w-full justify-center"
+                  >
+                    Systems: {selectedFlight.systemsStatus}
+                  </Badge>
+                </>
+              ) : (
+                <>
+                  <Badge variant="outline" className="w-full justify-center text-gray-400">
+                    Fuel: No Data
+                  </Badge>
+                  <Badge variant="outline" className="w-full justify-center text-gray-400">
+                    Engines: No Data
+                  </Badge>
+                  <Badge variant="outline" className="w-full justify-center text-gray-400">
+                    Systems: No Data
+                  </Badge>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>

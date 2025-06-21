@@ -10,6 +10,9 @@ interface FlightPosition {
   aircraft: string;
   origin?: string;
   destination?: string;
+  fuel: number;
+  engineStatus: string;
+  systemsStatus: string;
 }
 
 interface SelectedFlightState {
@@ -56,7 +59,10 @@ export const useSelectedFlight = create<SelectedFlightState>((set) => ({
       heading: 270,
       aircraft: config.aircraft,
       origin: config.origin,
-      destination: config.destination
+      destination: config.destination,
+      fuel: Math.floor(Math.random() * 10000) + 15000, // 15,000-25,000 kg
+      engineStatus: 'normal',
+      systemsStatus: 'normal'
     };
     
     set({ 

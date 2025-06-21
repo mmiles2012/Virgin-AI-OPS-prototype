@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { X } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 
 // Import types and data
 interface Airport {
@@ -30,6 +31,9 @@ interface FlightPosition {
   aircraft: string;
   origin?: string;
   destination?: string;
+  fuel: number;
+  engineStatus: string;
+  systemsStatus: string;
 }
 
 interface AviationWeatherData {
