@@ -120,31 +120,6 @@ function App() {
                 </div>
                 
                 <div className="space-y-2">
-                  
-
-                  
-                  <button
-                    onClick={() => setViewMode('operations')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'operations' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Operations Center
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('decisions')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'decisions' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Decision Engine
-                  </button>
-                  
                   <button
                     onClick={() => setViewMode('overview')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
@@ -157,14 +132,14 @@ function App() {
                   </button>
                   
                   <button
-                    onClick={() => setViewMode('airspace')}
+                    onClick={() => setViewMode('operations')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'airspace' 
+                      viewMode === 'operations' 
                         ? 'bg-blue-600 text-white' 
                         : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                     }`}
                   >
-                    SafeAirspace
+                    Operations Centre
                   </button>
                   
                   <button
@@ -190,36 +165,14 @@ function App() {
                   </button>
                   
                   <button
-                    onClick={() => setViewMode('diversion')}
+                    onClick={() => setViewMode('airspace')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'diversion' 
+                      viewMode === 'airspace' 
                         ? 'bg-blue-600 text-white' 
                         : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                     }`}
                   >
-                    AI Diversion
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('diversion-support')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'diversion-support' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Diversion Support
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('api-testing')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'api-testing' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    API Testing
+                    Safe Airspace
                   </button>
                   
                   <button
@@ -242,6 +195,50 @@ function App() {
                     }`}
                   >
                     Delay Prediction
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('diversion')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'diversion' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    AI Diversion
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('decisions')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'decisions' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Decision Engine
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('diversion-support')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'diversion-support' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Diversion Support
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('api-testing')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'api-testing' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    API Centre
                   </button>
                   
 
