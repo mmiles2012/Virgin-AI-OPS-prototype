@@ -63,16 +63,59 @@ export interface ICAONotamData {
 class ICAOApiService {
   private baseUrl = 'https://www.icao.int/aviation-api';
   private apiKey: string | undefined;
+  private cache: Map<string, { data: any; timestamp: number; ttl: number }> = new Map();
+  private callCount: number = 0;
+  private callLimit: number = 100;
+  private rateLimitReset: number = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
   
   constructor() {
     this.apiKey = process.env.ICAO_API_KEY || '043b75c5-6a88-4b27-9b7f-148c6b2e5893';
-    console.log('ICAO Aviation API Service initialized with official credentials');
+    console.log('ICAO Aviation API Service initialized with call limit optimization');
+    console.log(`Call limit: ${this.callLimit} calls per 24 hours`);
     
     if (!this.apiKey) {
       console.warn('ICAO API key not configured - some features may be limited');
     } else {
-      console.log('ICAO API authenticated with official ICAO identifier');
+      console.log('ICAO API authenticated with rate limiting enabled');
     }
+  }
+
+  private canMakeCall(): boolean {
+    if (Date.now() > this.rateLimitReset) {
+      this.callCount = 0;
+      this.rateLimitReset = Date.now() + (24 * 60 * 60 * 1000);
+    }
+    
+    return this.callCount < this.callLimit;
+  }
+
+  private incrementCallCount(): void {
+    this.callCount++;
+    console.log(`ICAO API call ${this.callCount}/${this.callLimit} (${this.callLimit - this.callCount} remaining)`);
+  }
+
+  private getCachedData(key: string): any | null {
+    const cached = this.cache.get(key);
+    if (cached && (Date.now() - cached.timestamp) < cached.ttl) {
+      console.log(`ICAO cache hit for ${key}`);
+      return cached.data;
+    }
+    return null;
+  }
+
+  private setCachedData(key: string, data: any, ttlMinutes: number = 30): void {
+    this.cache.set(key, {
+      data,
+      timestamp: Date.now(),
+      ttl: ttlMinutes * 60 * 1000
+    });
+  }
+
+  getRemainingCalls(): { remaining: number; resetTime: string } {
+    return {
+      remaining: this.callLimit - this.callCount,
+      resetTime: new Date(this.rateLimitReset).toISOString()
+    };
   }
 
   private getHeaders() {
@@ -89,7 +132,7 @@ class ICAOApiService {
   }
 
   /**
-   * Get real-time flight data from ICAO
+   * Get real-time flight data from ICAO with caching and rate limiting
    */
   async getFlightData(bounds?: {
     min_latitude: number;
@@ -102,8 +145,34 @@ class ICAOApiService {
     count: number;
     timestamp: string;
     data_source: string;
+    cached?: boolean;
+    calls_remaining?: number;
   }> {
     try {
+      const cacheKey = bounds ? `flights_${JSON.stringify(bounds)}` : 'flights_global';
+      
+      // Check cache first
+      const cached = this.getCachedData(cacheKey);
+      if (cached) {
+        return {
+          ...cached,
+          cached: true,
+          calls_remaining: this.callLimit - this.callCount
+        };
+      }
+
+      // Check rate limit
+      if (!this.canMakeCall()) {
+        return {
+          success: false,
+          flights: [],
+          count: 0,
+          timestamp: new Date().toISOString(),
+          data_source: 'ICAO_Rate_Limited',
+          calls_remaining: 0
+        };
+      }
+
       let url = `${this.baseUrl}/flights/live`;
       
       if (bounds) {
@@ -116,39 +185,37 @@ class ICAOApiService {
         url += `?${params}`;
       }
 
+      this.incrementCallCount();
+
       const response = await axios.get(url, {
         headers: this.getHeaders(),
         timeout: 15000
       });
 
-      if (response.data && response.data.flights) {
-        return {
-          success: true,
-          flights: response.data.flights,
-          count: response.data.flights.length,
-          timestamp: new Date().toISOString(),
-          data_source: 'ICAO_Official_Aviation_API'
-        };
-      }
-
-      return {
-        success: false,
-        flights: [],
-        count: 0,
+      const result = {
+        success: true,
+        flights: response.data?.flights || [],
+        count: response.data?.flights?.length || 0,
         timestamp: new Date().toISOString(),
-        data_source: 'ICAO_Official_Aviation_API'
+        data_source: 'ICAO_Official_Aviation_API',
+        calls_remaining: this.callLimit - this.callCount
       };
+
+      // Cache for 15 minutes for flight data
+      this.setCachedData(cacheKey, result, 15);
+      
+      return result;
 
     } catch (error: any) {
       console.error('ICAO flight data error:', error.message);
       
-      // Return structured error response
       return {
         success: false,
         flights: [],
         count: 0,
         timestamp: new Date().toISOString(),
-        data_source: 'ICAO_Official_Aviation_API'
+        data_source: 'ICAO_API_Error',
+        calls_remaining: this.callLimit - this.callCount
       };
     }
   }

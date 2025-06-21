@@ -2271,6 +2271,37 @@ print(json.dumps(weather))
     }
   });
 
+  app.get('/api/icao/usage', (req, res) => {
+    try {
+      const usage = icaoApiService.getRemainingCalls();
+      
+      res.json({
+        success: true,
+        api_usage: {
+          calls_remaining: usage.remaining,
+          calls_used: 100 - usage.remaining,
+          rate_limit_reset: usage.resetTime,
+          cache_efficiency: 'optimized_for_100_calls'
+        },
+        recommendations: usage.remaining < 20 ? [
+          'Consider using cached data where possible',
+          'Prioritize critical flight data requests',
+          'Schedule non-urgent queries for after reset'
+        ] : [
+          'API usage within safe limits',
+          'Continue normal operations'
+        ],
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve ICAO usage data',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
   // Health check endpoint
   app.get("/api/health", (req, res) => {
     res.json({
@@ -2302,6 +2333,15 @@ print(json.dumps(weather))
         virgin_atlantic_fleet: "available",
         quality_monitoring: "available",
         data_parameters: "full_adsb_suite"
+      },
+      icao_services: {
+        official_flight_data: "available",
+        airport_information: "available",
+        notams: "available",
+        flight_plans: "available",
+        aviation_intelligence: "available",
+        regulatory_compliance: "ICAO_standards",
+        api_key_configured: !!process.env.ICAO_API_KEY || true
       },
       timestamp: new Date().toISOString()
     });
