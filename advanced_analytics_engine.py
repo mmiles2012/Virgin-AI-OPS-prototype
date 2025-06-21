@@ -213,7 +213,7 @@ class AdvancedDelayAnalytics:
         print("\nTraining Advanced Ensemble Models")
         print("-" * 40)
         
-        # Prepare features
+        # Prepare features including operating cost data
         feature_columns = [
             'airline_name', 'origin_destination', 'arrival_departure', 'scheduled_charter',
             'low_visibility_flag', 'strong_wind_flag', 'ifr_flag', 'fog_risk_flag',
@@ -227,6 +227,12 @@ class AdvancedDelayAnalytics:
             feature_columns.append('temp_wind_interaction')
         if 'season' in df.columns:
             feature_columns.append('season')
+        
+        # Add operating cost features for cost-aware predictions
+        cost_features = ['operating_cost_per_hour', 'fuel_cost_per_hour', 'passenger_capacity', 'delay_cost_per_minute']
+        for feature in cost_features:
+            if feature in df.columns:
+                feature_columns.append(feature)
         
         available_features = [col for col in feature_columns if col in df.columns]
         
