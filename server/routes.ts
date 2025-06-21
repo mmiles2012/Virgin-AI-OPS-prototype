@@ -25,6 +25,7 @@ import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 import { weatherDataCollector } from "./weatherDataCollector";
 import { adsbFlightTracker } from "./adsbFlightTracker";
+import { icaoApiService } from "./icaoApiService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -2064,6 +2065,206 @@ print(json.dumps(weather))
       res.status(500).json({
         success: false,
         message: 'ADS-B quality check failed',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // ICAO Official Aviation API Endpoints
+  app.get('/api/icao/flights', async (req, res) => {
+    try {
+      const { min_lat, max_lat, min_lon, max_lon } = req.query;
+      
+      let bounds;
+      if (min_lat && max_lat && min_lon && max_lon) {
+        bounds = {
+          min_latitude: parseFloat(min_lat as string),
+          max_latitude: parseFloat(max_lat as string),
+          min_longitude: parseFloat(min_lon as string),
+          max_longitude: parseFloat(max_lon as string)
+        };
+      }
+
+      const flightData = await icaoApiService.getFlightData(bounds);
+      
+      res.json({
+        success: flightData.success,
+        flights: flightData.flights,
+        count: flightData.count,
+        data_source: 'ICAO_Official_Aviation_API',
+        regulatory_compliance: 'ICAO_Standards',
+        coverage_area: bounds,
+        timestamp: flightData.timestamp
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'ICAO flight data unavailable',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/icao/flight/:callsign', async (req, res) => {
+    try {
+      const { callsign } = req.params;
+      const flight = await icaoApiService.getFlightByCallsign(callsign.toUpperCase());
+      
+      if (flight) {
+        res.json({
+          success: true,
+          flight,
+          data_source: 'ICAO_Official_Aviation_API',
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: `No ICAO data found for flight ${callsign.toUpperCase()}`,
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve ICAO flight data',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/icao/airport/:icao', async (req, res) => {
+    try {
+      const { icao } = req.params;
+      const airport = await icaoApiService.getAirportData(icao.toUpperCase());
+      
+      if (airport) {
+        res.json({
+          success: true,
+          airport,
+          data_source: 'ICAO_Official_Aviation_API',
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: `No ICAO data found for airport ${icao.toUpperCase()}`,
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve ICAO airport data',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/icao/notams/:icao?', async (req, res) => {
+    try {
+      const { icao } = req.params;
+      const notamData = await icaoApiService.getNotams(icao?.toUpperCase());
+      
+      res.json({
+        success: notamData.success,
+        notams: notamData.notams,
+        count: notamData.count,
+        airport: icao?.toUpperCase() || 'global',
+        data_source: 'ICAO_Official_NOTAMs',
+        timestamp: notamData.timestamp
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'ICAO NOTAM data unavailable',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/icao/flight-plan/:callsign', async (req, res) => {
+    try {
+      const { callsign } = req.params;
+      const flightPlan = await icaoApiService.getFlightPlan(callsign.toUpperCase());
+      
+      res.json({
+        success: flightPlan.success,
+        flight_plan: flightPlan.flight_plan,
+        callsign: callsign.toUpperCase(),
+        data_source: 'ICAO_Official_Flight_Plans',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'ICAO flight plan data unavailable',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/icao/virgin-atlantic', async (req, res) => {
+    try {
+      const fleetData = await icaoApiService.getVirginAtlanticFleetData();
+      
+      res.json({
+        success: fleetData.success,
+        fleet_aircraft: fleetData.fleet_aircraft,
+        active_count: fleetData.active_count,
+        data_source: 'ICAO_Virgin_Atlantic_Official',
+        operator_code: 'VIR',
+        timestamp: fleetData.timestamp
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'ICAO Virgin Atlantic data unavailable',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/icao/aviation-intelligence', async (req, res) => {
+    try {
+      const intelligence = await icaoApiService.getAviationIntelligence();
+      
+      res.json({
+        success: intelligence.success,
+        aviation_intelligence: intelligence.data,
+        data_source: 'ICAO_Global_Aviation_Intelligence',
+        regulatory_authority: 'International_Civil_Aviation_Organization',
+        timestamp: intelligence.timestamp
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'ICAO aviation intelligence unavailable',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.post('/api/icao/test-connection', async (req, res) => {
+    try {
+      const connectionTest = await icaoApiService.testICAOConnection();
+      
+      res.json({
+        icao_api_status: connectionTest,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'ICAO connection test failed',
         error: error.message,
         timestamp: new Date().toISOString()
       });
