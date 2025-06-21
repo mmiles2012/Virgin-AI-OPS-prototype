@@ -11,6 +11,9 @@ import joblib
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 import json
+import requests
+import re
+from textblob import TextBlob
 
 class FuelOptimizationEngine:
     """Advanced fuel efficiency optimization with real-time recommendations"""
@@ -19,6 +22,14 @@ class FuelOptimizationEngine:
         self.aircraft_fuel_models = self._initialize_aircraft_models()
         self.weather_impact_factors = self._initialize_weather_factors()
         self.route_efficiency_data = {}
+        self.fuel_price_predictor = self._initialize_fuel_price_ml_model()
+        self.news_sentiment_cache = {}
+        
+        # Initialize with the provided Financial Times article
+        self.add_fuel_cost_news_source(
+            "https://on.ft.com/4kSn8xO",
+            "Financial Times fuel cost analysis"
+        )
         
     def _initialize_aircraft_models(self):
         """Initialize fuel consumption models for different aircraft types"""
