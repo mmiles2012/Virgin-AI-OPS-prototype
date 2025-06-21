@@ -520,6 +520,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ML Fuel Cost Prediction endpoint with Financial Times integration
+  app.post("/api/fuel/ml-prediction", async (req, res) => {
+    try {
+      const { mlFuelCostService } = await import('./mlFuelCostService.js');
+      const flightData = req.body;
+      
+      // Validate required flight data
+      if (!flightData.aircraft_type || !flightData.route) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required flight data: aircraft_type and route'
+        });
+      }
+
+      // Generate ML fuel cost prediction
+      const prediction = await mlFuelCostService.predictFuelCosts({
+        aircraft_type: flightData.aircraft_type,
+        route: flightData.route,
+        distance_nm: flightData.distance_nm || 3500,
+        passengers: flightData.passengers || 275,
+        flight_time_hours: flightData.flight_time_hours
+      });
+
+      res.json({
+        success: true,
+        mlPrediction: prediction,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Error in ML fuel prediction:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to execute ML fuel cost prediction'
+      });
+    }
+  });
+
+  // Get current fuel market sentiment from Financial Times
+  app.get("/api/fuel/market-sentiment", async (req, res) => {
+    try {
+      const { mlFuelCostService } = await import('./mlFuelCostService.js');
+      const sentiment = mlFuelCostService.getCurrentMarketSentiment();
+      const performance = mlFuelCostService.getModelPerformanceMetrics();
+
+      res.json({
+        success: true,
+        sentiment: sentiment,
+        performance: performance,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Error getting market sentiment:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve market sentiment'
+      });
+    }
+  });
+
   app.post("/api/scenarios/decision", (req, res) => {
     const { decisionId, optionId, source = 'unknown' } = req.body;
     
