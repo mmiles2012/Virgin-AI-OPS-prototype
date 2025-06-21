@@ -225,17 +225,6 @@ function App() {
                     >
                       Airbus Fleet
                     </button>
-                    
-                    <button
-                      onClick={() => setViewMode('training-simulator')}
-                      className={`w-full px-4 py-2 rounded transition-colors text-sm mt-1 ${
-                        viewMode === 'training-simulator' 
-                          ? 'bg-blue-600 text-white' 
-                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                      }`}
-                    >
-                      Flight Training
-                    </button>
                   </div>
                   
                   <button
