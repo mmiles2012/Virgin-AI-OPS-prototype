@@ -14,7 +14,7 @@
         "average_delay_minutes": 29.75,
         "total_flights": 4
       },
-      "timestamp": "2025-06-21T17:03:46.707339",
+      "timestamp": "2025-06-21T17:05:56.338300",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -27,10 +27,10 @@
       "carrier": "2 EXCEL AVIATION LTD T/A THE BLADES BROADSWORD SCIMITAR SABRE AND T2",
       "metrics": {
         "on_time_percentage": 0.0,
-        "average_delay_minutes": NaN,
+        "average_delay_minutes": 0,
         "total_flights": 0
       },
-      "timestamp": "2025-06-21T17:03:46.707419",
+      "timestamp": "2025-06-21T17:05:56.338381",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -43,10 +43,10 @@
       "carrier": "AEGEAN AIRLINES",
       "metrics": {
         "on_time_percentage": 0.0,
-        "average_delay_minutes": NaN,
+        "average_delay_minutes": 0,
         "total_flights": 0
       },
-      "timestamp": "2025-06-21T17:03:46.707487",
+      "timestamp": "2025-06-21T17:05:56.338438",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -59,10 +59,10 @@
       "carrier": "AEGEAN AIRLINES",
       "metrics": {
         "on_time_percentage": 0.0,
-        "average_delay_minutes": NaN,
+        "average_delay_minutes": 0,
         "total_flights": 0
       },
-      "timestamp": "2025-06-21T17:03:46.707556",
+      "timestamp": "2025-06-21T17:05:56.338487",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -78,7 +78,7 @@
         "average_delay_minutes": 4.5,
         "total_flights": 20
       },
-      "timestamp": "2025-06-21T17:03:46.707695",
+      "timestamp": "2025-06-21T17:05:56.338557",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -94,7 +94,7 @@
         "average_delay_minutes": 2.5,
         "total_flights": 38
       },
-      "timestamp": "2025-06-21T17:03:46.707827",
+      "timestamp": "2025-06-21T17:05:56.338610",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -110,7 +110,7 @@
         "average_delay_minutes": 7.0,
         "total_flights": 204
       },
-      "timestamp": "2025-06-21T17:03:46.707916",
+      "timestamp": "2025-06-21T17:05:56.338707",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -126,7 +126,7 @@
         "average_delay_minutes": 34.0,
         "total_flights": 16
       },
-      "timestamp": "2025-06-21T17:03:46.707994",
+      "timestamp": "2025-06-21T17:05:56.338763",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -139,10 +139,10 @@
       "carrier": "AEGEAN AIRLINES",
       "metrics": {
         "on_time_percentage": 0.0,
-        "average_delay_minutes": NaN,
+        "average_delay_minutes": 0,
         "total_flights": 0
       },
-      "timestamp": "2025-06-21T17:03:46.708069",
+      "timestamp": "2025-06-21T17:05:56.338825",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -158,7 +158,7 @@
         "average_delay_minutes": 16.0,
         "total_flights": 64
       },
-      "timestamp": "2025-06-21T17:03:46.708145",
+      "timestamp": "2025-06-21T17:05:56.338884",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -172,7 +172,7 @@
       "metrics": {
         "cancellation_percentage": 5.882353
       },
-      "timestamp": "2025-06-21T17:03:46.708151",
+      "timestamp": "2025-06-21T17:05:56.338889",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -188,7 +188,7 @@
         "average_delay_minutes": 19.125,
         "total_flights": 95
       },
-      "timestamp": "2025-06-21T17:03:46.708226",
+      "timestamp": "2025-06-21T17:05:56.338935",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -202,7 +202,7 @@
       "metrics": {
         "cancellation_percentage": 20.07243655
       },
-      "timestamp": "2025-06-21T17:03:46.708231",
+      "timestamp": "2025-06-21T17:05:56.338938",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -215,10 +215,10 @@
       "carrier": "AER LINGUS",
       "metrics": {
         "on_time_percentage": 0.0,
-        "average_delay_minutes": NaN,
+        "average_delay_minutes": 0,
         "total_flights": 0
       },
-      "timestamp": "2025-06-21T17:03:46.708310",
+      "timestamp": "2025-06-21T17:05:56.338998",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -234,7 +234,7 @@
         "average_delay_minutes": 16.25,
         "total_flights": 559
       },
-      "timestamp": "2025-06-21T17:03:46.708495",
+      "timestamp": "2025-06-21T17:05:56.339045",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -248,7 +248,7 @@
       "metrics": {
         "cancellation_percentage": 5.073193
       },
-      "timestamp": "2025-06-21T17:03:46.708501",
+      "timestamp": "2025-06-21T17:05:56.339048",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -264,7 +264,7 @@
         "average_delay_minutes": 9.0,
         "total_flights": 199
       },
-      "timestamp": "2025-06-21T17:03:46.708579",
+      "timestamp": "2025-06-21T17:05:56.339092",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -280,7 +280,7 @@
         "average_delay_minutes": 0.0,
         "total_flights": 2
       },
-      "timestamp": "2025-06-21T17:03:46.708671",
+      "timestamp": "2025-06-21T17:05:56.339154",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -294,7 +294,7 @@
       "metrics": {
         "cancellation_percentage": 50.0
       },
-      "timestamp": "2025-06-21T17:03:46.708677",
+      "timestamp": "2025-06-21T17:05:56.339158",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -310,7 +310,7 @@
         "average_delay_minutes": 9.333333333333334,
         "total_flights": 28
       },
-      "timestamp": "2025-06-21T17:03:46.708753",
+      "timestamp": "2025-06-21T17:05:56.339222",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -326,7 +326,7 @@
         "average_delay_minutes": 10.75,
         "total_flights": 455
       },
-      "timestamp": "2025-06-21T17:03:46.708825",
+      "timestamp": "2025-06-21T17:05:56.339282",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -339,10 +339,10 @@
       "carrier": "AER LINGUS",
       "metrics": {
         "on_time_percentage": 0.0,
-        "average_delay_minutes": NaN,
+        "average_delay_minutes": 0,
         "total_flights": 0
       },
-      "timestamp": "2025-06-21T17:03:46.709169",
+      "timestamp": "2025-06-21T17:05:56.339339",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -358,7 +358,7 @@
         "average_delay_minutes": 15.714285714285714,
         "total_flights": 305
       },
-      "timestamp": "2025-06-21T17:03:46.709346",
+      "timestamp": "2025-06-21T17:05:56.339405",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -374,7 +374,7 @@
         "average_delay_minutes": 14.375,
         "total_flights": 1077
       },
-      "timestamp": "2025-06-21T17:03:46.709433",
+      "timestamp": "2025-06-21T17:05:56.339473",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -390,7 +390,7 @@
         "average_delay_minutes": 10.25,
         "total_flights": 306
       },
-      "timestamp": "2025-06-21T17:03:46.709508",
+      "timestamp": "2025-06-21T17:05:56.339532",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -404,7 +404,7 @@
       "metrics": {
         "cancellation_percentage": 8.202926
       },
-      "timestamp": "2025-06-21T17:03:46.709515",
+      "timestamp": "2025-06-21T17:05:56.339536",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -420,7 +420,7 @@
         "average_delay_minutes": 11.0,
         "total_flights": 114
       },
-      "timestamp": "2025-06-21T17:03:46.709598",
+      "timestamp": "2025-06-21T17:05:56.339602",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -436,7 +436,7 @@
         "average_delay_minutes": 21.5,
         "total_flights": 506
       },
-      "timestamp": "2025-06-21T17:03:46.709689",
+      "timestamp": "2025-06-21T17:05:56.339684",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -450,7 +450,7 @@
       "metrics": {
         "cancellation_percentage": 6.7216077499999995
       },
-      "timestamp": "2025-06-21T17:03:46.709696",
+      "timestamp": "2025-06-21T17:05:56.339689",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -466,7 +466,7 @@
         "average_delay_minutes": 23.0,
         "total_flights": 82
       },
-      "timestamp": "2025-06-21T17:03:46.709773",
+      "timestamp": "2025-06-21T17:05:56.339746",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -482,7 +482,7 @@
         "average_delay_minutes": 11.0,
         "total_flights": 264
       },
-      "timestamp": "2025-06-21T17:03:46.709843",
+      "timestamp": "2025-06-21T17:05:56.339804",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -498,7 +498,7 @@
         "average_delay_minutes": 69.83333333333333,
         "total_flights": 95
       },
-      "timestamp": "2025-06-21T17:03:46.709915",
+      "timestamp": "2025-06-21T17:05:56.339877",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -512,7 +512,7 @@
       "metrics": {
         "cancellation_percentage": 9.241910142857142
       },
-      "timestamp": "2025-06-21T17:03:46.709920",
+      "timestamp": "2025-06-21T17:05:56.339882",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -528,7 +528,7 @@
         "average_delay_minutes": 21.0,
         "total_flights": 66
       },
-      "timestamp": "2025-06-21T17:03:46.709990",
+      "timestamp": "2025-06-21T17:05:56.339943",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -541,10 +541,10 @@
       "carrier": "AERONEXUS",
       "metrics": {
         "on_time_percentage": 0.0,
-        "average_delay_minutes": NaN,
+        "average_delay_minutes": 0,
         "total_flights": 0
       },
-      "timestamp": "2025-06-21T17:03:46.710060",
+      "timestamp": "2025-06-21T17:05:56.339997",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -560,7 +560,7 @@
         "average_delay_minutes": 19.0,
         "total_flights": 34
       },
-      "timestamp": "2025-06-21T17:03:46.710128",
+      "timestamp": "2025-06-21T17:05:56.340052",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -576,7 +576,7 @@
         "average_delay_minutes": 23.5,
         "total_flights": 30
       },
-      "timestamp": "2025-06-21T17:03:46.710198",
+      "timestamp": "2025-06-21T17:05:56.340103",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -592,7 +592,7 @@
         "average_delay_minutes": 18.5,
         "total_flights": 18
       },
-      "timestamp": "2025-06-21T17:03:46.710273",
+      "timestamp": "2025-06-21T17:05:56.340158",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -608,7 +608,7 @@
         "average_delay_minutes": 14.75,
         "total_flights": 102
       },
-      "timestamp": "2025-06-21T17:03:46.710346",
+      "timestamp": "2025-06-21T17:05:56.340211",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -621,10 +621,10 @@
       "carrier": "AIR CANADA",
       "metrics": {
         "on_time_percentage": 0.0,
-        "average_delay_minutes": NaN,
+        "average_delay_minutes": 0,
         "total_flights": 0
       },
-      "timestamp": "2025-06-21T17:03:46.710414",
+      "timestamp": "2025-06-21T17:05:56.340264",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -640,7 +640,7 @@
         "average_delay_minutes": 17.166666666666668,
         "total_flights": 464
       },
-      "timestamp": "2025-06-21T17:03:46.710488",
+      "timestamp": "2025-06-21T17:05:56.340322",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -656,7 +656,7 @@
         "average_delay_minutes": 25.0,
         "total_flights": 84
       },
-      "timestamp": "2025-06-21T17:03:46.710560",
+      "timestamp": "2025-06-21T17:05:56.340379",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -672,7 +672,7 @@
         "average_delay_minutes": 12.75,
         "total_flights": 146
       },
-      "timestamp": "2025-06-21T17:03:46.710645",
+      "timestamp": "2025-06-21T17:05:56.340451",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -688,7 +688,7 @@
         "average_delay_minutes": 37.5,
         "total_flights": 2
       },
-      "timestamp": "2025-06-21T17:03:46.710728",
+      "timestamp": "2025-06-21T17:05:56.340506",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -704,7 +704,7 @@
         "average_delay_minutes": 7.5,
         "total_flights": 97
       },
-      "timestamp": "2025-06-21T17:03:46.710801",
+      "timestamp": "2025-06-21T17:05:56.340557",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -720,7 +720,7 @@
         "average_delay_minutes": 17.0,
         "total_flights": 1
       },
-      "timestamp": "2025-06-21T17:03:46.710940",
+      "timestamp": "2025-06-21T17:05:56.340604",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -736,7 +736,7 @@
         "average_delay_minutes": 5.5,
         "total_flights": 123
       },
-      "timestamp": "2025-06-21T17:03:46.711160",
+      "timestamp": "2025-06-21T17:05:56.340670",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -752,7 +752,7 @@
         "average_delay_minutes": 13.0,
         "total_flights": 187
       },
-      "timestamp": "2025-06-21T17:03:46.711250",
+      "timestamp": "2025-06-21T17:05:56.340714",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -768,7 +768,7 @@
         "average_delay_minutes": 18.5,
         "total_flights": 121
       },
-      "timestamp": "2025-06-21T17:03:46.711324",
+      "timestamp": "2025-06-21T17:05:56.340756",
       "data_source": "UK_CAA_Punctuality_Stats"
     },
     {
@@ -784,7 +784,7 @@
         "average_delay_minutes": 18.0,
         "total_flights": 394
       },
-      "timestamp": "2025-06-21T17:03:46.711394",
+      "timestamp": "2025-06-21T17:05:56.340802",
       "data_source": "UK_CAA_Punctuality_Stats"
     }
   ],
@@ -797,7 +797,7 @@
       "DOT_Airline_Delay_Causes",
       "UK_CAA_Punctuality_Stats"
     ],
-    "last_updated": "2025-06-21T17:03:46.758679"
+    "last_updated": "2025-06-21T17:05:56.367322"
   },
   "data_integrity": "authentic_government_sources"
 }

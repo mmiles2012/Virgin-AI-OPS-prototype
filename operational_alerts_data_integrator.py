@@ -59,14 +59,14 @@ class OperationalAlertsDataIntegrator:
             carrier = row['carrier_name']
             airport = row['airport_name']
             
-            # Calculate delay metrics
-            total_flights = row['arr_flights']
-            delayed_flights = row['arr_del15']
+            # Calculate delay metrics with proper NaN handling
+            total_flights = float(row['arr_flights']) if pd.notna(row['arr_flights']) else 0
+            delayed_flights = float(row['arr_del15']) if pd.notna(row['arr_del15']) else 0
             delay_rate = (delayed_flights / total_flights) * 100 if total_flights > 0 else 0
             
-            avg_delay = row['arr_delay'] / total_flights if total_flights > 0 else 0
-            weather_delay_impact = row['weather_delay'] / row['arr_delay'] * 100 if row['arr_delay'] > 0 else 0
-            carrier_delay_impact = row['carrier_delay'] / row['arr_delay'] * 100 if row['arr_delay'] > 0 else 0
+            avg_delay = float(row['arr_delay']) / total_flights if total_flights > 0 and pd.notna(row['arr_delay']) else 0
+            weather_delay_impact = float(row['weather_delay']) / float(row['arr_delay']) * 100 if pd.notna(row['arr_delay']) and float(row['arr_delay']) > 0 and pd.notna(row['weather_delay']) else 0
+            carrier_delay_impact = float(row['carrier_delay']) / float(row['arr_delay']) * 100 if pd.notna(row['arr_delay']) and float(row['arr_delay']) > 0 and pd.notna(row['carrier_delay']) else 0
             
             # Generate alerts based on thresholds
             if delay_rate > 25:  # High delay rate
@@ -242,9 +242,22 @@ def main():
             if 'affected_flights' in alert:
                 print(f"  Affected Flights: {alert['affected_flights']}")
         
+        # Clean data before saving to prevent NaN values
+        def clean_data(obj):
+            if isinstance(obj, dict):
+                return {k: clean_data(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [clean_data(item) for item in obj]
+            elif pd.isna(obj) or obj != obj:  # NaN check
+                return 0
+            else:
+                return obj
+        
+        cleaned_results = clean_data(results)
+        
         # Save alerts for API consumption
         with open('operational_alerts_feed.json', 'w') as f:
-            json.dump(results, f, indent=2)
+            json.dump(cleaned_results, f, indent=2)
         
         print(f"\n✓ Alerts saved to operational_alerts_feed.json")
         print("✓ Ready for real-time operational dashboard integration")
