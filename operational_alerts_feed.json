@@ -1,0 +1,803 @@
+{
+  "success": true,
+  "alerts": [
+    {
+      "id": "punctuality_2 EXCEL AVIATION LTD T/A THE BLADES BROADSWORD SCIMITAR SABRE AND T2_LIVERPOOL (JOHN LENNON)",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - 2 EXCEL AVIATION LTD T/A THE BLADES BROADSWORD SCIMITAR SABRE AND T2",
+      "description": "Only 50.0% on-time performance at LIVERPOOL (JOHN LENNON)",
+      "airport": "LIVERPOOL (JOHN LENNON)",
+      "carrier": "2 EXCEL AVIATION LTD T/A THE BLADES BROADSWORD SCIMITAR SABRE AND T2",
+      "metrics": {
+        "on_time_percentage": 50.0,
+        "average_delay_minutes": 29.75,
+        "total_flights": 4
+      },
+      "timestamp": "2025-06-21T17:03:46.707339",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_2 EXCEL AVIATION LTD T/A THE BLADES BROADSWORD SCIMITAR SABRE AND T2_TEESSIDE INTERNATIONAL AIRPORT",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - 2 EXCEL AVIATION LTD T/A THE BLADES BROADSWORD SCIMITAR SABRE AND T2",
+      "description": "Only 0.0% on-time performance at TEESSIDE INTERNATIONAL AIRPORT",
+      "airport": "TEESSIDE INTERNATIONAL AIRPORT",
+      "carrier": "2 EXCEL AVIATION LTD T/A THE BLADES BROADSWORD SCIMITAR SABRE AND T2",
+      "metrics": {
+        "on_time_percentage": 0.0,
+        "average_delay_minutes": NaN,
+        "total_flights": 0
+      },
+      "timestamp": "2025-06-21T17:03:46.707419",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AEGEAN AIRLINES_BIRMINGHAM",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AEGEAN AIRLINES",
+      "description": "Only 0.0% on-time performance at BIRMINGHAM",
+      "airport": "BIRMINGHAM",
+      "carrier": "AEGEAN AIRLINES",
+      "metrics": {
+        "on_time_percentage": 0.0,
+        "average_delay_minutes": NaN,
+        "total_flights": 0
+      },
+      "timestamp": "2025-06-21T17:03:46.707487",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AEGEAN AIRLINES_BRISTOL",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AEGEAN AIRLINES",
+      "description": "Only 0.0% on-time performance at BRISTOL",
+      "airport": "BRISTOL",
+      "carrier": "AEGEAN AIRLINES",
+      "metrics": {
+        "on_time_percentage": 0.0,
+        "average_delay_minutes": NaN,
+        "total_flights": 0
+      },
+      "timestamp": "2025-06-21T17:03:46.707556",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AEGEAN AIRLINES_EDINBURGH",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AEGEAN AIRLINES",
+      "description": "Only 30.0% on-time performance at EDINBURGH",
+      "airport": "EDINBURGH",
+      "carrier": "AEGEAN AIRLINES",
+      "metrics": {
+        "on_time_percentage": 30.0,
+        "average_delay_minutes": 4.5,
+        "total_flights": 20
+      },
+      "timestamp": "2025-06-21T17:03:46.707695",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AEGEAN AIRLINES_GATWICK",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AEGEAN AIRLINES",
+      "description": "Only 23.7% on-time performance at GATWICK",
+      "airport": "GATWICK",
+      "carrier": "AEGEAN AIRLINES",
+      "metrics": {
+        "on_time_percentage": 23.6842105,
+        "average_delay_minutes": 2.5,
+        "total_flights": 38
+      },
+      "timestamp": "2025-06-21T17:03:46.707827",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AEGEAN AIRLINES_HEATHROW",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AEGEAN AIRLINES",
+      "description": "Only 33.3% on-time performance at HEATHROW",
+      "airport": "HEATHROW",
+      "carrier": "AEGEAN AIRLINES",
+      "metrics": {
+        "on_time_percentage": 33.333332999999996,
+        "average_delay_minutes": 7.0,
+        "total_flights": 204
+      },
+      "timestamp": "2025-06-21T17:03:46.707916",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AEGEAN AIRLINES_MANCHESTER",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AEGEAN AIRLINES",
+      "description": "Only 12.5% on-time performance at MANCHESTER",
+      "airport": "MANCHESTER",
+      "carrier": "AEGEAN AIRLINES",
+      "metrics": {
+        "on_time_percentage": 12.5,
+        "average_delay_minutes": 34.0,
+        "total_flights": 16
+      },
+      "timestamp": "2025-06-21T17:03:46.707994",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AEGEAN AIRLINES_NEWCASTLE",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AEGEAN AIRLINES",
+      "description": "Only 0.0% on-time performance at NEWCASTLE",
+      "airport": "NEWCASTLE",
+      "carrier": "AEGEAN AIRLINES",
+      "metrics": {
+        "on_time_percentage": 0.0,
+        "average_delay_minutes": NaN,
+        "total_flights": 0
+      },
+      "timestamp": "2025-06-21T17:03:46.708069",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_ABERDEEN",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 29.4% on-time performance at ABERDEEN",
+      "airport": "ABERDEEN",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 29.4117645,
+        "average_delay_minutes": 16.0,
+        "total_flights": 64
+      },
+      "timestamp": "2025-06-21T17:03:46.708145",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_cancel_AER LINGUS_ABERDEEN",
+      "severity": "high",
+      "type": "high_cancellations",
+      "title": "Cancellation Alert - AER LINGUS",
+      "description": "5.9% cancellation rate at ABERDEEN",
+      "airport": "ABERDEEN",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "cancellation_percentage": 5.882353
+      },
+      "timestamp": "2025-06-21T17:03:46.708151",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_BELFAST CITY (GEORGE BEST)",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 19.4% on-time performance at BELFAST CITY (GEORGE BEST)",
+      "airport": "BELFAST CITY (GEORGE BEST)",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 19.3650263,
+        "average_delay_minutes": 19.125,
+        "total_flights": 95
+      },
+      "timestamp": "2025-06-21T17:03:46.708226",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_cancel_AER LINGUS_BELFAST CITY (GEORGE BEST)",
+      "severity": "high",
+      "type": "high_cancellations",
+      "title": "Cancellation Alert - AER LINGUS",
+      "description": "20.1% cancellation rate at BELFAST CITY (GEORGE BEST)",
+      "airport": "BELFAST CITY (GEORGE BEST)",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "cancellation_percentage": 20.07243655
+      },
+      "timestamp": "2025-06-21T17:03:46.708231",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_BELFAST INTERNATIONAL",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 0.0% on-time performance at BELFAST INTERNATIONAL",
+      "airport": "BELFAST INTERNATIONAL",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 0.0,
+        "average_delay_minutes": NaN,
+        "total_flights": 0
+      },
+      "timestamp": "2025-06-21T17:03:46.708310",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_BIRMINGHAM",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 20.3% on-time performance at BIRMINGHAM",
+      "airport": "BIRMINGHAM",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 20.26437275,
+        "average_delay_minutes": 16.25,
+        "total_flights": 559
+      },
+      "timestamp": "2025-06-21T17:03:46.708495",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_cancel_AER LINGUS_BIRMINGHAM",
+      "severity": "high",
+      "type": "high_cancellations",
+      "title": "Cancellation Alert - AER LINGUS",
+      "description": "5.1% cancellation rate at BIRMINGHAM",
+      "airport": "BIRMINGHAM",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "cancellation_percentage": 5.073193
+      },
+      "timestamp": "2025-06-21T17:03:46.708501",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_BRISTOL",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 27.2% on-time performance at BRISTOL",
+      "airport": "BRISTOL",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 27.1639385,
+        "average_delay_minutes": 9.0,
+        "total_flights": 199
+      },
+      "timestamp": "2025-06-21T17:03:46.708579",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_CARDIFF WALES",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 0.0% on-time performance at CARDIFF WALES",
+      "airport": "CARDIFF WALES",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 0.0,
+        "average_delay_minutes": 0.0,
+        "total_flights": 2
+      },
+      "timestamp": "2025-06-21T17:03:46.708671",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_cancel_AER LINGUS_CARDIFF WALES",
+      "severity": "high",
+      "type": "high_cancellations",
+      "title": "Cancellation Alert - AER LINGUS",
+      "description": "50.0% cancellation rate at CARDIFF WALES",
+      "airport": "CARDIFF WALES",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "cancellation_percentage": 50.0
+      },
+      "timestamp": "2025-06-21T17:03:46.708677",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_EAST MIDLANDS INTERNATIONAL",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 7.3% on-time performance at EAST MIDLANDS INTERNATIONAL",
+      "airport": "EAST MIDLANDS INTERNATIONAL",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 7.326007333333333,
+        "average_delay_minutes": 9.333333333333334,
+        "total_flights": 28
+      },
+      "timestamp": "2025-06-21T17:03:46.708753",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_EDINBURGH",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 24.6% on-time performance at EDINBURGH",
+      "airport": "EDINBURGH",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 24.62671725,
+        "average_delay_minutes": 10.75,
+        "total_flights": 455
+      },
+      "timestamp": "2025-06-21T17:03:46.708825",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_GATWICK",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 0.0% on-time performance at GATWICK",
+      "airport": "GATWICK",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 0.0,
+        "average_delay_minutes": NaN,
+        "total_flights": 0
+      },
+      "timestamp": "2025-06-21T17:03:46.709169",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_GLASGOW",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 21.1% on-time performance at GLASGOW",
+      "airport": "GLASGOW",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 21.09734,
+        "average_delay_minutes": 15.714285714285714,
+        "total_flights": 305
+      },
+      "timestamp": "2025-06-21T17:03:46.709346",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_HEATHROW",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 22.3% on-time performance at HEATHROW",
+      "airport": "HEATHROW",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 22.288890375,
+        "average_delay_minutes": 14.375,
+        "total_flights": 1077
+      },
+      "timestamp": "2025-06-21T17:03:46.709433",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_LEEDS BRADFORD",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 21.7% on-time performance at LEEDS BRADFORD",
+      "airport": "LEEDS BRADFORD",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 21.66535175,
+        "average_delay_minutes": 10.25,
+        "total_flights": 306
+      },
+      "timestamp": "2025-06-21T17:03:46.709508",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_cancel_AER LINGUS_LEEDS BRADFORD",
+      "severity": "high",
+      "type": "high_cancellations",
+      "title": "Cancellation Alert - AER LINGUS",
+      "description": "8.2% cancellation rate at LEEDS BRADFORD",
+      "airport": "LEEDS BRADFORD",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "cancellation_percentage": 8.202926
+      },
+      "timestamp": "2025-06-21T17:03:46.709515",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_LIVERPOOL (JOHN LENNON)",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 11.5% on-time performance at LIVERPOOL (JOHN LENNON)",
+      "airport": "LIVERPOOL (JOHN LENNON)",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 11.5079365,
+        "average_delay_minutes": 11.0,
+        "total_flights": 114
+      },
+      "timestamp": "2025-06-21T17:03:46.709598",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_MANCHESTER",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 19.2% on-time performance at MANCHESTER",
+      "airport": "MANCHESTER",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 19.1981095,
+        "average_delay_minutes": 21.5,
+        "total_flights": 506
+      },
+      "timestamp": "2025-06-21T17:03:46.709689",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_cancel_AER LINGUS_MANCHESTER",
+      "severity": "high",
+      "type": "high_cancellations",
+      "title": "Cancellation Alert - AER LINGUS",
+      "description": "6.7% cancellation rate at MANCHESTER",
+      "airport": "MANCHESTER",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "cancellation_percentage": 6.7216077499999995
+      },
+      "timestamp": "2025-06-21T17:03:46.709696",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_NEWCASTLE",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 24.7% on-time performance at NEWCASTLE",
+      "airport": "NEWCASTLE",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 24.71719475,
+        "average_delay_minutes": 23.0,
+        "total_flights": 82
+      },
+      "timestamp": "2025-06-21T17:03:46.709773",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS_SOUTHAMPTON",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS",
+      "description": "Only 14.4% on-time performance at SOUTHAMPTON",
+      "airport": "SOUTHAMPTON",
+      "carrier": "AER LINGUS",
+      "metrics": {
+        "on_time_percentage": 14.39000625,
+        "average_delay_minutes": 11.0,
+        "total_flights": 264
+      },
+      "timestamp": "2025-06-21T17:03:46.709843",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AER LINGUS (UK) LTD_MANCHESTER",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AER LINGUS (UK) LTD",
+      "description": "Only 13.9% on-time performance at MANCHESTER",
+      "airport": "MANCHESTER",
+      "carrier": "AER LINGUS (UK) LTD",
+      "metrics": {
+        "on_time_percentage": 13.880589285714285,
+        "average_delay_minutes": 69.83333333333333,
+        "total_flights": 95
+      },
+      "timestamp": "2025-06-21T17:03:46.709915",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_cancel_AER LINGUS (UK) LTD_MANCHESTER",
+      "severity": "high",
+      "type": "high_cancellations",
+      "title": "Cancellation Alert - AER LINGUS (UK) LTD",
+      "description": "9.2% cancellation rate at MANCHESTER",
+      "airport": "MANCHESTER",
+      "carrier": "AER LINGUS (UK) LTD",
+      "metrics": {
+        "cancellation_percentage": 9.241910142857142
+      },
+      "timestamp": "2025-06-21T17:03:46.709920",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AEROMEXICO_HEATHROW",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AEROMEXICO",
+      "description": "Only 36.5% on-time performance at HEATHROW",
+      "airport": "HEATHROW",
+      "carrier": "AEROMEXICO",
+      "metrics": {
+        "on_time_percentage": 36.510264,
+        "average_delay_minutes": 21.0,
+        "total_flights": 66
+      },
+      "timestamp": "2025-06-21T17:03:46.709990",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AERONEXUS_STANSTED",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AERONEXUS",
+      "description": "Only 0.0% on-time performance at STANSTED",
+      "airport": "STANSTED",
+      "carrier": "AERONEXUS",
+      "metrics": {
+        "on_time_percentage": 0.0,
+        "average_delay_minutes": NaN,
+        "total_flights": 0
+      },
+      "timestamp": "2025-06-21T17:03:46.710060",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR ALGERIE_HEATHROW",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR ALGERIE",
+      "description": "Only 23.5% on-time performance at HEATHROW",
+      "airport": "HEATHROW",
+      "carrier": "AIR ALGERIE",
+      "metrics": {
+        "on_time_percentage": 23.529412,
+        "average_delay_minutes": 19.0,
+        "total_flights": 34
+      },
+      "timestamp": "2025-06-21T17:03:46.710128",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR ARABIA MAROC_GATWICK",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR ARABIA MAROC",
+      "description": "Only 23.3% on-time performance at GATWICK",
+      "airport": "GATWICK",
+      "carrier": "AIR ARABIA MAROC",
+      "metrics": {
+        "on_time_percentage": 23.333333500000002,
+        "average_delay_minutes": 23.5,
+        "total_flights": 30
+      },
+      "timestamp": "2025-06-21T17:03:46.710198",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR ASTANA_HEATHROW",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR ASTANA",
+      "description": "Only 22.2% on-time performance at HEATHROW",
+      "airport": "HEATHROW",
+      "carrier": "AIR ASTANA",
+      "metrics": {
+        "on_time_percentage": 22.222222000000002,
+        "average_delay_minutes": 18.5,
+        "total_flights": 18
+      },
+      "timestamp": "2025-06-21T17:03:46.710273",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR BALTIC_GATWICK",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR BALTIC",
+      "description": "Only 26.6% on-time performance at GATWICK",
+      "airport": "GATWICK",
+      "carrier": "AIR BALTIC",
+      "metrics": {
+        "on_time_percentage": 26.619433,
+        "average_delay_minutes": 14.75,
+        "total_flights": 102
+      },
+      "timestamp": "2025-06-21T17:03:46.710346",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR CANADA_EDINBURGH",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR CANADA",
+      "description": "Only 0.0% on-time performance at EDINBURGH",
+      "airport": "EDINBURGH",
+      "carrier": "AIR CANADA",
+      "metrics": {
+        "on_time_percentage": 0.0,
+        "average_delay_minutes": NaN,
+        "total_flights": 0
+      },
+      "timestamp": "2025-06-21T17:03:46.710414",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR CANADA_HEATHROW",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR CANADA",
+      "description": "Only 30.6% on-time performance at HEATHROW",
+      "airport": "HEATHROW",
+      "carrier": "AIR CANADA",
+      "metrics": {
+        "on_time_percentage": 30.6407125,
+        "average_delay_minutes": 17.166666666666668,
+        "total_flights": 464
+      },
+      "timestamp": "2025-06-21T17:03:46.710488",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR CHINA_GATWICK",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR CHINA",
+      "description": "Only 29.6% on-time performance at GATWICK",
+      "airport": "GATWICK",
+      "carrier": "AIR CHINA",
+      "metrics": {
+        "on_time_percentage": 29.58333325,
+        "average_delay_minutes": 25.0,
+        "total_flights": 84
+      },
+      "timestamp": "2025-06-21T17:03:46.710560",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR CHINA_HEATHROW",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR CHINA",
+      "description": "Only 29.3% on-time performance at HEATHROW",
+      "airport": "HEATHROW",
+      "carrier": "AIR CHINA",
+      "metrics": {
+        "on_time_percentage": 29.33743175,
+        "average_delay_minutes": 12.75,
+        "total_flights": 146
+      },
+      "timestamp": "2025-06-21T17:03:46.710645",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR DOLOMITI_ISLE OF MAN",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR DOLOMITI",
+      "description": "Only 50.0% on-time performance at ISLE OF MAN",
+      "airport": "ISLE OF MAN",
+      "carrier": "AIR DOLOMITI",
+      "metrics": {
+        "on_time_percentage": 50.0,
+        "average_delay_minutes": 37.5,
+        "total_flights": 2
+      },
+      "timestamp": "2025-06-21T17:03:46.710728",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR DOLOMITI_LONDON CITY",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR DOLOMITI",
+      "description": "Only 47.4% on-time performance at LONDON CITY",
+      "airport": "LONDON CITY",
+      "carrier": "AIR DOLOMITI",
+      "metrics": {
+        "on_time_percentage": 47.367346999999995,
+        "average_delay_minutes": 7.5,
+        "total_flights": 97
+      },
+      "timestamp": "2025-06-21T17:03:46.710801",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR DOLOMITI_STANSTED",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR DOLOMITI",
+      "description": "Only 0.0% on-time performance at STANSTED",
+      "airport": "STANSTED",
+      "carrier": "AIR DOLOMITI",
+      "metrics": {
+        "on_time_percentage": 0.0,
+        "average_delay_minutes": 17.0,
+        "total_flights": 1
+      },
+      "timestamp": "2025-06-21T17:03:46.710940",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR EUROPA_GATWICK",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR EUROPA",
+      "description": "Only 32.3% on-time performance at GATWICK",
+      "airport": "GATWICK",
+      "carrier": "AIR EUROPA",
+      "metrics": {
+        "on_time_percentage": 32.258065,
+        "average_delay_minutes": 5.5,
+        "total_flights": 123
+      },
+      "timestamp": "2025-06-21T17:03:46.711160",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR FRANCE_BIRMINGHAM",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR FRANCE",
+      "description": "Only 30.7% on-time performance at BIRMINGHAM",
+      "airport": "BIRMINGHAM",
+      "carrier": "AIR FRANCE",
+      "metrics": {
+        "on_time_percentage": 30.729166999999997,
+        "average_delay_minutes": 13.0,
+        "total_flights": 187
+      },
+      "timestamp": "2025-06-21T17:03:46.711250",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR FRANCE_EDINBURGH",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR FRANCE",
+      "description": "Only 26.2% on-time performance at EDINBURGH",
+      "airport": "EDINBURGH",
+      "carrier": "AIR FRANCE",
+      "metrics": {
+        "on_time_percentage": 26.190476,
+        "average_delay_minutes": 18.5,
+        "total_flights": 121
+      },
+      "timestamp": "2025-06-21T17:03:46.711324",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    },
+    {
+      "id": "punctuality_AIR FRANCE_HEATHROW",
+      "severity": "high",
+      "type": "poor_punctuality",
+      "title": "Punctuality Alert - AIR FRANCE",
+      "description": "Only 28.1% on-time performance at HEATHROW",
+      "airport": "HEATHROW",
+      "carrier": "AIR FRANCE",
+      "metrics": {
+        "on_time_percentage": 28.05992875,
+        "average_delay_minutes": 18.0,
+        "total_flights": 394
+      },
+      "timestamp": "2025-06-21T17:03:46.711394",
+      "data_source": "UK_CAA_Punctuality_Stats"
+    }
+  ],
+  "summary": {
+    "total_alerts": 617,
+    "critical_alerts": 0,
+    "high_alerts": 616,
+    "medium_alerts": 1,
+    "data_sources": [
+      "DOT_Airline_Delay_Causes",
+      "UK_CAA_Punctuality_Stats"
+    ],
+    "last_updated": "2025-06-21T17:03:46.758679"
+  },
+  "data_integrity": "authentic_government_sources"
+}

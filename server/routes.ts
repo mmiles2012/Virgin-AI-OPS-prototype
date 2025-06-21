@@ -1834,6 +1834,123 @@ print(json.dumps(weather))
     }
   });
 
+  // Operational Alerts API - Authentic Aviation Data Sources
+  app.get('/api/operational/alerts', async (req, res) => {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const alertsFilePath = path.join(process.cwd(), 'operational_alerts_feed.json');
+      
+      if (!fs.existsSync(alertsFilePath)) {
+        return res.status(404).json({
+          success: false,
+          message: 'Operational alerts data not available',
+          alerts: [],
+          summary: {
+            total_alerts: 0,
+            critical_alerts: 0,
+            high_alerts: 0,
+            medium_alerts: 0,
+            data_sources: [],
+            last_updated: new Date().toISOString()
+          }
+        });
+      }
+
+      const alertsData = JSON.parse(fs.readFileSync(alertsFilePath, 'utf8'));
+      alertsData.summary.api_served_at = new Date().toISOString();
+      
+      res.json(alertsData);
+    } catch (error) {
+      console.error('Error serving operational alerts:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve operational alerts',
+        error: error.message
+      });
+    }
+  });
+
+  app.get('/api/operational/alerts/summary', async (req, res) => {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const alertsFilePath = path.join(process.cwd(), 'operational_alerts_feed.json');
+      
+      if (!fs.existsSync(alertsFilePath)) {
+        return res.status(404).json({
+          success: false,
+          message: 'Operational alerts data not available'
+        });
+      }
+
+      const alertsData = JSON.parse(fs.readFileSync(alertsFilePath, 'utf8'));
+      
+      res.json({
+        success: true,
+        summary: {
+          ...alertsData.summary,
+          api_served_at: new Date().toISOString()
+        }
+      });
+    } catch (error) {
+      console.error('Error serving alerts summary:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve alerts summary',
+        error: error.message
+      });
+    }
+  });
+
+  app.get('/api/operational/alerts/by-severity/:severity', async (req, res) => {
+    try {
+      const { severity } = req.params;
+      const validSeverities = ['critical', 'high', 'medium', 'low'];
+      
+      if (!validSeverities.includes(severity)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid severity level. Must be: critical, high, medium, or low'
+        });
+      }
+
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const alertsFilePath = path.join(process.cwd(), 'operational_alerts_feed.json');
+      
+      if (!fs.existsSync(alertsFilePath)) {
+        return res.status(404).json({
+          success: false,
+          message: 'Operational alerts data not available',
+          alerts: []
+        });
+      }
+
+      const alertsData = JSON.parse(fs.readFileSync(alertsFilePath, 'utf8'));
+      const filteredAlerts = alertsData.alerts.filter(alert => alert.severity === severity);
+      
+      res.json({
+        success: true,
+        alerts: filteredAlerts,
+        count: filteredAlerts.length,
+        severity: severity,
+        data_sources: alertsData.summary.data_sources,
+        last_updated: alertsData.summary.last_updated
+      });
+    } catch (error) {
+      console.error('Error filtering alerts by severity:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to filter alerts',
+        error: error.message
+      });
+    }
+  });
+
   // Health check endpoint
   app.get("/api/health", (req, res) => {
     res.json({
@@ -1854,6 +1971,10 @@ print(json.dumps(weather))
         aviationstack_configured: !!process.env.AVIATIONSTACK_API_KEY,
         opensky_configured: !!(process.env.OPENSKY_USERNAME && process.env.OPENSKY_PASSWORD),
         mapbox_configured: !!process.env.MAPBOX_API_KEY
+      },
+      operational_alerts: {
+        authentic_data_sources: ["DOT_Airline_Delay_Causes", "UK_CAA_Punctuality_Stats"],
+        data_integrity: "government_aviation_authorities"
       },
       timestamp: new Date().toISOString()
     });
