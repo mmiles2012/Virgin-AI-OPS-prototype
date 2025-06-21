@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { flightDataCache } from './flightDataCache';
 import { demoFlightGenerator } from './demoFlightData';
+import { maintrolService, type MaintrolData } from './maintrolIntegration';
 
 interface AviationStackResponse {
   data: any[];
@@ -87,7 +88,7 @@ export interface DetailedFlightStatus {
     electrical: string;
     pressurization: string;
     avionics: string;
-    landing gear: string;
+    landingGear: string;
     autopilot: string;
   };
   warnings: string[];

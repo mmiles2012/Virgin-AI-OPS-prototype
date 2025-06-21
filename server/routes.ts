@@ -18,6 +18,7 @@ import { weatherApiService } from "./weatherApiService";
 import { delayPredictionService } from "./delayPredictionService";
 import { ukCaaDelayService } from "./ukCaaDelayService";
 import { tensorflowDelayService } from "./tensorflowIntegration";
+import { maintrolService } from "./maintrolIntegration";
 import { ukCaaDelayService as ukCaaAIService } from "./ukCaaIntegration";
 import { dualModelAIService } from "./dualModelIntegration";
 import { flightDataCache } from "./flightDataCache";
@@ -449,7 +450,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Detailed flight status endpoint for comprehensive monitoring
-  app.get("/api/aviation/flight/:callsign/detailed", (req, res) => {
+  app.get("/api/aviation/flight/:callsign/detailed", async (req, res) => {
     try {
       const callsign = req.params.callsign;
       const detailedStatus = aviationApiService.getDetailedFlightStatus(callsign);
@@ -471,6 +472,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         success: false, 
         error: 'Failed to retrieve detailed flight status' 
+      });
+    }
+  });
+
+  // Maintrol integration endpoints
+  app.get("/api/maintrol/test", async (req, res) => {
+    try {
+      const testResult = await maintrolService.testConnection();
+      res.json({
+        success: testResult.success,
+        message: testResult.message,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error testing Maintrol connection:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to test Maintrol connection' 
+      });
+    }
+  });
+
+  app.get("/api/maintrol/aircraft/:registration", async (req, res) => {
+    try {
+      const registration = req.params.registration;
+      const maintrolData = await maintrolService.getAircraftMaintenanceData(registration);
+      
+      if (!maintrolData) {
+        return res.status(404).json({ 
+          success: false, 
+          error: `Aircraft ${registration} not found` 
+        });
+      }
+
+      res.json({
+        success: true,
+        maintrolData: maintrolData,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error fetching Maintrol data:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to retrieve aircraft maintenance data' 
       });
     }
   });
