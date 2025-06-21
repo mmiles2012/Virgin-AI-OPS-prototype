@@ -127,6 +127,9 @@ const DelayPredictionDashboard: React.FC = () => {
   const [tensorflowStatus, setTensorflowStatus] = useState<any>(null);
   const [tensorflowPrediction, setTensorflowPrediction] = useState<any>(null);
   const [tensorflowModelInfo, setTensorflowModelInfo] = useState<any>(null);
+  const [dualModelStatus, setDualModelStatus] = useState<any>(null);
+  const [dualModelPrediction, setDualModelPrediction] = useState<any>(null);
+  const [dualModelInfo, setDualModelInfo] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   // Flight prediction form state
@@ -166,6 +169,10 @@ const DelayPredictionDashboard: React.FC = () => {
     if (activeTab === 'tensorflow') {
       loadTensorflowStatus();
       loadTensorflowModelInfo();
+    }
+    if (activeTab === 'dual-model') {
+      loadDualModelStatus();
+      loadDualModelInfo();
     }
   }, [activeTab]);
 
@@ -371,6 +378,78 @@ const DelayPredictionDashboard: React.FC = () => {
     setLoading(false);
   };
 
+  const loadDualModelStatus = async () => {
+    try {
+      const response = await fetch('/api/delays/dual-model/status');
+      const data = await response.json();
+      if (data.success) {
+        setDualModelStatus(data.status);
+      }
+    } catch (error) {
+      console.error('Failed to load dual-model status:', error);
+    }
+  };
+
+  const loadDualModelInfo = async () => {
+    try {
+      const response = await fetch('/api/delays/dual-model/info');
+      const data = await response.json();
+      if (data.success) {
+        setDualModelInfo(data.modelInfo);
+      }
+    } catch (error) {
+      console.error('Failed to load dual-model info:', error);
+    }
+  };
+
+  const trainDualModelSystem = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/delays/dual-model/train', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        await loadDualModelStatus();
+        await loadDualModelInfo();
+      }
+    } catch (error) {
+      console.error('Failed to train dual-model system:', error);
+    }
+    setLoading(false);
+  };
+
+  const predictWithDualModel = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/delays/dual-model/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          flightNumber: flightForm.flightNumber,
+          route: flightForm.route,
+          airport: 'EGLL',
+          destination: flightForm.route.split(' → ')[1] || 'International',
+          airline: flightForm.airline || 'British Airways',
+          weather: flightForm.weather,
+          traffic: flightForm.traffic
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setDualModelPrediction(data.prediction);
+      }
+    } catch (error) {
+      console.error('Failed to predict with dual-model:', error);
+    }
+    setLoading(false);
+  };
+
   const pieChartColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1'];
 
   const causesData = useMemo(() => {
@@ -407,7 +486,8 @@ const DelayPredictionDashboard: React.FC = () => {
                 { id: 'holding', label: 'Holding Analysis' },
                 { id: 'seasonal', label: 'Seasonal Patterns' },
                 { id: 'heathrow', label: 'Heathrow Analysis' },
-                { id: 'tensorflow', label: 'AI Neural Network' }
+                { id: 'tensorflow', label: 'AI Neural Network' },
+                { id: 'dual-model', label: 'Dual-Model AI' }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -1588,6 +1668,337 @@ const DelayPredictionDashboard: React.FC = () => {
                         <span className="font-medium">{(tensorflowModelInfo.validation_split * 100)}%</span>
                       </div>
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Dual-Model AI Tab */}
+        {activeTab === 'dual-model' && (
+          <div className="space-y-6">
+            {/* Dual-Model System Status */}
+            {dualModelStatus && (
+              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 rounded-lg shadow">
+                <h2 className="text-xl font-semibold mb-4 text-emerald-900">Dual-Model AI System Status</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-gray-700">Framework</h3>
+                    <p className="text-lg font-bold text-emerald-600">{dualModelStatus.framework}</p>
+                    <p className="text-xs text-gray-500">{dualModelStatus.model_type}</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-gray-700">Data Sources</h3>
+                    <div className="space-y-1">
+                      {dualModelStatus.data_sources?.map((source: string, index: number) => (
+                        <p key={index} className="text-sm font-medium text-blue-600">{source}</p>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-gray-700">System Status</h3>
+                    <p className={`text-lg font-bold ${dualModelStatus.dual_model_ready ? 'text-green-600' : 'text-orange-600'}`}>
+                      {dualModelStatus.dual_model_ready ? 'Ready' : 'Training Required'}
+                    </p>
+                    <p className="text-xs text-gray-500">{dualModelStatus.ensemble_type} Ensemble</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Model Training Section */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4">Dual-Model Training</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-medium mb-3">Training Overview</h3>
+                  <div className="space-y-3">
+                    <div className="p-3 bg-blue-50 rounded-lg">
+                      <h4 className="text-sm font-semibold text-blue-900">UK CAA Model</h4>
+                      <p className="text-xs text-blue-700">UK punctuality statistics with European operational patterns</p>
+                    </div>
+                    <div className="p-3 bg-red-50 rounded-lg">
+                      <h4 className="text-sm font-semibold text-red-900">US Airlines Model</h4>
+                      <p className="text-xs text-red-700">American delay cause data with US operational patterns</p>
+                    </div>
+                    <div className="p-3 bg-emerald-50 rounded-lg">
+                      <h4 className="text-sm font-semibold text-emerald-900">Ensemble Model</h4>
+                      <p className="text-xs text-emerald-700">Random Forest combining both predictions for optimal accuracy</p>
+                    </div>
+                  </div>
+                  
+                  {dualModelInfo && (
+                    <div className="mt-4 p-3 bg-gray-50 rounded">
+                      <h4 className="font-medium text-sm mb-2">Model Architecture</h4>
+                      <div className="space-y-1">
+                        <div className="text-xs text-gray-600">
+                          UK Model: {dualModelInfo.models?.uk_model?.architecture}
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          US Model: {dualModelInfo.models?.us_model?.architecture}
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          Ensemble: {dualModelInfo.models?.ensemble?.type}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-3">Train Dual-Model System</h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Train the comprehensive AI system using both UK CAA punctuality statistics and US Airlines delay data. 
+                    This creates an ensemble model for enhanced prediction accuracy across international operations.
+                  </p>
+                  <button
+                    onClick={trainDualModelSystem}
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 px-4 rounded-md hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50"
+                  >
+                    {loading ? 'Training Dual-Model System...' : 'Train Combined AI Models'}
+                  </button>
+                  
+                  {dualModelStatus?.dual_model_ready && (
+                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded">
+                      <p className="text-sm text-green-800">
+                        ✓ Dual-model system trained and ready for enhanced predictions
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Enhanced Prediction Interface */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4">Enhanced Dual-Model Prediction</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Flight Number
+                    </label>
+                    <input
+                      type="text"
+                      value={flightForm.flightNumber}
+                      onChange={(e) => setFlightForm({...flightForm, flightNumber: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Route
+                    </label>
+                    <input
+                      type="text"
+                      value={flightForm.route}
+                      onChange={(e) => setFlightForm({...flightForm, route: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Airline
+                    </label>
+                    <select
+                      value={flightForm.airline}
+                      onChange={(e) => setFlightForm({...flightForm, airline: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    >
+                      <option value="British Airways">British Airways</option>
+                      <option value="Virgin Atlantic">Virgin Atlantic</option>
+                      <option value="American Airlines">American Airlines</option>
+                      <option value="Delta Airlines">Delta Airlines</option>
+                      <option value="United Airlines">United Airlines</option>
+                      <option value="easyJet">easyJet</option>
+                      <option value="Ryanair">Ryanair</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Weather Conditions (0-10): {flightForm.weather}
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      value={flightForm.weather}
+                      onChange={(e) => setFlightForm({...flightForm, weather: parseInt(e.target.value)})}
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Traffic Level (0-10): {flightForm.traffic}
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      value={flightForm.traffic}
+                      onChange={(e) => setFlightForm({...flightForm, traffic: parseInt(e.target.value)})}
+                      className="w-full"
+                    />
+                  </div>
+                  <button
+                    onClick={predictWithDualModel}
+                    disabled={loading || !dualModelStatus?.dual_model_ready}
+                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 px-4 rounded-md hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50"
+                  >
+                    {loading ? 'Processing with Dual Models...' : 'Predict with Enhanced AI'}
+                  </button>
+                </div>
+
+                {dualModelPrediction && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-emerald-900">Enhanced Prediction Results</h3>
+                    
+                    {/* Model Agreement Analysis */}
+                    <div className="bg-gradient-to-r from-emerald-100 to-teal-100 p-4 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium">Model Agreement</span>
+                        <span className="text-sm font-bold text-emerald-600">
+                          {(dualModelPrediction.factors?.dualModelAgreement * 100)?.toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-white rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full"
+                          style={{ width: `${(dualModelPrediction.factors?.dualModelAgreement * 100)}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1">
+                        UK CAA + US Airlines model consensus
+                      </p>
+                    </div>
+
+                    {/* Individual Model Predictions */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-blue-50 p-3 rounded-lg">
+                        <h4 className="font-semibold text-blue-900 text-sm">UK Model</h4>
+                        <p className="text-xl font-bold text-blue-600">
+                          {dualModelPrediction.modelDetails?.ukModelPrediction?.toFixed(0)} min
+                        </p>
+                        <p className="text-xs text-blue-700">CAA Data</p>
+                      </div>
+                      <div className="bg-red-50 p-3 rounded-lg">
+                        <h4 className="font-semibold text-red-900 text-sm">US Model</h4>
+                        <p className="text-xl font-bold text-red-600">
+                          {dualModelPrediction.modelDetails?.usModelPrediction?.toFixed(0)} min
+                        </p>
+                        <p className="text-xs text-red-700">US Airlines</p>
+                      </div>
+                    </div>
+
+                    {/* Ensemble Results */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-emerald-50 p-3 rounded-lg">
+                        <h4 className="font-semibold text-emerald-900 text-sm">Delay Probability</h4>
+                        <p className="text-2xl font-bold text-emerald-600">
+                          {(dualModelPrediction.predictions?.delayProbability * 100)?.toFixed(1)}%
+                        </p>
+                        <p className="text-xs text-emerald-700">Ensemble prediction</p>
+                      </div>
+                      <div className="bg-teal-50 p-3 rounded-lg">
+                        <h4 className="font-semibold text-teal-900 text-sm">Expected Delay</h4>
+                        <p className="text-2xl font-bold text-teal-600">
+                          {dualModelPrediction.predictions?.expectedDelayMinutes} min
+                        </p>
+                        <p className="text-xs text-teal-700">Combined models</p>
+                      </div>
+                    </div>
+
+                    {/* Enhanced Recommendations */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="font-semibold mb-2 text-gray-900">Enhanced Recommendations</h4>
+                      <ul className="space-y-1">
+                        {dualModelPrediction.recommendations?.map((rec: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-2 h-2 bg-emerald-600 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-sm text-gray-700">{rec}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Model Insights */}
+                    <div className="border-t pt-3">
+                      <div className="grid grid-cols-2 gap-4 text-xs text-gray-500">
+                        <div>
+                          <span className="font-medium">Data Sources:</span>
+                          <div>{dualModelPrediction.modelDetails?.dataSources?.join(', ')}</div>
+                        </div>
+                        <div>
+                          <span className="font-medium">Confidence:</span>
+                          <div>{(dualModelPrediction.predictions?.confidence * 100)?.toFixed(1)}%</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Model Comparison Analysis */}
+            {dualModelInfo && (
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h2 className="text-xl font-semibold mb-4">Model Comparison & Capabilities</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="font-medium mb-3">UK CAA Model</h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Data Source:</span>
+                        <span className="font-medium">{dualModelInfo.models?.uk_model?.data}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Features:</span>
+                        <span className="font-medium">{dualModelInfo.models?.uk_model?.features?.length}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Focus:</span>
+                        <span className="font-medium">European Operations</span>
+                      </div>
+                    </div>
+                    <div className="mt-3 p-2 bg-blue-50 rounded text-xs">
+                      Features: {dualModelInfo.models?.uk_model?.features?.join(', ')}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium mb-3">US Airlines Model</h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Data Source:</span>
+                        <span className="font-medium">{dualModelInfo.models?.us_model?.data}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Features:</span>
+                        <span className="font-medium">{dualModelInfo.models?.us_model?.features?.length}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Focus:</span>
+                        <span className="font-medium">American Operations</span>
+                      </div>
+                    </div>
+                    <div className="mt-3 p-2 bg-red-50 rounded text-xs">
+                      Features: {dualModelInfo.models?.us_model?.features?.join(', ')}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Ensemble Benefits */}
+                <div className="mt-6 p-4 bg-emerald-50 rounded-lg">
+                  <h3 className="font-medium mb-2 text-emerald-900">Ensemble Benefits</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {dualModelInfo.capabilities?.map((capability: string, index: number) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                        <span className="text-sm text-emerald-800">{capability}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
