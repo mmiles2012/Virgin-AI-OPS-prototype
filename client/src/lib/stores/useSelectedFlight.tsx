@@ -41,11 +41,11 @@ export const useSelectedFlight = create<SelectedFlightState>((set) => ({
   setSelectedFlight: (callsign) => {
     // Create a basic FlightPosition object from callsign
     const flightConfigs = {
-      'VIR127C': { lat: 45.18, lon: -69.17, aircraft: 'A350-1000', origin: 'LHR', destination: 'JFK' },
-      'VIR43': { lat: 40.2, lon: -45.8, aircraft: 'A330-300', origin: 'LGW', destination: 'MCO' },
-      'VIR25F': { lat: 51.4, lon: -12.2, aircraft: '787-9', origin: 'LHR', destination: 'LAX' },
-      'VIR155': { lat: 49.8, lon: -25.1, aircraft: 'A350-900', origin: 'MAN', destination: 'ATL' },
-      'VIR9': { lat: 52.1, lon: -18.7, aircraft: '787-9', origin: 'LHR', destination: 'BOS' }
+      'VIR127C': { lat: 45.18, lon: -69.17, aircraft: 'A350-1000', origin: 'LHR', destination: 'JFK', fuel: 18500, engines: 'normal', systems: 'normal' },
+      'VIR43': { lat: 40.2, lon: -45.8, aircraft: 'A330-300', origin: 'LGW', destination: 'MCO', fuel: 16200, engines: 'normal', systems: 'normal' },
+      'VIR25F': { lat: 51.4, lon: -12.2, aircraft: '787-9', origin: 'LHR', destination: 'LAX', fuel: 22800, engines: 'normal', systems: 'normal' },
+      'VIR155': { lat: 49.8, lon: -25.1, aircraft: 'A350-900', origin: 'MAN', destination: 'ATL', fuel: 17600, engines: 'normal', systems: 'normal' },
+      'VIR9': { lat: 52.1, lon: -18.7, aircraft: '787-9', origin: 'LHR', destination: 'BOS', fuel: 15400, engines: 'normal', systems: 'normal' }
     };
     
     const config = flightConfigs[callsign as keyof typeof flightConfigs] || flightConfigs['VIR127C'];
@@ -60,9 +60,9 @@ export const useSelectedFlight = create<SelectedFlightState>((set) => ({
       aircraft: config.aircraft,
       origin: config.origin,
       destination: config.destination,
-      fuel: Math.floor(Math.random() * 10000) + 15000, // 15,000-25,000 kg
-      engineStatus: 'normal',
-      systemsStatus: 'normal'
+      fuel: config.fuel,
+      engineStatus: config.engines,
+      systemsStatus: config.systems
     };
     
     set({ 

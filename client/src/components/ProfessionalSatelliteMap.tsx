@@ -387,6 +387,8 @@ export default function ProfessionalSatelliteMap() {
   const [showFlights, setShowFlights] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   
+  const { selectFlight, selectedFlight } = useSelectedFlight();
+  
   // Weather controls state
   const [showWeatherPanel, setShowWeatherPanel] = useState(false);
   const [weatherLayers, setWeatherLayers] = useState({
@@ -607,13 +609,27 @@ export default function ProfessionalSatelliteMap() {
             <Marker
               key={`${flight.callsign}-${index}`}
               position={[flight.latitude, flight.longitude]}
-              icon={createFlightIcon(flight.heading, false)}
+              icon={createFlightIcon(flight.heading, selectedFlight?.callsign === flight.callsign)}
+              eventHandlers={{
+                click: () => {
+                  selectFlight(flight);
+                  console.log('Flight selected:', flight.callsign);
+                },
+              }}
             >
               <Popup>
                 <div className="text-sm">
                   <div className="font-medium">{flight.callsign}</div>
                   <div className="text-gray-600">{flight.aircraft}</div>
                   <div className="text-gray-600">{flight.altitude}ft - {flight.velocity}kts</div>
+                  <div className="text-gray-600">{flight.origin} → {flight.destination}</div>
+                  <div className="text-gray-600">Fuel: {flight.fuel} kg</div>
+                  <button 
+                    onClick={() => selectFlight(flight)}
+                    className="mt-2 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
+                  >
+                    Select Flight
+                  </button>
                 </div>
               </Popup>
             </Marker>

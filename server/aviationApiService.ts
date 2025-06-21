@@ -34,6 +34,9 @@ export interface FlightData {
   arrivalTime?: string;
   route?: string;
   status?: string;
+  fuel: number;
+  engineStatus: string;
+  systemsStatus: string;
 }
 
 interface AirportData {
