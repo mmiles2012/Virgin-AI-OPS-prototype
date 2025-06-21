@@ -166,9 +166,14 @@ function CostComparisonChart() {
 }
 
 function FleetOptimizationAnalysis() {
-  const [selectedRoute, setSelectedRoute] = useState('Long Haul');
+  const [selectedRoute, setSelectedRoute] = useState<'Long Haul' | 'Ultra Long Haul' | 'Short/Medium Haul'>('Long Haul');
   
-  const routeAnalysis = {
+  const routeAnalysis: Record<string, {
+    optimalAircraft: string;
+    reasoning: string;
+    costSaving: number;
+    alternatives: string[];
+  }> = {
     'Long Haul': {
       optimalAircraft: 'Boeing 787-9',
       reasoning: 'Best cost efficiency for passenger capacity and range',
@@ -192,10 +197,10 @@ function FleetOptimizationAnalysis() {
   return (
     <div className="space-y-6">
       <div className="flex space-x-4">
-        {Object.keys(routeAnalysis).map(route => (
+        {(Object.keys(routeAnalysis) as Array<keyof typeof routeAnalysis>).map(route => (
           <button
             key={route}
-            onClick={() => setSelectedRoute(route)}
+            onClick={() => setSelectedRoute(route as 'Long Haul' | 'Ultra Long Haul' | 'Short/Medium Haul')}
             className={`px-4 py-2 rounded-lg ${
               selectedRoute === route 
                 ? 'bg-blue-600 text-white' 
@@ -273,7 +278,7 @@ function FleetOptimizationAnalysis() {
 }
 
 function OperationalCostCalculator() {
-  const [selectedAircraft, setSelectedAircraft] = useState('Boeing 787-9');
+  const [selectedAircraft, setSelectedAircraft] = useState<keyof typeof AIRCRAFT_OPERATING_COSTS>('Boeing 787-9');
   const [flightHours, setFlightHours] = useState(8);
   const [utilizationRate, setUtilizationRate] = useState(12);
 
@@ -295,10 +300,10 @@ function OperationalCostCalculator() {
               <label className="block text-sm font-medium mb-2">Aircraft Type</label>
               <select 
                 value={selectedAircraft}
-                onChange={(e) => setSelectedAircraft(e.target.value)}
+                onChange={(e) => setSelectedAircraft(e.target.value as keyof typeof AIRCRAFT_OPERATING_COSTS)}
                 className="w-full p-2 border rounded-lg"
               >
-                {Object.keys(AIRCRAFT_OPERATING_COSTS).map(aircraft => (
+                {(Object.keys(AIRCRAFT_OPERATING_COSTS) as Array<keyof typeof AIRCRAFT_OPERATING_COSTS>).map(aircraft => (
                   <option key={aircraft} value={aircraft}>{aircraft}</option>
                 ))}
               </select>

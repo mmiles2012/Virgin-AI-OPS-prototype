@@ -67,7 +67,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -261,6 +261,17 @@ function App() {
                     Diversion Support
                   </button>
                   
+                  <button
+                    onClick={() => setViewMode('financial-analytics')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'financial-analytics' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Financial Analytics
+                  </button>
+                  
                   {/* API Centre Section */}
                   <div className="border-t border-gray-600 pt-3 mt-3">
                     <div className="text-xs text-gray-400 mb-2 px-2">API CENTRE</div>
@@ -377,6 +388,12 @@ function App() {
             {viewMode === 'airbus-ops' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
                 <AirbusOperationsCenter />
+              </div>
+            )}
+            
+            {viewMode === 'financial-analytics' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
+                <FinancialAnalyticsDashboard />
               </div>
             )}
             
