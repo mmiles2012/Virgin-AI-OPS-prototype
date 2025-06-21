@@ -24,7 +24,14 @@ export const AIRBUS_FLEET_SPECS = {
       bridge_compatibility: 'standard'
     },
     fuel_capacity: 24210,
-    service_ceiling: 39800
+    service_ceiling: 39800,
+    operating_costs: {
+      fuel_per_hour: 650, // gallons per hour
+      crew_cost_per_hour: 420,
+      maintenance_per_hour: 380,
+      insurance_per_hour: 125,
+      total_per_hour: 3850
+    }
   },
   'A321': {
     wingspan: 34.1,
@@ -45,7 +52,14 @@ export const AIRBUS_FLEET_SPECS = {
       bridge_compatibility: 'standard'
     },
     fuel_capacity: 32940,
-    service_ceiling: 39800
+    service_ceiling: 39800,
+    operating_costs: {
+      fuel_per_hour: 720, // gallons per hour
+      crew_cost_per_hour: 420,
+      maintenance_per_hour: 410,
+      insurance_per_hour: 140,
+      total_per_hour: 4200
+    }
   },
   'A330-200': {
     wingspan: 60.3,
@@ -66,7 +80,14 @@ export const AIRBUS_FLEET_SPECS = {
       bridge_compatibility: 'wide_body'
     },
     fuel_capacity: 139090,
-    service_ceiling: 41000
+    service_ceiling: 41000,
+    operating_costs: {
+      fuel_per_hour: 1750, // gallons per hour
+      crew_cost_per_hour: 580,
+      maintenance_per_hour: 680,
+      insurance_per_hour: 270,
+      total_per_hour: 7500
+    }
   },
   'A330-300': {
     wingspan: 60.3,
@@ -87,7 +108,14 @@ export const AIRBUS_FLEET_SPECS = {
       bridge_compatibility: 'wide_body'
     },
     fuel_capacity: 139090,
-    service_ceiling: 41000
+    service_ceiling: 41000,
+    operating_costs: {
+      fuel_per_hour: 1850, // gallons per hour
+      crew_cost_per_hour: 580,
+      maintenance_per_hour: 720,
+      insurance_per_hour: 280,
+      total_per_hour: 7800
+    }
   },
   'A350-1000': {
     wingspan: 64.75,
@@ -108,7 +136,14 @@ export const AIRBUS_FLEET_SPECS = {
       bridge_compatibility: 'wide_body'
     },
     fuel_capacity: 156000,
-    service_ceiling: 43100
+    service_ceiling: 43100,
+    operating_costs: {
+      fuel_per_hour: 2100, // gallons per hour
+      crew_cost_per_hour: 650,
+      maintenance_per_hour: 850,
+      insurance_per_hour: 320,
+      total_per_hour: 9200
+    }
   },
   'A380': {
     wingspan: 79.75,
@@ -129,7 +164,14 @@ export const AIRBUS_FLEET_SPECS = {
       bridge_compatibility: 'double_deck'
     },
     fuel_capacity: 320000,
-    service_ceiling: 43000
+    service_ceiling: 43000,
+    operating_costs: {
+      fuel_per_hour: 3100, // gallons per hour
+      crew_cost_per_hour: 920,
+      maintenance_per_hour: 1450,
+      insurance_per_hour: 580,
+      total_per_hour: 14200
+    }
   }
 };
 
