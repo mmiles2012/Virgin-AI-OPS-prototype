@@ -22,6 +22,7 @@ import { ukCaaDelayService as ukCaaAIService } from "./ukCaaIntegration";
 import { dualModelAIService } from "./dualModelIntegration";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
+import { weatherDataCollector } from "./weatherDataCollector";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
