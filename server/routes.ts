@@ -17,6 +17,7 @@ import { openDataSoftService } from "./openDataSoftService";
 import { weatherApiService } from "./weatherApiService";
 import { delayPredictionService } from "./delayPredictionService";
 import { ukCaaDelayService } from "./ukCaaDelayService";
+import { tensorflowDelayService } from "./tensorflowIntegration";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 
@@ -1429,6 +1430,98 @@ print(json.dumps(weather))
       res.status(500).json({
         success: false,
         error: 'Failed to get route analysis'
+      });
+    }
+  });
+
+  // TensorFlow Neural Network Routes
+  app.post('/api/delays/tensorflow/train', async (req, res) => {
+    try {
+      console.log('Starting TensorFlow neural network training...');
+      const result = await tensorflowDelayService.trainNeuralNetwork();
+      
+      res.json({
+        success: true,
+        result,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('TensorFlow training error:', error);
+      res.status(500).json({
+        success: false,
+        error: `Neural network training failed: ${error}`
+      });
+    }
+  });
+
+  app.post('/api/delays/tensorflow/predict', async (req, res) => {
+    try {
+      const { flightNumber, route, month, weather, traffic, carrierStatus } = req.body;
+      
+      if (!flightNumber || !route || month === undefined || weather === undefined || 
+          traffic === undefined || carrierStatus === undefined) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required parameters: flightNumber, route, month, weather, traffic, carrierStatus'
+        });
+      }
+
+      const prediction = await tensorflowDelayService.getEnhancedDelayPrediction(
+        flightNumber, route, month, weather, traffic, carrierStatus
+      );
+
+      res.json({
+        success: true,
+        prediction,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('TensorFlow prediction error:', error);
+      res.status(500).json({
+        success: false,
+        error: `Neural network prediction failed: ${error}`
+      });
+    }
+  });
+
+  app.get('/api/delays/tensorflow/model-info', (req, res) => {
+    try {
+      const modelInfo = tensorflowDelayService.getModelInfo();
+      
+      res.json({
+        success: true,
+        modelInfo,
+        isReady: tensorflowDelayService.isNeuralNetworkReady(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get model information'
+      });
+    }
+  });
+
+  app.get('/api/delays/tensorflow/status', (req, res) => {
+    try {
+      const isReady = tensorflowDelayService.isNeuralNetworkReady();
+      
+      res.json({
+        success: true,
+        status: {
+          neural_network_ready: isReady,
+          framework: "TensorFlow 2.14.0",
+          python_backend: "Available",
+          model_type: "Deep Neural Network",
+          training_data: "American Airlines JFK (2022-2024)",
+          last_updated: new Date().toISOString()
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get TensorFlow status'
       });
     }
   });

@@ -116,7 +116,7 @@ interface DelayStatistics {
 }
 
 const DelayPredictionDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'predict' | 'holding' | 'seasonal' | 'heathrow'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'predict' | 'holding' | 'seasonal' | 'heathrow' | 'tensorflow'>('overview');
   const [statistics, setStatistics] = useState<DelayStatistics | null>(null);
   const [seasonalPatterns, setSeasonalPatterns] = useState<SeasonalPattern[]>([]);
   const [prediction, setPrediction] = useState<DelayPrediction | null>(null);
@@ -124,6 +124,9 @@ const DelayPredictionDashboard: React.FC = () => {
   const [heathrowMetrics, setHeathrowMetrics] = useState<any>(null);
   const [heathrowPrediction, setHeathrowPrediction] = useState<any>(null);
   const [heathrowAirlines, setHeathrowAirlines] = useState<any[]>([]);
+  const [tensorflowStatus, setTensorflowStatus] = useState<any>(null);
+  const [tensorflowPrediction, setTensorflowPrediction] = useState<any>(null);
+  const [tensorflowModelInfo, setTensorflowModelInfo] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   // Flight prediction form state
@@ -159,6 +162,10 @@ const DelayPredictionDashboard: React.FC = () => {
     if (activeTab === 'heathrow') {
       loadHeathrowMetrics();
       loadHeathrowAirlines();
+    }
+    if (activeTab === 'tensorflow') {
+      loadTensorflowStatus();
+      loadTensorflowModelInfo();
     }
   }, [activeTab]);
 
@@ -327,7 +334,8 @@ const DelayPredictionDashboard: React.FC = () => {
                 { id: 'predict', label: 'Flight Prediction' },
                 { id: 'holding', label: 'Holding Analysis' },
                 { id: 'seasonal', label: 'Seasonal Patterns' },
-                { id: 'heathrow', label: 'Heathrow Analysis' }
+                { id: 'heathrow', label: 'Heathrow Analysis' },
+                { id: 'tensorflow', label: 'AI Neural Network' }
               ].map((tab) => (
                 <button
                   key={tab.id}
