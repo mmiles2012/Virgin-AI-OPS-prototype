@@ -448,6 +448,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(scenarioEngine.getScenarioState());
   });
 
+  // Detailed flight status endpoint for comprehensive monitoring
+  app.get("/api/aviation/flight/:callsign/detailed", (req, res) => {
+    try {
+      const callsign = req.params.callsign;
+      const detailedStatus = aviationApiService.getDetailedFlightStatus(callsign);
+      
+      if (!detailedStatus) {
+        return res.status(404).json({ 
+          success: false, 
+          error: `Flight ${callsign} not found` 
+        });
+      }
+
+      res.json({
+        success: true,
+        flightStatus: detailedStatus,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error fetching detailed flight status:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to retrieve detailed flight status' 
+      });
+    }
+  });
+
   app.post("/api/scenarios/decision", (req, res) => {
     const { decisionId, optionId, source = 'unknown' } = req.body;
     

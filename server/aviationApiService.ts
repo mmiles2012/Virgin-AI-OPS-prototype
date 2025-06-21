@@ -39,6 +39,72 @@ export interface FlightData {
   systemsStatus: string;
 }
 
+export interface DetailedFlightStatus {
+  callsign: string;
+  aircraft: string;
+  route: string;
+  currentPosition: {
+    latitude: number;
+    longitude: number;
+    altitude: number;
+    heading: number;
+    velocity: number;
+  };
+  fuelSystem: {
+    currentFuel: number;
+    fuelCapacity: number;
+    fuelBurnRate: number;
+    estimatedRange: number;
+    fuelPercentage: number;
+    tankDistribution: {
+      leftWing: number;
+      rightWing: number;
+      centerTank: number;
+    };
+  };
+  engineStatus: {
+    overall: string;
+    engine1: {
+      status: string;
+      temperature: number;
+      pressure: number;
+      rpm: number;
+      fuelFlow: number;
+      vibration: number;
+    };
+    engine2: {
+      status: string;
+      temperature: number;
+      pressure: number;
+      rpm: number;
+      fuelFlow: number;
+      vibration: number;
+    };
+  };
+  systemsStatus: {
+    overall: string;
+    hydraulics: string;
+    electrical: string;
+    pressurization: string;
+    avionics: string;
+    landing gear: string;
+    autopilot: string;
+  };
+  warnings: string[];
+  maintrolData?: {
+    lastMaintenance: string;
+    nextScheduledMaintenance: string;
+    maintenanceStatus: string;
+    openWorkOrders: number;
+    componentHealth: {
+      engines: number;
+      hydraulics: number;
+      electrical: number;
+      avionics: number;
+    };
+  };
+}
+
 interface AirportData {
   iata: string;
   icao: string;
@@ -2110,6 +2176,127 @@ export class AviationApiService {
       diversionsInPast30Days: data.diversions,
       averageDiversionCost: data.avgCost
     };
+  }
+
+  /**
+   * Get detailed flight status for comprehensive monitoring and Maintrol integration
+   */
+  getDetailedFlightStatus(callsign: string): DetailedFlightStatus | null {
+    // Get current flight data from demo generator
+    const currentFlights = demoFlightGenerator.getVirginAtlanticFlights();
+    const flight = currentFlights.find(f => f.callsign === callsign);
+    
+    if (!flight) return null;
+
+    // Generate detailed status based on current flight data
+    const fuelCapacity = this.getAircraftFuelCapacity(flight.aircraft);
+    const fuelPercentage = (flight.fuel / fuelCapacity) * 100;
+    
+    // Determine engine statuses based on current conditions
+    const engine1Status = flight.engineStatus === 'warning' ? 'caution' : 
+                         flight.fuel < 5000 ? 'caution' : 'normal';
+    const engine2Status = flight.engineStatus === 'warning' ? 'normal' : 
+                         Math.random() > 0.95 ? 'caution' : 'normal';
+    
+    // Generate warnings based on current status
+    const warnings: string[] = [];
+    if (flight.fuel < 5000) warnings.push('LOW FUEL');
+    if (flight.velocity > 520) warnings.push('OVERSPEED');
+    if (flight.altitude > 42000) warnings.push('ALTITUDE LIMIT EXCEEDED');
+    if (engine1Status === 'caution' || engine2Status === 'caution') warnings.push('ENGINE CAUTION');
+    if (flight.systemsStatus === 'warning') warnings.push('SYSTEMS WARNING');
+
+    return {
+      callsign: flight.callsign,
+      aircraft: flight.aircraft,
+      route: `${flight.origin}-${flight.destination}`,
+      currentPosition: {
+        latitude: flight.latitude,
+        longitude: flight.longitude,
+        altitude: flight.altitude,
+        heading: flight.heading,
+        velocity: flight.velocity
+      },
+      fuelSystem: {
+        currentFuel: flight.fuel,
+        fuelCapacity: fuelCapacity,
+        fuelBurnRate: this.getFuelBurnRate(flight.aircraft),
+        estimatedRange: this.calculateEstimatedRange(flight.fuel, flight.aircraft),
+        fuelPercentage: fuelPercentage,
+        tankDistribution: {
+          leftWing: Math.round(flight.fuel * 0.35),
+          rightWing: Math.round(flight.fuel * 0.35),
+          centerTank: Math.round(flight.fuel * 0.30)
+        }
+      },
+      engineStatus: {
+        overall: flight.engineStatus,
+        engine1: {
+          status: engine1Status,
+          temperature: 850 + Math.random() * 100,
+          pressure: 45.2 + Math.random() * 2,
+          rpm: 85 + Math.random() * 5,
+          fuelFlow: this.getFuelBurnRate(flight.aircraft) / 2 + Math.random() * 100,
+          vibration: 0.2 + Math.random() * 0.1
+        },
+        engine2: {
+          status: engine2Status,
+          temperature: 845 + Math.random() * 100,
+          pressure: 44.8 + Math.random() * 2,
+          rpm: 84 + Math.random() * 5,
+          fuelFlow: this.getFuelBurnRate(flight.aircraft) / 2 + Math.random() * 100,
+          vibration: 0.15 + Math.random() * 0.1
+        }
+      },
+      systemsStatus: {
+        overall: flight.systemsStatus,
+        hydraulics: Math.random() > 0.95 ? 'caution' : 'normal',
+        electrical: Math.random() > 0.98 ? 'caution' : 'normal',
+        pressurization: 'normal',
+        avionics: 'normal',
+        landingGear: 'normal',
+        autopilot: 'engaged'
+      },
+      warnings: warnings,
+      maintrolData: {
+        lastMaintenance: '2024-12-15T08:30:00Z',
+        nextScheduledMaintenance: '2024-12-28T10:00:00Z',
+        maintenanceStatus: 'current',
+        openWorkOrders: Math.floor(Math.random() * 3),
+        componentHealth: {
+          engines: engine1Status === 'caution' || engine2Status === 'caution' ? 85 : 95,
+          hydraulics: 98,
+          electrical: 96,
+          avionics: 99
+        }
+      }
+    };
+  }
+
+  private getAircraftFuelCapacity(aircraft: string): number {
+    const capacities: Record<string, number> = {
+      'A351': 138000, // A350-1000
+      'A339': 139090, // A330-300  
+      'B789': 126206, // 787-9
+      'A333': 139090  // A330-300
+    };
+    return capacities[aircraft] || 130000;
+  }
+
+  private getFuelBurnRate(aircraft: string): number {
+    const rates: Record<string, number> = {
+      'A351': 6800,
+      'A339': 7200,
+      'B789': 6900,
+      'A333': 7500
+    };
+    return rates[aircraft] || 7000;
+  }
+
+  private calculateEstimatedRange(currentFuel: number, aircraft: string): number {
+    const fuelBurnRate = this.getFuelBurnRate(aircraft);
+    const remainingFlightTime = currentFuel / fuelBurnRate;
+    return Math.round(remainingFlightTime * 450); // 450 knots average speed
   }
 
   /**
