@@ -1,7 +1,7 @@
 station,retrieved_at,visibility,wind_speed,temperature,dewpoint,flight_rules,low_visibility_flag,strong_wind_flag,ifr_flag,temp_dewpoint_delta,fog_risk_flag
-EGLL,2025-06-21T11:38:05.800736,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
-EGKK,2025-06-21T11:38:06.560286,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
-EGCC,2025-06-21T11:38:07.342274,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
-EGGD,2025-06-21T11:38:07.939973,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
-EGPH,2025-06-21T11:38:08.540814,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
-EGTE,2025-06-21T11:38:09.139140,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGLL,2025-06-21T11:48:17.618252,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGKK,2025-06-21T11:48:18.226489,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGCC,2025-06-21T11:48:18.878816,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGGD,2025-06-21T11:48:19.475967,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGPH,2025-06-21T11:48:20.073479,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGTE,2025-06-21T11:48:20.724513,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
