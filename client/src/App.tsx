@@ -29,6 +29,7 @@ import { NewsIntelligenceDashboard } from "./components/NewsIntelligenceDashboar
 import Boeing787DigitalTwin from "./components/Boeing787DigitalTwin";
 import AinoTrainingSimulator from "./components/AinoTrainingSimulator";
 import AirbusOperationsCenter from "./components/AirbusOperationsCenter";
+import FinancialAnalyticsDashboard from "./components/FinancialAnalyticsDashboard";
 
 // Flight control mappings
 enum FlightControls {

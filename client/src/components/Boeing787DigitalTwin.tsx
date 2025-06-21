@@ -203,7 +203,7 @@ function SystemStatusPanel({ system, data }: { system: string; data: any }) {
 // Flight Data Panel
 function FlightDataPanel({ flightData }: { flightData: any }) {
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-3 gap-4">
       <Card>
         <CardHeader>
           <CardTitle>Flight Parameters</CardTitle>
@@ -251,6 +251,43 @@ function FlightDataPanel({ flightData }: { flightData: any }) {
             <div className="flex justify-between">
               <span>ETA</span>
               <span className="font-mono">{flightData?.eta || '14:45'}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Operating Costs</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="font-semibold">Total Per Hour:</span>
+              <span className="font-mono text-lg font-bold text-green-600">
+                ${BOEING_787_SPECS.operating_costs.total_per_hour.toLocaleString()}
+              </span>
+            </div>
+            <div className="space-y-1 text-xs text-gray-600">
+              <div className="flex justify-between">
+                <span>Crew:</span>
+                <span>${BOEING_787_SPECS.operating_costs.crew_cost_per_hour.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Maintenance:</span>
+                <span>${BOEING_787_SPECS.operating_costs.maintenance_per_hour.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Insurance:</span>
+                <span>${BOEING_787_SPECS.operating_costs.insurance_per_hour.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Fuel Rate:</span>
+                <span>{BOEING_787_SPECS.operating_costs.fuel_per_hour} gal/hr</span>
+              </div>
+            </div>
+            <div className="text-xs text-gray-500 pt-1 border-t">
+              Industry authentic data
             </div>
           </div>
         </CardContent>
