@@ -61,7 +61,7 @@ export interface ICAONotamData {
 }
 
 class ICAOApiService {
-  private baseUrl = 'https://www.icao.int/aviation-api';
+  private baseUrl = 'https://api.icao.int/v1';
   private apiKey: string | undefined;
   private cache: Map<string, { data: any; timestamp: number; ttl: number }> = new Map();
   private callCount: number = 0;

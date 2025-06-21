@@ -27,6 +27,7 @@ import { weatherDataCollector } from "./weatherDataCollector";
 import { adsbFlightTracker } from "./adsbFlightTracker";
 import { icaoApiService } from "./icaoApiService";
 import { icaoMLIntegration } from "./icaoMLIntegration";
+import { icaoDemo } from "./icaoDemo";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -2500,6 +2501,158 @@ print(json.dumps(weather))
       res.status(500).json({
         success: false,
         message: 'Risk prediction failed',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // ICAO Demonstration Endpoints
+  app.get('/api/icao/demo/flights', (req, res) => {
+    try {
+      const demoFlights = icaoDemo.generateDemoFlightData();
+      
+      res.json({
+        success: true,
+        flights: demoFlights,
+        count: demoFlights.length,
+        data_source: 'ICAO_Demo_Authentic_Structures',
+        features_demonstrated: [
+          'Virgin Atlantic fleet tracking',
+          'Emergency aircraft detection',
+          'Multi-airline operations',
+          'Real-time position data',
+          'Flight phase monitoring'
+        ],
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Demo flight data generation failed',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/icao/demo/notams', (req, res) => {
+    try {
+      const demoNotams = icaoDemo.generateDemoNotamData();
+      
+      res.json({
+        success: true,
+        notams: demoNotams,
+        count: demoNotams.length,
+        data_source: 'ICAO_Demo_NOTAM_Intelligence',
+        features_demonstrated: [
+          'Runway closure monitoring',
+          'ILS system status',
+          'Air traffic control limitations',
+          'Obstacle notifications',
+          'Navigation aid testing'
+        ],
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Demo NOTAM data generation failed',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/icao/demo/airports', (req, res) => {
+    try {
+      const demoAirports = icaoDemo.generateDemoAirportData();
+      
+      res.json({
+        success: true,
+        airports: demoAirports,
+        count: demoAirports.length,
+        data_source: 'ICAO_Demo_Airport_Intelligence',
+        features_demonstrated: [
+          'Comprehensive airport data',
+          'Runway specifications',
+          'ILS capabilities',
+          'Operational status monitoring',
+          'Geographic positioning'
+        ],
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Demo airport data generation failed',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/icao/demo/ml-safety', (req, res) => {
+    try {
+      const safetyIntelligence = icaoDemo.generateMLSafetyIntelligence();
+      
+      res.json({
+        success: true,
+        safety_intelligence: safetyIntelligence,
+        data_source: 'ICAO_ML_Safety_Demo',
+        features_demonstrated: [
+          'Emergency detection algorithms',
+          'Altitude deviation analysis',
+          'Airspace congestion monitoring',
+          'Predictive safety modeling',
+          'Real-time risk assessment'
+        ],
+        ml_capabilities: {
+          random_forest_models: 'deployed',
+          feature_extraction: 'active',
+          safety_prediction: 'real_time',
+          alert_generation: 'automated'
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Demo ML safety intelligence generation failed',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/icao/demo/comprehensive-report', (req, res) => {
+    try {
+      const comprehensiveReport = icaoDemo.generateAviationIntelligenceReport();
+      
+      res.json({
+        success: true,
+        aviation_intelligence_report: comprehensiveReport,
+        data_source: 'ICAO_Comprehensive_Demo',
+        demonstration_scope: [
+          'Official ICAO data structures',
+          'Virgin Atlantic fleet operations',
+          'ML safety intelligence integration',
+          'Real-time aviation monitoring',
+          'Predictive analytics capabilities'
+        ],
+        integration_features: {
+          flight_tracking: 'comprehensive',
+          notam_processing: 'intelligent',
+          safety_analysis: 'ml_powered',
+          risk_assessment: 'predictive',
+          operational_intelligence: 'real_time'
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Comprehensive demo report generation failed',
         error: error.message,
         timestamp: new Date().toISOString()
       });
