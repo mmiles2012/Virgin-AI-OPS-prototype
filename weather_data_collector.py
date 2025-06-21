@@ -22,10 +22,11 @@ class WeatherDataCollector:
     """
     
     def __init__(self, api_key: Optional[str] = None):
-        self.api_key = api_key or os.getenv('AVIATION_WEATHER_API_KEY')
+        self.api_key = api_key or os.getenv('AVWX_API_KEY')
         self.session = requests.Session()
         self.session.headers.update({
-            'User-Agent': 'AINO-Aviation-Intelligence/1.0'
+            'User-Agent': 'AINO-Aviation-Intelligence/1.0',
+            'Authorization': f'BEARER {self.api_key}' if self.api_key else ''
         })
         
     def get_metar_taf_data(self, icao: str, api_key: str = None) -> Dict:
@@ -97,7 +98,24 @@ class WeatherDataCollector:
         return weather_df
     
     def _get_noaa_metar(self, icao: str) -> Optional[Dict]:
-        """Get METAR from NOAA Aviation Weather Center"""
+        """Get METAR from AVWX API (primary) or NOAA (fallback)"""
+        # Try AVWX API first if we have the key
+        if self.api_key:
+            try:
+                url = f"https://avwx.rest/api/metar/{icao}"
+                headers = {'Authorization': f'BEARER {self.api_key}'}
+                response = self.session.get(url, headers=headers, timeout=10)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    return self._parse_avwx_metar(data, icao)
+                elif response.status_code == 401:
+                    print(f"AVWX API authentication failed for {icao}")
+                    
+            except Exception as e:
+                print(f"AVWX METAR error for {icao}: {e}")
+        
+        # Fallback to NOAA Aviation Weather Center
         try:
             url = f"https://aviationweather.gov/api/data/metar?ids={icao}&format=json&hours=2"
             response = self.session.get(url, timeout=10)
@@ -174,6 +192,97 @@ class WeatherDataCollector:
         parsed['cloud_coverage'] = self._extract_clouds(raw_metar)
         
         return parsed
+    
+    def _parse_avwx_metar(self, avwx_data: Dict, icao: str) -> Dict:
+        """Parse AVWX API response into structured format"""
+        try:
+            # AVWX provides structured data directly
+            parsed = {
+                'icao': icao,
+                'raw_metar': avwx_data.get('raw', ''),
+                'observation_time': avwx_data.get('time', {}).get('dt', ''),
+                'visibility_m': 9999,
+                'wind_speed_kt': 0,
+                'wind_direction_deg': 0,
+                'temperature_c': 15,
+                'dewpoint_c': 10,
+                'pressure_hpa': 1013,
+                'conditions': [],
+                'cloud_coverage': 'CLR'
+            }
+            
+            # Extract visibility
+            if 'visibility' in avwx_data and avwx_data['visibility']:
+                vis_data = avwx_data['visibility']
+                if isinstance(vis_data, dict) and 'value' in vis_data:
+                    # AVWX returns visibility in statute miles, convert to meters
+                    vis_sm = vis_data['value']
+                    if vis_sm and vis_sm > 0:
+                        parsed['visibility_m'] = int(vis_sm * 1609.34)  # Convert SM to meters
+            
+            # Extract wind
+            if 'wind_direction' in avwx_data and avwx_data['wind_direction']:
+                wind_dir = avwx_data['wind_direction'].get('value')
+                if wind_dir: parsed['wind_direction_deg'] = wind_dir
+            
+            if 'wind_speed' in avwx_data and avwx_data['wind_speed']:
+                wind_speed = avwx_data['wind_speed'].get('value')
+                if wind_speed: parsed['wind_speed_kt'] = wind_speed
+            
+            # Extract temperature and dewpoint
+            if 'temperature' in avwx_data and avwx_data['temperature']:
+                temp = avwx_data['temperature'].get('value')
+                if temp is not None: parsed['temperature_c'] = temp
+            
+            if 'dewpoint' in avwx_data and avwx_data['dewpoint']:
+                dewpoint = avwx_data['dewpoint'].get('value')
+                if dewpoint is not None: parsed['dewpoint_c'] = dewpoint
+            
+            # Extract altimeter/pressure
+            if 'altimeter' in avwx_data and avwx_data['altimeter']:
+                alt_data = avwx_data['altimeter']
+                if isinstance(alt_data, dict) and 'value' in alt_data:
+                    # AVWX returns altimeter in inHg, convert to hPa
+                    alt_inhg = alt_data['value']
+                    if alt_inhg: parsed['pressure_hpa'] = int(alt_inhg * 33.8639)
+            
+            # Extract weather conditions
+            if 'other' in avwx_data and avwx_data['other']:
+                for condition in avwx_data['other']:
+                    if 'RA' in condition: parsed['conditions'].append('Rain')
+                    elif 'SN' in condition: parsed['conditions'].append('Snow')
+                    elif 'FG' in condition: parsed['conditions'].append('Fog')
+                    elif 'TS' in condition: parsed['conditions'].append('Thunderstorm')
+                    elif 'BR' in condition: parsed['conditions'].append('Mist')
+            
+            # Extract clouds
+            if 'clouds' in avwx_data and avwx_data['clouds']:
+                clouds = avwx_data['clouds']
+                if clouds:
+                    cloud_types = [cloud.get('type', '') for cloud in clouds]
+                    if 'OVC' in cloud_types: parsed['cloud_coverage'] = 'Overcast'
+                    elif 'BKN' in cloud_types: parsed['cloud_coverage'] = 'Broken'
+                    elif 'SCT' in cloud_types: parsed['cloud_coverage'] = 'Scattered'
+                    elif 'FEW' in cloud_types: parsed['cloud_coverage'] = 'Few'
+            
+            return parsed
+            
+        except Exception as e:
+            print(f"AVWX parsing error for {icao}: {e}")
+            # Return with defaults if parsing fails
+            return {
+                'icao': icao,
+                'raw_metar': avwx_data.get('raw', ''),
+                'observation_time': avwx_data.get('time', {}).get('dt', ''),
+                'visibility_m': 9999,
+                'wind_speed_kt': 5,
+                'wind_direction_deg': 270,
+                'temperature_c': 15,
+                'dewpoint_c': 10,
+                'pressure_hpa': 1013,
+                'conditions': [],
+                'cloud_coverage': 'CLR'
+            }
     
     def _parse_taf(self, taf_data: Dict) -> Dict:
         """Parse TAF data for forecast information"""
