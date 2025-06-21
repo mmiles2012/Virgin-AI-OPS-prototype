@@ -1065,6 +1065,239 @@ export default function DiversionSupportDashboard() {
             </div>
           </div>
         )}
+
+        {/* Aircraft Compatibility Tab */}
+        {activeTab === 'compatibility' && (
+          <div className="bg-white rounded-xl shadow-lg p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">
+              Aircraft Compatibility Assessment
+            </h2>
+            
+            <div className="mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Aircraft Type
+                  </label>
+                  <select
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={diversionRequest.aircraftType}
+                    onChange={(e) => setDiversionRequest({...diversionRequest, aircraftType: e.target.value})}
+                  >
+                    <option value="">Select Aircraft</option>
+                    {Object.keys(AIRBUS_FLEET_SPECS).map((aircraft) => (
+                      <option key={aircraft} value={aircraft}>{aircraft}</option>
+                    ))}
+                    <option value="B787-9">B787-9</option>
+                    <option value="B777-300ER">B777-300ER</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Diversion Airport
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter ICAO code (e.g., EGLL)"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={diversionRequest.diversionAirport}
+                    onChange={(e) => setDiversionRequest({...diversionRequest, diversionAirport: e.target.value.toUpperCase()})}
+                  />
+                </div>
+              </div>
+              
+              <button
+                className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                onClick={() => {
+                  if (diversionRequest.aircraftType && diversionRequest.diversionAirport) {
+                    const isAirbus = Object.keys(AIRBUS_FLEET_SPECS).includes(diversionRequest.aircraftType);
+                    
+                    if (isAirbus) {
+                      const aircraftType = diversionRequest.aircraftType as keyof typeof AIRBUS_FLEET_SPECS;
+                      const airportSpecs = {
+                        longestRunway: 4000,
+                        wideBodyGates: 10,
+                        doubleAisleCapable: true,
+                        maxWingspan: 80,
+                        maxLength: 80,
+                        maxHeight: 30
+                      };
+                      
+                      const compatibility = assessAirportCompatibility(aircraftType, airportSpecs);
+                      
+                      const resultsDiv = document.getElementById('compatibilityResults');
+                      if (resultsDiv) {
+                        resultsDiv.innerHTML = `
+                          <div class="space-y-4">
+                            <div class="bg-${compatibility.compatible ? 'green' : 'red'}-50 p-4 rounded-lg border border-${compatibility.compatible ? 'green' : 'red'}-200">
+                              <h3 class="font-semibold text-${compatibility.compatible ? 'green' : 'red'}-900 mb-2">
+                                Compatibility Score: ${compatibility.score}%
+                              </h3>
+                              <p class="text-${compatibility.compatible ? 'green' : 'red'}-700">
+                                ${compatibility.compatible ? 'Airport is compatible with ' + aircraftType : 'Compatibility issues detected'}
+                              </p>
+                            </div>
+                            
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                              <h4 class="font-semibold text-blue-900 mb-3">Aircraft Specifications</h4>
+                              <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div>Wingspan: ${AIRBUS_FLEET_SPECS[aircraftType].wingspan}m</div>
+                                <div>Length: ${AIRBUS_FLEET_SPECS[aircraftType].length}m</div>
+                                <div>Height: ${AIRBUS_FLEET_SPECS[aircraftType].height}m</div>
+                                <div>MTOW: ${(AIRBUS_FLEET_SPECS[aircraftType].mtow / 1000).toFixed(0)}t</div>
+                                <div>Runway Required: ${AIRBUS_FLEET_SPECS[aircraftType].runway_requirements.takeoff}m</div>
+                                <div>Gate Type: ${AIRBUS_FLEET_SPECS[aircraftType].gate_requirements.bridge_compatibility}</div>
+                              </div>
+                            </div>
+                            
+                            ${compatibility.issues.length > 0 ? `
+                              <div class="bg-yellow-50 p-4 rounded-lg">
+                                <h4 class="font-semibold text-yellow-900 mb-3">Compatibility Issues</h4>
+                                <ul class="space-y-1">
+                                  ${compatibility.issues.map((issue: string) => `<li class="text-yellow-800 text-sm">• ${issue}</li>`).join('')}
+                                </ul>
+                              </div>
+                            ` : ''}
+                            
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                              <h4 class="font-semibold text-gray-900 mb-3">Operational Recommendations</h4>
+                              <ul class="space-y-1 text-sm text-gray-700">
+                                ${compatibility.score >= 90 ? '<li>• Proceed with diversion - excellent compatibility</li>' : ''}
+                                ${compatibility.score >= 70 && compatibility.score < 90 ? '<li>• Diversion acceptable with minor considerations</li>' : ''}
+                                ${compatibility.score < 70 ? '<li>• Consider alternative airports - significant limitations</li>' : ''}
+                                <li>• Coordinate with ground operations for ${aircraftType} specific requirements</li>
+                                <li>• Verify fuel availability for ${AIRBUS_FLEET_SPECS[aircraftType].engines}</li>
+                                <li>• Confirm passenger capacity for ${AIRBUS_FLEET_SPECS[aircraftType].passengers.typical} passengers</li>
+                              </ul>
+                            </div>
+                          </div>
+                        `;
+                      }
+                    }
+                  }
+                }}
+              >
+                Assess Compatibility
+              </button>
+            </div>
+            
+            <div id="compatibilityResults" className="mt-6">
+              <div className="text-center text-gray-500 py-8">
+                Select aircraft type and airport to perform compatibility assessment
+              </div>
+            </div>
+            
+            <div className="mt-8 border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Alternative Airports Assessment
+              </h3>
+              
+              <button
+                className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                onClick={() => {
+                  if (diversionRequest.aircraftType && Object.keys(AIRBUS_FLEET_SPECS).includes(diversionRequest.aircraftType)) {
+                    const aircraftType = diversionRequest.aircraftType as keyof typeof AIRBUS_FLEET_SPECS;
+                    const currentPosition = { lat: 51.4700, lon: -0.4543 };
+                    
+                    const alternateAirports = [
+                      {
+                        icao: 'EGLL',
+                        name: 'London Heathrow',
+                        lat: 51.4700,
+                        lon: -0.4543,
+                        runwayLength: 3902,
+                        wideBodyCapable: true,
+                        a380Capable: true,
+                        fuelAvailable: true,
+                        maintenanceCapable: true
+                      },
+                      {
+                        icao: 'EGKK',
+                        name: 'London Gatwick',
+                        lat: 51.1481,
+                        lon: -0.1903,
+                        runwayLength: 3316,
+                        wideBodyCapable: true,
+                        a380Capable: false,
+                        fuelAvailable: true,
+                        maintenanceCapable: true
+                      },
+                      {
+                        icao: 'EBBR',
+                        name: 'Brussels Airport',
+                        lat: 50.9014,
+                        lon: 4.4844,
+                        runwayLength: 3638,
+                        wideBodyCapable: true,
+                        a380Capable: false,
+                        fuelAvailable: true,
+                        maintenanceCapable: true
+                      }
+                    ];
+                    
+                    const assessments = assessDiversionAirports(aircraftType, currentPosition, alternateAirports);
+                    
+                    const alternativesDiv = document.getElementById('alternativeAirports');
+                    if (alternativesDiv) {
+                      alternativesDiv.innerHTML = `
+                        <div class="space-y-4">
+                          <h4 class="font-semibold text-gray-900">Ranked Alternative Airports</h4>
+                          ${assessments.map((assessment: any, index: number) => `
+                            <div class="border rounded-lg p-4 ${index === 0 ? 'border-green-300 bg-green-50' : 'border-gray-200'}">
+                              <div class="flex justify-between items-start mb-2">
+                                <div>
+                                  <h5 class="font-medium text-gray-900">${assessment.airport.name}</h5>
+                                  <p class="text-sm text-gray-600">${assessment.airport.icao}</p>
+                                </div>
+                                <div class="text-right">
+                                  <div class="text-lg font-semibold ${assessment.suitability >= 80 ? 'text-green-600' : assessment.suitability >= 60 ? 'text-yellow-600' : 'text-red-600'}">
+                                    ${assessment.suitability}%
+                                  </div>
+                                  <div class="text-sm text-gray-600">${assessment.distance.toFixed(0)}km away</div>
+                                </div>
+                              </div>
+                              
+                              <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <span class="text-gray-600">Runway:</span> ${assessment.airport.runwayLength}m
+                                </div>
+                                <div>
+                                  <span class="text-gray-600">Wide Body:</span> ${assessment.airport.wideBodyCapable ? 'Yes' : 'No'}
+                                </div>
+                                <div>
+                                  <span class="text-gray-600">Fuel:</span> ${assessment.airport.fuelAvailable ? 'Available' : 'Limited'}
+                                </div>
+                                <div>
+                                  <span class="text-gray-600">Maintenance:</span> ${assessment.airport.maintenanceCapable ? 'Capable' : 'Limited'}
+                                </div>
+                              </div>
+                              
+                              ${assessment.compatibility.issues.length > 0 ? `
+                                <div class="mt-3 text-sm text-yellow-700">
+                                  Issues: ${assessment.compatibility.issues.slice(0, 2).join(', ')}
+                                </div>
+                              ` : ''}
+                              
+                              ${index === 0 ? '<div class="mt-2 text-sm font-medium text-green-700">Recommended Option</div>' : ''}
+                            </div>
+                          `).join('')}
+                        </div>
+                      `;
+                    }
+                  }
+                }}
+              >
+                Find Alternative Airports
+              </button>
+              
+              <div id="alternativeAirports" className="mt-4">
+                <div className="text-center text-gray-500 py-4">
+                  Click to assess alternative airports for selected aircraft
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
