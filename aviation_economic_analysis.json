@@ -1,0 +1,190 @@
+{
+  "timestamp": "2025-06-21T13:32:23.470395",
+  "impact_distribution": {
+    "high": 3,
+    "medium": 1,
+    "low": 1
+  },
+  "market_sentiment": {
+    "score": -0.010376984126984136,
+    "label": "Neutral"
+  },
+  "economic_alerts": [
+    {
+      "title": "Rising Jet Fuel Costs Impact Virgin Atlantic Operations",
+      "impact_level": "HIGH",
+      "confidence": 0.68,
+      "key_factors": [
+        "fuel_price"
+      ]
+    },
+    {
+      "title": "Bank of England Rate Decision Affects UK Aviation Financing",
+      "impact_level": "HIGH",
+      "confidence": 0.45,
+      "key_factors": [
+        "currency",
+        "interest_rates"
+      ]
+    },
+    {
+      "title": "ECB Monetary Policy Impacts European Aviation",
+      "impact_level": "HIGH",
+      "confidence": 0.71,
+      "key_factors": [
+        "currency",
+        "inflation",
+        "interest_rates"
+      ]
+    }
+  ],
+  "recommendations": [
+    "URGENT: Multiple high-impact economic factors detected - Review fuel hedging strategies",
+    "Monitor currency exposure on international routes",
+    "Fuel price volatility detected - Implement fuel cost optimization measures",
+    "Currency fluctuations identified - Review foreign exchange hedging positions",
+    "Continue monitoring economic indicators for operational planning",
+    "Update quarterly financial forecasts based on current economic trends",
+    "Coordinate with procurement team on strategic purchasing decisions"
+  ],
+  "detailed_analysis": [
+    {
+      "fuel_price": [
+        "jet fuel",
+        "crude oil",
+        "brent",
+        "wti"
+      ],
+      "currency": [],
+      "inflation": [],
+      "interest_rates": [],
+      "economic_indicators": [],
+      "airline_costs": [],
+      "demand_factors": [],
+      "currency_values": [],
+      "fuel_price_values": [
+        "2.95",
+        "89"
+      ],
+      "percentage_values": [
+        "18"
+      ],
+      "numbers_values": [
+        "18",
+        "2.95",
+        "89",
+        "92",
+        "45"
+      ]
+    },
+    {
+      "fuel_price": [],
+      "currency": [
+        "usd",
+        "dollar"
+      ],
+      "inflation": [],
+      "interest_rates": [
+        "interest rate"
+      ],
+      "economic_indicators": [],
+      "airline_costs": [],
+      "demand_factors": [],
+      "currency_values": [],
+      "fuel_price_values": [],
+      "percentage_values": [
+        "0.25",
+        "5.5",
+        "2.1"
+      ],
+      "numbers_values": [
+        "0.25",
+        "5.5",
+        "2.1"
+      ]
+    },
+    {
+      "fuel_price": [
+        "fuel cost"
+      ],
+      "currency": [],
+      "inflation": [],
+      "interest_rates": [],
+      "economic_indicators": [],
+      "airline_costs": [],
+      "demand_factors": [
+        "passenger demand",
+        "booking",
+        "load factor"
+      ],
+      "currency_values": [],
+      "fuel_price_values": [],
+      "percentage_values": [
+        "89",
+        "22"
+      ],
+      "numbers_values": [
+        "89",
+        "22",
+        "180"
+      ]
+    },
+    {
+      "fuel_price": [],
+      "currency": [],
+      "inflation": [
+        "inflation"
+      ],
+      "interest_rates": [],
+      "economic_indicators": [],
+      "airline_costs": [
+        "maintenance cost"
+      ],
+      "demand_factors": [],
+      "currency_values": [],
+      "fuel_price_values": [],
+      "percentage_values": [
+        "12",
+        "8",
+        "15"
+      ],
+      "numbers_values": [
+        "12",
+        "8",
+        "15"
+      ]
+    },
+    {
+      "fuel_price": [],
+      "currency": [
+        "usd",
+        "eur",
+        "currency",
+        "euro"
+      ],
+      "inflation": [
+        "inflation"
+      ],
+      "interest_rates": [
+        "central bank"
+      ],
+      "economic_indicators": [],
+      "airline_costs": [],
+      "demand_factors": [],
+      "currency_values": [],
+      "fuel_price_values": [],
+      "percentage_values": [
+        "4.5",
+        "3.2",
+        "6"
+      ],
+      "numbers_values": [
+        "4.5",
+        "3.2",
+        "1.05",
+        "1.12",
+        "6"
+      ]
+    }
+  ]
+}

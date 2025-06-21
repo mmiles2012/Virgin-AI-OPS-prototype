@@ -1,0 +1,142 @@
+{
+  "timestamp": "2025-06-21T13:33:46.508416",
+  "analysis_summary": {
+    "total_flights": 3,
+    "critical_risk_flights": 0,
+    "high_risk_flights": 2,
+    "active_alerts": 9,
+    "economic_impact": "high_impact"
+  },
+  "flight_risk_matrix": [
+    {
+      "flight_id": "VS3",
+      "route": "LHR-JFK",
+      "overall_risk": "HIGH",
+      "composite_score": 2.5999999999999996,
+      "ml_risk": "MEDIUM",
+      "security_risks": [
+        "HIGH",
+        "HIGH"
+      ]
+    },
+    {
+      "flight_id": "VS15",
+      "route": "LHR-LAX",
+      "overall_risk": "MEDIUM",
+      "composite_score": 2.1999999999999997,
+      "ml_risk": "LOW",
+      "security_risks": [
+        "HIGH",
+        "HIGH"
+      ]
+    },
+    {
+      "flight_id": "VS45",
+      "route": "MAN-JFK",
+      "overall_risk": "HIGH",
+      "composite_score": 2.5999999999999996,
+      "ml_risk": "MEDIUM",
+      "security_risks": [
+        "HIGH",
+        "HIGH"
+      ]
+    }
+  ],
+  "security_assessment": {
+    "LAX": {
+      "risk_level": "HIGH",
+      "security_notams": 1,
+      "factors": [
+        "1 security/military NOTAMs active",
+        "2 high-priority NOTAMs"
+      ]
+    },
+    "MAN": {
+      "risk_level": "HIGH",
+      "security_notams": 1,
+      "factors": [
+        "1 security/military NOTAMs active",
+        "2 high-priority NOTAMs"
+      ]
+    },
+    "LHR": {
+      "risk_level": "HIGH",
+      "security_notams": 1,
+      "factors": [
+        "1 security/military NOTAMs active",
+        "2 high-priority NOTAMs"
+      ]
+    },
+    "JFK": {
+      "risk_level": "HIGH",
+      "security_notams": 1,
+      "factors": [
+        "1 security/military NOTAMs active",
+        "2 high-priority NOTAMs"
+      ]
+    }
+  },
+  "economic_intelligence": {
+    "prediction": "high_impact",
+    "probability": {
+      "high_impact": 1.0
+    },
+    "economic_factors": {
+      "fuel_price": [
+        "jet fuel",
+        "oil price",
+        "fuel cost"
+      ],
+      "currency": [
+        "usd",
+        "eur"
+      ],
+      "inflation": [],
+      "interest_rates": [
+        "central bank"
+      ],
+      "economic_indicators": [],
+      "airline_costs": [],
+      "demand_factors": [],
+      "currency_values": [],
+      "fuel_price_values": [
+        "94",
+        "3.25"
+      ],
+      "percentage_values": [
+        "7",
+        "3"
+      ],
+      "numbers_values": [
+        "7",
+        "94",
+        "3.25",
+        "2.8",
+        "3"
+      ]
+    },
+    "sentiment": {
+      "polarity": 0.0,
+      "subjectivity": 0.175
+    }
+  },
+  "operational_alerts": [
+    "VS3: Operational anomaly requires urgent review",
+    "VS3: Elevated technical risk - Enhanced pre-flight checks recommended",
+    "VS45: Operational anomaly requires urgent review",
+    "LAX: HIGH security risk - Enhanced protocols required",
+    "MAN: HIGH security risk - Enhanced protocols required",
+    "LHR: HIGH security risk - Enhanced protocols required",
+    "JFK: HIGH security risk - Enhanced protocols required",
+    "HIGH economic impact detected - Review fuel hedging strategies",
+    "Oil price surge affecting operational costs - Implement cost optimization"
+  ],
+  "strategic_recommendations": [
+    "SECURITY: Multiple airports showing elevated threats - Review security protocols",
+    "Implement enhanced pre-flight security briefings for all crew",
+    "Activate fuel cost optimization protocols across fleet",
+    "Coordinate with ground operations on potential security delays",
+    "Update passenger communications for affected routes",
+    "Monitor economic indicators for operational planning adjustments"
+  ]
+}
