@@ -26,6 +26,8 @@ import DiversionSupportDashboard from "./components/DiversionSupportDashboard";
 import DelayPredictionDashboard from "./components/DelayPredictionDashboard";
 import { ApiTestingCenter } from "./components/ApiTestingCenter";
 import { NewsIntelligenceDashboard } from "./components/NewsIntelligenceDashboard";
+import Boeing787DigitalTwin from "./components/Boeing787DigitalTwin";
+import AinoTrainingSimulator from "./components/AinoTrainingSimulator";
 
 // Flight control mappings
 enum FlightControls {
@@ -63,7 +65,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -198,6 +200,17 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('boeing787-twin')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'boeing787-twin' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    787 Digital Twin
+                  </button>
+                  
+                  <button
                     onClick={() => setViewMode('diversion')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'diversion' 
@@ -325,6 +338,12 @@ function App() {
             {viewMode === 'delay-prediction' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
                 <DelayPredictionDashboard />
+              </div>
+            )}
+            
+            {viewMode === 'boeing787-twin' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
+                <Boeing787DigitalTwin />
               </div>
             )}
             
