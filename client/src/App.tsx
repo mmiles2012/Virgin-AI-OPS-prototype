@@ -65,7 +65,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -211,6 +211,17 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('training-simulator')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'training-simulator' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Flight Training
+                  </button>
+                  
+                  <button
                     onClick={() => setViewMode('diversion')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'diversion' 
@@ -344,6 +355,12 @@ function App() {
             {viewMode === 'boeing787-twin' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
                 <Boeing787DigitalTwin />
+              </div>
+            )}
+            
+            {viewMode === 'training-simulator' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
+                <AinoTrainingSimulator />
               </div>
             )}
             
