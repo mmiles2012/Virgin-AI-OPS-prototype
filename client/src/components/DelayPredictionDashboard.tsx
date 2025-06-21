@@ -299,6 +299,78 @@ const DelayPredictionDashboard: React.FC = () => {
     setLoading(false);
   };
 
+  const loadTensorflowStatus = async () => {
+    try {
+      const response = await fetch('/api/delays/tensorflow/status');
+      const data = await response.json();
+      if (data.success) {
+        setTensorflowStatus(data.status);
+      }
+    } catch (error) {
+      console.error('Failed to load TensorFlow status:', error);
+    }
+  };
+
+  const loadTensorflowModelInfo = async () => {
+    try {
+      const response = await fetch('/api/delays/tensorflow/model-info');
+      const data = await response.json();
+      if (data.success) {
+        setTensorflowModelInfo(data.modelInfo);
+      }
+    } catch (error) {
+      console.error('Failed to load TensorFlow model info:', error);
+    }
+  };
+
+  const trainTensorflowModel = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/delays/tensorflow/train', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        await loadTensorflowStatus();
+        await loadTensorflowModelInfo();
+      }
+    } catch (error) {
+      console.error('Failed to train TensorFlow model:', error);
+    }
+    setLoading(false);
+  };
+
+  const predictWithTensorflow = async () => {
+    setLoading(true);
+    try {
+      const currentMonth = new Date().getMonth() + 1;
+      const response = await fetch('/api/delays/tensorflow/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          flightNumber: flightForm.flightNumber,
+          route: flightForm.route,
+          month: currentMonth,
+          weather: flightForm.weather,
+          traffic: flightForm.traffic,
+          carrierStatus: flightForm.carrierStatus
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setTensorflowPrediction(data.prediction);
+      }
+    } catch (error) {
+      console.error('Failed to predict with TensorFlow:', error);
+    }
+    setLoading(false);
+  };
+
   const pieChartColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1'];
 
   const causesData = useMemo(() => {
@@ -1225,6 +1297,297 @@ const DelayPredictionDashboard: React.FC = () => {
                         </li>
                       ))}
                     </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TensorFlow Neural Network Tab */}
+        {activeTab === 'tensorflow' && (
+          <div className="space-y-6">
+            {/* AI Model Status */}
+            {tensorflowStatus && (
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg shadow">
+                <h2 className="text-xl font-semibold mb-4 text-purple-900">TensorFlow Neural Network Status</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-gray-700">Framework</h3>
+                    <p className="text-lg font-bold text-purple-600">{tensorflowStatus.framework}</p>
+                    <p className="text-xs text-gray-500">{tensorflowStatus.model_type}</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-gray-700">Neural Network</h3>
+                    <p className={`text-lg font-bold ${tensorflowStatus.neural_network_ready ? 'text-green-600' : 'text-orange-600'}`}>
+                      {tensorflowStatus.neural_network_ready ? 'Ready' : 'Training Required'}
+                    </p>
+                    <p className="text-xs text-gray-500">{tensorflowStatus.python_backend}</p>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-gray-700">Training Data</h3>
+                    <p className="text-sm font-medium text-blue-600">American Airlines JFK</p>
+                    <p className="text-xs text-gray-500">2022-2024 Operations</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Model Training Section */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4">Neural Network Training</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-medium mb-3">Training Information</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Training Samples:</span>
+                      <span className="font-medium">33 months of data</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Features:</span>
+                      <span className="font-medium">6 input variables</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Outputs:</span>
+                      <span className="font-medium">Delay probability & duration</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Architecture:</span>
+                      <span className="font-medium">Deep Neural Network</span>
+                    </div>
+                  </div>
+                  
+                  {tensorflowModelInfo && (
+                    <div className="mt-4 p-3 bg-gray-50 rounded">
+                      <h4 className="font-medium text-sm mb-2">Model Architecture</h4>
+                      <div className="space-y-1">
+                        {tensorflowModelInfo.layers?.map((layer: string, index: number) => (
+                          <div key={index} className="text-xs text-gray-600 font-mono">
+                            Layer {index + 1}: {layer}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-3">Train Neural Network</h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Train the deep learning model on historical American Airlines JFK delay data using TensorFlow. 
+                    This will enable AI-powered delay predictions with enhanced accuracy.
+                  </p>
+                  <button
+                    onClick={trainTensorflowModel}
+                    disabled={loading}
+                    className="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 disabled:opacity-50"
+                  >
+                    {loading ? 'Training Neural Network...' : 'Train AI Model'}
+                  </button>
+                  
+                  {tensorflowStatus?.neural_network_ready && (
+                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded">
+                      <p className="text-sm text-green-800">
+                        ✓ Neural network is trained and ready for AI-powered predictions
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* AI Prediction Interface */}
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4">AI-Powered Delay Prediction</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Flight Number
+                    </label>
+                    <input
+                      type="text"
+                      value={flightForm.flightNumber}
+                      onChange={(e) => setFlightForm({...flightForm, flightNumber: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Route
+                    </label>
+                    <input
+                      type="text"
+                      value={flightForm.route}
+                      onChange={(e) => setFlightForm({...flightForm, route: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Weather Conditions (0-10): {flightForm.weather}
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      value={flightForm.weather}
+                      onChange={(e) => setFlightForm({...flightForm, weather: parseInt(e.target.value)})}
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Traffic Level (0-10): {flightForm.traffic}
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      value={flightForm.traffic}
+                      onChange={(e) => setFlightForm({...flightForm, traffic: parseInt(e.target.value)})}
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Carrier Status (0-10): {flightForm.carrierStatus}
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="10"
+                      value={flightForm.carrierStatus}
+                      onChange={(e) => setFlightForm({...flightForm, carrierStatus: parseInt(e.target.value)})}
+                      className="w-full"
+                    />
+                  </div>
+                  <button
+                    onClick={predictWithTensorflow}
+                    disabled={loading || !tensorflowStatus?.neural_network_ready}
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-md hover:from-purple-700 hover:to-blue-700 disabled:opacity-50"
+                  >
+                    {loading ? 'AI Processing...' : 'Predict with Neural Network'}
+                  </button>
+                </div>
+
+                {tensorflowPrediction && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-purple-900">AI Prediction Results</h3>
+                    
+                    {/* AI Confidence Indicator */}
+                    <div className="bg-gradient-to-r from-purple-100 to-blue-100 p-4 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium">AI Confidence</span>
+                        <span className="text-sm font-bold text-purple-600">
+                          {(tensorflowPrediction.predictions?.confidence * 100)?.toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-white rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full"
+                          style={{ width: `${(tensorflowPrediction.predictions?.confidence * 100)}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Neural network trained on 33 months of authentic data
+                      </p>
+                    </div>
+
+                    {/* Prediction Metrics */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-red-50 p-3 rounded-lg">
+                        <h4 className="font-semibold text-red-900 text-sm">Delay Probability</h4>
+                        <p className="text-2xl font-bold text-red-600">
+                          {(tensorflowPrediction.predictions?.delayProbability * 100)?.toFixed(1)}%
+                        </p>
+                        <p className="text-xs text-red-700">AI prediction</p>
+                      </div>
+                      <div className="bg-orange-50 p-3 rounded-lg">
+                        <h4 className="font-semibold text-orange-900 text-sm">Expected Delay</h4>
+                        <p className="text-2xl font-bold text-orange-600">
+                          {tensorflowPrediction.predictions?.expectedDelayMinutes} min
+                        </p>
+                        <p className="text-xs text-orange-700">Neural network output</p>
+                      </div>
+                      <div className="bg-yellow-50 p-3 rounded-lg">
+                        <h4 className="font-semibold text-yellow-900 text-sm">Holding Risk</h4>
+                        <p className="text-2xl font-bold text-yellow-600">
+                          {(tensorflowPrediction.predictions?.holdingProbability * 100)?.toFixed(1)}%
+                        </p>
+                        <p className="text-xs text-yellow-700">AI calculated</p>
+                      </div>
+                      <div className="bg-blue-50 p-3 rounded-lg">
+                        <h4 className="font-semibold text-blue-900 text-sm">Holding Time</h4>
+                        <p className="text-2xl font-bold text-blue-600">
+                          {tensorflowPrediction.predictions?.expectedHoldingTime} min
+                        </p>
+                        <p className="text-xs text-blue-700">Estimated duration</p>
+                      </div>
+                    </div>
+
+                    {/* AI Recommendations */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="font-semibold mb-2 text-gray-900">AI Recommendations</h4>
+                      <ul className="space-y-1">
+                        {tensorflowPrediction.recommendations?.map((rec: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-sm text-gray-700">{rec}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Model Information */}
+                    <div className="border-t pt-3">
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <span>Model: {tensorflowPrediction.modelVersion}</span>
+                        <span>Data: {tensorflowPrediction.dataSource}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Neural Network Architecture Details */}
+            {tensorflowModelInfo && (
+              <div className="bg-white p-6 rounded-lg shadow">
+                <h2 className="text-xl font-semibold mb-4">Neural Network Architecture</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="font-medium mb-3">Input Features</h3>
+                    <ul className="space-y-2">
+                      {tensorflowModelInfo.features?.map((feature: string, index: number) => (
+                        <li key={index} className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="font-medium mb-3">Model Configuration</h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Optimizer:</span>
+                        <span className="font-medium">{tensorflowModelInfo.optimizer}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Loss Function:</span>
+                        <span className="font-medium">{tensorflowModelInfo.loss_function}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Training Samples:</span>
+                        <span className="font-medium">{tensorflowModelInfo.training_samples}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Validation Split:</span>
+                        <span className="font-medium">{(tensorflowModelInfo.validation_split * 100)}%</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
