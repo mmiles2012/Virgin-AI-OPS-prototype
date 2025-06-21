@@ -71,7 +71,7 @@ interface DiversionSupportResponse {
 }
 
 export default function DiversionSupportDashboard() {
-  const [activeTab, setActiveTab] = useState<'initiate' | 'status' | 'services' | 'fuel' | 'airport'>('initiate');
+  const [activeTab, setActiveTab] = useState<'initiate' | 'status' | 'services' | 'fuel' | 'airport' | 'compatibility'>('initiate');
   const [diversionRequest, setDiversionRequest] = useState<DiversionRequest>({
     flightNumber: '',
     aircraftType: 'Boeing 787',

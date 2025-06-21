@@ -89,25 +89,25 @@ export const AIRBUS_FLEET_SPECS = {
     fuel_capacity: 139090,
     service_ceiling: 41000
   },
-  'A350-900': {
+  'A350-1000': {
     wingspan: 64.75,
-    length: 66.8,
+    length: 73.78,
     height: 17.05,
-    mtow: 280000,
-    range: 15000,
-    passengers: { typical: 315, max: 440 },
-    engines: 'Trent XWB',
+    mtow: 319000,
+    range: 16100,
+    passengers: { typical: 366, max: 480 },
+    engines: 'Trent XWB-97',
     runway_requirements: {
-      takeoff: 2500,
-      landing: 1500
+      takeoff: 2750,
+      landing: 1650
     },
     gate_requirements: {
       wingspan_clearance: 68,
-      length_clearance: 70,
+      length_clearance: 76,
       height_clearance: 18.5,
       bridge_compatibility: 'wide_body'
     },
-    fuel_capacity: 138000,
+    fuel_capacity: 156000,
     service_ceiling: 43100
   },
   'A380': {
@@ -429,7 +429,7 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 
 // Export component for visual representation in decision engines
 export default function AirbusFleetVisualization({ 
-  selectedAircraft = 'A350-900',
+  selectedAircraft = 'A350-1000',
   showAllTypes = false 
 }: {
   selectedAircraft?: keyof typeof AIRBUS_FLEET_SPECS;

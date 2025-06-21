@@ -259,7 +259,7 @@ function FleetOptimizationPanel() {
       }
     ];
 
-    const availableAircraft: (keyof typeof AIRBUS_FLEET_SPECS)[] = ['A320', 'A330-300', 'A350-900', 'A380'];
+    const availableAircraft: (keyof typeof AIRBUS_FLEET_SPECS)[] = ['A320', 'A330-300', 'A350-1000', 'A380'];
 
     const optimizationResults = routes.map(route => {
       const optimization = calculateFleetOptimization(route, availableAircraft);
@@ -359,7 +359,7 @@ function SystemStatusPanel() {
 
 // Main Airbus Operations Center
 export default function AirbusOperationsCenter() {
-  const [selectedAircraft, setSelectedAircraft] = useState<keyof typeof AIRBUS_FLEET_SPECS>('A350-900');
+  const [selectedAircraft, setSelectedAircraft] = useState<keyof typeof AIRBUS_FLEET_SPECS>('A350-1000');
   const [flightData, setFlightData] = useState<any>(null);
   const [alerts, setAlerts] = useState<string[]>([]);
 
