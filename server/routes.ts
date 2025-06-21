@@ -18,6 +18,8 @@ import { weatherApiService } from "./weatherApiService";
 import { delayPredictionService } from "./delayPredictionService";
 import { ukCaaDelayService } from "./ukCaaDelayService";
 import { tensorflowDelayService } from "./tensorflowIntegration";
+import { ukCaaDelayService as ukCaaAIService } from "./ukCaaIntegration";
+import { dualModelAIService } from "./dualModelIntegration";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 
@@ -1522,6 +1524,99 @@ print(json.dumps(weather))
       res.status(500).json({
         success: false,
         error: 'Failed to get TensorFlow status'
+      });
+    }
+  });
+
+  // Dual-Model AI Routes (UK CAA + US Airlines)
+  app.post('/api/delays/dual-model/train', async (req, res) => {
+    try {
+      console.log('Starting dual-model AI training with UK CAA and US Airlines data...');
+      const result = await dualModelAIService.trainDualModelSystem();
+      
+      res.json({
+        success: true,
+        result,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Dual-model training error:', error);
+      res.status(500).json({
+        success: false,
+        error: `Dual-model training failed: ${error}`
+      });
+    }
+  });
+
+  app.post('/api/delays/dual-model/predict', async (req, res) => {
+    try {
+      const { flightNumber, route, airport, destination, airline, weather, traffic } = req.body;
+      
+      if (!flightNumber || !route || !airport || !airline || 
+          weather === undefined || traffic === undefined) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required parameters: flightNumber, route, airport, airline, weather, traffic'
+        });
+      }
+
+      const prediction = await dualModelAIService.getEnhancedDualModelPrediction(
+        flightNumber, route, airport, destination || 'International', airline, weather, traffic
+      );
+
+      res.json({
+        success: true,
+        prediction,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Dual-model prediction error:', error);
+      res.status(500).json({
+        success: false,
+        error: `Dual-model prediction failed: ${error}`
+      });
+    }
+  });
+
+  app.get('/api/delays/dual-model/status', (req, res) => {
+    try {
+      const isReady = dualModelAIService.isDualModelReady();
+      
+      res.json({
+        success: true,
+        status: {
+          dual_model_ready: isReady,
+          framework: "TensorFlow + Scikit-learn",
+          python_backend: "Available",
+          model_type: "Dual Neural Networks + Ensemble",
+          data_sources: ["UK CAA Punctuality Statistics", "US Airlines Delay Data"],
+          ensemble_type: "Random Forest",
+          last_updated: new Date().toISOString()
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get dual-model status'
+      });
+    }
+  });
+
+  app.get('/api/delays/dual-model/info', (req, res) => {
+    try {
+      const modelInfo = dualModelAIService.getDualModelInfo();
+      
+      res.json({
+        success: true,
+        modelInfo,
+        isReady: dualModelAIService.isDualModelReady(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get dual-model information'
       });
     }
   });

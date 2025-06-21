@@ -116,7 +116,7 @@ interface DelayStatistics {
 }
 
 const DelayPredictionDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'predict' | 'holding' | 'seasonal' | 'heathrow' | 'tensorflow'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'predict' | 'holding' | 'seasonal' | 'heathrow' | 'tensorflow' | 'dual-model'>('overview');
   const [statistics, setStatistics] = useState<DelayStatistics | null>(null);
   const [seasonalPatterns, setSeasonalPatterns] = useState<SeasonalPattern[]>([]);
   const [prediction, setPrediction] = useState<DelayPrediction | null>(null);
