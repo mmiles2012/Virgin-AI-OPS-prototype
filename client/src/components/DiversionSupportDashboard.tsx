@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AlertTriangle, Phone, Clock, DollarSign, Users, Plane, MapPin, CheckCircle } from 'lucide-react';
+import { assessAirportCompatibility, assessDiversionAirports, AIRBUS_FLEET_SPECS } from './AirbusDigitalTwins';
 
 interface DiversionRequest {
   flightNumber: string;
@@ -189,7 +190,8 @@ export default function DiversionSupportDashboard() {
             { id: 'status', label: 'Diversion Status', icon: CheckCircle },
             { id: 'services', label: 'Available Services', icon: MapPin },
             { id: 'fuel', label: 'Fuel Analysis', icon: Plane },
-            { id: 'airport', label: 'Airport Intelligence', icon: MapPin }
+            { id: 'airport', label: 'Airport Intelligence', icon: MapPin },
+            { id: 'compatibility', label: 'Aircraft Compatibility', icon: Plane }
           ].map(({ id, label, icon: Icon }) => (
             <button
               key={id}

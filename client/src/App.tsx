@@ -28,6 +28,7 @@ import { ApiTestingCenter } from "./components/ApiTestingCenter";
 import { NewsIntelligenceDashboard } from "./components/NewsIntelligenceDashboard";
 import Boeing787DigitalTwin from "./components/Boeing787DigitalTwin";
 import AinoTrainingSimulator from "./components/AinoTrainingSimulator";
+import AirbusOperationsCenter from "./components/AirbusOperationsCenter";
 
 // Flight control mappings
 enum FlightControls {
@@ -65,7 +66,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -222,6 +223,17 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('airbus-ops')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'airbus-ops' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Airbus Fleet
+                  </button>
+                  
+                  <button
                     onClick={() => setViewMode('diversion')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'diversion' 
@@ -361,6 +373,12 @@ function App() {
             {viewMode === 'training-simulator' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
                 <AinoTrainingSimulator />
+              </div>
+            )}
+            
+            {viewMode === 'airbus-ops' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+                <AirbusOperationsCenter />
               </div>
             )}
             
