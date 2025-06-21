@@ -530,6 +530,37 @@ export default function AirbusOperationsCenter() {
                   </div>
                 </div>
 
+                {/* Operating Costs Section */}
+                <div className="mt-6 pt-4 border-t border-gray-600">
+                  <div className="text-sm text-gray-400 mb-3">Operating Costs (Per Hour)</div>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Total Cost:</span>
+                      <span className="font-mono text-yellow-400 font-bold">
+                        ${AIRBUS_FLEET_SPECS[selectedAircraft].operating_costs.total_per_hour.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="text-xs space-y-1 text-gray-500">
+                      <div className="flex justify-between">
+                        <span>Crew:</span>
+                        <span>${AIRBUS_FLEET_SPECS[selectedAircraft].operating_costs.crew_cost_per_hour.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Maintenance:</span>
+                        <span>${AIRBUS_FLEET_SPECS[selectedAircraft].operating_costs.maintenance_per_hour.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Insurance:</span>
+                        <span>${AIRBUS_FLEET_SPECS[selectedAircraft].operating_costs.insurance_per_hour.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Fuel Rate:</span>
+                        <span>{AIRBUS_FLEET_SPECS[selectedAircraft].operating_costs.fuel_per_hour} gal/hr</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {flightData && (
                   <div className="mt-4 pt-4 border-t border-gray-600">
                     <div className="text-sm text-gray-400 mb-2">Current Flight Data</div>
