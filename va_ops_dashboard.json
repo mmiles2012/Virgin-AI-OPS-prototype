@@ -1,0 +1,91 @@
+{
+  "timestamp": "2025-06-21T13:24:57.368059",
+  "fleet_status": {
+    "A330-200": {
+      "capacity": 262,
+      "range_nm": 7250,
+      "maintenance_interval": 500
+    },
+    "A330-300": {
+      "capacity": 296,
+      "range_nm": 6350,
+      "maintenance_interval": 500
+    },
+    "A350-1000": {
+      "capacity": 335,
+      "range_nm": 8700,
+      "maintenance_interval": 600
+    },
+    "B747-400": {
+      "capacity": 455,
+      "range_nm": 7260,
+      "maintenance_interval": 400
+    },
+    "B787-9": {
+      "capacity": 258,
+      "range_nm": 7635,
+      "maintenance_interval": 650
+    }
+  },
+  "route_analysis": {
+    "total_flights": 2,
+    "high_risk_flights": 0,
+    "medium_risk_flights": 1,
+    "anomaly_flights": 2,
+    "risk_distribution": {
+      "HIGH": 0,
+      "MEDIUM": 1,
+      "LOW": 1
+    },
+    "detailed_results": [
+      {
+        "flight_id": "VS1",
+        "route": "LHR-JFK",
+        "date": "2025-06-22",
+        "risk_assessment": {
+          "general_issue_probability": 0.42,
+          "risk_level": "MEDIUM",
+          "cancelled_probability": 0.13,
+          "diverted_probability": 0.09,
+          "technical_issue_probability": 0.08,
+          "anomaly_score": -0.0429987503818372,
+          "is_anomaly": true,
+          "predicted_delay_category": "minor"
+        },
+        "recommendations": [
+          "ANOMALY DETECTED: Manual review recommended",
+          "Check for unusual operational parameters",
+          "Monitor origin weather conditions closely"
+        ]
+      },
+      {
+        "flight_id": "VS15",
+        "route": "LHR-LAX",
+        "date": "2025-06-22",
+        "risk_assessment": {
+          "general_issue_probability": 0.31,
+          "risk_level": "LOW",
+          "cancelled_probability": 0.06,
+          "diverted_probability": 0.12,
+          "technical_issue_probability": 0.12,
+          "anomaly_score": -0.003240126198185145,
+          "is_anomaly": true,
+          "predicted_delay_category": "moderate"
+        },
+        "recommendations": [
+          "ANOMALY DETECTED: Manual review recommended",
+          "Check for unusual operational parameters"
+        ]
+      }
+    ]
+  },
+  "risk_summary": {
+    "HIGH": 0,
+    "MEDIUM": 1,
+    "LOW": 1
+  },
+  "operational_alerts": [
+    "ANOMALY DETECTED: Manual review recommended",
+    "ANOMALY DETECTED: Manual review recommended"
+  ]
+}
