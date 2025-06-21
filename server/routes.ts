@@ -581,6 +581,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // NOTAM endpoints for operational intelligence
+  app.get("/api/notams/:location", async (req, res) => {
+    try {
+      const { notamService } = await import('./notamService.js');
+      const location = req.params.location.toUpperCase();
+      const radiusNm = parseInt(req.query.radius as string) || 50;
+
+      const notamSummary = await notamService.getConsolidatedNOTAMs(location, radiusNm);
+
+      res.json({
+        success: true,
+        data: notamSummary,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Error retrieving NOTAMs:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve NOTAM data'
+      });
+    }
+  });
+
+  // Security alerts from NOTAMs
+  app.get("/api/notams/:location/security", async (req, res) => {
+    try {
+      const { notamService } = await import('./notamService.js');
+      const location = req.params.location.toUpperCase();
+
+      const securityAlerts = await notamService.getSecurityAlerts(location);
+
+      res.json({
+        success: true,
+        location: location,
+        security_alerts: securityAlerts,
+        alert_count: securityAlerts.length,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Error retrieving security alerts:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve security alerts'
+      });
+    }
+  });
+
+  // Geopolitical risk analysis based on NOTAMs
+  app.get("/api/notams/:location/risk-analysis", async (req, res) => {
+    try {
+      const { notamService } = await import('./notamService.js');
+      const location = req.params.location.toUpperCase();
+
+      const notamSummary = await notamService.getConsolidatedNOTAMs(location);
+      const riskAnalysis = notamService.analyzeGeopoliticalRisk(notamSummary.notams);
+
+      res.json({
+        success: true,
+        location: location,
+        notam_summary: {
+          total_notams: notamSummary.total_notams,
+          security_notams: notamSummary.security_notams,
+          high_priority_notams: notamSummary.high_priority_notams
+        },
+        risk_analysis: riskAnalysis,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('Error analyzing geopolitical risk:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to analyze geopolitical risk'
+      });
+    }
+  });
+
   app.post("/api/scenarios/decision", (req, res) => {
     const { decisionId, optionId, source = 'unknown' } = req.body;
     
