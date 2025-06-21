@@ -200,38 +200,43 @@ function App() {
                     Delay Prediction
                   </button>
                   
-                  <button
-                    onClick={() => setViewMode('boeing787-twin')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'boeing787-twin' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    787 Digital Twin
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('training-simulator')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'training-simulator' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Flight Training
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('airbus-ops')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'airbus-ops' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Airbus Fleet
-                  </button>
+                  {/* Digital Twins Section */}
+                  <div className="border-t border-gray-600 pt-3 mt-3">
+                    <div className="text-xs text-gray-400 mb-2 px-2">DIGITAL TWINS</div>
+                    
+                    <button
+                      onClick={() => setViewMode('boeing787-twin')}
+                      className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                        viewMode === 'boeing787-twin' 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Boeing 787
+                    </button>
+                    
+                    <button
+                      onClick={() => setViewMode('airbus-ops')}
+                      className={`w-full px-4 py-2 rounded transition-colors text-sm mt-1 ${
+                        viewMode === 'airbus-ops' 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Airbus Fleet
+                    </button>
+                    
+                    <button
+                      onClick={() => setViewMode('training-simulator')}
+                      className={`w-full px-4 py-2 rounded transition-colors text-sm mt-1 ${
+                        viewMode === 'training-simulator' 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Flight Training
+                    </button>
+                  </div>
                   
                   <button
                     onClick={() => setViewMode('diversion')}
@@ -266,29 +271,32 @@ function App() {
                     Diversion Support
                   </button>
                   
-                  <button
-                    onClick={() => setViewMode('api-testing')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'api-testing' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    API Centre
-                  </button>
-                  
-
-                  
-                  <button
-                    onClick={() => {
-                      console.log('API Setup button clicked');
-                      setShowApiWizard(true);
-                    }}
-                    className="w-full px-4 py-2 rounded transition-colors bg-green-600 text-white hover:bg-green-700 text-sm"
-                    title="Configure Aviation APIs"
-                  >
-                    API Setup
-                  </button>
+                  {/* API Centre Section */}
+                  <div className="border-t border-gray-600 pt-3 mt-3">
+                    <div className="text-xs text-gray-400 mb-2 px-2">API CENTRE</div>
+                    
+                    <button
+                      onClick={() => setViewMode('api-testing')}
+                      className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                        viewMode === 'api-testing' 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      API Testing
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        console.log('API Setup button clicked');
+                        setShowApiWizard(true);
+                      }}
+                      className="w-full px-4 py-2 rounded transition-colors bg-green-600 text-white hover:bg-green-700 text-sm mt-1"
+                      title="Configure Aviation APIs"
+                    >
+                      API Setup
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
