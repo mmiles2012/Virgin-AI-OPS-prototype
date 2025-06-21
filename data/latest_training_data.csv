@@ -1,7 +1,181 @@
-icao,raw_metar,observation_time,visibility_m,wind_speed_kt,wind_direction_deg,temperature_c,dewpoint_c,pressure_hpa,conditions,cloud_coverage,delay_risk_score,operational_impact,crosswind_component_kt,weather_complexity_index,visibility_category,wind_category,temperature_category,hour_of_day,day_of_week,month,seasonal_factor,peak_traffic_indicator,icing_risk,airport_icao,timestamp,taf_forecast,visibility_normalized,wind_speed_normalized,temperature_normalized,pressure_normalized,visibility_category_excellent,wind_category_calm,wind_category_light,temperature_category_hot,temperature_category_warm,operational_impact_minimal
-EGLL,EGLL 211050Z AUTO 17009KT 120V200 9999 NCD 30/14 Q1018,2025-06-21T10:50:00Z,16091790,9,170,30,14,34473,[],CLR,0,minimal,8.863269777109872,0,excellent,light,hot,11,5,6,0.3,0,0,EGLL,2025-06-21T11:23:40.429437,"{'raw_taf': 'TAF EGLL 211055Z 2112/2218 16010KT 9999 FEW040 PROB30 TEMPO 2112/2114 17015G25KT 4000 +TSRA PROB30 TEMPO 2114/2119 7000 SHRA PROB30 TEMPO 2119/2202 19015G25KT 4000 +TSRA BECMG 2121/2124 22006KT PROB30 TEMPO 2211/2218 26016G26KT', 'valid_from': 1750507200, 'valid_to': 1750615200, 'forecast_periods': []}",1609.179,0.18,0.875,335.23,True,False,True,True,False,True
-EGKK,EGKK 211050Z 14009KT 110V170 CAVOK 29/14 Q1018,2025-06-21T10:50:00Z,16091790,9,140,29,14,34473,[],CLR,0,minimal,6.894399988070802,0,excellent,light,hot,11,5,6,0.3,0,0,EGKK,2025-06-21T11:23:40.596211,"{'raw_taf': 'TAF EGKK 211056Z 2112/2218 17006KT 9999 FEW045 PROB30 TEMPO 2112/2114 VRB15G25KT 3000 +SHRA +TSGS PROB30 TEMPO 2114/2119 6000 SHRA PROB30 TEMPO 2119/2202 VRB15G25KT 4000 +TSRAGS BECMG 2200/2203 26010KT PROB30 TEMPO 2212/2218 24015G25KT', 'valid_from': 1750507200, 'valid_to': 1750615200, 'forecast_periods': []}",1609.179,0.18,0.8625,335.23,True,False,True,True,False,True
-KJFK,KJFK 211051Z 24004KT 10SM BKN130 BKN250 23/19 A3011 RMK AO2 SLP196 T02330189 $,2025-06-21T10:51:00Z,16093,4,240,23,19,1019,[],Broken,0,minimal,1.9999999999999998,0,excellent,calm,warm,11,5,6,0.3,0,0,KJFK,2025-06-21T11:23:40.708357,"{'raw_taf': 'KJFK 210855Z 2109/2212 26006KT P6SM BKN150 FM211200 28007KT P6SM BKN120 FM211400 22007KT P6SM SCT150 FM211600 19010KT P6SM FEW060 SCT120 FM212000 19014KT P6SM FEW060 SCT120 FM220100 20008KT P6SM FEW060 SCT250', 'valid_from': 1750496400, 'valid_to': 1750593600, 'forecast_periods': []}",1.6093,0.08,0.7875,0.69,True,True,False,False,True,True
-KLAX,KLAX 211053Z 11006KT 10SM FEW019 OVC029 18/13 A2983 RMK AO2 SLP099 T01830133,2025-06-21T10:53:00Z,16093,6,110,18,13,1010,[],Overcast,0,minimal,2.0521208599540133,0,excellent,light,warm,11,5,6,0.3,0,0,KLAX,2025-06-21T11:23:40.832116,"{'raw_taf': 'KLAX 210837Z 2109/2212 12005KT P6SM OVC025 FM211200 12008KT P6SM OVC030 FM211600 14006KT P6SM BKN035 FM211800 22006KT P6SM SCT030 FM212000 26012KT P6SM SKC FM220400 VRB03KT P6SM SKC', 'valid_from': 1750496400, 'valid_to': 1750593600, 'forecast_periods': []}",1.6093,0.12,0.725,0.6,True,False,True,False,True,True
-EDDF,EDDF 211050Z AUTO 11005KT 020V190 CAVOK 28/08 Q1022 NOSIG,2025-06-21T10:50:00Z,16091790,5,110,28,8,34608,[],CLR,0,minimal,1.7101007166283444,0,excellent,calm,hot,11,5,6,0.3,0,0,EDDF,2025-06-21T11:23:40.924632,"{'raw_taf': 'TAF EDDF 210500Z 2106/2212 02008KT CAVOK BECMG 2108/2111 08006KT', 'valid_from': 1750485600, 'valid_to': 1750593600, 'forecast_periods': []}",1609.179,0.1,0.85,336.58,True,True,False,True,False,True
-LFPG,LFPG 211100Z AUTO 12005KT 050V170 CAVOK 30/11 Q1019 NOSIG,2025-06-21T11:00:00Z,16091790,5,120,30,11,34507,[],CLR,0,minimal,2.4999999999999996,0,excellent,calm,hot,11,5,6,0.3,0,0,LFPG,2025-06-21T11:23:43.022980,"{'raw_taf': 'TAF LFPG 211100Z 2112/2218 10008KT CAVOK TX35/2115Z TN22/2206Z BECMG 2206/2208 27010KT', 'valid_from': 1750507200, 'valid_to': 1750615200, 'forecast_periods': []}",1609.179,0.1,0.875,335.57,True,True,False,True,False,True
+icao_code,airline_name,origin_destination,arrival_departure,scheduled_charter,average_delay_mins,station,retrieved_at,visibility,wind_speed,temperature,dewpoint,flight_rules,low_visibility_flag,strong_wind_flag,ifr_flag,temp_dewpoint_delta,fog_risk_flag
+EGLL,British Airways,Departure,Arrival,Scheduled,2.601795468963023,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,British Airways,Arrival,Arrival,Scheduled,8.16811796659848,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,British Airways,Arrival,Arrival,Scheduled,9.974792866313848,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,British Airways,Arrival,Arrival,Scheduled,7.0750115958606035,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,British Airways,Departure,Departure,Scheduled,8.664803016853883,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Virgin Atlantic,Departure,Departure,Scheduled,8.211075550984587,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Virgin Atlantic,Arrival,Departure,Charter,7.8950417098410615,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Virgin Atlantic,Departure,Arrival,Scheduled,8.780978611234266,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Virgin Atlantic,Departure,Departure,Scheduled,9.216792920678186,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Virgin Atlantic,Departure,Departure,Scheduled,6.773161304868199,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,EasyJet,Departure,Departure,Scheduled,8.147794939016318,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,EasyJet,Arrival,Departure,Scheduled,10.529340244724096,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,EasyJet,Departure,Departure,Scheduled,13.652740799923397,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,EasyJet,Arrival,Arrival,Charter,8.014981179811262,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,EasyJet,Departure,Departure,Scheduled,8.031060464963494,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Ryanair,Arrival,Departure,Scheduled,6.714522640884102,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Ryanair,Arrival,Departure,Scheduled,20.37832850041199,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Ryanair,Arrival,Arrival,Scheduled,4.067750725083943,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Ryanair,Departure,Arrival,Scheduled,5.612862995337997,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Ryanair,Departure,Departure,Scheduled,17.093784848508307,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Jet2,Departure,Arrival,Charter,15.131771992591947,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Jet2,Arrival,Arrival,Scheduled,7.788695066833894,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Jet2,Departure,Departure,Scheduled,11.447938628104982,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Jet2,Departure,Arrival,Scheduled,15.923616898837118,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,Jet2,Arrival,Arrival,Scheduled,9.695381169986728,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,TUI Airways,Departure,Departure,Scheduled,0.0,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,TUI Airways,Departure,Departure,Scheduled,0.8990719445342519,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,TUI Airways,Arrival,Departure,Charter,5.7782653945126725,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,TUI Airways,Departure,Arrival,Scheduled,1.9259857644415161,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGLL,TUI Airways,Departure,Departure,Scheduled,9.392085756714467,EGLL,2025-06-21T11:30:24.648953,9999.0,11.0,30.0,14.0,VFR,False,False,False,16.0,False
+EGKK,British Airways,Arrival,Departure,Scheduled,4.2573225035840405,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,British Airways,Arrival,Departure,Scheduled,15.267318894972494,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,British Airways,Departure,Arrival,Charter,2.264362159456968,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,British Airways,Arrival,Departure,Scheduled,3.019588381605124,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,British Airways,Departure,Arrival,Scheduled,14.462710692265784,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Virgin Atlantic,Arrival,Departure,Scheduled,0.0,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Virgin Atlantic,Departure,Arrival,Scheduled,10.453048729370526,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Virgin Atlantic,Departure,Departure,Scheduled,2.7582981744710233,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Virgin Atlantic,Arrival,Departure,Scheduled,7.241451925970681,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Virgin Atlantic,Departure,Departure,Scheduled,3.3241884849840124,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,EasyJet,Departure,Arrival,Scheduled,10.583769336735148,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,EasyJet,Departure,Arrival,Scheduled,12.263894410372352,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,EasyJet,Arrival,Departure,Scheduled,3.878075575719632,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,EasyJet,Departure,Departure,Scheduled,15.545699969106973,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,EasyJet,Departure,Arrival,Scheduled,12.845647601042788,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Ryanair,Arrival,Departure,Scheduled,5.732074455802638,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Ryanair,Departure,Departure,Scheduled,10.286857557757365,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Ryanair,Departure,Arrival,Charter,12.695749968809292,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Ryanair,Arrival,Arrival,Scheduled,12.339050384966617,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Ryanair,Arrival,Arrival,Scheduled,3.3795694253471,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Jet2,Departure,Departure,Scheduled,9.975520202661688,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Jet2,Departure,Departure,Scheduled,6.331243921758817,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Jet2,Arrival,Departure,Scheduled,6.095577173868007,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Jet2,Departure,Departure,Scheduled,13.832307899373228,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,Jet2,Arrival,Departure,Scheduled,9.908839709001771,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,TUI Airways,Arrival,Departure,Scheduled,4.022676597047294,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,TUI Airways,Arrival,Arrival,Scheduled,7.443445051955569,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,TUI Airways,Departure,Departure,Scheduled,3.7208309381924725,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,TUI Airways,Departure,Arrival,Scheduled,3.48318141636641,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGKK,TUI Airways,Arrival,Arrival,Scheduled,5.069842535185854,EGKK,2025-06-21T11:30:25.254786,9999.0,10.0,29.0,14.0,VFR,False,False,False,15.0,False
+EGCC,British Airways,Departure,Departure,Scheduled,8.65947793190362,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,British Airways,Departure,Departure,Scheduled,7.19384525434193,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,British Airways,Arrival,Arrival,Scheduled,8.48580256280655,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,British Airways,Departure,Arrival,Charter,0.0,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,British Airways,Departure,Departure,Scheduled,2.9164325779261064,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Virgin Atlantic,Arrival,Departure,Scheduled,9.825863212726611,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Virgin Atlantic,Arrival,Arrival,Scheduled,6.649666291774848,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Virgin Atlantic,Arrival,Departure,Scheduled,7.114691671093082,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Virgin Atlantic,Departure,Arrival,Scheduled,15.30360428132985,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Virgin Atlantic,Departure,Departure,Scheduled,5.235871973399359,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,EasyJet,Arrival,Departure,Scheduled,10.610652169577541,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,EasyJet,Departure,Departure,Scheduled,6.7275249812841,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,EasyJet,Arrival,Departure,Scheduled,11.592052284403064,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,EasyJet,Departure,Departure,Charter,0.8270520799584524,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,EasyJet,Departure,Arrival,Scheduled,3.7820095953267305,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Ryanair,Departure,Arrival,Scheduled,6.95516257120349,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Ryanair,Departure,Departure,Scheduled,4.704189382758645,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Ryanair,Departure,Departure,Scheduled,9.286099519531502,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Ryanair,Arrival,Arrival,Scheduled,8.417554689158342,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Ryanair,Arrival,Departure,Scheduled,13.60029256118115,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Jet2,Departure,Departure,Scheduled,6.869436997426812,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Jet2,Departure,Arrival,Scheduled,21.426668194004876,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Jet2,Departure,Departure,Scheduled,11.071207409658165,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Jet2,Departure,Departure,Scheduled,8.991529918283733,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,Jet2,Departure,Departure,Scheduled,11.321765139666319,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,TUI Airways,Departure,Departure,Charter,1.5797986967378694,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,TUI Airways,Arrival,Arrival,Scheduled,7.9225180597601765,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,TUI Airways,Arrival,Departure,Charter,14.051665796905123,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,TUI Airways,Arrival,Departure,Scheduled,10.952953034228573,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGCC,TUI Airways,Arrival,Arrival,Scheduled,0.0,EGCC,2025-06-21T11:30:25.871931,9999.0,5.0,25.0,16.0,VFR,False,False,False,9.0,False
+EGGD,British Airways,Departure,Departure,Scheduled,1.9996872559315406,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,British Airways,Departure,Arrival,Scheduled,8.17251223446124,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,British Airways,Departure,Departure,Scheduled,16.341624672911394,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,British Airways,Departure,Departure,Scheduled,19.218932873516305,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,British Airways,Departure,Departure,Scheduled,10.130961493612254,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Virgin Atlantic,Departure,Departure,Scheduled,4.610891516956709,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Virgin Atlantic,Departure,Arrival,Scheduled,7.722718404013774,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Virgin Atlantic,Departure,Arrival,Scheduled,7.22486148448093,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Virgin Atlantic,Arrival,Arrival,Scheduled,5.224535122312342,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Virgin Atlantic,Arrival,Arrival,Scheduled,11.002218219700747,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,EasyJet,Departure,Arrival,Scheduled,15.311494499081425,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,EasyJet,Departure,Departure,Scheduled,9.738736921968973,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,EasyJet,Departure,Arrival,Scheduled,5.060311402671662,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,EasyJet,Arrival,Departure,Scheduled,4.227177329396619,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,EasyJet,Departure,Arrival,Scheduled,14.260054250507224,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Ryanair,Departure,Arrival,Scheduled,7.51412798782567,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Ryanair,Departure,Arrival,Scheduled,12.654980236160098,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Ryanair,Departure,Departure,Scheduled,6.643631160148051,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Ryanair,Departure,Arrival,Scheduled,2.480923282221622,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Ryanair,Arrival,Arrival,Scheduled,3.318620224700922,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Jet2,Arrival,Arrival,Scheduled,11.981926636151726,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Jet2,Arrival,Departure,Scheduled,9.936170017489626,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Jet2,Arrival,Departure,Scheduled,12.493321378784197,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Jet2,Arrival,Arrival,Charter,4.75266646401026,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,Jet2,Arrival,Arrival,Scheduled,11.87937328534134,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,TUI Airways,Departure,Arrival,Scheduled,13.390650506463741,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,TUI Airways,Departure,Arrival,Scheduled,15.559161966197424,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,TUI Airways,Departure,Arrival,Scheduled,13.370646618863457,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,TUI Airways,Departure,Arrival,Scheduled,13.662067856814133,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGGD,TUI Airways,Arrival,Departure,Scheduled,4.718439026582741,EGGD,2025-06-21T11:30:26.471254,9999.0,7.0,24.0,16.0,VFR,False,False,False,8.0,False
+EGPH,British Airways,Arrival,Arrival,Scheduled,9.215850793312747,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,British Airways,Arrival,Departure,Scheduled,18.140847579616995,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,British Airways,Arrival,Arrival,Scheduled,15.682726091672828,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,British Airways,Departure,Arrival,Scheduled,13.241008177758959,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,British Airways,Arrival,Arrival,Scheduled,22.289282150639963,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Virgin Atlantic,Arrival,Arrival,Scheduled,7.357870464211146,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Virgin Atlantic,Arrival,Departure,Charter,26.89080533386252,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Virgin Atlantic,Departure,Arrival,Scheduled,18.38652501366127,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Virgin Atlantic,Arrival,Departure,Scheduled,16.16748978980443,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Virgin Atlantic,Arrival,Arrival,Scheduled,20.161473299224422,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,EasyJet,Arrival,Departure,Scheduled,16.751564309433377,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,EasyJet,Arrival,Departure,Scheduled,13.089896458565436,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,EasyJet,Departure,Departure,Scheduled,17.585535138461434,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,EasyJet,Arrival,Departure,Scheduled,18.3557626000728,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,EasyJet,Arrival,Departure,Scheduled,14.020436345967727,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Ryanair,Departure,Departure,Scheduled,15.666552714851314,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Ryanair,Departure,Arrival,Scheduled,12.023956217401832,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Ryanair,Departure,Departure,Scheduled,11.776919470472095,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Ryanair,Arrival,Departure,Scheduled,16.34615162615136,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Ryanair,Departure,Arrival,Scheduled,11.405086681223905,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Jet2,Arrival,Departure,Charter,12.014299498430683,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Jet2,Arrival,Arrival,Scheduled,18.76545071359083,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Jet2,Arrival,Arrival,Scheduled,6.317505629983746,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Jet2,Arrival,Arrival,Scheduled,25.874397403990237,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,Jet2,Departure,Departure,Charter,15.667319446184074,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,TUI Airways,Arrival,Arrival,Scheduled,21.59920009553039,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,TUI Airways,Departure,Departure,Scheduled,16.82874033052202,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,TUI Airways,Arrival,Arrival,Scheduled,18.266264916547883,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,TUI Airways,Arrival,Departure,Scheduled,24.83988496676373,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGPH,TUI Airways,Departure,Departure,Scheduled,20.912710730628437,EGPH,2025-06-21T11:30:27.133564,7000.0,9.0,15.0,15.0,LIFR,False,False,True,0.0,False
+EGTE,British Airways,Arrival,Arrival,Scheduled,6.036015451923668,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,British Airways,Arrival,Departure,Scheduled,10.706534742340743,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,British Airways,Arrival,Arrival,Scheduled,9.66008121568655,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,British Airways,Departure,Arrival,Scheduled,8.204053970998181,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,British Airways,Departure,Departure,Scheduled,9.01383595713777,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Virgin Atlantic,Arrival,Arrival,Scheduled,7.615408042458394,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Virgin Atlantic,Arrival,Departure,Charter,8.531554576269336,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Virgin Atlantic,Departure,Departure,Scheduled,16.987455423126104,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Virgin Atlantic,Arrival,Arrival,Scheduled,9.856654845810503,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Virgin Atlantic,Arrival,Arrival,Scheduled,8.488501539596166,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,EasyJet,Departure,Departure,Charter,10.839208223051761,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,EasyJet,Departure,Departure,Scheduled,10.158178392396053,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,EasyJet,Departure,Departure,Scheduled,6.734489445720067,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,EasyJet,Departure,Departure,Scheduled,1.2845721837246478,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,EasyJet,Arrival,Arrival,Scheduled,0.0,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Ryanair,Departure,Departure,Scheduled,6.718529495120866,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Ryanair,Arrival,Arrival,Scheduled,9.318451680272428,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Ryanair,Arrival,Departure,Scheduled,7.113856850579715,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Ryanair,Departure,Departure,Scheduled,6.211671155243319,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Ryanair,Departure,Departure,Charter,13.34901960182355,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Jet2,Arrival,Departure,Scheduled,10.555542587242993,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Jet2,Departure,Departure,Scheduled,6.239208704348198,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Jet2,Departure,Arrival,Scheduled,6.433299361568634,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Jet2,Departure,Departure,Scheduled,6.405271263786998,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,Jet2,Arrival,Departure,Scheduled,7.409231561241946,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,TUI Airways,Departure,Arrival,Scheduled,14.710543567020455,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,TUI Airways,Arrival,Departure,Scheduled,4.21262032087072,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,TUI Airways,Departure,Arrival,Charter,7.911251754305001,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,TUI Airways,Departure,Arrival,Scheduled,10.18238048612865,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False
+EGTE,TUI Airways,Arrival,Departure,Scheduled,6.532552420705201,EGTE,2025-06-21T11:30:27.735665,9999.0,8.0,22.0,17.0,VFR,False,False,False,5.0,False

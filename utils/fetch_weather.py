@@ -43,7 +43,8 @@ def fetch_and_save_weather_data():
     
     # Handle errors and missing data
     error_count = df['error'].sum() if 'error' in df.columns else 0
-    df = df[df.get('error', False) != True]  # Remove error records
+    if 'error' in df.columns:
+        df = df[df['error'] != True]  # Remove error records
     
     if len(df) == 0:
         print("No valid weather data retrieved. Check API key and connectivity.")
@@ -52,7 +53,7 @@ def fetch_and_save_weather_data():
     # Add weather-based flags for delay prediction
     df["low_visibility_flag"] = df["visibility"] < 3000
     df["strong_wind_flag"] = df["wind_speed"] > 25
-    df["ifr_flag"] = df["flight_rules"].isin(["IFR", "LIFR"])
+    df["ifr_flag"] = df["flight_rules"].str.contains("IFR", na=False)
     df["temp_dewpoint_delta"] = df["temperature"] - df["dewpoint"]
     df["fog_risk_flag"] = (df["temp_dewpoint_delta"] < 2) & (df["visibility"] < 2000)
     

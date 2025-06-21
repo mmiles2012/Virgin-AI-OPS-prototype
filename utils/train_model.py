@@ -81,18 +81,19 @@ def create_training_data():
 def train_and_save_model():
     """Train Random Forest model with weather and operational features"""
     
-    # Load or create training data
-    if not os.path.exists(DATA_PATH):
-        print("Creating training data...")
-        df = create_training_data()
-        if df is None:
-            return
-    else:
-        df = pd.read_csv(DATA_PATH)
+    # Always create fresh training data from current weather
+    print("Creating training data...")
+    df = create_training_data()
+    if df is None:
+        return
     
     # Clean data
-    df = df.dropna(subset=["average_delay_mins"])
-    df = df[df['average_delay_mins'] >= 0]  # No negative delays
+    if 'average_delay_mins' in df.columns:
+        df = df.dropna(subset=["average_delay_mins"])
+        df = df[df['average_delay_mins'] >= 0]  # No negative delays
+    else:
+        print("No delay data found - using weather data only for demonstration")
+        return
     
     print(f"Training on {len(df)} records")
     
@@ -117,6 +118,11 @@ def train_and_save_model():
     available_categorical = [f for f in categorical_features if f in available_features]
     available_boolean = [f for f in boolean_features if f in available_features]
     available_numeric = [f for f in numeric_features if f in available_features]
+    
+    # Convert boolean columns to integers for scikit-learn compatibility
+    for col in available_boolean:
+        if col in X.columns:
+            X[col] = X[col].astype(int)
     
     # Create preprocessor
     transformers = []
