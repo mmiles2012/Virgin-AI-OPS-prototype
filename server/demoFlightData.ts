@@ -48,6 +48,11 @@ export class DemoFlightDataGenerator {
       const lat = startCoord.lat + (endCoord.lat - startCoord.lat) * progress + (Math.random() - 0.5) * 2;
       const lon = startCoord.lon + (endCoord.lon - startCoord.lon) * progress + (Math.random() - 0.5) * 5;
       
+      // Calculate realistic fuel based on aircraft type and route progress
+      const baseFuel = this.calculateBaseFuel(route.aircraft, route.origin, route.destination, progress);
+      const engineStatus = Math.random() > 0.05 ? 'normal' : (Math.random() > 0.5 ? 'caution' : 'warning');
+      const systemsStatus = Math.random() > 0.03 ? 'normal' : (Math.random() > 0.7 ? 'caution' : 'warning');
+      
       this.flightStates.set(route.callsign, {
         ...route,
         latitude: lat,
@@ -57,7 +62,10 @@ export class DemoFlightDataGenerator {
         heading: this.calculateHeading(startCoord, endCoord) + (Math.random() - 0.5) * 20,
         progress: progress,
         lastUpdate: Date.now(),
-        status: 'en-route'
+        status: 'en-route',
+        fuel: baseFuel,
+        engineStatus: engineStatus,
+        systemsStatus: systemsStatus
       });
     });
   }
@@ -89,6 +97,45 @@ export class DemoFlightDataGenerator {
     return Math.round(heading);
   }
 
+  private calculateBaseFuel(aircraft: string, origin: string, destination: string, progress: number): number {
+    // Aircraft fuel consumption rates (kg/hour)
+    const fuelRates: Record<string, number> = {
+      'A351': 6800, // A350-1000
+      'A339': 7200, // A330-300
+      'B789': 6900, // 787-9
+      'A333': 7500  // A330-300
+    };
+    
+    // Route distances (approximate nautical miles)
+    const routeDistances: Record<string, number> = {
+      'LHR-JFK': 3008, 'LHR-LAX': 4750, 'LHR-MIA': 3750, 'LHR-BOS': 2850,
+      'LHR-IAD': 3200, 'LGW-MCO': 3850, 'MAN-MCO': 4100
+    };
+    
+    const routeKey = `${origin}-${destination}`;
+    const distance = routeDistances[routeKey] || 3500;
+    const fuelRate = fuelRates[aircraft] || 7000;
+    
+    // Calculate total fuel needed for route
+    const flightTime = distance / 450; // Average speed 450 knots
+    const totalFuelNeeded = fuelRate * flightTime;
+    
+    // Current fuel remaining based on progress (with some variation)
+    const fuelRemaining = totalFuelNeeded * (1 - progress) + (Math.random() - 0.5) * 2000;
+    
+    return Math.max(5000, Math.round(fuelRemaining)); // Minimum 5000kg fuel
+  }
+
+  private getFuelRate(aircraft: string): number {
+    const fuelRates: Record<string, number> = {
+      'A351': 6800, // A350-1000
+      'A339': 7200, // A330-300
+      'B789': 6900, // 787-9
+      'A333': 7500  // A330-300
+    };
+    return fuelRates[aircraft] || 7000;
+  }
+
   updateFlightPositions(): void {
     const now = Date.now();
     const deltaTime = (now - this.lastUpdate) / 1000 / 3600; // hours
@@ -114,6 +161,16 @@ export class DemoFlightDataGenerator {
       // Add some realistic flight path variation
       const variation = (Math.random() - 0.5) * 0.1;
       
+      // Update fuel consumption based on time elapsed
+      const hoursElapsed = deltaTime;
+      const fuelRate = this.getFuelRate(flight.aircraft);
+      const fuelConsumed = fuelRate * hoursElapsed;
+      const newFuel = Math.max(flight.fuel - fuelConsumed, 0);
+      
+      // Update engine and systems status based on fuel and flight conditions
+      const engineStatus = newFuel < 5000 ? 'warning' : (Math.random() > 0.95 ? 'caution' : flight.engineStatus);
+      const systemsStatus = newFuel < 3000 ? 'warning' : (Math.random() > 0.97 ? 'caution' : flight.systemsStatus);
+      
       this.flightStates.set(callsign, {
         ...flight,
         latitude: (lat2 * 180 / Math.PI) + variation,
@@ -121,6 +178,9 @@ export class DemoFlightDataGenerator {
         altitude: flight.altitude + (Math.random() - 0.5) * 500, // Small altitude variations
         velocity: flight.velocity + (Math.random() - 0.5) * 20, // Speed variations
         heading: flight.heading + (Math.random() - 0.5) * 5, // Heading adjustments
+        fuel: newFuel,
+        engineStatus: engineStatus,
+        systemsStatus: systemsStatus,
         lastUpdate: now
       });
     });
@@ -142,6 +202,9 @@ export class DemoFlightDataGenerator {
       origin: flight.origin,
       destination: flight.destination,
       status: flight.status,
+      fuel: flight.fuel || 15000,
+      engineStatus: flight.engineStatus || 'normal',
+      systemsStatus: flight.systemsStatus || 'normal',
       departureTime: undefined,
       arrivalTime: undefined
     }));
