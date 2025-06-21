@@ -24,6 +24,7 @@ import { dualModelAIService } from "./dualModelIntegration";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 import { weatherDataCollector } from "./weatherDataCollector";
+import { adsbFlightTracker } from "./adsbFlightTracker";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -1951,6 +1952,124 @@ print(json.dumps(weather))
     }
   });
 
+  // ADS-B Real-Time Flight Tracking API
+  app.get('/api/adsb/realtime', async (req, res) => {
+    try {
+      const { min_lat, max_lat, min_lon, max_lon } = req.query;
+      
+      let bounds;
+      if (min_lat && max_lat && min_lon && max_lon) {
+        bounds = {
+          min_latitude: parseFloat(min_lat as string),
+          max_latitude: parseFloat(max_lat as string),
+          min_longitude: parseFloat(min_lon as string),
+          max_longitude: parseFloat(max_lon as string)
+        };
+      }
+
+      const adsbData = await adsbFlightTracker.getOpenSkyADSBData(bounds);
+      const formattedData = adsbFlightTracker.formatADSBForDisplay(adsbData.aircraft);
+      
+      res.json({
+        success: adsbData.success,
+        aircraft: formattedData,
+        count: adsbData.count,
+        data_source: 'ADS-B_OpenSky_Network',
+        coverage_area: bounds,
+        timestamp: adsbData.timestamp,
+        parameters_included: [
+          'ICAO24_address', 'callsign', 'position', 'altitude_barometric_geometric',
+          'ground_speed', 'track', 'vertical_rate', 'squawk_code',
+          'on_ground_status', 'position_source', 'aircraft_category'
+        ]
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'ADS-B data unavailable',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/adsb/aircraft/:icao24', async (req, res) => {
+    try {
+      const { icao24 } = req.params;
+      const aircraftData = await adsbFlightTracker.getAircraftADSBData(icao24.toLowerCase());
+      
+      if (aircraftData) {
+        const formatted = adsbFlightTracker.formatADSBForDisplay([aircraftData]);
+        res.json({
+          success: true,
+          aircraft: formatted[0],
+          data_source: 'ADS-B_OpenSky_Network',
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: `No ADS-B data found for aircraft ${icao24.toUpperCase()}`,
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve aircraft ADS-B data',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/adsb/virgin-atlantic', async (req, res) => {
+    try {
+      const virginData = await adsbFlightTracker.getVirginAtlanticADSBData();
+      const formattedData = adsbFlightTracker.formatADSBForDisplay(virginData.aircraft);
+      
+      res.json({
+        success: virginData.success,
+        fleet_aircraft: formattedData,
+        active_count: virginData.count,
+        data_source: 'ADS-B_Virgin_Atlantic_Fleet',
+        timestamp: virginData.timestamp,
+        fleet_coverage: {
+          total_fleet_monitored: 13,
+          currently_transmitting: virginData.count,
+          coverage_percentage: Math.round((virginData.count / 13) * 100)
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Virgin Atlantic ADS-B data unavailable',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/adsb/quality-check', async (req, res) => {
+    try {
+      const qualityData = await adsbFlightTracker.checkADSBDataQuality();
+      
+      res.json({
+        success: true,
+        adsb_quality: qualityData,
+        service_status: qualityData.quality_score > 70 ? 'operational' : 'degraded',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'ADS-B quality check failed',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
   // Health check endpoint
   app.get("/api/health", (req, res) => {
     res.json({
@@ -1975,6 +2094,13 @@ print(json.dumps(weather))
       operational_alerts: {
         authentic_data_sources: ["DOT_Airline_Delay_Causes", "UK_CAA_Punctuality_Stats"],
         data_integrity: "government_aviation_authorities"
+      },
+      adsb_services: {
+        realtime_tracking: "available",
+        aircraft_specific: "available", 
+        virgin_atlantic_fleet: "available",
+        quality_monitoring: "available",
+        data_parameters: "full_adsb_suite"
       },
       timestamp: new Date().toISOString()
     });
