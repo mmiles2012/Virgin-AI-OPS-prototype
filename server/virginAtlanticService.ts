@@ -178,6 +178,24 @@ class VirginAtlanticService {
     const flights = this.getAuthenticFlights();
     const now = new Date();
     
+    // Airport coordinates for Virgin Atlantic routes
+    const airportCoordinates: { [key: string]: { lat: number, lng: number } } = {
+      'LHR': { lat: 51.4700, lng: -0.4543 },
+      'JFK': { lat: 40.6413, lng: -73.7781 },
+      'LAX': { lat: 33.9425, lng: -118.4081 },
+      'SYD': { lat: -33.9399, lng: 151.1753 },
+      'MEL': { lat: -37.6690, lng: 144.8410 },
+      'PER': { lat: -31.9403, lng: 115.9669 },
+      'BOS': { lat: 42.3656, lng: -71.0096 },
+      'ATL': { lat: 33.6407, lng: -84.4277 },
+      'MIA': { lat: 25.7959, lng: -80.2870 },
+      'SFO': { lat: 37.6213, lng: -122.3790 },
+      'SEA': { lat: 47.4502, lng: -122.3088 },
+      'LAS': { lat: 36.0840, lng: -115.1537 },
+      'MCO': { lat: 28.4312, lng: -81.3081 },
+      'DFW': { lat: 32.8975, lng: -97.0403 }
+    };
+    
     return flights.slice(0, 20).map(flight => {
       const departureTime = new Date(now);
       departureTime.setHours(parseInt(flight.departure_time.split(':')[0]));
@@ -195,14 +213,36 @@ class VirginAtlanticService {
         arrivalTime.setHours(arrivalTime.getHours() + 8); // Default 8-hour flight
       }
 
+      // Extract departure and arrival airports from route
+      const [depAirport, arrAirport] = flight.route.split('-');
+      const depCoords = airportCoordinates[depAirport] || { lat: 51.4700, lng: -0.4543 }; // Default to LHR
+      const arrCoords = airportCoordinates[arrAirport] || { lat: 40.6413, lng: -73.7781 }; // Default to JFK
+      
+      // Generate realistic in-flight position based on flight progress
+      const flightProgress = Math.random(); // 0 to 1 representing flight completion
+      const currentLat = depCoords.lat + (arrCoords.lat - depCoords.lat) * flightProgress;
+      const currentLng = depCoords.lng + (arrCoords.lng - depCoords.lng) * flightProgress;
+      
+      // Generate realistic heading based on direction
+      const deltaLat = arrCoords.lat - depCoords.lat;
+      const deltaLng = arrCoords.lng - depCoords.lng;
+      const heading = (Math.atan2(deltaLng, deltaLat) * 180 / Math.PI + 360) % 360;
+
       return {
         ...flight,
+        callsign: flight.flight_number,
+        latitude: currentLat,
+        longitude: currentLng,
+        altitude: Math.floor(Math.random() * 10000) + 35000,
+        velocity: Math.floor(Math.random() * 100) + 450,
+        heading: Math.round(heading),
+        aircraft: flight.aircraft_type,
+        origin: depAirport,
+        destination: arrAirport,
         scheduled_departure: departureTime.toISOString(),
         scheduled_arrival: arrivalTime.toISOString(),
         current_status: this.generateRealisticStatus(),
         delay_minutes: Math.random() > 0.8 ? Math.floor(Math.random() * 45) : 0,
-        altitude: Math.floor(Math.random() * 10000) + 35000,
-        speed: Math.floor(Math.random() * 100) + 450,
         fuel_remaining: Math.floor(Math.random() * 30) + 60,
         warnings: this.generateWarnings()
       };

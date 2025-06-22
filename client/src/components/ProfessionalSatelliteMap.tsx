@@ -465,7 +465,17 @@ function ProfessionalSatelliteMapCore() {
         const response = await fetch('/api/airports/major');
         const data = await response.json();
         if (data.success && data.airports) {
-          setAirports(data.airports);
+          console.log('Airport data received:', data.airports.slice(0, 3)); // Debug first 3 airports
+          const validAirports = data.airports.filter((airport: any) => {
+            const isValid = airport.latitude != null && airport.longitude != null && 
+                           !isNaN(airport.latitude) && !isNaN(airport.longitude);
+            if (!isValid) {
+              console.warn('Invalid airport coordinates:', airport.icao, airport.latitude, airport.longitude);
+            }
+            return isValid;
+          });
+          setAirports(validAirports);
+          console.log(`Loaded ${validAirports.length} valid airports out of ${data.airports.length} total`);
         }
       } catch (error) {
         console.error('Failed to fetch airports:', error);
@@ -482,7 +492,17 @@ function ProfessionalSatelliteMapCore() {
         const response = await fetch('/api/aviation/virgin-atlantic-flights');
         const data = await response.json();
         if (data.success && data.flights) {
-          setFlightData(data.flights);
+          console.log('Flight data received:', data.flights.slice(0, 2)); // Debug first 2 flights
+          const validFlights = data.flights.filter((flight: any) => {
+            const isValid = flight.latitude != null && flight.longitude != null && 
+                           !isNaN(flight.latitude) && !isNaN(flight.longitude);
+            if (!isValid) {
+              console.warn('Invalid flight coordinates:', flight.callsign || flight.flight_number, flight.latitude, flight.longitude);
+            }
+            return isValid;
+          });
+          setFlightData(validFlights);
+          console.log(`Loaded ${validFlights.length} valid flights out of ${data.flights.length} total`);
         }
       } catch (error) {
         console.error('Failed to fetch flight data:', error);
@@ -689,11 +709,17 @@ function ProfessionalSatelliteMapCore() {
           ))}
 
           {/* Flight markers */}
-          {showFlights && flightData.map((flight, index) => (
+          {showFlights && flightData.filter((flight) => {
+            // Only render flights with valid coordinates
+            return flight.latitude != null && flight.longitude != null && 
+                   !isNaN(flight.latitude) && !isNaN(flight.longitude) &&
+                   flight.latitude >= -90 && flight.latitude <= 90 &&
+                   flight.longitude >= -180 && flight.longitude <= 180;
+          }).map((flight, index) => (
             <Marker
-              key={`${flight.callsign}-${index}`}
+              key={`flight-${flight.callsign || index}-${index}`}
               position={[flight.latitude, flight.longitude]}
-              icon={createFlightIcon(flight.heading, selectedFlight?.callsign === flight.callsign)}
+              icon={createFlightIcon(flight.heading || 0, selectedFlight?.callsign === flight.callsign)}
               eventHandlers={{
                 click: () => {
                   selectFlight(flight);
