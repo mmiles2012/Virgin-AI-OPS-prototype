@@ -68,7 +68,70 @@ const EmergencyCommDashboard: React.FC = () => {
   const [activeAlerts, setActiveAlerts] = useState<EmergencyAlert[]>([]);
   const [alertHistory, setAlertHistory] = useState<EmergencyAlert[]>([]);
   const [messages, setMessages] = useState<CommunicationMessage[]>([]);
-  const [channels, setChannels] = useState<CommunicationChannel[]>([]);
+  const [channels, setChannels] = useState<CommunicationChannel[]>([
+    {
+      id: 'emergency-freq',
+      name: 'Emergency Frequency',
+      type: 'voice',
+      frequency: '121.5',
+      active: true,
+      participants: ['ATC', 'Emergency Services', 'Aircraft']
+    },
+    {
+      id: 'atc-primary',
+      name: 'ATC Primary',
+      type: 'voice', 
+      frequency: '118.7',
+      active: true,
+      participants: ['Air Traffic Control', 'Aircraft', 'Ground Control']
+    },
+    {
+      id: 'ground-control',
+      name: 'Ground Control',
+      type: 'voice',
+      frequency: '121.9',
+      active: false,
+      participants: ['Ground Control', 'Aircraft', 'Ground Crew']
+    },
+    {
+      id: 'medical-channel',
+      name: 'Medical Emergency',
+      type: 'voice',
+      frequency: '123.45',
+      active: false,
+      participants: ['Medical Team', 'Paramedics', 'Hospital']
+    },
+    {
+      id: 'security-channel', 
+      name: 'Security Services',
+      type: 'voice',
+      frequency: '122.15',
+      active: false,
+      participants: ['Airport Security', 'Police', 'Border Control']
+    },
+    {
+      id: 'acars-data',
+      name: 'Aircraft ACARS',
+      type: 'data',
+      active: true,
+      participants: ['Aircraft Systems', 'Operations Center', 'Maintenance']
+    },
+    {
+      id: 'ops-center',
+      name: 'Operations Center',
+      type: 'text',
+      active: true,
+      participants: ['Flight Dispatch', 'Operations Manager', 'Crew Scheduling']
+    },
+    {
+      id: 'fire-rescue',
+      name: 'Fire & Rescue',
+      type: 'voice',
+      frequency: '121.6',
+      active: false,
+      participants: ['Fire Department', 'Rescue Teams', 'Airport ARFF']
+    }
+  ]);
   const [selectedAlert, setSelectedAlert] = useState<EmergencyAlert | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [selectedRecipient, setSelectedRecipient] = useState('ATC');
