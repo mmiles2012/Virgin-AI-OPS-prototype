@@ -31,6 +31,7 @@ import SkyGateAirportDashboard from "./components/SkyGateAirportDashboard";
 import EmergencyCommDashboard from "./components/EmergencyCommDashboard";
 import OnTimePerformanceDashboard from "./components/OnTimePerformanceDashboard";
 import VirginAtlanticFleetMonitor from "./components/VirginAtlanticFleetMonitor";
+import IntelligenceDashboard from "./components/IntelligenceDashboard";
 
 // Flight control mappings
 enum FlightControls {
