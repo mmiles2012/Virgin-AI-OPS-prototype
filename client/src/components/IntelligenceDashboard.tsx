@@ -303,41 +303,49 @@ export default function IntelligenceDashboard() {
               {intelligenceData && (
                 <>
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-white font-medium">Intelligence Feed</h3>
-                    <Badge className="bg-blue-600">
-                      {intelligenceData.analytics.total_articles_today} articles today
-                    </Badge>
+                    <h3 className="text-white font-medium">Live Intelligence Feed</h3>
+                    <div className="flex items-center gap-2">
+                      {intelligenceData.data_source === 'Live_News_API' && (
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="text-green-400 text-xs">LIVE DATA</span>
+                        </div>
+                      )}
+                      <Badge className="bg-blue-600">
+                        {intelligenceData.analytics.total_articles_today} articles processed
+                      </Badge>
+                    </div>
                   </div>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2">
                     {intelligenceData.articles.map(article => (
                       <Card key={article.id} className="bg-gray-800/30">
-                        <CardContent className="pt-4">
+                        <CardContent className="pt-3 pb-3">
                           <div className="flex justify-between items-start mb-2">
-                            <h4 className="text-white font-medium text-sm leading-tight">{article.title}</h4>
-                            <Badge variant={article.impact_level === 'high' ? 'destructive' : 'secondary'}>
+                            <h4 className="text-white font-medium text-sm leading-tight flex-1 mr-2">{article.title}</h4>
+                            <Badge variant={article.impact_level === 'high' ? 'destructive' : 'secondary'} className="text-xs shrink-0">
                               {article.relevance_score}%
                             </Badge>
                           </div>
-                          <p className="text-gray-300 text-sm mb-3 leading-relaxed">{article.content}</p>
+                          <p className="text-gray-300 text-xs mb-2 leading-relaxed line-clamp-2">{article.content}</p>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <span className="text-blue-300 text-xs">{article.source}</span>
+                              <span className="text-blue-300 text-xs truncate max-w-[120px]">{article.source}</span>
                               <span className="text-gray-400 text-xs">•</span>
                               <span className="text-gray-400 text-xs">{formatTimeAgo(article.published_at)}</span>
                             </div>
                             <div className="flex items-center gap-1">
-                              {article.categories.slice(0, 3).map(category => (
-                                <div key={category} className="flex items-center gap-1 bg-gray-700/50 px-2 py-1 rounded text-xs">
+                              {article.categories.slice(0, 2).map(category => (
+                                <div key={category} className="flex items-center gap-1 bg-gray-700/50 px-1.5 py-0.5 rounded text-xs">
                                   {getCategoryIcon(category)}
-                                  <span className="text-gray-300">{category.replace('_', ' ')}</span>
+                                  <span className="text-gray-300 hidden sm:inline">{category.replace('_', ' ')}</span>
                                 </div>
                               ))}
                             </div>
                           </div>
                           {article.operational_significance && (
-                            <div className="mt-2 p-2 bg-blue-900/30 rounded border-l-2 border-blue-600">
-                              <span className="text-blue-300 text-xs font-medium">Operational Impact: </span>
+                            <div className="mt-2 p-1.5 bg-blue-900/30 rounded border-l-2 border-blue-600">
+                              <span className="text-blue-300 text-xs font-medium">Impact: </span>
                               <span className="text-blue-200 text-xs">{article.operational_significance}</span>
                             </div>
                           )}
@@ -371,7 +379,7 @@ export default function IntelligenceDashboard() {
                     </div>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2">
                     {alertsData.alerts.map(alert => (
                       <Alert key={alert.id} className={`border-l-4 ${
                         alert.level === 'high' ? 'border-red-600 bg-red-900/20' :
@@ -379,29 +387,27 @@ export default function IntelligenceDashboard() {
                         'border-blue-600 bg-blue-900/20'
                       }`}>
                         <div className="flex items-start justify-between">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
                             {getAlertIcon(alert.level)}
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-white font-medium">{alert.title}</span>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                <span className="text-white font-medium text-sm">{alert.title}</span>
                                 {getAlertBadge(alert.level)}
                                 {alert.action_required && (
-                                  <Badge variant="outline" className="border-orange-600 text-orange-400">
+                                  <Badge variant="outline" className="border-orange-600 text-orange-400 text-xs">
                                     Action Required
                                   </Badge>
                                 )}
                               </div>
-                              <AlertDescription className="text-gray-300 text-sm mb-2">
+                              <AlertDescription className="text-gray-300 text-xs mb-2 line-clamp-2">
                                 {alert.summary}
                               </AlertDescription>
-                              <div className="flex items-center gap-4 text-xs text-gray-400">
-                                <span>Source: {alert.source}</span>
-                                <span>•</span>
-                                <span>Relevance: {alert.relevance_score}%</span>
-                                <span>•</span>
-                                <span>Timeline: {alert.timeline}</span>
+                              <div className="flex items-center gap-3 text-xs text-gray-400 flex-wrap">
+                                <span className="truncate max-w-[120px]">Source: {alert.source}</span>
+                                <span>Score: {alert.relevance_score}%</span>
+                                <span className="truncate max-w-[120px]">Timeline: {alert.timeline}</span>
                               </div>
-                              <div className="mt-1 text-xs text-blue-300">
+                              <div className="mt-1 text-xs text-blue-300 truncate">
                                 Impact: {alert.estimated_impact}
                               </div>
                             </div>
