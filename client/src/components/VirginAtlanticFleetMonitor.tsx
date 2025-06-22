@@ -50,9 +50,22 @@ export default function VirginAtlanticFleetMonitor() {
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
 
-  // Generate realistic Virgin Atlantic fleet data
+  // Fetch real-time Virgin Atlantic fleet data from backend
   useEffect(() => {
-    const generateFleetData = (): FleetData[] => {
+    const fetchFleetData = async (): Promise<FleetData[]> => {
+      try {
+        const response = await fetch('/api/fleet/virgin-atlantic/status');
+        if (response.ok) {
+          const data = await response.json();
+          return data.fleet_data || [];
+        }
+      } catch (error) {
+        console.error('Failed to fetch fleet data:', error);
+      }
+      return generateMockFleetData();
+    };
+    
+    const generateMockFleetData = (): FleetData[] => {
       const virginAtlanticFleet = [
         { reg: 'G-VEIL', type: 'A350-1000', flight: 'VS127C', route: 'LHR-JFK' },
         { reg: 'G-VJAM', type: 'A350-1000', flight: 'VS43', route: 'LGW-MCO' },
@@ -103,14 +116,19 @@ export default function VirginAtlanticFleetMonitor() {
       });
     };
 
-    const data = generateFleetData();
-    setFleetData(data);
-    setSelectedAircraft(data[0]?.aircraft_registration || '');
-    setLoading(false);
+    const loadData = async () => {
+      const data = await fetchFleetData();
+      setFleetData(data);
+      setSelectedAircraft(data[0]?.aircraft_registration || '');
+      setLoading(false);
+    };
+
+    loadData();
 
     // Update fleet data every 30 seconds
-    const interval = setInterval(() => {
-      setFleetData(generateFleetData());
+    const interval = setInterval(async () => {
+      const data = await fetchFleetData();
+      setFleetData(data);
     }, 30000);
 
     return () => clearInterval(interval);
