@@ -308,32 +308,7 @@ function WeatherControlsPanel({
 
   return (
     <>
-      <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
-        <button
-          onClick={() => setShowWeatherPanel(!showWeatherPanel)}
-          className={`px-3 py-2 rounded-lg border transition-all duration-300 backdrop-blur-sm ${
-            showWeatherPanel 
-              ? 'bg-green-600/30 border-green-500 text-white' 
-              : 'bg-black/80 border-gray-600 text-white hover:bg-gray-700/80'
-          }`}
-          style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
-        >
-          ☁️ Weather
-        </button>
-        
-        <button
-          className="px-3 py-2 bg-black/80 border border-gray-600 text-white rounded-lg hover:bg-gray-700/80 transition-all duration-300 backdrop-blur-sm"
-          style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}
-          onClick={() => {
-            // Center on London Heathrow
-            if (typeof window !== 'undefined' && (window as any).mapInstance) {
-              (window as any).mapInstance.setView([51.4700, -0.4543], 6);
-            }
-          }}
-        >
-          📍 Center
-        </button>
-      </div>
+
 
       {showWeatherPanel && (
         <div 
