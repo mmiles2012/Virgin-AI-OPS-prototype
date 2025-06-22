@@ -28,6 +28,7 @@ import AirbusOperationsCenter from "./components/AirbusOperationsCenter";
 import FinancialAnalyticsDashboard from "./components/FinancialAnalyticsDashboard";
 import FleetSubstitutionCalculator from "./components/FleetSubstitutionCalculator";
 import SkyGateAirportDashboard from "./components/SkyGateAirportDashboard";
+import EmergencyCommDashboard from "./components/EmergencyCommDashboard";
 
 // Flight control mappings
 enum FlightControls {
@@ -65,7 +66,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -256,6 +257,17 @@ function App() {
                     SkyGate Airports
                   </button>
                   
+                  <button
+                    onClick={() => setViewMode('emergency-comm')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'emergency-comm' 
+                        ? 'bg-red-600 text-white' 
+                        : 'bg-red-800 text-red-300 hover:bg-red-700'
+                    }`}
+                  >
+                    Emergency Comm
+                  </button>
+                  
                   {/* API Centre Section */}
                   <div className="border-t border-gray-600 pt-3 mt-3">
                     <div className="text-xs text-gray-400 mb-2 px-2">API CENTRE</div>
@@ -390,6 +402,12 @@ function App() {
             {viewMode === 'skygate-airports' && (
               <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
                 <SkyGateAirportDashboard />
+              </div>
+            )}
+            
+            {viewMode === 'emergency-comm' && (
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-hidden">
+                <EmergencyCommDashboard />
               </div>
             )}
 
