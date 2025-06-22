@@ -51,28 +51,7 @@ const AIRCRAFT_OPERATING_COSTS = {
     range: 13334,
     category: 'Long Haul'
   },
-  'A320': {
-    total_per_hour: 4800,
-    fuel_per_hour: 850,
-    crew_cost_per_hour: 380,
-    maintenance_per_hour: 450,
-    insurance_per_hour: 200,
-    depreciation_per_hour: 2920,
-    passengers: 180,
-    range: 6150,
-    category: 'Short/Medium Haul'
-  },
-  'A380': {
-    total_per_hour: 26000,
-    fuel_per_hour: 4600,
-    crew_cost_per_hour: 1800,
-    maintenance_per_hour: 8500,
-    insurance_per_hour: 2100,
-    depreciation_per_hour: 9000,
-    passengers: 525,
-    range: 15700,
-    category: 'Ultra Long Haul'
-  }
+
 };
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];

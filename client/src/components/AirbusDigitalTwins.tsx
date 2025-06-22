@@ -5,62 +5,7 @@ import * as THREE from 'three';
 
 // Aircraft specifications database for ML integration
 export const AIRBUS_FLEET_SPECS = {
-  'A320': {
-    wingspan: 34.1,
-    length: 37.57,
-    height: 11.76,
-    mtow: 78000,
-    range: 6150,
-    passengers: { typical: 180, max: 240 },
-    engines: 'CFM56-5B / V2500',
-    runway_requirements: {
-      takeoff: 2090,
-      landing: 1440
-    },
-    gate_requirements: {
-      wingspan_clearance: 36,
-      length_clearance: 40,
-      height_clearance: 12.5,
-      bridge_compatibility: 'standard'
-    },
-    fuel_capacity: 24210,
-    service_ceiling: 39800,
-    operating_costs: {
-      fuel_per_hour: 650, // gallons per hour
-      crew_cost_per_hour: 420,
-      maintenance_per_hour: 380,
-      insurance_per_hour: 125,
-      total_per_hour: 3850
-    }
-  },
-  'A321': {
-    wingspan: 34.1,
-    length: 44.51,
-    height: 11.76,
-    mtow: 93500,
-    range: 7400,
-    passengers: { typical: 220, max: 244 },
-    engines: 'CFM56-5B / V2500',
-    runway_requirements: {
-      takeoff: 2560,
-      landing: 1500
-    },
-    gate_requirements: {
-      wingspan_clearance: 36,
-      length_clearance: 47,
-      height_clearance: 12.5,
-      bridge_compatibility: 'standard'
-    },
-    fuel_capacity: 32940,
-    service_ceiling: 39800,
-    operating_costs: {
-      fuel_per_hour: 720, // gallons per hour
-      crew_cost_per_hour: 420,
-      maintenance_per_hour: 410,
-      insurance_per_hour: 140,
-      total_per_hour: 4200
-    }
-  },
+
   'A330-200': {
     wingspan: 60.3,
     length: 58.8,
@@ -173,34 +118,7 @@ export const AIRBUS_FLEET_SPECS = {
       total_per_hour: 9250 // Industry average $9,000-$9,500 per authentic data
     }
   },
-  'A380': {
-    wingspan: 79.75,
-    length: 72.7,
-    height: 24.1,
-    mtow: 575000,
-    range: 14800,
-    passengers: { typical: 525, max: 853 },
-    engines: 'Trent 900 / GP7200',
-    runway_requirements: {
-      takeoff: 2900,
-      landing: 2000
-    },
-    gate_requirements: {
-      wingspan_clearance: 85,
-      length_clearance: 76,
-      height_clearance: 26,
-      bridge_compatibility: 'double_deck'
-    },
-    fuel_capacity: 320000,
-    service_ceiling: 43000,
-    operating_costs: {
-      fuel_per_hour: 3100, // gallons per hour
-      crew_cost_per_hour: 920,
-      maintenance_per_hour: 1450,
-      insurance_per_hour: 580,
-      total_per_hour: 14200
-    }
-  }
+
 };
 
 // Digital twin component for each Airbus aircraft type
