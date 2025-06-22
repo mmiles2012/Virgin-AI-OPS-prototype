@@ -732,3 +732,12 @@ function useWeatherControls() {
     setWeatherOpacity
   };
 }
+
+// Main Export with Error Boundary
+export default function LeafletSatelliteMap() {
+  return (
+    <MapErrorBoundary>
+      <LeafletSatelliteMapCore />
+    </MapErrorBoundary>
+  );
+}

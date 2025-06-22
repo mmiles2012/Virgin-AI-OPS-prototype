@@ -141,6 +141,7 @@ const DelayPredictionDashboard: React.FC = () => {
     route: 'EGLL-KJFK',
     departureTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString().slice(0, 16),
     arrivalTime: new Date(Date.now() + 10 * 60 * 60 * 1000).toISOString().slice(0, 16),
+    airline: 'Virgin Atlantic',
     weather: 3,
     traffic: 5,
     carrierStatus: 2
@@ -228,7 +229,7 @@ const DelayPredictionDashboard: React.FC = () => {
         setPrediction(data.prediction);
       }
     } catch (error) {
-      console.error('Failed to predict flight delays:', error);
+      console.error('Failed to predict flight delays:', error instanceof Error ? error.message : String(error));
     }
     setLoading(false);
   };
@@ -533,8 +534,9 @@ const DelayPredictionDashboard: React.FC = () => {
         setTrainingProgress(prev => [...prev, `Training failed: ${data.error}`]);
       }
     } catch (error) {
-      setTrainingStatus({ status: 'failed', error: error.message });
-      setTrainingProgress(prev => [...prev, `Training error: ${error.message}`]);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setTrainingStatus({ status: 'failed', error: errorMessage });
+      setTrainingProgress(prev => [...prev, `Training error: ${errorMessage}`]);
     }
     setLoading(false);
   };
