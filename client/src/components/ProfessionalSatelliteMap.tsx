@@ -135,24 +135,24 @@ const createAirportIcon = (selected: boolean) => L.divIcon({
   iconAnchor: [10, 10],
 });
 
-// Custom flight icon - Extra large for maximum visibility
+// Custom flight icon - Optimally sized for visibility and selection
 const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
   className: 'custom-flight-marker',
   html: `
     <div style="
       transform: rotate(${heading}deg);
       color: ${selected ? '#fbbf24' : '#ef4444'};
-      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.8));
-      font-size: 48px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
+      font-size: 24px;
       font-weight: bold;
       display: flex;
       align-items: center;
       justify-content: center;
       background: ${selected ? 'rgba(251, 191, 36, 0.3)' : 'rgba(239, 68, 68, 0.3)'};
       border-radius: 50%;
-      border: 3px solid ${selected ? '#fbbf24' : '#ef4444'};
-      width: 56px;
-      height: 56px;
+      border: 2px solid ${selected ? '#fbbf24' : '#ef4444'};
+      width: 28px;
+      height: 28px;
       transition: all 0.3s ease;
       cursor: pointer;
       z-index: 1000;
@@ -160,8 +160,8 @@ const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
       ✈
     </div>
   `,
-  iconSize: [64, 64],
-  iconAnchor: [32, 32],
+  iconSize: [32, 32],
+  iconAnchor: [16, 16],
 });
 
 // Coordinate display component
