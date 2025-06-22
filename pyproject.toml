@@ -8,6 +8,8 @@ dependencies = [
     "matplotlib>=3.10.3",
     "numpy<2.0",
     "pandas>=2.3.0",
+    "pdfplumber>=0.11.7",
+    "pypdf2>=3.0.1",
     "requests>=2.32.4",
     "scikit-learn>=1.7.0",
     "seaborn>=0.13.2",

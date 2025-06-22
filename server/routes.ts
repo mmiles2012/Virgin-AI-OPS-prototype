@@ -33,6 +33,7 @@ import { newsMLTraining } from "./newsMLTraining";
 import fleetSubstitution from "./fleetSubstitution";
 import skyGateRouter, { skyGateService } from "./skyGateAirportService";
 import { emergencyCommService } from "./emergencyCommService";
+import { virginAtlanticService } from "./virginAtlanticService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
