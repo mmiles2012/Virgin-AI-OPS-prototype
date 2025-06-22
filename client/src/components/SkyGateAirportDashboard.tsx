@@ -65,7 +65,7 @@ interface FlightData {
 }
 
 const SkyGateAirportDashboard: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [authLoading, setAuthLoading] = useState(false);
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [diversionAnalysis, setDiversionAnalysis] = useState<DiversionAnalysis | null>(null);
@@ -73,6 +73,12 @@ const SkyGateAirportDashboard: React.FC = () => {
   const [airports, setAirports] = useState<AirportData[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedPosition, setSelectedPosition] = useState({ lat: 51.4700, lon: -0.4543 }); // Heathrow default
+
+  useEffect(() => {
+    // Load initial data when component mounts
+    loadAirportData();
+    loadFlightTracking();
+  }, []);
 
   const authenticateWithSkyGate = async () => {
     setAuthLoading(true);
