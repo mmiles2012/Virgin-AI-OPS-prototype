@@ -1069,102 +1069,103 @@ const DelayPredictionDashboard: React.FC = () => {
                 </div>
 
                 {holdingAnalysis && (
-                  <div className="max-h-[500px] overflow-y-auto space-y-4 pr-2">
-                    <h3 className="text-lg font-semibold sticky top-0 bg-white py-2 border-b">
+                  <div className="max-h-[500px] overflow-y-auto space-y-4 pr-2 animate-in slide-in-from-right-2 duration-500">
+                    <h3 className="text-lg font-semibold sticky top-0 bg-white py-2 border-b shadow-sm z-10 animate-in fade-in duration-300">
                       Analysis Results for {holdingAnalysis.airport}
                     </h3>
                     
-                    <div className="bg-orange-50 p-4 rounded-lg">
+                    <div className="bg-orange-50 p-4 rounded-lg animate-in slide-in-from-bottom-3 duration-700 hover:shadow-md transition-all">
                       <h4 className="font-semibold text-orange-900">Holding Likelihood</h4>
-                      <p className="text-3xl font-bold text-orange-600 mt-1">
+                      <p className="text-3xl font-bold text-orange-600 mt-1 animate-in zoom-in duration-1000 delay-300">
                         {(holdingAnalysis.holdingPrediction.likelihood * 100).toFixed(1)}%
                       </p>
-                      <p className="text-sm text-orange-700 mt-1">
+                      <p className="text-sm text-orange-700 mt-1 animate-in fade-in duration-500 delay-500">
                         Estimated Duration: {holdingAnalysis.holdingPrediction.estimatedDuration} minutes
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-red-50 p-3 rounded">
+                      <div className="bg-red-50 p-3 rounded animate-in slide-in-from-left-2 duration-600 delay-200 hover:bg-red-100 transition-colors">
                         <h5 className="font-medium text-red-900">Fuel Impact</h5>
-                        <p className="text-xl font-bold text-red-600">{holdingAnalysis.holdingPrediction.fuelImpact} kg</p>
-                        <p className="text-xs text-red-700 mt-1">
+                        <p className="text-xl font-bold text-red-600 animate-in zoom-in duration-800 delay-400">{holdingAnalysis.holdingPrediction.fuelImpact} kg</p>
+                        <p className="text-xs text-red-700 mt-1 animate-in fade-in duration-500 delay-600">
                           Based on {(holdingAnalysis.holdingPrediction.estimatedDuration / 60).toFixed(1)} hours holding
                         </p>
                       </div>
-                      <div className="bg-purple-50 p-3 rounded">
+                      <div className="bg-purple-50 p-3 rounded animate-in slide-in-from-right-2 duration-600 delay-300 hover:bg-purple-100 transition-colors">
                         <h5 className="font-medium text-purple-900">Cost Impact</h5>
-                        <p className="text-xl font-bold text-purple-600">${holdingAnalysis.holdingPrediction.costImpact}</p>
-                        <p className="text-xs text-purple-700 mt-1">
+                        <p className="text-xl font-bold text-purple-600 animate-in zoom-in duration-800 delay-500">${holdingAnalysis.holdingPrediction.costImpact}</p>
+                        <p className="text-xs text-purple-700 mt-1 animate-in fade-in duration-500 delay-700">
                           Fuel + operational costs
                         </p>
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h4 className="font-semibold mb-3 text-gray-900">Current Conditions Assessment</h4>
+                    <div className="bg-gray-50 p-4 rounded-lg animate-in slide-in-from-bottom-2 duration-800 delay-400 hover:bg-gray-100 transition-colors">
+                      <h4 className="font-semibold mb-3 text-gray-900 animate-in fade-in duration-500 delay-600">Current Conditions Assessment</h4>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="space-y-2">
-                          <div className="flex justify-between items-center">
+                          <div className="flex justify-between items-center animate-in slide-in-from-left-1 duration-600 delay-700">
                             <span>Traffic Density:</span>
                             <div className="flex items-center space-x-2">
-                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                              <div className="w-16 bg-gray-200 rounded-full h-2 overflow-hidden">
                                 <div 
-                                  className="bg-blue-600 h-2 rounded-full"
+                                  className="bg-blue-600 h-2 rounded-full transition-all duration-1000 ease-out animate-in slide-in-from-left-full delay-800"
                                   style={{ width: `${(holdingAnalysis.currentConditions.trafficDensity / 10) * 100}%` }}
                                 ></div>
                               </div>
-                              <span className="font-medium">{holdingAnalysis.currentConditions.trafficDensity}/10</span>
+                              <span className="font-medium animate-in zoom-in duration-500 delay-900">{holdingAnalysis.currentConditions.trafficDensity}/10</span>
                             </div>
                           </div>
-                          <div className="flex justify-between items-center">
+                          <div className="flex justify-between items-center animate-in slide-in-from-left-1 duration-600 delay-800">
                             <span>Weather Impact:</span>
                             <div className="flex items-center space-x-2">
-                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                              <div className="w-16 bg-gray-200 rounded-full h-2 overflow-hidden">
                                 <div 
-                                  className="bg-orange-600 h-2 rounded-full"
+                                  className="bg-orange-600 h-2 rounded-full transition-all duration-1000 ease-out animate-in slide-in-from-left-full delay-900"
                                   style={{ width: `${(holdingAnalysis.currentConditions.weatherImpact / 10) * 100}%` }}
                                 ></div>
                               </div>
-                              <span className="font-medium">{holdingAnalysis.currentConditions.weatherImpact}/10</span>
+                              <span className="font-medium animate-in zoom-in duration-500 delay-1000">{holdingAnalysis.currentConditions.weatherImpact}/10</span>
                             </div>
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <div className="flex justify-between items-center">
+                          <div className="flex justify-between items-center animate-in slide-in-from-right-1 duration-600 delay-900">
                             <span>Runway Capacity:</span>
                             <div className="flex items-center space-x-2">
-                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                              <div className="w-16 bg-gray-200 rounded-full h-2 overflow-hidden">
                                 <div 
-                                  className="bg-green-600 h-2 rounded-full"
+                                  className="bg-green-600 h-2 rounded-full transition-all duration-1000 ease-out animate-in slide-in-from-left-full delay-1000"
                                   style={{ width: `${(holdingAnalysis.currentConditions.runwayCapacity / 10) * 100}%` }}
                                 ></div>
                               </div>
-                              <span className="font-medium">{holdingAnalysis.currentConditions.runwayCapacity}/10</span>
+                              <span className="font-medium animate-in zoom-in duration-500 delay-1100">{holdingAnalysis.currentConditions.runwayCapacity}/10</span>
                             </div>
                           </div>
-                          <div className="flex justify-between items-center">
+                          <div className="flex justify-between items-center animate-in slide-in-from-right-1 duration-600 delay-1000">
                             <span>Current Delays:</span>
                             <div className="flex items-center space-x-2">
-                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                              <div className="w-16 bg-gray-200 rounded-full h-2 overflow-hidden">
                                 <div 
-                                  className="bg-red-600 h-2 rounded-full"
+                                  className="bg-red-600 h-2 rounded-full transition-all duration-1000 ease-out animate-in slide-in-from-left-full delay-1100"
                                   style={{ width: `${holdingAnalysis.currentConditions.currentDelays}%` }}
                                 ></div>
                               </div>
-                              <span className="font-medium">{holdingAnalysis.currentConditions.currentDelays}%</span>
+                              <span className="font-medium animate-in zoom-in duration-500 delay-1200">{holdingAnalysis.currentConditions.currentDelays}%</span>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="bg-blue-50 p-4 rounded-lg">
-                      <h4 className="font-semibold mb-3 text-blue-900">Operational Recommendations</h4>
+                    <div className="bg-blue-50 p-4 rounded-lg animate-in slide-in-from-bottom-1 duration-900 delay-500 hover:bg-blue-100 transition-colors">
+                      <h4 className="font-semibold mb-3 text-blue-900 animate-in fade-in duration-500 delay-700">Operational Recommendations</h4>
                       <ul className="space-y-2">
                         {holdingAnalysis.alternateRecommendations.map((rec, index) => (
-                          <li key={index} className="text-sm flex items-start space-x-3">
-                            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                          <li key={index} className={`text-sm flex items-start space-x-3 animate-in slide-in-from-left-1 duration-600 hover:translate-x-1 transition-transform`}
+                              style={{ animationDelay: `${800 + (index * 100)}ms` }}>
+                            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0 animate-pulse"></div>
                             <span className="text-blue-800">{rec}</span>
                           </li>
                         ))}
@@ -1174,21 +1175,21 @@ const DelayPredictionDashboard: React.FC = () => {
                 )}
 
                 {/* AI Holding Prediction Section */}
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 animate-in slide-in-from-bottom-3 duration-1000 delay-600 hover:shadow-lg transition-all">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-blue-900">AI Holding Prediction for Flight Planning</h3>
+                    <h3 className="text-lg font-semibold text-blue-900 animate-in fade-in duration-500 delay-800">AI Holding Prediction for Flight Planning</h3>
                     <div className="flex gap-2">
                       <button
                         onClick={generateAiHoldingPrediction}
                         disabled={loading}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm"
+                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm animate-in slide-in-from-right-2 duration-600 delay-900 hover:scale-105 transition-all"
                       >
                         {loading ? 'Generating...' : 'Generate AI Prediction'}
                       </button>
                       {aiHoldingPrediction && (
                         <button
                           onClick={() => forwardToFlightPlanning(aiHoldingPrediction)}
-                          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm"
+                          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm animate-in slide-in-from-right-1 duration-600 delay-1000 hover:scale-105 transition-all"
                         >
                           Forward to Flight Planning
                         </button>
@@ -1197,37 +1198,38 @@ const DelayPredictionDashboard: React.FC = () => {
                   </div>
 
                   {aiHoldingPrediction && (
-                    <div className="space-y-4">
+                    <div className="space-y-4 animate-in fade-in duration-800 delay-1100">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="bg-white p-3 rounded border">
+                        <div className="bg-white p-3 rounded border animate-in slide-in-from-left-3 duration-700 delay-1200 hover:shadow-md hover:-translate-y-1 transition-all">
                           <h4 className="font-semibold text-blue-900 text-sm">Holding Probability</h4>
-                          <p className="text-2xl font-bold text-blue-600">
+                          <p className="text-2xl font-bold text-blue-600 animate-in zoom-in duration-1000 delay-1400">
                             {(aiHoldingPrediction.holdingProbability * 100).toFixed(1)}%
                           </p>
-                          <p className="text-xs text-blue-700">AI confidence: {(aiHoldingPrediction.confidence * 100).toFixed(0)}%</p>
+                          <p className="text-xs text-blue-700 animate-in fade-in duration-500 delay-1600">AI confidence: {(aiHoldingPrediction.confidence * 100).toFixed(0)}%</p>
                         </div>
-                        <div className="bg-white p-3 rounded border">
+                        <div className="bg-white p-3 rounded border animate-in slide-in-from-bottom-2 duration-700 delay-1300 hover:shadow-md hover:-translate-y-1 transition-all">
                           <h4 className="font-semibold text-orange-900 text-sm">Expected Duration</h4>
-                          <p className="text-2xl font-bold text-orange-600">
+                          <p className="text-2xl font-bold text-orange-600 animate-in zoom-in duration-1000 delay-1500">
                             {aiHoldingPrediction.expectedDuration} min
                           </p>
-                          <p className="text-xs text-orange-700">Range: {aiHoldingPrediction.durationRange}</p>
+                          <p className="text-xs text-orange-700 animate-in fade-in duration-500 delay-1700">Range: {aiHoldingPrediction.durationRange}</p>
                         </div>
-                        <div className="bg-white p-3 rounded border">
+                        <div className="bg-white p-3 rounded border animate-in slide-in-from-right-3 duration-700 delay-1400 hover:shadow-md hover:-translate-y-1 transition-all">
                           <h4 className="font-semibold text-green-900 text-sm">Fuel Recommendation</h4>
-                          <p className="text-2xl font-bold text-green-600">
+                          <p className="text-2xl font-bold text-green-600 animate-in zoom-in duration-1000 delay-1600">
                             +{aiHoldingPrediction.additionalFuel} kg
                           </p>
-                          <p className="text-xs text-green-700">Safety margin included</p>
+                          <p className="text-xs text-green-700 animate-in fade-in duration-500 delay-1800">Safety margin included</p>
                         </div>
                       </div>
 
-                      <div className="bg-white p-4 rounded border">
-                        <h4 className="font-semibold mb-2">Flight Planning Recommendations</h4>
+                      <div className="bg-white p-4 rounded border animate-in slide-in-from-bottom-1 duration-800 delay-1500 hover:shadow-md transition-all">
+                        <h4 className="font-semibold mb-2 animate-in fade-in duration-500 delay-1700">Flight Planning Recommendations</h4>
                         <ul className="space-y-1 text-sm">
                           {aiHoldingPrediction.flightPlanningRecommendations?.map((rec: string, index: number) => (
-                            <li key={index} className="flex items-start space-x-2">
-                              <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                            <li key={index} className={`flex items-start space-x-2 animate-in slide-in-from-left-1 duration-600 hover:translate-x-1 transition-transform`}
+                                style={{ animationDelay: `${1800 + (index * 100)}ms` }}>
+                              <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0 animate-pulse"></div>
                               <span>{rec}</span>
                             </li>
                           ))}
@@ -1235,20 +1237,20 @@ const DelayPredictionDashboard: React.FC = () => {
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="bg-white p-3 rounded border">
-                          <h5 className="font-medium text-gray-900 mb-2">Optimal Holding Pattern</h5>
+                        <div className="bg-white p-3 rounded border animate-in slide-in-from-left-2 duration-700 delay-1600 hover:shadow-md hover:scale-105 transition-all">
+                          <h5 className="font-medium text-gray-900 mb-2 animate-in fade-in duration-500 delay-1800">Optimal Holding Pattern</h5>
                           <div className="text-sm space-y-1">
-                            <div>Altitude: {aiHoldingPrediction.optimalPattern?.altitude || '15,000 ft'}</div>
-                            <div>Speed: {aiHoldingPrediction.optimalPattern?.speed || '220 kts'}</div>
-                            <div>Pattern: {aiHoldingPrediction.optimalPattern?.type || 'Standard right turns'}</div>
+                            <div className="animate-in slide-in-from-left-1 duration-500 delay-1900">Altitude: {aiHoldingPrediction.optimalPattern?.altitude || '15,000 ft'}</div>
+                            <div className="animate-in slide-in-from-left-1 duration-500 delay-2000">Speed: {aiHoldingPrediction.optimalPattern?.speed || '220 kts'}</div>
+                            <div className="animate-in slide-in-from-left-1 duration-500 delay-2100">Pattern: {aiHoldingPrediction.optimalPattern?.type || 'Standard right turns'}</div>
                           </div>
                         </div>
-                        <div className="bg-white p-3 rounded border">
-                          <h5 className="font-medium text-gray-900 mb-2">ATC Coordination</h5>
+                        <div className="bg-white p-3 rounded border animate-in slide-in-from-right-2 duration-700 delay-1700 hover:shadow-md hover:scale-105 transition-all">
+                          <h5 className="font-medium text-gray-900 mb-2 animate-in fade-in duration-500 delay-1900">ATC Coordination</h5>
                           <div className="text-sm space-y-1">
-                            <div>Frequency: {aiHoldingPrediction.atcCoordination?.frequency || '121.5 MHz'}</div>
-                            <div>Squawk: {aiHoldingPrediction.atcCoordination?.squawk || '2000'}</div>
-                            <div>Contact: {aiHoldingPrediction.atcCoordination?.contact || 'Approach Control'}</div>
+                            <div className="animate-in slide-in-from-right-1 duration-500 delay-2000">Frequency: {aiHoldingPrediction.atcCoordination?.frequency || '121.5 MHz'}</div>
+                            <div className="animate-in slide-in-from-right-1 duration-500 delay-2100">Squawk: {aiHoldingPrediction.atcCoordination?.squawk || '2000'}</div>
+                            <div className="animate-in slide-in-from-right-1 duration-500 delay-2200">Contact: {aiHoldingPrediction.atcCoordination?.contact || 'Approach Control'}</div>
                           </div>
                         </div>
                       </div>
