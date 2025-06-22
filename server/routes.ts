@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { WebSocketServer } from "ws";
 import { storage } from "./storage";
 import { FlightSimulationEngine } from "./flightSimulation";
 import { ScenarioEngine } from "./scenarioEngine";
@@ -31,6 +32,7 @@ import { icaoDemo } from "./icaoDemo";
 import { newsMLTraining } from "./newsMLTraining";
 import fleetSubstitution from "./fleetSubstitution";
 import skyGateRouter, { skyGateService } from "./skyGateAirportService";
+import { emergencyCommService } from "./emergencyCommService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -3787,6 +3789,133 @@ print(json.dumps(weather))
   // SkyGate Airport Service Integration for Enhanced Diversion Support
   app.use('/api/skygate', skyGateRouter);
 
+  // Emergency Communication System Endpoints
+  app.post('/api/emergency/declare', async (req, res) => {
+    try {
+      const { scenario } = req.body;
+      const alertId = emergencyCommService.simulateEmergencyScenario(scenario);
+      
+      res.json({
+        success: true,
+        alertId,
+        message: `Emergency declared: ${scenario}`,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to declare emergency',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.post('/api/emergency/acknowledge/:alertId', async (req, res) => {
+    try {
+      const { alertId } = req.params;
+      const { acknowledgedBy } = req.body;
+      
+      const success = emergencyCommService.acknowledgeAlert(alertId, acknowledgedBy);
+      
+      if (success) {
+        res.json({
+          success: true,
+          message: `Alert ${alertId} acknowledged by ${acknowledgedBy}`,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          error: 'Alert not found',
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to acknowledge alert',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.post('/api/emergency/resolve/:alertId', async (req, res) => {
+    try {
+      const { alertId } = req.params;
+      const { resolvedBy, resolution } = req.body;
+      
+      const success = emergencyCommService.resolveAlert(alertId, resolvedBy, resolution);
+      
+      if (success) {
+        res.json({
+          success: true,
+          message: `Alert ${alertId} resolved by ${resolvedBy}`,
+          resolution,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          error: 'Alert not found',
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to resolve alert',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.post('/api/emergency/message', async (req, res) => {
+    try {
+      const { recipient, message, alertId } = req.body;
+      
+      emergencyCommService.sendMessage(recipient, message, alertId);
+      
+      res.json({
+        success: true,
+        message: 'Emergency message sent',
+        recipient,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to send message',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/emergency/alerts', async (req, res) => {
+    try {
+      const activeAlerts = emergencyCommService.getActiveAlerts();
+      const alertHistory = emergencyCommService.getAlertHistory();
+      
+      res.json({
+        success: true,
+        active_alerts: activeAlerts,
+        alert_history: alertHistory.slice(0, 10), // Last 10 alerts
+        total_active: activeAlerts.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve alerts',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
   // Enhanced Decision Engine with SkyGate Integration
   app.get('/api/decision-engine/diversion-analysis', async (req, res) => {
     try {
@@ -3975,6 +4104,36 @@ print(json.dumps(weather))
     
     return Math.max(0, Math.min(100, Math.round(score)));
   }
+
+  // Setup WebSocket server for real-time emergency communication
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws/emergency' });
+  
+  wss.on('connection', (ws) => {
+    console.log('Emergency communication client connected');
+    emergencyCommService.addWebSocket(ws);
+    
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        console.log('Received WebSocket message:', data);
+        
+        // Handle client messages if needed
+        if (data.type === 'PING') {
+          ws.send(JSON.stringify({ type: 'PONG', timestamp: new Date().toISOString() }));
+        }
+      } catch (error) {
+        console.error('WebSocket message error:', error);
+      }
+    });
+    
+    ws.on('close', () => {
+      console.log('Emergency communication client disconnected');
+    });
+    
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
+  });
 
   return httpServer;
 }
