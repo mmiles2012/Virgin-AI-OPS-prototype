@@ -145,8 +145,7 @@ function AirbusAircraftModel({
 
     // Fuselage proportions based on actual aircraft
     const fuselageLength = specs.length * 0.1;
-    const fuselageRadius = aircraftType.includes('A380') ? 3.0 : 
-                          aircraftType.includes('A350') || aircraftType.includes('A330') ? 2.0 : 1.5;
+    const fuselageRadius = aircraftType.includes('A350') || aircraftType.includes('A330') ? 2.0 : 1.5;
 
     const fuselage = new THREE.CylinderGeometry(fuselageRadius, fuselageRadius * 0.8, fuselageLength, 32);
     const fuselageMesh = new THREE.Mesh(
@@ -164,9 +163,9 @@ function AirbusAircraftModel({
       new THREE.MeshStandardMaterial({ color: '#D0D0D0' })
     );
 
-    // Engines based on aircraft type
-    const engineCount = aircraftType.includes('A380') ? 4 : 2;
-    const engineRadius = aircraftType.includes('A380') || aircraftType.includes('A350') || aircraftType.includes('A330') ? 1.0 : 0.7;
+    // Engines based on aircraft type - all Virgin Atlantic aircraft have 2 engines
+    const engineCount = 2;
+    const engineRadius = aircraftType.includes('A350') || aircraftType.includes('A330') ? 1.0 : 0.7;
     const engineLength = fuselageLength * 0.2;
 
     for (let i = 0; i < engineCount; i++) {
@@ -176,15 +175,7 @@ function AirbusAircraftModel({
         new THREE.MeshStandardMaterial({ color: '#505050' })
       );
       engineMesh.rotation.z = Math.PI / 2;
-      
-      if (engineCount === 2) {
-        engineMesh.position.set(-engineLength * 0.3, (i === 0 ? -1 : 1) * wingSpan * 0.3, -0.5);
-      } else {
-        // A380 engine positioning
-        const yPos = (i < 2 ? -1 : 1) * wingSpan * (i % 2 === 0 ? 0.2 : 0.4);
-        engineMesh.position.set(-engineLength * 0.3, yPos, -0.5);
-      }
-      
+      engineMesh.position.set(-engineLength * 0.3, (i === 0 ? -1 : 1) * wingSpan * 0.3, -0.5);
       aircraft.add(engineMesh);
     }
 
@@ -246,7 +237,7 @@ export function assessAirportCompatibility(
   }
 
   if (aircraft.gate_requirements.bridge_compatibility === 'double_deck' && !airportSpecs.doubleAisleCapable) {
-    issues.push('No A380-capable gates available');
+    issues.push('No double-deck capable gates available');
     score -= 50;
   }
 

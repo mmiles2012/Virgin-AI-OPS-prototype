@@ -259,7 +259,7 @@ function FleetOptimizationPanel() {
       }
     ];
 
-    const availableAircraft: (keyof typeof AIRBUS_FLEET_SPECS)[] = ['A320', 'A330-300', 'A350-1000', 'A380'];
+    const availableAircraft: (keyof typeof AIRBUS_FLEET_SPECS)[] = ['A330-300', 'A330-900', 'A350-1000'];
 
     const optimizationResults = routes.map(route => {
       const optimization = calculateFleetOptimization(route, availableAircraft);
