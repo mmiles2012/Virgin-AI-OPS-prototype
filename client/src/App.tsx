@@ -26,6 +26,7 @@ import Boeing787DigitalTwin from "./components/Boeing787DigitalTwin";
 import AinoTrainingSimulator from "./components/AinoTrainingSimulator";
 import AirbusOperationsCenter from "./components/AirbusOperationsCenter";
 import FinancialAnalyticsDashboard from "./components/FinancialAnalyticsDashboard";
+import FleetSubstitutionCalculator from "./components/FleetSubstitutionCalculator";
 
 // Flight control mappings
 enum FlightControls {
@@ -63,7 +64,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -232,6 +233,17 @@ function App() {
                     Financial Analytics
                   </button>
                   
+                  <button
+                    onClick={() => setViewMode('fleet-substitution')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'fleet-substitution' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Fleet Substitution
+                  </button>
+                  
                   {/* API Centre Section */}
                   <div className="border-t border-gray-600 pt-3 mt-3">
                     <div className="text-xs text-gray-400 mb-2 px-2">API CENTRE</div>
@@ -354,6 +366,12 @@ function App() {
             {viewMode === 'financial-analytics' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
                 <FinancialAnalyticsDashboard />
+              </div>
+            )}
+            
+            {viewMode === 'fleet-substitution' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+                <FleetSubstitutionCalculator />
               </div>
             )}
             
