@@ -30,6 +30,7 @@ import FleetSubstitutionCalculator from "./components/FleetSubstitutionCalculato
 import SkyGateAirportDashboard from "./components/SkyGateAirportDashboard";
 import EmergencyCommDashboard from "./components/EmergencyCommDashboard";
 import OnTimePerformanceDashboard from "./components/OnTimePerformanceDashboard";
+import VirginAtlanticFleetMonitor from "./components/VirginAtlanticFleetMonitor";
 
 // Flight control mappings
 enum FlightControls {
@@ -67,7 +68,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -248,6 +249,17 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('fleet-monitor')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'fleet-monitor' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Fleet Intelligence
+                  </button>
+                  
+                  <button
                     onClick={() => setViewMode('skygate-airports')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'skygate-airports' 
@@ -420,6 +432,12 @@ function App() {
             {viewMode === 'otp-dashboard' && (
               <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
                 <OnTimePerformanceDashboard />
+              </div>
+            )}
+            
+            {viewMode === 'fleet-monitor' && (
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
+                <VirginAtlanticFleetMonitor />
               </div>
             )}
             
