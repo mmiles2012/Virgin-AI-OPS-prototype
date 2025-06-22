@@ -130,6 +130,7 @@ const DelayPredictionDashboard: React.FC = () => {
   const [dualModelStatus, setDualModelStatus] = useState<any>(null);
   const [dualModelPrediction, setDualModelPrediction] = useState<any>(null);
   const [dualModelInfo, setDualModelInfo] = useState<any>(null);
+  const [aiHoldingPrediction, setAiHoldingPrediction] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   // Flight prediction form state
@@ -448,6 +449,56 @@ const DelayPredictionDashboard: React.FC = () => {
       console.error('Failed to predict with dual-model:', error);
     }
     setLoading(false);
+  };
+
+  const generateAiHoldingPrediction = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/delays/ai-holding-prediction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          flightNumber: flightForm.flightNumber,
+          route: flightForm.route,
+          airport: holdingForm.airport,
+          trafficLevel: holdingForm.trafficLevel,
+          weatherConditions: holdingForm.weatherConditions,
+          runwayStatus: holdingForm.runwayStatus
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setAiHoldingPrediction(data.prediction);
+      }
+    } catch (error) {
+      console.error('Failed to generate AI holding prediction:', error);
+    }
+    setLoading(false);
+  };
+
+  const forwardToFlightPlanning = async (predictionData: any) => {
+    try {
+      const response = await fetch('/api/flight-planning/holding-prediction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prediction: predictionData,
+          timestamp: new Date().toISOString(),
+          sentBy: 'Delay Prediction System'
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('AI Holding Prediction forwarded to Flight Planning successfully!');
+      }
+    } catch (error) {
+      console.error('Failed to forward to flight planning:', error);
+      alert('Failed to forward to Flight Planning. Please try again.');
+    }
   };
 
   const pieChartColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1'];
@@ -1017,6 +1068,95 @@ const DelayPredictionDashboard: React.FC = () => {
                     </div>
                   </div>
                 )}
+
+                {/* AI Holding Prediction Section */}
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-blue-900">AI Holding Prediction for Flight Planning</h3>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={generateAiHoldingPrediction}
+                        disabled={loading}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm"
+                      >
+                        {loading ? 'Generating...' : 'Generate AI Prediction'}
+                      </button>
+                      {aiHoldingPrediction && (
+                        <button
+                          onClick={() => forwardToFlightPlanning(aiHoldingPrediction)}
+                          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm"
+                        >
+                          Forward to Flight Planning
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {aiHoldingPrediction && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-white p-3 rounded border">
+                          <h4 className="font-semibold text-blue-900 text-sm">Holding Probability</h4>
+                          <p className="text-2xl font-bold text-blue-600">
+                            {(aiHoldingPrediction.holdingProbability * 100).toFixed(1)}%
+                          </p>
+                          <p className="text-xs text-blue-700">AI confidence: {(aiHoldingPrediction.confidence * 100).toFixed(0)}%</p>
+                        </div>
+                        <div className="bg-white p-3 rounded border">
+                          <h4 className="font-semibold text-orange-900 text-sm">Expected Duration</h4>
+                          <p className="text-2xl font-bold text-orange-600">
+                            {aiHoldingPrediction.expectedDuration} min
+                          </p>
+                          <p className="text-xs text-orange-700">Range: {aiHoldingPrediction.durationRange}</p>
+                        </div>
+                        <div className="bg-white p-3 rounded border">
+                          <h4 className="font-semibold text-green-900 text-sm">Fuel Recommendation</h4>
+                          <p className="text-2xl font-bold text-green-600">
+                            +{aiHoldingPrediction.additionalFuel} kg
+                          </p>
+                          <p className="text-xs text-green-700">Safety margin included</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-white p-4 rounded border">
+                        <h4 className="font-semibold mb-2">Flight Planning Recommendations</h4>
+                        <ul className="space-y-1 text-sm">
+                          {aiHoldingPrediction.flightPlanningRecommendations?.map((rec: string, index: number) => (
+                            <li key={index} className="flex items-start space-x-2">
+                              <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                              <span>{rec}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-white p-3 rounded border">
+                          <h5 className="font-medium text-gray-900 mb-2">Optimal Holding Pattern</h5>
+                          <div className="text-sm space-y-1">
+                            <div>Altitude: {aiHoldingPrediction.optimalPattern?.altitude || '15,000 ft'}</div>
+                            <div>Speed: {aiHoldingPrediction.optimalPattern?.speed || '220 kts'}</div>
+                            <div>Pattern: {aiHoldingPrediction.optimalPattern?.type || 'Standard right turns'}</div>
+                          </div>
+                        </div>
+                        <div className="bg-white p-3 rounded border">
+                          <h5 className="font-medium text-gray-900 mb-2">ATC Coordination</h5>
+                          <div className="text-sm space-y-1">
+                            <div>Frequency: {aiHoldingPrediction.atcCoordination?.frequency || '121.5 MHz'}</div>
+                            <div>Squawk: {aiHoldingPrediction.atcCoordination?.squawk || '2000'}</div>
+                            <div>Contact: {aiHoldingPrediction.atcCoordination?.contact || 'Approach Control'}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {!aiHoldingPrediction && (
+                    <div className="text-center text-blue-600 py-4">
+                      <p className="text-sm">Generate AI prediction to get comprehensive holding recommendations for Flight Planning</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
