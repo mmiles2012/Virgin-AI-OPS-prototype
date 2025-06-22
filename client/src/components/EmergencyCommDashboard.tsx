@@ -422,6 +422,7 @@ const EmergencyCommDashboard: React.FC = () => {
                     <option value="MAINTENANCE">Maintenance Control</option>
                     <option value="SECURITY">Security Services</option>
                     <option value="MANAGEMENT">Management</option>
+                    <option value="ACARS">Aircraft ACARS</option>
                   </select>
                 </div>
 
