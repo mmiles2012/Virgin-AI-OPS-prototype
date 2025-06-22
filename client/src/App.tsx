@@ -82,8 +82,8 @@ function App() {
         {/* UI Overlay */}
         <div className="absolute inset-0 pointer-events-none">
           {/* Left Sidebar Navigation */}
-          <div className="absolute top-4 left-4 z-50 pointer-events-auto">
-              <div className="aviation-panel p-4 rounded-lg space-y-3 w-48">
+          <div className="absolute top-4 left-4 z-50 pointer-events-auto max-h-[calc(100vh-2rem)] overflow-y-auto">
+              <div className="aviation-panel p-4 rounded-lg space-y-3 w-52">
                 <div className="text-center mb-4">
                   <h1 className="text-white font-bold text-lg">AINO</h1>
                   <p className="text-blue-300 text-xs">Augmented Intelligent Network Operations</p>
