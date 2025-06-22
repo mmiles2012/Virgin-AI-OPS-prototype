@@ -29,6 +29,7 @@ import { icaoApiService } from "./icaoApiService";
 import { icaoMLIntegration } from "./icaoMLIntegration";
 import { icaoDemo } from "./icaoDemo";
 import { newsMLTraining } from "./newsMLTraining";
+import fleetSubstitution from "./fleetSubstitution";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -3778,6 +3779,9 @@ print(json.dumps(weather))
       });
     }
   });
+
+  // Fleet Substitution Analysis Endpoints
+  app.use('/api/fleet', fleetSubstitution);
 
   return httpServer;
 }

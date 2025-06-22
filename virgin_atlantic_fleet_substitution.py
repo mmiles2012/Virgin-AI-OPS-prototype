@@ -1,0 +1,374 @@
+"""
+Virgin Atlantic Fleet Substitution Analysis System
+Comprehensive aircraft substitution calculator for operational planning
+"""
+
+import pandas as pd
+import numpy as np
+from typing import Dict, List, Tuple
+import warnings
+warnings.filterwarnings('ignore')
+
+class VirginAtlanticFleetManager:
+    def __init__(self):
+        # Fleet specifications based on Virgin Atlantic's current configurations
+        self.fleet_specs = {
+            '789': {  # Boeing 787-9
+                'name': 'Boeing 787-9',
+                'total_pax': 258,
+                'upper_class': 31,
+                'premium': 35,
+                'economy': 192,
+                'cargo_capacity': 15000,  # kg
+                'range_nm': 7635,
+                'fuel_efficiency': 8.5,  # relative efficiency score
+                'operating_cost_per_hour': 7184,  # USD
+                'count': 17
+            },
+            '333': {  # Airbus A330-300
+                'name': 'Airbus A330-300',
+                'total_pax': 264,
+                'upper_class': 33,
+                'premium': 48,
+                'economy': 183,
+                'cargo_capacity': 12500,  # kg
+                'range_nm': 6350,
+                'fuel_efficiency': 7.2,
+                'operating_cost_per_hour': 8200,  # USD
+                'count': 10
+            },
+            '339': {  # Airbus A330-900 (A330neo)
+                'name': 'Airbus A330-900',
+                'total_pax': 262,
+                'upper_class': 32,
+                'premium': 46,
+                'economy': 184,
+                'cargo_capacity': 13800,  # kg
+                'range_nm': 7200,
+                'fuel_efficiency': 8.8,
+                'operating_cost_per_hour': 9300,  # USD
+                'count': 16
+            },
+            '351': {  # Airbus A350-1000
+                'name': 'Airbus A350-1000',
+                'total_pax': 335,
+                'upper_class': 44,
+                'premium': 56,
+                'economy': 235,
+                'cargo_capacity': 18500,  # kg
+                'range_nm': 8700,
+                'fuel_efficiency': 9.5,
+                'operating_cost_per_hour': 11500,  # USD
+                'count': 14
+            }
+        }
+        
+        # Create substitution compatibility matrix
+        self.substitution_matrix = self._create_substitution_matrix()
+        
+    def _create_substitution_matrix(self) -> pd.DataFrame:
+        """Create aircraft substitution compatibility matrix"""
+        aircraft_types = list(self.fleet_specs.keys())
+        matrix = pd.DataFrame(index=aircraft_types, columns=aircraft_types)
+        
+        # Define substitution rules and efficiency scores
+        substitution_rules = {
+            ('789', '333'): 0.85,  # 789 replacing 333 - good match
+            ('789', '339'): 0.95,  # 789 replacing 339 - excellent match
+            ('789', '351'): 0.70,  # 789 replacing 351 - capacity loss
+            ('333', '789'): 0.80,  # 333 replacing 789 - slight downgrade
+            ('333', '339'): 0.85,  # 333 replacing 339 - acceptable
+            ('333', '351'): 0.65,  # 333 replacing 351 - significant capacity loss
+            ('339', '789'): 0.90,  # 339 replacing 789 - good match
+            ('339', '333'): 0.90,  # 339 replacing 333 - upgrade
+            ('339', '351'): 0.75,  # 339 replacing 351 - capacity loss
+            ('351', '789'): 1.15,  # 351 replacing 789 - capacity gain
+            ('351', '333'): 1.25,  # 351 replacing 333 - significant upgrade
+            ('351', '339'): 1.20,  # 351 replacing 339 - capacity upgrade
+        }
+        
+        # Fill matrix with compatibility scores
+        for (backup, original), score in substitution_rules.items():
+            matrix.loc[backup, original] = score
+            
+        # Self-substitution is perfect (1.0)
+        for aircraft in aircraft_types:
+            matrix.loc[aircraft, aircraft] = 1.0
+            
+        return matrix.fillna(0)  # 0 means not suitable for substitution
+    
+    def calculate_passenger_impact(self, original_aircraft: str, backup_aircraft: str, 
+                                 load_factor: float = 0.85) -> Dict:
+        """Calculate passenger overflow/underload when substituting aircraft"""
+        original_spec = self.fleet_specs[original_aircraft]
+        backup_spec = self.fleet_specs[backup_aircraft]
+        
+        # Calculate expected passengers based on load factor
+        expected_pax = int(original_spec['total_pax'] * load_factor)
+        backup_capacity = backup_spec['total_pax']
+        
+        # Calculate class-wise impact
+        class_impact = {}
+        for class_type in ['upper_class', 'premium', 'economy']:
+            original_class_pax = int(original_spec[class_type] * load_factor)
+            backup_class_capacity = backup_spec[class_type]
+            
+            class_impact[class_type] = {
+                'original_demand': original_class_pax,
+                'backup_capacity': backup_class_capacity,
+                'overflow': max(0, original_class_pax - backup_class_capacity),
+                'underload': max(0, backup_class_capacity - original_class_pax)
+            }
+        
+        return {
+            'total_expected_pax': expected_pax,
+            'backup_total_capacity': backup_capacity,
+            'total_overflow': max(0, expected_pax - backup_capacity),
+            'total_underload': max(0, backup_capacity - expected_pax),
+            'capacity_utilization': min(1.0, expected_pax / backup_capacity),
+            'class_breakdown': class_impact,
+            'substitution_efficiency': self.substitution_matrix.loc[backup_aircraft, original_aircraft]
+        }
+    
+    def calculate_cost_impact(self, original_aircraft: str, backup_aircraft: str,
+                            flight_duration: float = 8.0) -> Dict:
+        """Calculate cost impact when substituting aircraft"""
+        original_cost = self.fleet_specs[original_aircraft]['operating_cost_per_hour']
+        backup_cost = self.fleet_specs[backup_aircraft]['operating_cost_per_hour']
+        
+        original_total_cost = original_cost * flight_duration
+        backup_total_cost = backup_cost * flight_duration
+        cost_difference = backup_total_cost - original_total_cost
+        
+        # Calculate cost per passenger for efficiency
+        original_cost_per_pax = original_cost / self.fleet_specs[original_aircraft]['total_pax']
+        backup_cost_per_pax = backup_cost / self.fleet_specs[backup_aircraft]['total_pax']
+        
+        return {
+            'original_hourly_cost': original_cost,
+            'backup_hourly_cost': backup_cost,
+            'flight_duration_hours': flight_duration,
+            'original_flight_cost': original_total_cost,
+            'backup_flight_cost': backup_total_cost,
+            'cost_difference': cost_difference,
+            'cost_difference_percent': (cost_difference / original_total_cost) * 100,
+            'original_cost_per_pax': original_cost_per_pax,
+            'backup_cost_per_pax': backup_cost_per_pax,
+            'cost_efficiency_ratio': original_cost_per_pax / backup_cost_per_pax
+        }
+    
+    def calculate_cargo_impact(self, original_aircraft: str, backup_aircraft: str,
+                             cargo_load: float = 10000) -> Dict:
+        """Calculate cargo capacity impact when substituting aircraft"""
+        original_cargo = self.fleet_specs[original_aircraft]['cargo_capacity']
+        backup_cargo = self.fleet_specs[backup_aircraft]['cargo_capacity']
+        
+        return {
+            'original_cargo_capacity': original_cargo,
+            'backup_cargo_capacity': backup_cargo,
+            'cargo_difference': backup_cargo - original_cargo,
+            'cargo_overflow': max(0, cargo_load - backup_cargo) if cargo_load > backup_cargo else 0,
+            'cargo_underutilization': max(0, backup_cargo - cargo_load) if cargo_load < backup_cargo else 0,
+            'cargo_efficiency': min(1.0, backup_cargo / original_cargo) if original_cargo > 0 else 1.0
+        }
+    
+    def get_best_substitution(self, unavailable_aircraft: str, 
+                            available_fleet: List[str] = None) -> Dict:
+        """Find the best substitution aircraft from available fleet"""
+        if available_fleet is None:
+            available_fleet = list(self.fleet_specs.keys())
+        
+        # Remove the unavailable aircraft from options
+        available_options = [ac for ac in available_fleet if ac != unavailable_aircraft]
+        
+        if not available_options:
+            return {'error': 'No available substitution aircraft'}
+        
+        best_substitutions = []
+        for backup_ac in available_options:
+            efficiency = self.substitution_matrix.loc[backup_ac, unavailable_aircraft]
+            if efficiency > 0:  # Only consider viable substitutions
+                pax_impact = self.calculate_passenger_impact(unavailable_aircraft, backup_ac)
+                cargo_impact = self.calculate_cargo_impact(unavailable_aircraft, backup_ac)
+                cost_impact = self.calculate_cost_impact(unavailable_aircraft, backup_ac)
+                
+                # Calculate overall substitution score (now includes cost efficiency)
+                score = (efficiency * 0.3 + 
+                        pax_impact['capacity_utilization'] * 0.3 + 
+                        cargo_impact['cargo_efficiency'] * 0.2 +
+                        cost_impact['cost_efficiency_ratio'] * 0.2)
+                
+                best_substitutions.append({
+                    'backup_aircraft': backup_ac,
+                    'aircraft_name': self.fleet_specs[backup_ac]['name'],
+                    'substitution_score': score,
+                    'efficiency_rating': efficiency,
+                    'passenger_impact': pax_impact,
+                    'cargo_impact': cargo_impact,
+                    'cost_impact': cost_impact
+                })
+        
+        # Sort by substitution score
+        best_substitutions.sort(key=lambda x: x['substitution_score'], reverse=True)
+        
+        return {
+            'unavailable_aircraft': unavailable_aircraft,
+            'recommendations': best_substitutions[:3],  # Top 3 recommendations
+            'all_options': best_substitutions
+        }
+    
+    def generate_substitution_report(self, scenarios: List[Tuple[str, float, float]] = None):
+        """Generate comprehensive substitution analysis report"""
+        if scenarios is None:
+            # Default scenarios: (original_aircraft, load_factor, cargo_load)
+            scenarios = [
+                ('351', 0.90, 12000),  # High-capacity A350 with high load
+                ('789', 0.85, 8000),   # Standard 787 operation
+                ('333', 0.80, 6000),   # A330-300 with moderate load
+                ('339', 0.88, 9000),   # A330-900 with high load
+            ]
+        
+        print("=== VIRGIN ATLANTIC AIRCRAFT SUBSTITUTION ANALYSIS ===\n")
+        print("Fleet Overview:")
+        for code, spec in self.fleet_specs.items():
+            cost_per_pax = spec['operating_cost_per_hour'] / spec['total_pax']
+            print(f"  {code} ({spec['name']}): {spec['count']} aircraft, "
+                  f"{spec['total_pax']} pax, ${spec['operating_cost_per_hour']}/hr "
+                  f"(${cost_per_pax:.1f}/pax/hr)")
+        
+        print(f"\n{'='*80}")
+        print("SUBSTITUTION MATRIX (Efficiency Scores):")
+        print("Rows = Backup Aircraft, Columns = Original Aircraft")
+        print(self.substitution_matrix.round(2))
+        
+        print(f"\n{'='*80}")
+        print("SCENARIO ANALYSIS:")
+        
+        for i, (original_ac, load_factor, cargo_load) in enumerate(scenarios, 1):
+            print(f"\nScenario {i}: {self.fleet_specs[original_ac]['name']} "
+                  f"({original_ac}) unavailable")
+            print(f"Expected load factor: {load_factor:.0%}, Cargo: {cargo_load}kg")
+            print("-" * 60)
+            
+            result = self.get_best_substitution(original_ac)
+            
+            for j, rec in enumerate(result['recommendations'], 1):
+                backup_ac = rec['backup_aircraft']
+                pax_impact = rec['passenger_impact']
+                cargo_impact = rec['cargo_impact']
+                cost_impact = rec['cost_impact']
+                
+                print(f"\nOption {j}: {rec['aircraft_name']} ({backup_ac})")
+                print(f"  Overall Score: {rec['substitution_score']:.3f}")
+                print(f"  Efficiency Rating: {rec['efficiency_rating']:.2f}")
+                
+                # Cost impact
+                if cost_impact['cost_difference'] > 0:
+                    print(f"  Cost Impact: +${cost_impact['cost_difference']:.0f} "
+                          f"({cost_impact['cost_difference_percent']:+.1f}%) per flight")
+                else:
+                    print(f"  Cost Savings: ${abs(cost_impact['cost_difference']):.0f} "
+                          f"({cost_impact['cost_difference_percent']:+.1f}%) per flight")
+                
+                print(f"  Cost Efficiency: ${cost_impact['backup_cost_per_pax']:.1f}/pax/hr "
+                      f"vs ${cost_impact['original_cost_per_pax']:.1f}/pax/hr")
+                
+                # Passenger impact
+                if pax_impact['total_overflow'] > 0:
+                    print(f"  Passenger Overflow: {pax_impact['total_overflow']} passengers")
+                elif pax_impact['total_underload'] > 0:
+                    print(f"  Spare Capacity: {pax_impact['total_underload']} seats")
+                else:
+                    print(f"  Perfect Capacity Match")
+                
+                print(f"  Capacity Utilization: {pax_impact['capacity_utilization']:.1%}")
+                
+                # Cargo impact
+                if cargo_impact['cargo_difference'] >= 0:
+                    print(f"  Cargo Capacity: +{cargo_impact['cargo_difference']}kg vs original")
+                else:
+                    print(f"  Cargo Capacity: {cargo_impact['cargo_difference']}kg vs original")
+                
+                # Class-wise breakdown
+                overflow_classes = []
+                for class_type, impact in pax_impact['class_breakdown'].items():
+                    if impact['overflow'] > 0:
+                        overflow_classes.append(f"{class_type}: {impact['overflow']}")
+                
+                if overflow_classes:
+                    print(f"  Class Overflow: {', '.join(overflow_classes)}")
+
+    def get_substitution_for_api(self, original_aircraft: str, load_factor: float = 0.85, 
+                                cargo_load: float = 10000, flight_duration: float = 8.0) -> Dict:
+        """Get substitution recommendations formatted for API response"""
+        result = self.get_best_substitution(original_aircraft)
+        
+        if 'error' in result:
+            return result
+            
+        # Format for API response
+        formatted_recommendations = []
+        for rec in result['recommendations']:
+            pax_impact = self.calculate_passenger_impact(original_aircraft, rec['backup_aircraft'], load_factor)
+            cargo_impact = self.calculate_cargo_impact(original_aircraft, rec['backup_aircraft'], cargo_load)
+            cost_impact = self.calculate_cost_impact(original_aircraft, rec['backup_aircraft'], flight_duration)
+            
+            formatted_recommendations.append({
+                'aircraft_code': rec['backup_aircraft'],
+                'aircraft_name': rec['aircraft_name'],
+                'substitution_score': round(rec['substitution_score'], 3),
+                'efficiency_rating': round(rec['efficiency_rating'], 2),
+                'cost_impact': {
+                    'difference_usd': round(cost_impact['cost_difference'], 0),
+                    'difference_percent': round(cost_impact['cost_difference_percent'], 1),
+                    'cost_per_passenger': round(cost_impact['backup_cost_per_pax'], 1)
+                },
+                'passenger_impact': {
+                    'total_overflow': pax_impact['total_overflow'],
+                    'total_underload': pax_impact['total_underload'],
+                    'capacity_utilization': round(pax_impact['capacity_utilization'], 3),
+                    'class_breakdown': pax_impact['class_breakdown']
+                },
+                'cargo_impact': {
+                    'capacity_difference_kg': cargo_impact['cargo_difference'],
+                    'cargo_overflow': cargo_impact['cargo_overflow'],
+                    'cargo_efficiency': round(cargo_impact['cargo_efficiency'], 3)
+                }
+            })
+        
+        return {
+            'original_aircraft': original_aircraft,
+            'original_aircraft_name': self.fleet_specs[original_aircraft]['name'],
+            'recommendations': formatted_recommendations,
+            'analysis_parameters': {
+                'load_factor': load_factor,
+                'cargo_load_kg': cargo_load,
+                'flight_duration_hours': flight_duration
+            }
+        }
+
+# Create and run the analysis
+if __name__ == "__main__":
+    fleet_manager = VirginAtlanticFleetManager()
+    
+    # Generate comprehensive report
+    fleet_manager.generate_substitution_report()
+    
+    # Example: Specific substitution query
+    print(f"\n{'='*80}")
+    print("QUICK SUBSTITUTION LOOKUP EXAMPLE:")
+    print("-" * 40)
+    
+    # What if an A350 is unavailable?
+    result = fleet_manager.get_best_substitution('351')
+    best_option = result['recommendations'][0]
+    
+    print(f"If A350-1000 is unavailable, best substitute is:")
+    print(f"  {best_option['aircraft_name']} ({best_option['backup_aircraft']})")
+    print(f"  Substitution Score: {best_option['substitution_score']:.3f}")
+    
+    pax = best_option['passenger_impact']
+    if pax['total_overflow'] > 0:
+        print(f"  Result: {pax['total_overflow']} passengers will need rebooking")
+    else:
+        print(f"  Result: All passengers can be accommodated")
