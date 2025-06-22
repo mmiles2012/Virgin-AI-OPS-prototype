@@ -27,6 +27,7 @@ import AinoTrainingSimulator from "./components/AinoTrainingSimulator";
 import AirbusOperationsCenter from "./components/AirbusOperationsCenter";
 import FinancialAnalyticsDashboard from "./components/FinancialAnalyticsDashboard";
 import FleetSubstitutionCalculator from "./components/FleetSubstitutionCalculator";
+import SkyGateAirportDashboard from "./components/SkyGateAirportDashboard";
 
 // Flight control mappings
 enum FlightControls {
@@ -64,7 +65,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -244,6 +245,17 @@ function App() {
                     Fleet Substitution
                   </button>
                   
+                  <button
+                    onClick={() => setViewMode('skygate-airports')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'skygate-airports' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    SkyGate Airports
+                  </button>
+                  
                   {/* API Centre Section */}
                   <div className="border-t border-gray-600 pt-3 mt-3">
                     <div className="text-xs text-gray-400 mb-2 px-2">API CENTRE</div>
@@ -375,7 +387,11 @@ function App() {
               </div>
             )}
             
-
+            {viewMode === 'skygate-airports' && (
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
+                <SkyGateAirportDashboard />
+              </div>
+            )}
 
             {/* Full-Screen Enhanced Satellite Map - Overview Mode */}
             {viewMode === 'overview' && (

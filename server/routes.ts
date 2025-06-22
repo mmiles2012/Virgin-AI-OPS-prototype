@@ -3905,6 +3905,77 @@ print(json.dumps(weather))
     }
   });
 
+  // Helper functions for SkyGate decision engine integration
+  function calculateDiversionSuitability(capabilities: any): string {
+    if (!capabilities) return 'unknown';
+    
+    const runway = capabilities.operational_capabilities?.runway_length || 0;
+    const medical = capabilities.operational_capabilities?.medical_facilities || false;
+    const fuel = capabilities.operational_capabilities?.fuel_services || false;
+    
+    if (runway >= 3000 && medical && fuel) return 'excellent';
+    if (runway >= 2500 && fuel) return 'good';
+    if (runway >= 2000) return 'acceptable';
+    return 'limited';
+  }
+
+  function assessEmergencyCapability(capabilities: any): string {
+    const medical = capabilities?.operational_capabilities?.medical_facilities;
+    const operating = capabilities?.operational_capabilities?.operating_hours;
+    
+    if (medical && operating === '24/7') return 'full_capability';
+    if (medical) return 'medical_available';
+    return 'basic';
+  }
+
+  function calculateFuelRequirement(aircraftType: string, distanceIndex: number): number {
+    const baseConsumption = {
+      'Boeing 787-9': 2400,
+      'Airbus A350-1000': 2600,
+      'Airbus A330-900': 2200,
+      'Airbus A330-300': 2300
+    };
+    
+    const consumption = baseConsumption[aircraftType as keyof typeof baseConsumption] || 2400;
+    return Math.round(consumption + (distanceIndex * 200));
+  }
+
+  function assessRunwayCompatibility(aircraftType: string, capabilities: any): string {
+    const runwayLength = capabilities?.operational_capabilities?.runway_length || 2000;
+    
+    const requirements = {
+      'Boeing 787-9': 2500,
+      'Airbus A350-1000': 2700,
+      'Airbus A330-900': 2400,
+      'Airbus A330-300': 2500
+    };
+    
+    const required = requirements[aircraftType as keyof typeof requirements] || 2500;
+    
+    if (runwayLength >= required + 500) return 'excellent';
+    if (runwayLength >= required) return 'adequate';
+    return 'marginal';
+  }
+
+  function calculateRouteScore(alternative: any, reason: string): number {
+    let score = 80; // Base score
+    
+    // Adjust based on distance difference
+    const distancePenalty = Math.abs(alternative.distance_difference) / 100;
+    score -= distancePenalty;
+    
+    // Adjust based on time difference
+    const timePenalty = Math.abs(alternative.estimated_time_difference) / 30;
+    score -= timePenalty;
+    
+    // Reason-specific adjustments
+    if (reason === 'weather' && alternative.distance_difference < 0) score += 10;
+    if (reason === 'fuel' && alternative.distance_difference < 0) score += 15;
+    if (reason === 'emergency' && Math.abs(alternative.distance_difference) < 200) score += 20;
+    
+    return Math.max(0, Math.min(100, Math.round(score)));
+  }
+
   return httpServer;
 }
 
