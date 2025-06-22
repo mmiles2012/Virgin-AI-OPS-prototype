@@ -29,6 +29,7 @@ import FinancialAnalyticsDashboard from "./components/FinancialAnalyticsDashboar
 import FleetSubstitutionCalculator from "./components/FleetSubstitutionCalculator";
 import SkyGateAirportDashboard from "./components/SkyGateAirportDashboard";
 import EmergencyCommDashboard from "./components/EmergencyCommDashboard";
+import { OnTimePerformanceDashboard } from "./components/OnTimePerformanceDashboard";
 
 // Flight control mappings
 enum FlightControls {
@@ -66,7 +67,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
