@@ -2,9 +2,49 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { X } from 'lucide-react';
+import { X, AlertTriangle } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
+
+// Error Boundary Component for Map
+class SatelliteMapErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
+  constructor(props: {children: React.ReactNode}) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error('Satellite map error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex items-center justify-center h-full bg-gray-900 text-white">
+          <div className="text-center p-8">
+            <AlertTriangle className="h-16 w-16 mx-auto mb-4 text-yellow-500" />
+            <h2 className="text-2xl font-semibold mb-4">Satellite Map Unavailable</h2>
+            <p className="text-gray-400 mb-6 max-w-md">
+              The satellite map component encountered an error and cannot be displayed at this time.
+            </p>
+            <button 
+              onClick={() => this.setState({ hasError: false })}
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
+            >
+              Retry Map Loading
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 // Import types and data
 interface Airport {
@@ -365,7 +405,7 @@ function WeatherControlsPanel({
   );
 }
 
-export default function ProfessionalSatelliteMap() {
+function ProfessionalSatelliteMapCore() {
   const [airports, setAirports] = useState<Airport[]>([]);
   const [flightData, setFlightData] = useState<FlightPosition[]>([]);
   const [selectedAirport, setSelectedAirport] = useState<Airport | null>(null);
@@ -570,9 +610,16 @@ export default function ProfessionalSatelliteMap() {
           />
 
           {/* Airport markers */}
-          {showAirports && airports.map((airport) => (
+          {showAirports && airports.reduce((uniqueAirports: Airport[], airport, index) => {
+            // Ensure unique airports by ICAO code to prevent duplicate key errors
+            const exists = uniqueAirports.find(a => a.icao === airport.icao);
+            if (!exists) {
+              uniqueAirports.push(airport);
+            }
+            return uniqueAirports;
+          }, []).map((airport, index) => (
             <Marker
-              key={airport.icao}
+              key={`airport-${airport.icao}-${index}`}
               position={[airport.latitude, airport.longitude]}
               icon={createAirportIcon(selectedAirport?.icao === airport.icao)}
               eventHandlers={{
@@ -641,5 +688,14 @@ export default function ProfessionalSatelliteMap() {
         />
       </div>
     </div>
+  );
+}
+
+// Main Export with Error Boundary Protection
+export default function ProfessionalSatelliteMap() {
+  return (
+    <SatelliteMapErrorBoundary>
+      <ProfessionalSatelliteMapCore />
+    </SatelliteMapErrorBoundary>
   );
 }
