@@ -28,6 +28,7 @@ import { weatherDataCollector } from "./weatherDataCollector";
 import { adsbFlightTracker } from "./adsbFlightTracker";
 import { icaoApiService } from "./icaoApiService";
 import { icaoMLIntegration } from "./icaoMLIntegration";
+import VirginAtlanticFleetService from "./virginAtlanticFleetService";
 import { icaoDemo } from "./icaoDemo";
 import { newsMLTraining } from "./newsMLTraining";
 import fleetSubstitution from "./fleetSubstitution";
@@ -42,6 +43,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const flightSim = new FlightSimulationEngine();
   const scenarioEngine = new ScenarioEngine();
   const decisionEngine = new DecisionEngine(flightSim, scenarioEngine);
+  
+  // Initialize Virgin Atlantic Fleet Health Monitoring Service
+  const virginAtlanticFleet = new VirginAtlanticFleetService();
 
   // Mapbox configuration endpoint
   app.get('/api/config/mapbox', (req, res) => {
@@ -4260,6 +4264,154 @@ print(json.dumps(weather))
     ws.on('error', (error) => {
       console.error('WebSocket error:', error);
     });
+  });
+
+  // Virgin Atlantic Fleet Health Monitoring API Endpoints
+  app.get('/api/fleet/virgin-atlantic/status', (req, res) => {
+    try {
+      const fleetStatus = virginAtlanticFleet.getFleetStatus();
+      res.json({
+        success: true,
+        fleet_data: fleetStatus,
+        timestamp: new Date().toISOString(),
+        data_source: 'Virgin Atlantic Fleet Health Monitor'
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Fleet data unavailable',
+        message: error.message
+      });
+    }
+  });
+
+  app.get('/api/fleet/virgin-atlantic/aircraft/:registration', (req, res) => {
+    try {
+      const { registration } = req.params;
+      const aircraftData = virginAtlanticFleet.getAircraftData(registration.toUpperCase());
+      
+      if (aircraftData) {
+        res.json({
+          success: true,
+          aircraft: aircraftData,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          error: `Aircraft ${registration} not found in Virgin Atlantic fleet`
+        });
+      }
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Aircraft data unavailable',
+        message: error.message
+      });
+    }
+  });
+
+  app.get('/api/fleet/virgin-atlantic/analytics', (req, res) => {
+    try {
+      const analytics = virginAtlanticFleet.getFleetAnalytics();
+      res.json({
+        success: true,
+        analytics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Fleet analytics unavailable',
+        message: error.message
+      });
+    }
+  });
+
+  app.get('/api/fleet/virgin-atlantic/maintenance-schedule', (req, res) => {
+    try {
+      const schedule = virginAtlanticFleet.getMaintenanceSchedule();
+      res.json({
+        success: true,
+        maintenance_schedule: schedule,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Maintenance schedule unavailable',
+        message: error.message
+      });
+    }
+  });
+
+  app.get('/api/fleet/virgin-atlantic/predictive-insights', (req, res) => {
+    try {
+      const insights = virginAtlanticFleet.generatePredictiveInsights();
+      res.json({
+        success: true,
+        predictive_insights: insights,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Predictive insights unavailable',
+        message: error.message
+      });
+    }
+  });
+
+  app.get('/api/fleet/virgin-atlantic/health-summary', (req, res) => {
+    try {
+      const fleetStatus = virginAtlanticFleet.getFleetStatus();
+      const analytics = virginAtlanticFleet.getFleetAnalytics();
+      
+      const healthSummary = {
+        fleet_overview: {
+          total_aircraft: fleetStatus.length,
+          operational: fleetStatus.filter(a => a.status === 'Operational').length,
+          caution: fleetStatus.filter(a => a.status === 'Caution').length,
+          maintenance_required: fleetStatus.filter(a => a.status === 'Maintenance Required').length,
+          average_health_score: Math.round(fleetStatus.reduce((sum, a) => sum + a.health_score, 0) / fleetStatus.length)
+        },
+        aircraft_types: {
+          'A350-1000': fleetStatus.filter(a => a.aircraft_type === 'A350-1000').length,
+          '787-9': fleetStatus.filter(a => a.aircraft_type === '787-9').length,
+          'A330-900': fleetStatus.filter(a => a.aircraft_type === 'A330-900').length,
+          'A330-300': fleetStatus.filter(a => a.aircraft_type === 'A330-300').length
+        },
+        top_warnings: fleetStatus
+          .flatMap(a => a.real_time_data.current_warnings)
+          .reduce((acc: any, warning: string) => {
+            acc[warning] = (acc[warning] || 0) + 1;
+            return acc;
+          }, {}),
+        maintenance_urgency: {
+          immediate: fleetStatus.filter(a => a.maintenance_due_days < 7).length,
+          within_month: fleetStatus.filter(a => a.maintenance_due_days < 30).length,
+          scheduled: fleetStatus.filter(a => a.maintenance_due_days >= 30).length
+        },
+        performance_metrics: {
+          average_fuel_efficiency: Math.round(fleetStatus.reduce((sum, a) => sum + a.fuel_efficiency, 0) / fleetStatus.length),
+          average_otp: Math.round(fleetStatus.reduce((sum, a) => sum + a.operational_metrics.on_time_performance, 0) / fleetStatus.length),
+          total_flight_hours: analytics.total_flight_hours,
+          cost_savings_ytd: analytics.cost_savings_ytd
+        }
+      };
+      
+      res.json({
+        success: true,
+        health_summary: healthSummary,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Health summary unavailable',
+        message: error.message
+      });
+    }
   });
 
   return httpServer;
