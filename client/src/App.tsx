@@ -69,7 +69,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -293,6 +293,17 @@ function App() {
                     Communications
                   </button>
                   
+                  <button
+                    onClick={() => setViewMode('intelligence-dashboard')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'intelligence-dashboard' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Intelligence Center
+                  </button>
+                  
                   {/* API Centre Section */}
                   <div className="border-t border-gray-600 pt-3 mt-3">
                     <div className="text-xs text-gray-400 mb-2 px-2">API CENTRE</div>
@@ -439,6 +450,12 @@ function App() {
             {viewMode === 'fleet-monitor' && (
               <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
                 <VirginAtlanticFleetMonitor />
+              </div>
+            )}
+            
+            {viewMode === 'intelligence-dashboard' && (
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
+                <IntelligenceDashboard />
               </div>
             )}
             
