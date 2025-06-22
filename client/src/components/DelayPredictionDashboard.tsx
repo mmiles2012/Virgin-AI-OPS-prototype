@@ -116,7 +116,7 @@ interface DelayStatistics {
 }
 
 const DelayPredictionDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'predict' | 'holding' | 'seasonal' | 'heathrow' | 'tensorflow' | 'dual-model'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'predict' | 'holding' | 'seasonal' | 'heathrow' | 'tensorflow' | 'dual-model' | 'training'>('overview');
   const [statistics, setStatistics] = useState<DelayStatistics | null>(null);
   const [seasonalPatterns, setSeasonalPatterns] = useState<SeasonalPattern[]>([]);
   const [prediction, setPrediction] = useState<DelayPrediction | null>(null);
@@ -131,6 +131,8 @@ const DelayPredictionDashboard: React.FC = () => {
   const [dualModelPrediction, setDualModelPrediction] = useState<any>(null);
   const [dualModelInfo, setDualModelInfo] = useState<any>(null);
   const [aiHoldingPrediction, setAiHoldingPrediction] = useState<any>(null);
+  const [trainingStatus, setTrainingStatus] = useState<any>(null);
+  const [trainingProgress, setTrainingProgress] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Flight prediction form state
@@ -501,6 +503,42 @@ const DelayPredictionDashboard: React.FC = () => {
     }
   };
 
+  const startNeuralNetworkTraining = async () => {
+    setLoading(true);
+    setTrainingStatus({ status: 'training', progress: 0 });
+    setTrainingProgress(['Starting TensorFlow neural network training...']);
+    
+    try {
+      const response = await fetch('/api/delays/tensorflow/train', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setTrainingStatus({ 
+          status: 'completed', 
+          progress: 100,
+          performance: data.model_performance,
+          trainingTime: data.training_time
+        });
+        setTrainingProgress(prev => [...prev, 'Training completed successfully!', 
+          `Training time: ${data.training_time}`, 
+          `Model performance: ${JSON.stringify(data.model_performance)}`
+        ]);
+      } else {
+        setTrainingStatus({ status: 'failed', error: data.error });
+        setTrainingProgress(prev => [...prev, `Training failed: ${data.error}`]);
+      }
+    } catch (error) {
+      setTrainingStatus({ status: 'failed', error: error.message });
+      setTrainingProgress(prev => [...prev, `Training error: ${error.message}`]);
+    }
+    setLoading(false);
+  };
+
   const pieChartColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1'];
 
   const causesData = useMemo(() => {
@@ -538,7 +576,8 @@ const DelayPredictionDashboard: React.FC = () => {
                 { id: 'seasonal', label: 'Seasonal Patterns' },
                 { id: 'heathrow', label: 'Heathrow Analysis' },
                 { id: 'tensorflow', label: 'AI Neural Network' },
-                { id: 'dual-model', label: 'Dual-Model AI' }
+                { id: 'dual-model', label: 'Dual-Model AI' },
+                { id: 'training', label: 'AI Training Monitor' }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -2249,6 +2288,126 @@ const DelayPredictionDashboard: React.FC = () => {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* AI Training Monitor Tab */}
+        {activeTab === 'training' && (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Neural Network Training Monitor</h2>
+                <button
+                  onClick={startNeuralNetworkTraining}
+                  disabled={loading || trainingStatus?.status === 'training'}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {loading ? 'Training...' : 'Start Neural Network Training'}
+                </button>
+              </div>
+              
+              {/* Training Status */}
+              {trainingStatus && (
+                <div className="mb-6">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className={`w-3 h-3 rounded-full ${
+                      trainingStatus.status === 'training' ? 'bg-yellow-500 animate-pulse' :
+                      trainingStatus.status === 'completed' ? 'bg-green-500' :
+                      'bg-red-500'
+                    }`}></div>
+                    <span className="font-medium">
+                      Status: {trainingStatus.status.charAt(0).toUpperCase() + trainingStatus.status.slice(1)}
+                    </span>
+                  </div>
+                  
+                  {trainingStatus.status === 'completed' && trainingStatus.performance && (
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h3 className="font-medium text-green-900 mb-2">Training Completed Successfully</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="font-medium">Training Time:</span> {trainingStatus.trainingTime}
+                        </div>
+                        <div>
+                          <span className="font-medium">Model Performance:</span>
+                          <div className="mt-1 text-xs bg-white p-2 rounded">
+                            <pre>{JSON.stringify(trainingStatus.performance, null, 2)}</pre>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {trainingStatus.status === 'failed' && (
+                    <div className="bg-red-50 p-4 rounded-lg">
+                      <h3 className="font-medium text-red-900 mb-2">Training Failed</h3>
+                      <p className="text-sm text-red-700">{trainingStatus.error}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Training Progress Logs */}
+              {trainingProgress.length > 0 && (
+                <div className="bg-gray-50 rounded-lg">
+                  <div className="p-4 border-b">
+                    <h3 className="font-medium">Training Output</h3>
+                  </div>
+                  <div className="max-h-96 overflow-y-auto p-4">
+                    <div className="space-y-1 font-mono text-sm">
+                      {trainingProgress.map((log, index) => (
+                        <div key={index} className="text-gray-700">
+                          <span className="text-gray-400 mr-2">[{new Date().toLocaleTimeString()}]</span>
+                          {log}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Current Model Status */}
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h3 className="font-medium text-blue-900">TensorFlow Model</h3>
+                  <p className="text-sm text-blue-700 mt-1">
+                    Deep neural network for delay probability and duration prediction
+                  </p>
+                  <div className="mt-2">
+                    <span className={`inline-block px-2 py-1 rounded text-xs ${
+                      tensorflowStatus?.trained ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {tensorflowStatus?.trained ? 'Trained' : 'Not Trained'}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <h3 className="font-medium text-purple-900">Dual-Model AI</h3>
+                  <p className="text-sm text-purple-700 mt-1">
+                    UK/US ensemble model for cross-regional predictions
+                  </p>
+                  <div className="mt-2">
+                    <span className={`inline-block px-2 py-1 rounded text-xs ${
+                      dualModelStatus?.status === 'ready' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {dualModelStatus?.status || 'Unknown'}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="bg-orange-50 p-4 rounded-lg">
+                  <h3 className="font-medium text-orange-900">Random Forest</h3>
+                  <p className="text-sm text-orange-700 mt-1">
+                    Classical ML model for baseline predictions
+                  </p>
+                  <div className="mt-2">
+                    <span className="inline-block px-2 py-1 rounded text-xs bg-green-100 text-green-800">
+                      Ready
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
