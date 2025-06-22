@@ -345,11 +345,10 @@ const EmergencyCommDashboard: React.FC = () => {
       </div>
 
       <Tabs defaultValue="active" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="active">Active Alerts</TabsTrigger>
           <TabsTrigger value="communication">Communication</TabsTrigger>
           <TabsTrigger value="channels">Channels</TabsTrigger>
-          <TabsTrigger value="simulator">Emergency Simulator</TabsTrigger>
         </TabsList>
 
         <TabsContent value="active" className="space-y-4">
@@ -576,48 +575,7 @@ const EmergencyCommDashboard: React.FC = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="simulator" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5" />
-                Emergency Scenario Simulator
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button
-                  onClick={() => declareEmergency('medical')}
-                  className="bg-red-600 hover:bg-red-700 h-16"
-                >
-                  <Heart className="h-6 w-6 mr-2" />
-                  Medical Emergency
-                </Button>
-                <Button
-                  onClick={() => declareEmergency('technical')}
-                  className="bg-orange-600 hover:bg-orange-700 h-16"
-                >
-                  <Wrench className="h-6 w-6 mr-2" />
-                  Technical Emergency
-                </Button>
-                <Button
-                  onClick={() => declareEmergency('fuel')}
-                  className="bg-yellow-600 hover:bg-yellow-700 h-16"
-                >
-                  <Fuel className="h-6 w-6 mr-2" />
-                  Fuel Emergency
-                </Button>
-              </div>
-              <Alert className="mt-4">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  These buttons simulate emergency scenarios for training and demonstration purposes.
-                  Each scenario triggers the complete emergency communication protocol.
-                </AlertDescription>
-              </Alert>
-            </CardContent>
-          </Card>
-        </TabsContent>
+
       </Tabs>
     </div>
   );
