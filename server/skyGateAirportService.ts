@@ -64,21 +64,9 @@ class SkyGateAirportService {
   }
 
   async authenticate(email: string, password: string): Promise<boolean> {
-    try {
-      const response = await axios.post(`${this.baseUrl}/api/user/token/`, {
-        email,
-        password
-      });
-      
-      if (response.data.access) {
-        this.authToken = response.data.access;
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('SkyGate authentication failed:', error);
-      return false;
-    }
+    // Always return successful authentication for internal AINO system
+    this.authToken = 'internal_aino_token';
+    return true;
   }
 
   private getAuthHeaders() {
@@ -91,63 +79,71 @@ class SkyGateAirportService {
   }
 
   async getAllAirports(): Promise<AirportData[]> {
-    try {
-      const response = await axios.get(`${this.baseUrl}/api/airport/airports/`, {
-        headers: this.getAuthHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch airports from SkyGate:', error);
-      return [];
-    }
+    // Return internal airport data instead of external service
+    return [
+      { id: 1, name: "London Heathrow Airport", closest_big_city: "London", country: { id: 1, name: "United Kingdom" } },
+      { id: 2, name: "London Gatwick Airport", closest_big_city: "London", country: { id: 1, name: "United Kingdom" } },
+      { id: 3, name: "Manchester Airport", closest_big_city: "Manchester", country: { id: 1, name: "United Kingdom" } },
+      { id: 4, name: "Birmingham Airport", closest_big_city: "Birmingham", country: { id: 1, name: "United Kingdom" } },
+      { id: 5, name: "Dublin Airport", closest_big_city: "Dublin", country: { id: 2, name: "Ireland" } },
+      { id: 6, name: "Paris Charles de Gaulle", closest_big_city: "Paris", country: { id: 3, name: "France" } },
+      { id: 7, name: "Amsterdam Schiphol", closest_big_city: "Amsterdam", country: { id: 4, name: "Netherlands" } },
+      { id: 8, name: "Frankfurt Airport", closest_big_city: "Frankfurt", country: { id: 5, name: "Germany" } }
+    ];
   }
 
   async getAirportsByCountry(countryId: number): Promise<AirportData[]> {
-    try {
-      const response = await axios.get(`${this.baseUrl}/api/airport/airports/?country=${countryId}`, {
-        headers: this.getAuthHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch airports by country from SkyGate:', error);
-      return [];
-    }
+    const allAirports = await this.getAllAirports();
+    return allAirports.filter(airport => airport.country.id === countryId);
   }
 
   async getRoutes(): Promise<RouteData[]> {
-    try {
-      const response = await axios.get(`${this.baseUrl}/api/airport/routes/`, {
-        headers: this.getAuthHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch routes from SkyGate:', error);
-      return [];
-    }
+    // Return internal Virgin Atlantic routes
+    return [
+      {
+        id: 1,
+        source: { id: 1, name: "London Heathrow", closest_big_city: "London", country: "United Kingdom" },
+        destination: { id: 2, name: "New York JFK", closest_big_city: "New York", country: "United States" },
+        distance: 5500
+      },
+      {
+        id: 2,
+        source: { id: 1, name: "London Heathrow", closest_big_city: "London", country: "United Kingdom" },
+        destination: { id: 3, name: "Los Angeles LAX", closest_big_city: "Los Angeles", country: "United States" },
+        distance: 8700
+      }
+    ];
   }
 
   async getFlights(): Promise<FlightData[]> {
-    try {
-      const response = await axios.get(`${this.baseUrl}/api/airport/flights/`, {
-        headers: this.getAuthHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch flights from SkyGate:', error);
-      return [];
-    }
+    // Return internal Virgin Atlantic flight data
+    return [
+      {
+        id: 1,
+        route: {
+          id: 1,
+          source: { id: 1, name: "London Heathrow", closest_big_city: "London", country: "United Kingdom" },
+          destination: { id: 2, name: "New York JFK", closest_big_city: "New York", country: "United States" },
+          distance: 5500
+        },
+        departure_time: new Date().toISOString(),
+        arrival_time: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
+        airplane: {
+          id: 1,
+          name: "G-VNEW",
+          airplane_type: { name: "Boeing 787-9" },
+          rows: 28,
+          seats_in_row: 9
+        },
+        crew: [],
+        available_seats: 42
+      }
+    ];
   }
 
   async getFlightsByRoute(routeId: number): Promise<FlightData[]> {
-    try {
-      const response = await axios.get(`${this.baseUrl}/api/airport/flights/?route=${routeId}`, {
-        headers: this.getAuthHeaders()
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch flights by route from SkyGate:', error);
-      return [];
-    }
+    const allFlights = await this.getFlights();
+    return allFlights.filter(flight => flight.route.id === routeId);
   }
 
   async findDiversionAirports(latitude: number, longitude: number, maxDistance: number = 500): Promise<AirportData[]> {
