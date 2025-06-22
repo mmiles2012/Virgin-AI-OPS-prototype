@@ -277,7 +277,7 @@ function App() {
                         : 'bg-red-800 text-red-300 hover:bg-red-700'
                     }`}
                   >
-                    Emergency Comm
+                    Communications
                   </button>
                   
                   {/* API Centre Section */}
