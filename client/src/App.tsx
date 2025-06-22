@@ -29,7 +29,7 @@ import FinancialAnalyticsDashboard from "./components/FinancialAnalyticsDashboar
 import FleetSubstitutionCalculator from "./components/FleetSubstitutionCalculator";
 import SkyGateAirportDashboard from "./components/SkyGateAirportDashboard";
 import EmergencyCommDashboard from "./components/EmergencyCommDashboard";
-import { OnTimePerformanceDashboard } from "./components/OnTimePerformanceDashboard";
+import OnTimePerformanceDashboard from "./components/OnTimePerformanceDashboard";
 
 // Flight control mappings
 enum FlightControls {
@@ -259,6 +259,17 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('otp-dashboard')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'otp-dashboard' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Network OTP
+                  </button>
+                  
+                  <button
                     onClick={() => setViewMode('emergency-comm')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'emergency-comm' 
@@ -403,6 +414,12 @@ function App() {
             {viewMode === 'skygate-airports' && (
               <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
                 <SkyGateAirportDashboard />
+              </div>
+            )}
+            
+            {viewMode === 'otp-dashboard' && (
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
+                <OnTimePerformanceDashboard />
               </div>
             )}
             
