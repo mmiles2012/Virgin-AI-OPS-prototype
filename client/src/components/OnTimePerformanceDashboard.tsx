@@ -10,6 +10,8 @@ interface FlightPerformance {
   status: 'on-time' | 'delayed' | 'cancelled';
   aircraft: string;
   gate?: string;
+  delayCode?: string;
+  delayReason?: string;
 }
 
 interface HubPerformance {
@@ -32,6 +34,39 @@ export default function OnTimePerformanceDashboard() {
   const [hubData, setHubData] = useState<HubPerformance[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  // IATA delay codes and their descriptions
+  const delayCodes = {
+    '11': 'Late arrival of aircraft',
+    '12': 'Late departure due to connecting passengers',
+    '13': 'Late departure - No slot available',
+    '14': 'Late departure - ATC restrictions',
+    '15': 'Late departure - Weather',
+    '16': 'Late departure - Crew availability',
+    '17': 'Late departure - Aircraft technical',
+    '18': 'Late departure - Fueling',
+    '19': 'Late departure - Baggage loading',
+    '21': 'Aircraft servicing delay',
+    '22': 'Aircraft maintenance',
+    '23': 'Aircraft technical log defect',
+    '24': 'Crew scheduling/availability',
+    '25': 'Ground handling delays',
+    '31': 'Weather - departure airport',
+    '32': 'Weather - en route',
+    '33': 'Weather - destination airport',
+    '41': 'ATC flow control',
+    '42': 'ATC equipment failure',
+    '43': 'Industrial action - ATC',
+    '51': 'Airport/runway closure',
+    '52': 'Ground handling industrial action',
+    '61': 'Passenger boarding issues',
+    '62': 'Passenger illness/medical',
+    '63': 'Passenger documentation',
+    '71': 'Cargo/mail loading delay',
+    '81': 'Security alert',
+    '82': 'Immigration/customs delay',
+    '91': 'Other airline operational requirements'
+  };
 
   // Simulate real-time performance data for Virgin Atlantic network
   const generatePerformanceData = (): HubPerformance[] => {
@@ -80,6 +115,15 @@ export default function OnTimePerformanceDashboard() {
         if (Math.random() < 0.05) status = 'cancelled';
         else if (delayMinutes > 15) status = 'delayed';
 
+        // Generate delay code and reason for delayed flights
+        let delayCode = '';
+        let delayReason = '';
+        if (status === 'delayed') {
+          const delayCodeKeys = Object.keys(delayCodes);
+          delayCode = delayCodeKeys[Math.floor(Math.random() * delayCodeKeys.length)];
+          delayReason = delayCodes[delayCode as keyof typeof delayCodes];
+        }
+
         const routes = [
           'LHR-JFK', 'LHR-LAX', 'LHR-BOS', 'LHR-SFO', 'LGW-JFK', 'LGW-BOM',
           'JFK-LHR', 'LAX-LHR', 'BOS-LHR', 'SFO-LHR', 'BOM-LGW', 'BLR-LHR'
@@ -93,7 +137,9 @@ export default function OnTimePerformanceDashboard() {
           delayMinutes,
           status,
           aircraft: aircraft[Math.floor(Math.random() * aircraft.length)],
-          gate: `${String.fromCharCode(65 + Math.floor(Math.random() * 5))}${Math.floor(Math.random() * 20) + 1}`
+          gate: `${String.fromCharCode(65 + Math.floor(Math.random() * 5))}${Math.floor(Math.random() * 20) + 1}`,
+          delayCode,
+          delayReason
         });
       }
 
@@ -254,9 +300,19 @@ export default function OnTimePerformanceDashboard() {
                       <div className="text-gray-500 text-xs">{flight.aircraft}</div>
                     </div>
                   </div>
-                  {flight.gate && (
-                    <div className="text-gray-500 text-xs mt-1">Gate {flight.gate}</div>
-                  )}
+                  <div className="flex items-center justify-between mt-2">
+                    {flight.gate && (
+                      <div className="text-gray-500 text-xs">Gate {flight.gate}</div>
+                    )}
+                    {flight.delayCode && flight.delayReason && (
+                      <div className="text-right">
+                        <div className="text-yellow-400 text-xs font-mono">Code: {flight.delayCode}</div>
+                        <div className="text-gray-400 text-xs max-w-48 truncate" title={flight.delayReason}>
+                          {flight.delayReason}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
