@@ -437,7 +437,7 @@ export default function AirbusOperationsCenter() {
             {/* Aircraft Selection */}
             <Card className="bg-black/30 border-blue-500/30">
               <CardHeader>
-                <CardTitle className="text-white">Aircraft Digital Twin</CardTitle>
+                <CardTitle className="text-white">Aircraft Fleet Selection</CardTitle>
                 <div className="flex gap-2 flex-wrap">
                   {Object.keys(AIRBUS_FLEET_SPECS).map((aircraft) => (
                     <Button
@@ -452,35 +452,34 @@ export default function AirbusOperationsCenter() {
                   ))}
                 </div>
               </CardHeader>
-              <CardContent className="p-0">
-                <div className="h-96 bg-gradient-to-b from-blue-900/20 to-slate-900/20">
-                  <Canvas>
-                    <PerspectiveCamera makeDefault position={[15, 10, 15]} />
-                    <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
-                    <ambientLight intensity={0.4} />
-                    <directionalLight 
-                      position={[10, 10, 5]} 
-                      intensity={1}
-                      castShadow
-                      shadow-mapSize-width={1024}
-                      shadow-mapSize-height={1024}
-                    />
-                    <pointLight position={[-10, 5, 10]} intensity={0.3} color="#3b82f6" />
-                    
-                    <AirbusAircraftModel 
-                      aircraftType={selectedAircraft}
-                      flightData={flightData}
-                      onDataUpdate={handleAircraftUpdate}
-                    />
-                    
-                    {/* Ground plane */}
-                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -5, 0]} receiveShadow>
-                      <planeGeometry args={[100, 100]} />
-                      <meshLambertMaterial color="#1e293b" transparent opacity={0.3} />
-                    </mesh>
-                    
-                    <Environment preset="night" />
-                  </Canvas>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-gray-400">Max Range</p>
+                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].range.toLocaleString()} km</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Max Speed</p>
+                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].maxSpeed.toLocaleString()} km/h</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Passengers</p>
+                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].passengers}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Service Ceiling</p>
+                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].serviceCeiling.toLocaleString()} ft</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Wingspan</p>
+                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].wingspan} m</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400">Length</p>
+                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].length} m</p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

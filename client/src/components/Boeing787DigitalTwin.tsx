@@ -365,32 +365,7 @@ export default function Boeing787DigitalTwin({ flightId = 'VS3' }: { flightId?: 
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* 3D Aircraft View */}
-          <div className="lg:col-span-2">
-            <Card className="h-96">
-              <CardHeader>
-                <CardTitle>3D Aircraft View</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="h-80 bg-gradient-to-b from-blue-200 to-blue-400">
-                  <Canvas>
-                    <PerspectiveCamera makeDefault position={[10, 5, 10]} />
-                    <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
-                    <ambientLight intensity={0.5} />
-                    <directionalLight position={[10, 10, 5]} intensity={1} />
-                    <Suspense fallback={null}>
-                      <Boeing787Model 
-                        flightData={flightData} 
-                        onSystemClick={setSelectedSystem}
-                      />
-                    </Suspense>
-                    <Environment preset="sunset" />
-                  </Canvas>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* System Controls */}
           <div>

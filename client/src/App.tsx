@@ -78,40 +78,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <div className="w-full h-full relative bg-gradient-to-b from-blue-900 to-blue-950">
         <KeyboardControls map={controlMap}>
-          {/* Main 3D Scene */}
-          <div className="absolute inset-0">
-            <Canvas
-              shadows
-              camera={{
-                position: [0, 50, 100],
-                fov: 60,
-                near: 0.1,
-                far: 10000
-              }}
-              gl={{
-                antialias: true,
-                powerPreference: "high-performance"
-              }}
-            >
-              <color attach="background" args={["#0c1426"]} />
-              
-              {/* Lighting setup for aircraft visibility */}
-              <ambientLight intensity={0.4} />
-              <directionalLight
-                position={[100, 100, 50]}
-                intensity={1}
-                castShadow
-                shadow-mapSize-width={2048}
-                shadow-mapSize-height={2048}
-              />
-              <pointLight position={[0, 50, 0]} intensity={0.5} color="#60a5fa" />
 
-              <Suspense fallback={null}>
-                <Aircraft />
-                <FlightMap />
-              </Suspense>
-            </Canvas>
-          </div>
 
           {/* UI Overlay */}
           <div className="absolute inset-0 pointer-events-none">
