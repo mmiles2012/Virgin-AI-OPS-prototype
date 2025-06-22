@@ -946,6 +946,56 @@ const DelayPredictionDashboard: React.FC = () => {
           <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow">
               <h2 className="text-xl font-semibold mb-4">Holding Pattern Analysis</h2>
+              
+              {/* Legend for Traffic and Weather Conditions */}
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h3 className="text-lg font-semibold mb-3 text-gray-900">Operational Scale Legend</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-medium text-sm mb-2 text-blue-900">Traffic Level Scale (0-10)</h4>
+                    <div className="space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-green-700">0-2: Light Traffic</span>
+                        <span className="text-gray-600">Minimal aircraft movements, free flow</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-yellow-700">3-5: Moderate Traffic</span>
+                        <span className="text-gray-600">Normal operations, some sequencing</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-orange-700">6-7: Heavy Traffic</span>
+                        <span className="text-gray-600">High volume, extended sequencing</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-red-700">8-10: Congested</span>
+                        <span className="text-gray-600">Peak capacity, holding likely</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-sm mb-2 text-purple-900">Weather Conditions Scale (0-10)</h4>
+                    <div className="space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-green-700">0-2: Clear Conditions</span>
+                        <span className="text-gray-600">CAVOK, unlimited visibility</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-blue-700">3-4: Good Conditions</span>
+                        <span className="text-gray-600">Light clouds, good visibility</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-orange-700">5-7: Marginal Weather</span>
+                        <span className="text-gray-600">Low clouds, reduced visibility</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-red-700">8-10: Severe Weather</span>
+                        <span className="text-gray-600">Storms, fog, wind shear</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
@@ -971,6 +1021,11 @@ const DelayPredictionDashboard: React.FC = () => {
                       onChange={(e) => setHoldingForm({...holdingForm, trafficLevel: parseInt(e.target.value)})}
                       className="w-full"
                     />
+                    <div className="text-xs text-gray-500 mt-1">
+                      {holdingForm.trafficLevel <= 2 ? 'Light Traffic' :
+                       holdingForm.trafficLevel <= 5 ? 'Moderate Traffic' :
+                       holdingForm.trafficLevel <= 7 ? 'Heavy Traffic' : 'Congested'}
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -984,6 +1039,11 @@ const DelayPredictionDashboard: React.FC = () => {
                       onChange={(e) => setHoldingForm({...holdingForm, weatherConditions: parseInt(e.target.value)})}
                       className="w-full"
                     />
+                    <div className="text-xs text-gray-500 mt-1">
+                      {holdingForm.weatherConditions <= 2 ? 'Clear Conditions' :
+                       holdingForm.weatherConditions <= 4 ? 'Good Conditions' :
+                       holdingForm.weatherConditions <= 7 ? 'Marginal Weather' : 'Severe Weather'}
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1009,8 +1069,10 @@ const DelayPredictionDashboard: React.FC = () => {
                 </div>
 
                 {holdingAnalysis && (
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Analysis Results for {holdingAnalysis.airport}</h3>
+                  <div className="max-h-[500px] overflow-y-auto space-y-4 pr-2">
+                    <h3 className="text-lg font-semibold sticky top-0 bg-white py-2 border-b">
+                      Analysis Results for {holdingAnalysis.airport}
+                    </h3>
                     
                     <div className="bg-orange-50 p-4 rounded-lg">
                       <h4 className="font-semibold text-orange-900">Holding Likelihood</h4>
@@ -1026,42 +1088,84 @@ const DelayPredictionDashboard: React.FC = () => {
                       <div className="bg-red-50 p-3 rounded">
                         <h5 className="font-medium text-red-900">Fuel Impact</h5>
                         <p className="text-xl font-bold text-red-600">{holdingAnalysis.holdingPrediction.fuelImpact} kg</p>
+                        <p className="text-xs text-red-700 mt-1">
+                          Based on {(holdingAnalysis.holdingPrediction.estimatedDuration / 60).toFixed(1)} hours holding
+                        </p>
                       </div>
                       <div className="bg-purple-50 p-3 rounded">
                         <h5 className="font-medium text-purple-900">Cost Impact</h5>
                         <p className="text-xl font-bold text-purple-600">${holdingAnalysis.holdingPrediction.costImpact}</p>
+                        <p className="text-xs text-purple-700 mt-1">
+                          Fuel + operational costs
+                        </p>
                       </div>
                     </div>
 
-                    <div>
-                      <h4 className="font-semibold mb-2">Current Conditions</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span>Traffic Density:</span>
-                          <span className="font-medium">{holdingAnalysis.currentConditions.trafficDensity}/10</span>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="font-semibold mb-3 text-gray-900">Current Conditions Assessment</h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span>Traffic Density:</span>
+                            <div className="flex items-center space-x-2">
+                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className="bg-blue-600 h-2 rounded-full"
+                                  style={{ width: `${(holdingAnalysis.currentConditions.trafficDensity / 10) * 100}%` }}
+                                ></div>
+                              </div>
+                              <span className="font-medium">{holdingAnalysis.currentConditions.trafficDensity}/10</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span>Weather Impact:</span>
+                            <div className="flex items-center space-x-2">
+                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className="bg-orange-600 h-2 rounded-full"
+                                  style={{ width: `${(holdingAnalysis.currentConditions.weatherImpact / 10) * 100}%` }}
+                                ></div>
+                              </div>
+                              <span className="font-medium">{holdingAnalysis.currentConditions.weatherImpact}/10</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex justify-between">
-                          <span>Weather Impact:</span>
-                          <span className="font-medium">{holdingAnalysis.currentConditions.weatherImpact}/10</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Runway Capacity:</span>
-                          <span className="font-medium">{holdingAnalysis.currentConditions.runwayCapacity}/10</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Current Delays:</span>
-                          <span className="font-medium">{holdingAnalysis.currentConditions.currentDelays}%</span>
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span>Runway Capacity:</span>
+                            <div className="flex items-center space-x-2">
+                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className="bg-green-600 h-2 rounded-full"
+                                  style={{ width: `${(holdingAnalysis.currentConditions.runwayCapacity / 10) * 100}%` }}
+                                ></div>
+                              </div>
+                              <span className="font-medium">{holdingAnalysis.currentConditions.runwayCapacity}/10</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span>Current Delays:</span>
+                            <div className="flex items-center space-x-2">
+                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className="bg-red-600 h-2 rounded-full"
+                                  style={{ width: `${holdingAnalysis.currentConditions.currentDelays}%` }}
+                                ></div>
+                              </div>
+                              <span className="font-medium">{holdingAnalysis.currentConditions.currentDelays}%</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    <div>
-                      <h4 className="font-semibold mb-2">Alternate Recommendations</h4>
-                      <ul className="space-y-1">
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h4 className="font-semibold mb-3 text-blue-900">Operational Recommendations</h4>
+                      <ul className="space-y-2">
                         {holdingAnalysis.alternateRecommendations.map((rec, index) => (
-                          <li key={index} className="text-sm flex items-start space-x-2">
-                            <div className="w-1.5 h-1.5 bg-orange-600 rounded-full mt-2 flex-shrink-0"></div>
-                            <span>{rec}</span>
+                          <li key={index} className="text-sm flex items-start space-x-3">
+                            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-blue-800">{rec}</span>
                           </li>
                         ))}
                       </ul>
