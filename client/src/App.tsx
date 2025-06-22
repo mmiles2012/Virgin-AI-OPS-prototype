@@ -1,10 +1,6 @@
-import { Canvas } from "@react-three/fiber";
-import { Suspense, useState } from "react";
-import { KeyboardControls } from "@react-three/drei";
+import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@fontsource/inter";
-
-import Aircraft from "./components/Aircraft";
 
 import OperationsCenter from "./components/OperationsCenter";
 import EnhancedOperationalDecisionEngine from "./components/EnhancedOperationalDecisionEngine";
@@ -77,13 +73,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="w-full h-full relative bg-gradient-to-b from-blue-900 to-blue-950">
-        <KeyboardControls map={controlMap}>
-
-
-          {/* UI Overlay */}
-          <div className="absolute inset-0 pointer-events-none">
-            {/* Left Sidebar Navigation */}
-            <div className="absolute top-4 left-4 z-50 pointer-events-auto">
+        {/* UI Overlay */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Left Sidebar Navigation */}
+          <div className="absolute top-4 left-4 z-50 pointer-events-auto">
               <div className="aviation-panel p-4 rounded-lg space-y-3 w-48">
                 <div className="text-center mb-4">
                   <h1 className="text-white font-bold text-lg">AINO</h1>
@@ -379,7 +372,6 @@ function App() {
             )}
 
           </div>
-        </KeyboardControls>
       </div>
     </QueryClientProvider>
   );

@@ -460,16 +460,16 @@ export default function AirbusOperationsCenter() {
                       <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].range.toLocaleString()} km</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Max Speed</p>
-                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].maxSpeed.toLocaleString()} km/h</p>
+                      <p className="text-gray-400">MTOW</p>
+                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].mtow.toLocaleString()} kg</p>
                     </div>
                     <div>
                       <p className="text-gray-400">Passengers</p>
-                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].passengers}</p>
+                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].passengers.typical} typical</p>
                     </div>
                     <div>
                       <p className="text-gray-400">Service Ceiling</p>
-                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].serviceCeiling.toLocaleString()} ft</p>
+                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].service_ceiling.toLocaleString()} ft</p>
                     </div>
                     <div>
                       <p className="text-gray-400">Wingspan</p>
