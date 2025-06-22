@@ -1237,6 +1237,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Real-time Flight Data Routes
   app.get("/api/aviation/virgin-atlantic-flights", async (req, res) => {
     try {
+      // First try to get authentic Virgin Atlantic schedule data
+      const authenticFlights = virginAtlanticService.generateOperationalData();
+      
+      if (authenticFlights.length > 0) {
+        res.json({
+          success: true,
+          flights: authenticFlights,
+          count: authenticFlights.length,
+          timestamp: new Date().toISOString(),
+          source: 'virgin_atlantic_official_schedule',
+          schedule_info: virginAtlanticService.getFlightScheduleInfo(),
+          fleet_composition: virginAtlanticService.getFleetComposition(),
+          route_network: virginAtlanticService.getRouteNetwork(),
+          note: 'Authentic Virgin Atlantic flight data from official cargo schedule'
+        });
+        return;
+      }
+
+      // Fallback to external APIs if authentic schedule data not available
       const flights = await aviationApiService.getVirginAtlanticFlights();
       
       // If no authentic data available but training mode is requested

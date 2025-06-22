@@ -2,10 +2,48 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Plane, Info, X } from 'lucide-react';
+import { MapPin, Plane, Info, X, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+
+// Error Boundary Component
+class MapErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
+  constructor(props: {children: React.ReactNode}) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error('Map component error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex items-center justify-center h-full bg-gray-900 text-white">
+          <div className="text-center">
+            <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-yellow-500" />
+            <h2 className="text-xl font-semibold mb-2">Map Loading Error</h2>
+            <p className="text-gray-400 mb-4">Unable to load satellite map component</p>
+            <Button 
+              onClick={() => this.setState({ hasError: false })}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Retry
+            </Button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 // Custom CSS for dark theme Leaflet popups and professional controls
 const leafletStyles = `
@@ -402,9 +440,9 @@ function WeatherControlsPanel({
   );
 }
 
-export default function LeafletSatelliteMap() {
+function LeafletSatelliteMapCore() {
   const [airports, setAirports] = useState<Airport[]>([]);
-  const [flightData, setFlightData] = useState<FlightPosition[]>([]);
+  const [flightData, setFlightData] = useState<any[]>([]);
   const [selectedAirport, setSelectedAirport] = useState<Airport | null>(null);
   const [aviationWeather, setAviationWeather] = useState<AviationWeatherData | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
@@ -603,9 +641,16 @@ export default function LeafletSatelliteMap() {
         />
 
         {/* Airport Markers */}
-        {showAirports && airports.map((airport) => (
+        {showAirports && filteredAirports.reduce((uniqueAirports: any[], airport, index) => {
+          // Ensure unique airports by ICAO code
+          const exists = uniqueAirports.find(a => a.icao === airport.icao);
+          if (!exists) {
+            uniqueAirports.push(airport);
+          }
+          return uniqueAirports;
+        }, []).map((airport, index) => (
           <Marker
-            key={airport.icao}
+            key={`${airport.icao}-${index}`}
             position={[airport.latitude, airport.longitude]}
             icon={createAirportIcon(selectedAirport?.icao === airport.icao)}
             eventHandlers={{
@@ -626,17 +671,20 @@ export default function LeafletSatelliteMap() {
         ))}
 
         {/* Flight Markers */}
-        {showFlights && flightData.map((flight) => (
+        {showFlights && flightData.map((flight: any, index) => (
           <Marker
-            key={flight.callsign}
-            position={[flight.latitude, flight.longitude]}
-            icon={createFlightIcon(flight.heading, false)}
+            key={`flight-${flight.flight_number || flight.callsign || index}`}
+            position={[flight.latitude || 0, flight.longitude || 0]}
+            icon={createFlightIcon(flight.heading || 0, false)}
           >
             <Popup>
               <div className="text-sm">
-                <div className="font-medium">{flight.callsign}</div>
-                <div className="text-gray-600">{flight.aircraft}</div>
-                <div className="text-gray-600">{flight.altitude}ft - {flight.velocity}kts</div>
+                <div className="font-medium">{flight.flight_number || flight.callsign}</div>
+                <div className="text-gray-600">{flight.aircraft_type || flight.aircraft}</div>
+                <div className="text-gray-600">{flight.altitude || 0}ft - {flight.speed || flight.velocity || 0}kts</div>
+                {flight.route && (
+                  <div className="text-gray-500 text-xs mt-1">{flight.route}</div>
+                )}
               </div>
             </Popup>
           </Marker>
