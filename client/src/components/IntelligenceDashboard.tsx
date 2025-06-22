@@ -323,9 +323,21 @@ export default function IntelligenceDashboard() {
                         <CardContent className="pt-3 pb-3">
                           <div className="flex justify-between items-start mb-2">
                             <h4 className="text-white font-medium text-sm leading-tight flex-1 mr-2">{article.title}</h4>
-                            <Badge variant={article.impact_level === 'high' ? 'destructive' : 'secondary'} className="text-xs shrink-0">
-                              {article.relevance_score}%
-                            </Badge>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <Badge variant={article.impact_level === 'high' ? 'destructive' : 'secondary'} className="text-xs">
+                                {article.relevance_score}%
+                              </Badge>
+                              {(article as any).ml_enhanced && (
+                                <Badge variant="outline" className="text-xs border-green-600 text-green-400">
+                                  ML
+                                </Badge>
+                              )}
+                              {(article as any).confidence && (
+                                <span className="text-blue-300 text-xs">
+                                  {Math.round((article as any).confidence * 100)}%
+                                </span>
+                              )}
+                            </div>
                           </div>
                           <p className="text-gray-300 text-xs mb-2 leading-relaxed line-clamp-2">{article.content}</p>
                           <div className="flex items-center justify-between">

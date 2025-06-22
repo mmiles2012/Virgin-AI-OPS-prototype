@@ -1,4 +1,7 @@
 import { Express } from 'express';
+import MLNewsClassifier from './mlNewsClassifier';
+
+const mlClassifier = new MLNewsClassifier();
 
 export function addIntelligenceRoutes(app: Express) {
   // Aviation News Intelligence endpoints
@@ -10,6 +13,28 @@ export function addIntelligenceRoutes(app: Express) {
       res.status(500).json({ 
         success: false, 
         error: 'Failed to retrieve news intelligence' 
+      });
+    }
+  });
+
+  // ML Model Status endpoint
+  app.get('/api/intelligence/ml-status', (req, res) => {
+    try {
+      const status = mlClassifier.getModelStatus();
+      res.json({
+        success: true,
+        ml_status: status,
+        capabilities: {
+          enhanced_classification: status.trained,
+          confidence_scoring: true,
+          real_time_processing: true,
+          category_prediction: true
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to retrieve ML status' 
       });
     }
   });
@@ -48,18 +73,49 @@ async function generateNewsIntelligence() {
     const realArticles = await fetchRealAviationNews();
     
     if (realArticles.length > 0) {
-      // Process real articles with ML classification
-      const processedArticles = realArticles.map((article, index) => ({
-        id: index + 1,
-        title: article.title,
-        content: article.description || article.content || '',
-        source: article.source?.name || 'Unknown Source',
-        published_at: article.publishedAt,
-        relevance_score: calculateRelevanceScore(article),
-        categories: classifyArticle(article),
-        impact_level: getImpactLevel(article),
-        operational_significance: getOperationalSignificance(article)
-      }));
+      // Process real articles with enhanced ML classification
+      const processedArticles = await Promise.all(
+        realArticles.map(async (article, index) => {
+          try {
+            // Try ML classification first for enhanced accuracy
+            const mlResult = await mlClassifier.classifyArticle({
+              title: article.title,
+              content: article.description || article.content || '',
+              source: article.source?.name || 'Unknown Source',
+              publishedAt: article.publishedAt
+            });
+
+            return {
+              id: index + 1,
+              title: article.title,
+              content: article.description || article.content || '',
+              source: article.source?.name || 'Unknown Source',
+              published_at: article.publishedAt,
+              relevance_score: mlResult.relevance_score,
+              categories: mlResult.categories,
+              impact_level: mlResult.impact_level,
+              operational_significance: mlResult.operational_significance,
+              confidence: mlResult.confidence,
+              ml_enhanced: true
+            };
+          } catch (error) {
+            // Fallback to rule-based classification
+            return {
+              id: index + 1,
+              title: article.title,
+              content: article.description || article.content || '',
+              source: article.source?.name || 'Unknown Source',
+              published_at: article.publishedAt,
+              relevance_score: calculateRelevanceScore(article),
+              categories: classifyArticle(article),
+              impact_level: getImpactLevel(article),
+              operational_significance: getOperationalSignificance(article),
+              confidence: 0.65,
+              ml_enhanced: false
+            };
+          }
+        })
+      );
 
       // Calculate analytics from real data
       const analytics = calculateAnalytics(processedArticles);
