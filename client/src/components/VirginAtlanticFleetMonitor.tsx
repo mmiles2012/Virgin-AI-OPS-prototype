@@ -17,30 +17,32 @@ import {
 } from 'lucide-react';
 
 interface FleetData {
-  aircraft_registration: string;
+  registration: string;
   aircraft_type: string;
   current_flight: string;
   route: string;
   status: string;
   health_score: number;
   fuel_efficiency: number;
-  maintenance_due: number;
+  maintenance_due_days: number;
   flight_hours: number;
   cycles: number;
   last_inspection: string;
   next_maintenance: string;
   engine_health: {
-    engine1: number;
-    engine2: number;
+    engine1_health: number;
+    engine2_health: number;
     total_hours: number;
     performance_trend: string;
   };
-  warnings: string[];
-  position: {
-    latitude: number;
-    longitude: number;
-    altitude: number;
-    speed: number;
+  real_time_data: {
+    current_warnings: string[];
+    position: {
+      latitude: number;
+      longitude: number;
+      altitude: number;
+      speed: number;
+    };
   };
 }
 
@@ -49,92 +51,56 @@ export default function VirginAtlanticFleetMonitor() {
   const [selectedAircraft, setSelectedAircraft] = useState<string>('');
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
 
   // Fetch real-time Virgin Atlantic fleet data from backend
   useEffect(() => {
     const fetchFleetData = async (): Promise<FleetData[]> => {
       try {
+        setError('');
         const response = await fetch('/api/fleet/virgin-atlantic/status');
         if (response.ok) {
           const data = await response.json();
-          return data.fleet_data || [];
+          if (data.success && data.fleet_data) {
+            return data.fleet_data;
+          }
         }
+        throw new Error('Failed to fetch fleet data');
       } catch (error) {
         console.error('Failed to fetch fleet data:', error);
+        setError('Unable to connect to fleet monitoring system');
+        return [];
       }
-      return generateMockFleetData();
-    };
-    
-    const generateMockFleetData = (): FleetData[] => {
-      const virginAtlanticFleet = [
-        { reg: 'G-VEIL', type: 'A350-1000', flight: 'VS127C', route: 'LHR-JFK' },
-        { reg: 'G-VJAM', type: 'A350-1000', flight: 'VS43', route: 'LGW-MCO' },
-        { reg: 'G-VLIB', type: '787-9', flight: 'VS25F', route: 'LHR-LAX' },
-        { reg: 'G-VNEW', type: 'A330-900', flight: 'VS155', route: 'MAN-ATL' },
-        { reg: 'G-VRAY', type: '787-9', flight: 'VS9', route: 'LHR-BOS' },
-        { reg: 'G-VWAG', type: 'A330-300', flight: 'VS89', route: 'LGW-SYD' },
-        { reg: 'G-VGAS', type: 'A350-1000', flight: 'VS401', route: 'LHR-SFO' },
-        { reg: 'G-VKSS', type: '787-9', flight: 'VS75', route: 'MAN-DFW' }
-      ];
-
-      return virginAtlanticFleet.map(aircraft => {
-        const healthScore = Math.random() * 30 + 70; // 70-100%
-        const isHealthy = healthScore > 85;
-        const hasWarnings = Math.random() > 0.7;
-        
-        return {
-          aircraft_registration: aircraft.reg,
-          aircraft_type: aircraft.type,
-          current_flight: aircraft.flight,
-          route: aircraft.route,
-          status: isHealthy ? 'Operational' : healthScore > 75 ? 'Caution' : 'Maintenance Required',
-          health_score: Math.round(healthScore),
-          fuel_efficiency: Math.round(Math.random() * 15 + 85), // 85-100%
-          maintenance_due: Math.round(Math.random() * 30 + 5), // 5-35 days
-          flight_hours: Math.round(Math.random() * 2000 + 8000), // 8000-10000 hours
-          cycles: Math.round(Math.random() * 500 + 2500), // 2500-3000 cycles
-          last_inspection: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          next_maintenance: new Date(Date.now() + (Math.random() * 30 + 5) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          engine_health: {
-            engine1: Math.round(Math.random() * 20 + 80), // 80-100%
-            engine2: Math.round(Math.random() * 20 + 80),
-            total_hours: Math.round(Math.random() * 1000 + 7000),
-            performance_trend: Math.random() > 0.5 ? 'Stable' : 'Declining'
-          },
-          warnings: hasWarnings ? [
-            'Engine temperature slightly elevated',
-            'Hydraulic pressure monitoring',
-            'APU performance review recommended'
-          ].slice(0, Math.ceil(Math.random() * 3)) : [],
-          position: {
-            latitude: Math.random() * 80 - 40, // -40 to 40
-            longitude: Math.random() * 160 - 80, // -80 to 80
-            altitude: Math.round(Math.random() * 10000 + 35000),
-            speed: Math.round(Math.random() * 100 + 450)
-          }
-        };
-      });
     };
 
     const loadData = async () => {
-      const data = await fetchFleetData();
-      setFleetData(data);
-      setSelectedAircraft(data[0]?.aircraft_registration || '');
-      setLoading(false);
+      try {
+        const data = await fetchFleetData();
+        setFleetData(data);
+        setSelectedAircraft(data[0]?.registration || '');
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load fleet data');
+        setLoading(false);
+      }
     };
 
     loadData();
 
     // Update fleet data every 30 seconds
     const interval = setInterval(async () => {
-      const data = await fetchFleetData();
-      setFleetData(data);
+      try {
+        const data = await fetchFleetData();
+        setFleetData(data);
+      } catch (err) {
+        console.error('Failed to update fleet data:', err);
+      }
     }, 30000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const selectedAircraftData = fleetData.find(a => a.aircraft_registration === selectedAircraft);
+  const selectedAircraftData = fleetData.find(a => a.registration === selectedAircraft);
 
   const getHealthColor = (score: number) => {
     if (score >= 90) return 'text-green-400';
@@ -150,12 +116,48 @@ export default function VirginAtlanticFleetMonitor() {
     }
   };
 
+  const safeGet = (obj: any, path: string, defaultValue: any = 'N/A') => {
+    try {
+      return obj && obj[path] !== undefined ? obj[path] : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  };
+
   if (loading) {
     return (
       <Card className="aviation-panel">
         <CardContent className="flex items-center justify-center py-8">
           <Activity className="h-8 w-8 animate-spin text-blue-400" />
           <span className="ml-2 text-white">Loading Virgin Atlantic Fleet Data...</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="aviation-panel">
+        <CardContent className="flex flex-col items-center justify-center py-8">
+          <AlertTriangle className="h-8 w-8 text-red-400 mb-2" />
+          <span className="text-red-400 text-center">{error}</span>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (fleetData.length === 0) {
+    return (
+      <Card className="aviation-panel">
+        <CardContent className="flex flex-col items-center justify-center py-8">
+          <Plane className="h-8 w-8 text-gray-400 mb-2" />
+          <span className="text-gray-400">No fleet data available</span>
         </CardContent>
       </Card>
     );
@@ -194,13 +196,13 @@ export default function VirginAtlanticFleetMonitor() {
                 <div className="bg-gray-800/50 rounded p-3">
                   <div className="text-blue-300 text-sm">Avg Health Score</div>
                   <div className="text-2xl font-bold text-white">
-                    {Math.round(fleetData.reduce((sum, a) => sum + a.health_score, 0) / fleetData.length)}%
+                    {fleetData.length > 0 ? Math.round(fleetData.reduce((sum, a) => sum + a.health_score, 0) / fleetData.length) : 0}%
                   </div>
                 </div>
                 <div className="bg-gray-800/50 rounded p-3">
                   <div className="text-blue-300 text-sm">Active Warnings</div>
                   <div className="text-2xl font-bold text-yellow-400">
-                    {fleetData.reduce((sum, a) => sum + a.warnings.length, 0)}
+                    {fleetData.reduce((sum, a) => sum + (a.real_time_data?.current_warnings?.length || 0), 0)}
                   </div>
                 </div>
               </div>
@@ -209,15 +211,15 @@ export default function VirginAtlanticFleetMonitor() {
                 <h3 className="text-white font-medium">Fleet Status</h3>
                 {fleetData.map(aircraft => (
                   <div 
-                    key={aircraft.aircraft_registration}
+                    key={aircraft.registration}
                     className={`bg-gray-800/30 rounded p-3 cursor-pointer transition-colors ${
-                      selectedAircraft === aircraft.aircraft_registration ? 'bg-blue-900/50 border border-blue-600' : 'hover:bg-gray-800/50'
+                      selectedAircraft === aircraft.registration ? 'bg-blue-900/50 border border-blue-600' : 'hover:bg-gray-800/50'
                     }`}
-                    onClick={() => setSelectedAircraft(aircraft.aircraft_registration)}
+                    onClick={() => setSelectedAircraft(aircraft.registration)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="text-white font-mono">{aircraft.aircraft_registration}</div>
+                        <div className="text-white font-mono">{aircraft.registration}</div>
                         <div className="text-gray-400">{aircraft.aircraft_type}</div>
                         <div className="text-blue-300 text-sm">{aircraft.current_flight}</div>
                       </div>
@@ -239,7 +241,7 @@ export default function VirginAtlanticFleetMonitor() {
                 <div className="space-y-4">
                   <div className="bg-gray-800/50 rounded p-4">
                     <h3 className="text-white font-medium mb-3">
-                      {selectedAircraftData.aircraft_registration} - {selectedAircraftData.aircraft_type}
+                      {selectedAircraftData.registration} - {selectedAircraftData.aircraft_type}
                     </h3>
                     
                     <div className="grid grid-cols-2 gap-4 mb-4">
@@ -269,29 +271,29 @@ export default function VirginAtlanticFleetMonitor() {
                       <div>
                         <div className="text-blue-300 text-sm">Engine 1 Health</div>
                         <Progress 
-                          value={selectedAircraftData.engine_health.engine1} 
+                          value={selectedAircraftData.engine_health.engine1_health} 
                           className="mt-1"
                         />
                         <div className="text-sm mt-1 text-white">
-                          {selectedAircraftData.engine_health.engine1}%
+                          {selectedAircraftData.engine_health.engine1_health}%
                         </div>
                       </div>
                       <div>
                         <div className="text-blue-300 text-sm">Engine 2 Health</div>
                         <Progress 
-                          value={selectedAircraftData.engine_health.engine2} 
+                          value={selectedAircraftData.engine_health.engine2_health} 
                           className="mt-1"
                         />
                         <div className="text-sm mt-1 text-white">
-                          {selectedAircraftData.engine_health.engine2}%
+                          {selectedAircraftData.engine_health.engine2_health}%
                         </div>
                       </div>
                     </div>
 
-                    {selectedAircraftData.warnings.length > 0 && (
+                    {selectedAircraftData.real_time_data?.current_warnings && selectedAircraftData.real_time_data.current_warnings.length > 0 && (
                       <div className="mt-4">
                         <h4 className="text-yellow-400 text-sm font-medium mb-2">Active Warnings</h4>
-                        {selectedAircraftData.warnings.map((warning, index) => (
+                        {selectedAircraftData.real_time_data.current_warnings.map((warning, index) => (
                           <Alert key={index} className="border-yellow-600/50 bg-yellow-900/20 mb-2">
                             <AlertTriangle className="h-4 w-4 text-yellow-400" />
                             <AlertDescription className="text-yellow-300">
@@ -319,7 +321,7 @@ export default function VirginAtlanticFleetMonitor() {
                         <div className="space-y-2">
                           <div className="flex justify-between">
                             <span className="text-gray-400 text-sm">Days until next maintenance:</span>
-                            <span className="text-white">{selectedAircraftData.maintenance_due}</span>
+                            <span className="text-white">{selectedAircraftData.maintenance_due_days}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-400 text-sm">Last inspection:</span>
@@ -369,7 +371,7 @@ export default function VirginAtlanticFleetMonitor() {
                       <span className="text-blue-300 text-sm">Fleet Efficiency</span>
                     </div>
                     <div className="text-2xl font-bold text-green-400 mb-1">
-                      {Math.round(fleetData.reduce((sum, a) => sum + a.fuel_efficiency, 0) / fleetData.length)}%
+                      {fleetData.length > 0 ? Math.round(fleetData.reduce((sum, a) => sum + a.fuel_efficiency, 0) / fleetData.length) : 0}%
                     </div>
                     <div className="text-gray-400 text-xs">Average fuel efficiency</div>
                   </CardContent>
