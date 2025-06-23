@@ -1,0 +1,58 @@
+<svg width="2048" height="1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Ocean gradient -->
+    <radialGradient id="oceanGradient" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#1e40af;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Land gradient -->
+    <radialGradient id="landGradient" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#065f46;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#164e63;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1f2937;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Cloud pattern -->
+    <pattern id="clouds" x="0" y="0" width="200" height="100" patternUnits="userSpaceOnUse">
+      <circle cx="50" cy="25" r="15" fill="white" opacity="0.3"/>
+      <circle cx="150" cy="75" r="20" fill="white" opacity="0.2"/>
+      <circle cx="100" cy="50" r="12" fill="white" opacity="0.25"/>
+    </pattern>
+  </defs>
+  
+  <!-- Ocean base -->
+  <rect width="2048" height="1024" fill="url(#oceanGradient)"/>
+  
+  <!-- North America -->
+  <path d="M200,200 Q400,150 600,200 L650,400 Q500,450 300,400 Z" fill="url(#landGradient)"/>
+  
+  <!-- South America -->
+  <path d="M450,500 Q500,480 550,500 L580,750 Q530,780 480,750 Z" fill="url(#landGradient)"/>
+  
+  <!-- Europe -->
+  <path d="M800,250 Q900,230 1000,250 L1020,350 Q950,370 850,350 Z" fill="url(#landGradient)"/>
+  
+  <!-- Africa -->
+  <path d="M850,400 Q950,380 1050,400 L1080,700 Q980,720 880,700 Z" fill="url(#landGradient)"/>
+  
+  <!-- Asia -->
+  <path d="M1100,200 Q1400,150 1700,200 L1750,500 Q1500,550 1200,500 Z" fill="url(#landGradient)"/>
+  
+  <!-- Australia -->
+  <path d="M1400,650 Q1500,630 1600,650 L1620,750 Q1550,770 1450,750 Z" fill="url(#landGradient)"/>
+  
+  <!-- Antarctica -->
+  <rect x="0" y="900" width="2048" height="124" fill="url(#landGradient)" opacity="0.8"/>
+  
+  <!-- Greenland -->
+  <path d="M700,100 Q750,80 800,100 L820,200 Q770,220 720,200 Z" fill="url(#landGradient)"/>
+  
+  <!-- Cloud layer -->
+  <rect width="2048" height="1024" fill="url(#clouds)" opacity="0.3"/>
+  
+  <!-- Ocean depth variations -->
+  <circle cx="300" cy="600" r="150" fill="#0f172a" opacity="0.4"/>
+  <circle cx="1200" cy="700" r="200" fill="#0f172a" opacity="0.3"/>
+  <circle cx="1600" cy="300" r="180" fill="#0f172a" opacity="0.35"/>
+</svg>

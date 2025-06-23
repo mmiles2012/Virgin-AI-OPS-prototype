@@ -1,0 +1,59 @@
+<svg width="2048" height="1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Dark ocean gradient -->
+    <radialGradient id="darkOcean" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#0c1116;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- Dark land gradient -->
+    <radialGradient id="darkLand" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0a0a0a;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- City lights pattern -->
+    <pattern id="cityLights" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="15" r="1" fill="#fbbf24" opacity="0.8"/>
+      <circle cx="25" cy="30" r="0.5" fill="#60a5fa" opacity="0.6"/>
+      <circle cx="40" cy="10" r="0.8" fill="#fbbf24" opacity="0.7"/>
+      <circle cx="15" cy="40" r="0.6" fill="#f59e0b" opacity="0.5"/>
+    </pattern>
+  </defs>
+  
+  <!-- Dark ocean base -->
+  <rect width="2048" height="1024" fill="url(#darkOcean)"/>
+  
+  <!-- North America landmass -->
+  <path d="M200,200 Q400,150 600,200 L650,400 Q500,450 300,400 Z" fill="url(#darkLand)"/>
+  
+  <!-- South America -->
+  <path d="M450,500 Q500,480 550,500 L580,750 Q530,780 480,750 Z" fill="url(#darkLand)"/>
+  
+  <!-- Europe -->
+  <path d="M800,250 Q900,230 1000,250 L1020,350 Q950,370 850,350 Z" fill="url(#darkLand)"/>
+  
+  <!-- Africa -->
+  <path d="M850,400 Q950,380 1050,400 L1080,700 Q980,720 880,700 Z" fill="url(#darkLand)"/>
+  
+  <!-- Asia -->
+  <path d="M1100,200 Q1400,150 1700,200 L1750,500 Q1500,550 1200,500 Z" fill="url(#darkLand)"/>
+  
+  <!-- Australia -->
+  <path d="M1400,650 Q1500,630 1600,650 L1620,750 Q1550,770 1450,750 Z" fill="url(#darkLand)"/>
+  
+  <!-- City lights on continents -->
+  <path d="M200,200 Q400,150 600,200 L650,400 Q500,450 300,400 Z" fill="url(#cityLights)" opacity="0.6"/>
+  <path d="M800,250 Q900,230 1000,250 L1020,350 Q950,370 850,350 Z" fill="url(#cityLights)" opacity="0.8"/>
+  <path d="M1100,200 Q1400,150 1700,200 L1750,500 Q1500,550 1200,500 Z" fill="url(#cityLights)" opacity="0.7"/>
+  
+  <!-- Major city clusters -->
+  <circle cx="350" cy="300" r="8" fill="#fbbf24" opacity="0.9"/> <!-- New York -->
+  <circle cx="250" cy="350" r="6" fill="#fbbf24" opacity="0.8"/> <!-- Los Angeles -->
+  <circle cx="900" cy="300" r="5" fill="#60a5fa" opacity="0.8"/> <!-- London -->
+  <circle cx="950" cy="320" r="4" fill="#fbbf24" opacity="0.7"/> <!-- Paris -->
+  <circle cx="1200" cy="280" r="6" fill="#f59e0b" opacity="0.8"/> <!-- Moscow -->
+  <circle cx="1400" cy="350" r="8" fill="#fbbf24" opacity="0.9"/> <!-- Tokyo -->
+  <circle cx="1350" cy="450" r="5" fill="#60a5fa" opacity="0.7"/> <!-- Shanghai -->
+  <circle cx="1450" cy="700" r="4" fill="#fbbf24" opacity="0.6"/> <!-- Sydney -->
+</svg>

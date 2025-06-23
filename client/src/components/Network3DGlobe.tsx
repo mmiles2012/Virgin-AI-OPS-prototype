@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Text, Sphere, Line } from '@react-three/drei';
+import { OrbitControls, Text, Sphere, Line, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface Airport {
@@ -44,9 +44,14 @@ const latLngToVector3 = (lat: number, lng: number, radius: number = 5) => {
   );
 };
 
-// Earth Globe Component
+// Earth Globe Component with Satellite Imagery
 const EarthGlobe: React.FC = () => {
   const meshRef = useRef<THREE.Mesh>(null);
+  const [isNightMode, setIsNightMode] = useState(false);
+  
+  // Load Earth textures
+  const dayTexture = useTexture('/textures/earth-day.svg');
+  const nightTexture = useTexture('/textures/earth-night.svg');
   
   useFrame((state) => {
     if (meshRef.current) {
@@ -54,42 +59,51 @@ const EarthGlobe: React.FC = () => {
     }
   });
 
+  // Toggle between day and night every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsNightMode(prev => !prev);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <group>
-      {/* Main Earth sphere with visible material */}
-      <Sphere ref={meshRef} args={[5, 64, 64]}>
+      {/* Main Earth sphere with satellite imagery */}
+      <Sphere ref={meshRef} args={[5, 128, 64]}>
         <meshLambertMaterial
-          color="#1f2937"
-          emissive="#1e40af"
-          emissiveIntensity={0.1}
+          map={isNightMode ? nightTexture : dayTexture}
+          transparent={false}
+          side={THREE.FrontSide}
         />
       </Sphere>
       
-      {/* Ocean areas with blue tint */}
-      <Sphere args={[4.98, 32, 32]}>
+      {/* Atmospheric glow layer */}
+      <Sphere args={[5.15, 32, 32]}>
         <meshBasicMaterial
-          color="#1e40af"
+          color={isNightMode ? "#1a1a2e" : "#87ceeb"}
           transparent
-          opacity={0.3}
+          opacity={isNightMode ? 0.1 : 0.15}
+          side={THREE.BackSide}
         />
       </Sphere>
       
-      {/* Continent wireframe overlay */}
-      <Sphere args={[5.05, 24, 12]}>
+      {/* Cloud layer overlay */}
+      <Sphere args={[5.02, 64, 32]}>
         <meshBasicMaterial
-          color="#10b981"
-          wireframe
+          color="#ffffff"
           transparent
-          opacity={0.4}
+          opacity={isNightMode ? 0.05 : 0.1}
+          wireframe={false}
         />
       </Sphere>
       
-      {/* Outer atmosphere glow */}
-      <Sphere args={[5.3, 16, 16]}>
+      {/* Outer space atmosphere */}
+      <Sphere args={[5.4, 16, 16]}>
         <meshBasicMaterial
-          color="#3b82f6"
+          color={isNightMode ? "#0a0a1a" : "#4299e1"}
           transparent
-          opacity={0.05}
+          opacity={0.03}
           side={THREE.BackSide}
         />
       </Sphere>
