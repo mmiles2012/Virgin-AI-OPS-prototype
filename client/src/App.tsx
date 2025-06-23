@@ -29,7 +29,7 @@ import FinancialAnalyticsDashboard from "./components/FinancialAnalyticsDashboar
 import FleetSubstitutionCalculator from "./components/FleetSubstitutionCalculator";
 import SkyGateAirportDashboard from "./components/SkyGateAirportDashboard";
 import EmergencyCommDashboard from "./components/EmergencyCommDashboard";
-import OnTimePerformanceDashboard from "./components/OnTimePerformanceDashboard";
+import NetworkOTPDashboard from "./components/NetworkOTPDashboard";
 import VirginAtlanticFleetMonitor from "./components/VirginAtlanticFleetMonitor";
 import IntelligenceDashboard from "./components/IntelligenceDashboard";
 
