@@ -32,6 +32,7 @@ import EmergencyCommDashboard from "./components/EmergencyCommDashboard";
 import NetworkOTPDashboard from "./components/NetworkOTPDashboard";
 import VirginAtlanticFleetMonitor from "./components/VirginAtlanticFleetMonitor";
 import IntelligenceDashboard from "./components/IntelligenceDashboard";
+import Network3DGlobe from "./components/Network3DGlobe";
 
 // Flight control mappings
 enum FlightControls {
@@ -69,7 +70,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -247,6 +248,17 @@ function App() {
                     >
                       Fleet Intelligence
                     </button>
+                    
+                    <button
+                      onClick={() => setViewMode('3d-globe')}
+                      className={`w-full px-4 py-2 rounded transition-colors text-sm mt-1 ${
+                        viewMode === '3d-globe' 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      3D Globe Network
+                    </button>
                   </div>
                   
                   {/* API Centre Section */}
@@ -401,6 +413,12 @@ function App() {
             {viewMode === 'intelligence-dashboard' && (
               <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
                 <IntelligenceDashboard />
+              </div>
+            )}
+            
+            {viewMode === '3d-globe' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+                <Network3DGlobe />
               </div>
             )}
             
