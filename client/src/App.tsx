@@ -443,7 +443,7 @@ function App() {
             
             {viewMode === 'otp-dashboard' && (
               <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
-                <OnTimePerformanceDashboard />
+                <NetworkOTPDashboard />
               </div>
             )}
             
