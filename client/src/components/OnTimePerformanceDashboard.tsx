@@ -91,44 +91,58 @@ export default function OnTimePerformanceDashboard() {
     // Group flights by airport hubs
     const hubFlights = new Map<string, any[]>();
     
+    // Filter flights to only include authentic Virgin Atlantic flights from primary hubs
     virginAtlanticFlights.forEach(flight => {
+      // Ensure this is an authentic Virgin Atlantic flight
+      const flightNumber = flight.flight_number || flight.callsign || '';
+      if (!flightNumber.startsWith('VS') && !flightNumber.startsWith('VIR')) {
+        return; // Skip non-Virgin Atlantic flights
+      }
+      
       const origin = flight.origin || flight.departure_airport || 'LHR';
       const destination = flight.destination || flight.arrival_airport || 'JFK';
       
-      // Add to origin hub
-      if (!hubFlights.has(origin)) {
-        hubFlights.set(origin, []);
-      }
-      hubFlights.get(origin)?.push({ ...flight, hub: origin, direction: 'departure' });
+      // Only process flights that operate from or to primary hubs
+      const isFromPrimaryHub = primaryHubs.includes(origin);
+      const isToPrimaryHub = primaryHubs.includes(destination);
       
-      // Add to destination hub
-      if (!hubFlights.has(destination)) {
-        hubFlights.set(destination, []);
+      if (!isFromPrimaryHub && !isToPrimaryHub) {
+        return; // Skip flights that don't involve primary hubs
       }
-      hubFlights.get(destination)?.push({ ...flight, hub: destination, direction: 'arrival' });
+      
+      // Add to origin hub (only if it's a primary hub)
+      if (isFromPrimaryHub) {
+        if (!hubFlights.has(origin)) {
+          hubFlights.set(origin, []);
+        }
+        hubFlights.get(origin)?.push({ ...flight, hub: origin, direction: 'departure' });
+      }
+      
+      // Add to destination hub (only if it's a primary hub)
+      if (isToPrimaryHub) {
+        if (!hubFlights.has(destination)) {
+          hubFlights.set(destination, []);
+        }
+        hubFlights.get(destination)?.push({ ...flight, hub: destination, direction: 'arrival' });
+      }
     });
 
-    // Authentic Virgin Atlantic airport hubs from official schedule
+    // Virgin Atlantic primary hub airports only
+    const primaryHubs = ['LHR', 'JFK', 'LAX', 'MCO', 'MAN'];
+    
     const hubInfo: { [key: string]: { icao: string, iata: string, name: string, city: string } } = {
       'LHR': { icao: 'EGLL', iata: 'LHR', name: 'London Heathrow', city: 'London' },
       'MAN': { icao: 'EGCC', iata: 'MAN', name: 'Manchester', city: 'Manchester' },
       'JFK': { icao: 'KJFK', iata: 'JFK', name: 'John F. Kennedy', city: 'New York' },
       'LAX': { icao: 'KLAX', iata: 'LAX', name: 'Los Angeles International', city: 'Los Angeles' },
-      'SFO': { icao: 'KSFO', iata: 'SFO', name: 'San Francisco International', city: 'San Francisco' },
-      'BOS': { icao: 'KBOS', iata: 'BOS', name: 'Boston Logan', city: 'Boston' },
-      'ANU': { icao: 'TAPA', iata: 'ANU', name: 'V.C. Bird International', city: 'Antigua' },
-      'MBJ': { icao: 'MKJS', iata: 'MBJ', name: 'Sangster International', city: 'Montego Bay' },
-      'BGI': { icao: 'TBPB', iata: 'BGI', name: 'Grantley Adams International', city: 'Bridgetown' },
-      'UVF': { icao: 'TLPL', iata: 'UVF', name: 'Hewanorra International', city: 'St. Lucia' },
-      'TLS': { icao: 'LFBO', iata: 'TLS', name: 'Toulouse-Blagnac', city: 'Toulouse' },
-      'CDG': { icao: 'LFPG', iata: 'CDG', name: 'Charles de Gaulle', city: 'Paris' }
+      'MCO': { icao: 'KMCO', iata: 'MCO', name: 'Orlando International', city: 'Orlando' }
     };
 
     const performanceData: HubPerformance[] = [];
 
     Array.from(hubFlights.entries()).forEach(([hubCode, flights]) => {
       const hub = hubInfo[hubCode as keyof typeof hubInfo];
-      if (!hub || flights.length === 0) return;
+      if (!hub || flights.length === 0 || !primaryHubs.includes(hubCode)) return;
 
       const totalFlights = flights.length;
       let onTimeFlights = 0;
