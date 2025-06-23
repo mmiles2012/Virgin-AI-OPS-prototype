@@ -465,10 +465,15 @@ export default function SatelliteWorldMap() {
                       : 'bg-red-600 border-white hover:bg-red-500 hover:scale-110'
                   }`}
                   style={{
-                    transform: `rotate(${headingRotation}deg) ${selectedFlight?.callsign === flight.callsign ? 'scale(1.25)' : ''}`
+                    transform: `${selectedFlight?.callsign === flight.callsign ? 'scale(1.25)' : 'scale(1)'}`
                   }}
                 >
-                  <Plane className="w-3 h-3 text-white" />
+                  <Plane 
+                    className="w-3 h-3 text-white" 
+                    style={{ 
+                      transform: `rotate(${headingRotation}deg)` 
+                    }} 
+                  />
                 </div>
                 
                 {/* Enhanced flight info tooltip */}

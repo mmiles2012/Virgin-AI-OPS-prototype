@@ -546,7 +546,6 @@ export default function SimpleSatelliteMap() {
               style={{
                 left: pixel.x,
                 top: pixel.y,
-                transform: `translate(-50%, -50%) rotate(${flight.heading}deg)`
               }}
               onClick={() => selectFlight(flight)}
               title={`${flight.callsign} - ${flight.aircraft} - ${flight.altitude}ft - ${flight.velocity}kts`}
@@ -558,6 +557,9 @@ export default function SimpleSatelliteMap() {
                       ? 'text-yellow-400' 
                       : 'text-red-500'
                   } drop-shadow-lg`}
+                  style={{
+                    transform: `rotate(${flight.heading || 0}deg)`
+                  }}
                 />
                 <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-black/75 text-white text-xs px-1 rounded whitespace-nowrap">
                   {flight.callsign}
