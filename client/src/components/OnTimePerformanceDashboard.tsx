@@ -226,93 +226,27 @@ export default function OnTimePerformanceDashboard() {
     });
 
     return performanceData.sort((a, b) => b.totalFlights - a.totalFlights);
-
-    return hubs.map(hub => {
-      const totalFlights = Math.floor(Math.random() * 20) + 10;
-      const onTimeFlights = Math.floor(totalFlights * (0.7 + Math.random() * 0.25));
-      const cancelledFlights = Math.floor(Math.random() * 3);
-      const delayedFlights = totalFlights - onTimeFlights - cancelledFlights;
-      const onTimeRate = (onTimeFlights / totalFlights) * 100;
-      const avgDelayMinutes = Math.floor(Math.random() * 45) + 5;
-
-      // Generate recent flights
-      const recentFlights: FlightPerformance[] = [];
-      const flightPrefixes = ['VS', 'VIR'];
-      const aircraft = ['Boeing 787-9', 'Airbus A350-1000', 'Airbus A330-900', 'Airbus A330-300'];
-      
-      for (let i = 0; i < Math.min(totalFlights, 8); i++) {
-        const flightNumber = `${flightPrefixes[Math.floor(Math.random() * flightPrefixes.length)]}${Math.floor(Math.random() * 900) + 100}`;
-        const delayMinutes = Math.random() < 0.7 ? 0 : Math.floor(Math.random() * 120) + 5;
-        const scheduledTime = new Date(Date.now() - Math.random() * 6 * 60 * 60 * 1000).toLocaleTimeString('en-GB', { 
-          hour: '2-digit', 
-          minute: '2-digit' 
-        });
-        const actualTime = delayMinutes > 0 ? 
-          new Date(Date.parse(`1970-01-01T${scheduledTime}:00`) + delayMinutes * 60 * 1000).toLocaleTimeString('en-GB', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-          }) : scheduledTime;
-
-        let status: 'on-time' | 'delayed' | 'cancelled' = 'on-time';
-        if (Math.random() < 0.05) status = 'cancelled';
-        else if (delayMinutes > 15) status = 'delayed';
-
-        // Generate delay code and reason for delayed flights
-        let delayCode = '';
-        let delayReason = '';
-        if (status === 'delayed') {
-          const delayCodeKeys = Object.keys(delayCodes);
-          delayCode = delayCodeKeys[Math.floor(Math.random() * delayCodeKeys.length)];
-          delayReason = delayCodes[delayCode as keyof typeof delayCodes];
-        }
-
-        const routes = [
-          'LHR-JFK', 'LHR-LAX', 'LHR-BOS', 'LHR-SFO', 'LGW-JFK', 'LGW-BOM',
-          'JFK-LHR', 'LAX-LHR', 'BOS-LHR', 'SFO-LHR', 'BOM-LGW', 'BLR-LHR'
-        ];
-
-        recentFlights.push({
-          flightNumber,
-          route: routes[Math.floor(Math.random() * routes.length)],
-          scheduledTime,
-          actualTime,
-          delayMinutes,
-          status,
-          aircraft: aircraft[Math.floor(Math.random() * aircraft.length)],
-          gate: `${String.fromCharCode(65 + Math.floor(Math.random() * 5))}${Math.floor(Math.random() * 20) + 1}`,
-          delayCode,
-          delayReason
-        });
-      }
-
-      const trend = onTimeRate > 85 ? 'improving' : onTimeRate < 70 ? 'declining' : 'stable';
-
-      return {
-        ...hub,
-        onTimeRate,
-        avgDelayMinutes,
-        totalFlights,
-        onTimeFlights,
-        delayedFlights,
-        cancelledFlights,
-        trend,
-        recentFlights,
-        lastUpdated: new Date().toLocaleTimeString('en-GB')
-      };
-    });
   };
 
   useEffect(() => {
-    const updateData = () => {
-      setHubData(generatePerformanceData());
+    const initializeData = async () => {
+      setLoading(true);
+      await fetchVirginAtlanticFlights();
       setLoading(false);
     };
 
-    updateData();
-    const interval = setInterval(updateData, 30000); // Update every 30 seconds
+    initializeData();
+    const interval = setInterval(fetchVirginAtlanticFlights, 30000); // Update every 30 seconds
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (virginAtlanticFlights.length > 0) {
+      const performanceData = generatePerformanceData();
+      setHubData(performanceData);
+    }
+  }, [virginAtlanticFlights]);
 
   useEffect(() => {
     if (hubData.length > 0) {
@@ -363,7 +297,11 @@ export default function OnTimePerformanceDashboard() {
             <Plane className="w-6 h-6 text-white" />
             <h2 className="text-xl font-bold text-white">Virgin Atlantic Network OTP</h2>
           </div>
-          <div className="flex items-center gap-2 text-white/80">
+          <div className="flex items-center gap-3 text-white/80">
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-xs">AUTHENTIC DATA</span>
+            </div>
             <Clock className="w-4 h-4" />
             <span className="text-sm">Updated: {currentHub.lastUpdated}</span>
           </div>

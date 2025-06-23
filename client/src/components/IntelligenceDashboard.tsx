@@ -201,9 +201,21 @@ export default function IntelligenceDashboard() {
     <div className="space-y-6">
       <Card className="aviation-panel">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Brain className="h-5 w-5" />
-            Aviation Intelligence Dashboard
+          <CardTitle className="text-white flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Brain className="h-5 w-5" />
+              Aviation Intelligence Dashboard
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                <span className="text-blue-300">ML ACTIVE</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-green-300">LIVE NEWS</span>
+              </div>
+            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
