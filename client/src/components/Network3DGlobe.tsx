@@ -467,19 +467,20 @@ const Network3DGlobe: React.FC = () => {
   }
 
   return (
-    <div className="w-full h-full relative bg-gradient-to-b from-black to-blue-900">
+    <div className="w-full h-full relative">
       <Canvas
-        camera={{ position: [0, 0, 15], fov: 60 }}
-        style={{ background: 'radial-gradient(circle, #0a0a0a 0%, #1a1a2e 100%)' }}
+        camera={{ position: [0, 0, 12], fov: 75 }}
+        gl={{ antialias: true, alpha: false }}
+        style={{ background: '#000011' }}
       >
-        <Suspense fallback={null}>
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[10, 10, 5]} intensity={1.2} castShadow />
-          <pointLight position={[0, 0, 10]} intensity={0.8} />
-          <pointLight position={[-10, -10, -10]} intensity={0.5} />
+        <color attach="background" args={['#000011']} />
+        
+        <ambientLight intensity={0.4} />
+        <directionalLight position={[10, 10, 5]} intensity={1.0} />
+        <pointLight position={[0, 0, 8]} intensity={0.6} />
           
-          {/* Earth Globe */}
-          <EarthGlobe />
+        {/* Earth Globe */}
+        <EarthGlobe />
           
           {/* Airport Nodes */}
           {airports.map(airport => (

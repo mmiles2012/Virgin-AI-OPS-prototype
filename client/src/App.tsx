@@ -32,7 +32,7 @@ import EmergencyCommDashboard from "./components/EmergencyCommDashboard";
 import NetworkOTPDashboard from "./components/NetworkOTPDashboard";
 import VirginAtlanticFleetMonitor from "./components/VirginAtlanticFleetMonitor";
 import IntelligenceDashboard from "./components/IntelligenceDashboard";
-import Network3DGlobe from "./components/Network3DGlobe";
+import Simple3DGlobe from "./components/Simple3DGlobe";
 
 // Flight control mappings
 enum FlightControls {
@@ -418,7 +418,7 @@ function App() {
             
             {viewMode === '3d-globe' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
-                <Network3DGlobe />
+                <Simple3DGlobe />
               </div>
             )}
             
