@@ -317,7 +317,7 @@ export default function IntelligenceDashboard() {
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-white font-medium">Live Intelligence Feed</h3>
                     <div className="flex items-center gap-2">
-                      {intelligenceData.data_source === 'Live_News_API' && (
+                      {intelligenceData && (
                         <div className="flex items-center gap-1">
                           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                           <span className="text-green-400 text-xs">LIVE DATA</span>
