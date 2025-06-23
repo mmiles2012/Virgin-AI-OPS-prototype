@@ -124,6 +124,28 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('otp-dashboard')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'otp-dashboard' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Network OTP
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('skygate-airports')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'skygate-airports' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    SkyGate Airports
+                  </button>
+                  
+                  <button
                     onClick={() => setViewMode('geopolitical')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'geopolitical' 
@@ -146,6 +168,17 @@ function App() {
                   </button>
                   
                   <button
+                    onClick={() => setViewMode('intelligence-dashboard')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'intelligence-dashboard' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Intelligence Centre
+                  </button>
+                  
+                  <button
                     onClick={() => setViewMode('news-intelligence')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'news-intelligence' 
@@ -165,6 +198,17 @@ function App() {
                     }`}
                   >
                     Delay Prediction
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('emergency-comm')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'emergency-comm' 
+                        ? 'bg-red-600 text-white' 
+                        : 'bg-red-800 text-red-300 hover:bg-red-700'
+                    }`}
+                  >
+                    Communications
                   </button>
                   
                   {/* Digital Twins Section */}
@@ -192,117 +236,18 @@ function App() {
                     >
                       Airbus Fleet
                     </button>
+                    
+                    <button
+                      onClick={() => setViewMode('fleet-monitor')}
+                      className={`w-full px-4 py-2 rounded transition-colors text-sm mt-1 ${
+                        viewMode === 'fleet-monitor' 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Fleet Intelligence
+                    </button>
                   </div>
-                  
-                  <button
-                    onClick={() => setViewMode('diversion')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'diversion' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    AI Diversion
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('decisions')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'decisions' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Decision Engine
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('diversion-support')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'diversion-support' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Diversion Support
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('financial-analytics')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'financial-analytics' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Financial Analytics
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('fleet-substitution')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'fleet-substitution' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Fleet Substitution
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('fleet-monitor')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'fleet-monitor' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Fleet Intelligence
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('skygate-airports')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'skygate-airports' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    SkyGate Airports
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('otp-dashboard')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'otp-dashboard' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Network OTP
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('emergency-comm')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'emergency-comm' 
-                        ? 'bg-red-600 text-white' 
-                        : 'bg-red-800 text-red-300 hover:bg-red-700'
-                    }`}
-                  >
-                    Communications
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('intelligence-dashboard')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'intelligence-dashboard' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Intelligence Center
-                  </button>
                   
                   {/* API Centre Section */}
                   <div className="border-t border-gray-600 pt-3 mt-3">
