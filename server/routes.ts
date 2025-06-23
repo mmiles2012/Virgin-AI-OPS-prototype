@@ -47,6 +47,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Initialize Virgin Atlantic Fleet Health Monitoring Service
   const virginAtlanticFleet = new VirginAtlanticFleetService();
+  
+  // Initialize Aircraft Tracking Service
+  const aircraftTracker = new AircraftTrackingService();
 
   // Mapbox configuration endpoint
   app.get('/api/config/mapbox', (req, res) => {
@@ -4411,6 +4414,143 @@ print(json.dumps(weather))
         success: false,
         error: 'Health summary unavailable',
         message: error.message
+      });
+    }
+  });
+
+  // Aircraft Tracking API Endpoints
+  app.get('/api/aircraft/positions', (req, res) => {
+    try {
+      const positions = aircraftTracker.getAllAircraftPositions();
+      res.json({
+        success: true,
+        aircraft: positions,
+        count: positions.length,
+        data_source: 'virgin_atlantic_fleet_tracking',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Aircraft position data unavailable',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/aircraft/position/:flightNumber', (req, res) => {
+    try {
+      const { flightNumber } = req.params;
+      const position = aircraftTracker.getAircraftPosition(flightNumber.toUpperCase());
+      
+      if (position) {
+        res.json({
+          success: true,
+          aircraft: position,
+          data_source: 'virgin_atlantic_fleet_tracking',
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: `No position data found for flight ${flightNumber.toUpperCase()}`,
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve aircraft position',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/aircraft/route/:route', (req, res) => {
+    try {
+      const { route } = req.params;
+      const aircraft = aircraftTracker.getAircraftByRoute(route.toUpperCase());
+      
+      res.json({
+        success: true,
+        aircraft,
+        count: aircraft.length,
+        route: route.toUpperCase(),
+        data_source: 'virgin_atlantic_fleet_tracking',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve aircraft by route',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/aircraft/airport/:airport', (req, res) => {
+    try {
+      const { airport } = req.params;
+      const aircraft = aircraftTracker.getAircraftByAirport(airport.toUpperCase());
+      
+      res.json({
+        success: true,
+        aircraft,
+        count: aircraft.length,
+        airport: airport.toUpperCase(),
+        data_source: 'virgin_atlantic_fleet_tracking',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve aircraft by airport',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/aircraft/warnings', (req, res) => {
+    try {
+      const aircraft = aircraftTracker.getAircraftWithWarnings();
+      
+      res.json({
+        success: true,
+        aircraft,
+        count: aircraft.length,
+        data_source: 'virgin_atlantic_fleet_tracking',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve aircraft warnings',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/aircraft/network-coverage', (req, res) => {
+    try {
+      const coverage = aircraftTracker.getNetworkCoverage();
+      
+      res.json({
+        success: true,
+        network_coverage: coverage,
+        data_source: 'virgin_atlantic_fleet_tracking',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve network coverage',
+        error: error.message,
+        timestamp: new Date().toISOString()
       });
     }
   });
