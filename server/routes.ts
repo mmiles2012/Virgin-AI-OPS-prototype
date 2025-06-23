@@ -4555,6 +4555,184 @@ print(json.dumps(weather))
     }
   });
 
+  // ML Delay Prediction API Endpoints for Interactive Brokers/Ops Dashboard Integration
+  app.post('/api/ml/predict-delay', async (req, res) => {
+    try {
+      const flightData = req.body;
+      
+      // Execute Python ML model for delay prediction
+      const { spawn } = require('child_process');
+      const python = spawn('python', ['-c', `
+import sys
+import json
+sys.path.append('.')
+from delay_predictor import AINODelayPredictor
+
+# Initialize predictor and load models
+predictor = AINODelayPredictor()
+if predictor.load_models('aino_delay_models.pkl'):
+    # Parse input data
+    flight_data = json.loads('${JSON.stringify(flightData)}')
+    
+    # Generate prediction
+    result = predictor.predict_flight_delay(flight_data)
+    print(json.dumps(result))
+else:
+    print(json.dumps({"error": "Models not trained yet"}))
+`]);
+
+      let result = '';
+      python.stdout.on('data', (data) => {
+        result += data.toString();
+      });
+
+      python.on('close', (code) => {
+        try {
+          const prediction = JSON.parse(result.trim());
+          res.json({
+            success: true,
+            prediction,
+            timestamp: new Date().toISOString(),
+            model_version: '1.0',
+            platform: 'AINO_ML_Engine'
+          });
+        } catch (e) {
+          res.status(500).json({
+            success: false,
+            message: 'ML prediction failed',
+            error: e.message
+          });
+        }
+      });
+
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'ML service unavailable',
+        error: error.message
+      });
+    }
+  });
+
+  app.get('/api/ml/feature-importance', async (req, res) => {
+    try {
+      const { spawn } = require('child_process');
+      const python = spawn('python', ['-c', `
+import sys
+import json
+sys.path.append('.')
+from delay_predictor import AINODelayPredictor
+
+predictor = AINODelayPredictor()
+if predictor.load_models('aino_delay_models.pkl'):
+    importance = predictor.get_feature_importance()
+    print(json.dumps(importance))
+else:
+    print(json.dumps([]))
+`]);
+
+      let result = '';
+      python.stdout.on('data', (data) => {
+        result += data.toString();
+      });
+
+      python.on('close', (code) => {
+        try {
+          const features = JSON.parse(result.trim());
+          res.json({
+            success: true,
+            feature_importance: features,
+            timestamp: new Date().toISOString()
+          });
+        } catch (e) {
+          res.json({
+            success: false,
+            feature_importance: [],
+            message: 'Feature importance unavailable'
+          });
+        }
+      });
+
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'ML feature analysis unavailable',
+        error: error.message
+      });
+    }
+  });
+
+  app.post('/api/ml/batch-predict', async (req, res) => {
+    try {
+      const { flights } = req.body;
+      
+      if (!flights || !Array.isArray(flights)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid input: flights array required'
+        });
+      }
+
+      const predictions = [];
+      
+      for (const flight of flights) {
+        // Execute prediction for each flight
+        const { spawn } = require('child_process');
+        const python = spawn('python', ['-c', `
+import sys
+import json
+sys.path.append('.')
+from delay_predictor import AINODelayPredictor
+
+predictor = AINODelayPredictor()
+if predictor.load_models('aino_delay_models.pkl'):
+    flight_data = json.loads('${JSON.stringify(flight)}')
+    result = predictor.predict_flight_delay(flight_data)
+    print(json.dumps(result))
+else:
+    print(json.dumps({"error": "Models not available"}))
+`]);
+
+        let result = '';
+        python.stdout.on('data', (data) => {
+          result += data.toString();
+        });
+
+        await new Promise((resolve) => {
+          python.on('close', (code) => {
+            try {
+              const prediction = JSON.parse(result.trim());
+              predictions.push({
+                flight_number: flight.flight_number || 'Unknown',
+                prediction
+              });
+            } catch (e) {
+              predictions.push({
+                flight_number: flight.flight_number || 'Unknown',
+                prediction: { error: 'Prediction failed' }
+              });
+            }
+            resolve(null);
+          });
+        });
+      }
+
+      res.json({
+        success: true,
+        predictions,
+        count: predictions.length,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: 'Batch prediction failed',
+        error: error.message
+      });
+    }
+  });
+
   return httpServer;
 }
 
