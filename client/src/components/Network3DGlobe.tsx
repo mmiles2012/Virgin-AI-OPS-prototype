@@ -55,14 +55,45 @@ const EarthGlobe: React.FC = () => {
   });
 
   return (
-    <Sphere ref={meshRef} args={[5, 64, 64]}>
-      <meshStandardMaterial
-        color="#1a365d"
-        transparent
-        opacity={0.8}
-        wireframe={false}
-      />
-    </Sphere>
+    <group>
+      {/* Main Earth sphere with visible material */}
+      <Sphere ref={meshRef} args={[5, 64, 64]}>
+        <meshLambertMaterial
+          color="#1f2937"
+          emissive="#1e40af"
+          emissiveIntensity={0.1}
+        />
+      </Sphere>
+      
+      {/* Ocean areas with blue tint */}
+      <Sphere args={[4.98, 32, 32]}>
+        <meshBasicMaterial
+          color="#1e40af"
+          transparent
+          opacity={0.3}
+        />
+      </Sphere>
+      
+      {/* Continent wireframe overlay */}
+      <Sphere args={[5.05, 24, 12]}>
+        <meshBasicMaterial
+          color="#10b981"
+          wireframe
+          transparent
+          opacity={0.4}
+        />
+      </Sphere>
+      
+      {/* Outer atmosphere glow */}
+      <Sphere args={[5.3, 16, 16]}>
+        <meshBasicMaterial
+          color="#3b82f6"
+          transparent
+          opacity={0.05}
+          side={THREE.BackSide}
+        />
+      </Sphere>
+    </group>
   );
 };
 
@@ -89,8 +120,9 @@ const AirportNode: React.FC<{
 
   return (
     <group position={position}>
+      {/* Main airport node */}
       <Sphere
-        args={[getNodeSize(), 16, 16]}
+        args={[getNodeSize() * 2, 16, 16]}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
         onClick={() => onClick(airport)}
@@ -98,31 +130,51 @@ const AirportNode: React.FC<{
         <meshStandardMaterial
           color={getNodeColor()}
           emissive={getNodeColor()}
-          emissiveIntensity={hovered ? 0.3 : 0.1}
-          transparent
-          opacity={0.9}
+          emissiveIntensity={0.3}
         />
       </Sphere>
       
+      {/* Pulsing glow effect */}
+      <Sphere args={[getNodeSize() * 3, 12, 12]}>
+        <meshBasicMaterial
+          color={getNodeColor()}
+          transparent
+          opacity={hovered ? 0.4 : 0.2}
+        />
+      </Sphere>
+      
+      {/* Airport code label - always visible */}
+      <Text
+        position={[0, getNodeSize() * 4, 0]}
+        fontSize={0.08}
+        color="white"
+        anchorX="center"
+        anchorY="middle"
+        outlineWidth={0.01}
+        outlineColor="black"
+      >
+        {airport.icao}
+      </Text>
+      
       {hovered && (
         <Text
-          position={[0, 0.3, 0]}
-          fontSize={0.1}
-          color="white"
+          position={[0, getNodeSize() * 6, 0]}
+          fontSize={0.06}
+          color="#60a5fa"
           anchorX="center"
           anchorY="middle"
         >
-          {airport.icao}
+          {airport.city}
         </Text>
       )}
       
       {/* Performance indicator ring */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[getNodeSize() * 1.2, getNodeSize() * 1.4, 16]} />
+        <ringGeometry args={[getNodeSize() * 3.5, getNodeSize() * 4, 16]} />
         <meshBasicMaterial
           color={getNodeColor()}
           transparent
-          opacity={0.4}
+          opacity={0.6}
         />
       </mesh>
     </group>
@@ -172,24 +224,51 @@ const ActiveFlight: React.FC<{ flight: FlightData }> = ({ flight }) => {
   
   if (!flight.latitude || !flight.longitude) return null;
   
-  const position = latLngToVector3(flight.latitude, flight.longitude, 5.3);
+  const position = latLngToVector3(flight.latitude, flight.longitude, 5.4);
   
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += 0.1;
+      // Pulsing effect
+      const scale = 1 + Math.sin(state.clock.elapsedTime * 4) * 0.2;
+      meshRef.current.scale.setScalar(scale);
     }
   });
 
   return (
     <group position={position}>
+      {/* Main aircraft indicator */}
       <mesh ref={meshRef}>
-        <coneGeometry args={[0.02, 0.08, 4]} />
+        <coneGeometry args={[0.05, 0.15, 6]} />
         <meshStandardMaterial
-          color="#60a5fa"
-          emissive="#3b82f6"
-          emissiveIntensity={0.2}
+          color="#fbbf24"
+          emissive="#f59e0b"
+          emissiveIntensity={0.5}
         />
       </mesh>
+      
+      {/* Flight trail effect */}
+      <mesh>
+        <sphereGeometry args={[0.08, 8, 8]} />
+        <meshStandardMaterial
+          color="#60a5fa"
+          transparent
+          opacity={0.3}
+        />
+      </mesh>
+      
+      {/* Flight number label for major flights */}
+      {(flight.flight_number.includes('VS10') || flight.flight_number.includes('VS30')) && (
+        <Text
+          position={[0, 0.25, 0]}
+          fontSize={0.04}
+          color="#fbbf24"
+          anchorX="center"
+          anchorY="middle"
+        >
+          {flight.flight_number}
+        </Text>
+      )}
     </group>
   );
 };
@@ -392,9 +471,10 @@ const Network3DGlobe: React.FC = () => {
         style={{ background: 'radial-gradient(circle, #0a0a0a 0%, #1a1a2e 100%)' }}
       >
         <Suspense fallback={null}>
-          <ambientLight intensity={0.3} />
-          <pointLight position={[10, 10, 10]} intensity={0.8} />
-          <pointLight position={[-10, -10, -10]} intensity={0.4} />
+          <ambientLight intensity={0.6} />
+          <directionalLight position={[10, 10, 5]} intensity={1.2} castShadow />
+          <pointLight position={[0, 0, 10]} intensity={0.8} />
+          <pointLight position={[-10, -10, -10]} intensity={0.5} />
           
           {/* Earth Globe */}
           <EarthGlobe />
