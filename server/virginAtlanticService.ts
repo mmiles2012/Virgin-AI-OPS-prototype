@@ -178,22 +178,46 @@ class VirginAtlanticService {
     const flights = this.getAuthenticFlights();
     const now = new Date();
     
-    // Airport coordinates for Virgin Atlantic routes
+    // Complete Virgin Atlantic network coordinates
     const airportCoordinates: { [key: string]: { lat: number, lng: number } } = {
-      'LHR': { lat: 51.4700, lng: -0.4543 },
-      'JFK': { lat: 40.6413, lng: -73.7781 },
-      'LAX': { lat: 33.9425, lng: -118.4081 },
-      'SYD': { lat: -33.9399, lng: 151.1753 },
-      'MEL': { lat: -37.6690, lng: 144.8410 },
-      'PER': { lat: -31.9403, lng: 115.9669 },
-      'BOS': { lat: 42.3656, lng: -71.0096 },
-      'ATL': { lat: 33.6407, lng: -84.4277 },
-      'MIA': { lat: 25.7959, lng: -80.2870 },
-      'SFO': { lat: 37.6213, lng: -122.3790 },
-      'SEA': { lat: 47.4502, lng: -122.3088 },
-      'LAS': { lat: 36.0840, lng: -115.1537 },
-      'MCO': { lat: 28.4312, lng: -81.3081 },
-      'DFW': { lat: 32.8975, lng: -97.0403 }
+      // Primary hubs
+      'LHR': { lat: 51.4700, lng: -0.4543 },  // London Heathrow
+      'MAN': { lat: 53.3537, lng: -2.2750 },  // Manchester
+      
+      // North America
+      'JFK': { lat: 40.6413, lng: -73.7781 }, // New York JFK
+      'LAX': { lat: 33.9425, lng: -118.4081 }, // Los Angeles
+      'MCO': { lat: 28.4312, lng: -81.3081 }, // Orlando
+      'SFO': { lat: 37.6213, lng: -122.3790 }, // San Francisco
+      'BOS': { lat: 42.3656, lng: -71.0096 }, // Boston
+      'SEA': { lat: 47.4502, lng: -122.3088 }, // Seattle
+      'ATL': { lat: 33.6407, lng: -84.4277 }, // Atlanta
+      'MIA': { lat: 25.7959, lng: -80.2870 }, // Miami
+      'LAS': { lat: 36.0840, lng: -115.1537 }, // Las Vegas
+      'IAD': { lat: 38.9445, lng: -77.4558 }, // Washington Dulles
+      'TPA': { lat: 27.9755, lng: -82.5332 }, // Tampa
+      'YYZ': { lat: 43.6777, lng: -79.6248 }, // Toronto
+      
+      // Caribbean
+      'ANU': { lat: 17.1367, lng: -61.7928 }, // Antigua
+      'MBJ': { lat: 18.5037, lng: -77.9134 }, // Montego Bay
+      'BGI': { lat: 13.0746, lng: -59.4925 }, // Barbados
+      'GND': { lat: 12.0042, lng: -61.7862 }, // Grenada
+      
+      // Europe
+      'EDI': { lat: 55.9500, lng: -3.3725 }, // Edinburgh
+      
+      // Asia
+      'BOM': { lat: 19.0896, lng: 72.8656 },  // Mumbai
+      'BLR': { lat: 13.1986, lng: 77.7066 },  // Bangalore
+      'DEL': { lat: 28.5562, lng: 77.1000 },  // Delhi
+      'ICN': { lat: 37.4602, lng: 126.4407 }, // Seoul Incheon
+      
+      // Africa
+      'JNB': { lat: -26.1392, lng: 28.2460 }, // Johannesburg
+      
+      // Middle East
+      'RUH': { lat: 24.9576, lng: 46.6988 }   // Riyadh
     };
     
     return flights.map(flight => {
@@ -218,32 +242,107 @@ class VirginAtlanticService {
       const depCoords = airportCoordinates[depAirport] || { lat: 51.4700, lng: -0.4543 }; // Default to LHR
       const arrCoords = airportCoordinates[arrAirport] || { lat: 40.6413, lng: -73.7781 }; // Default to JFK
       
-      // Generate realistic in-flight position based on flight progress
-      const flightProgress = Math.random(); // 0 to 1 representing flight completion
-      const currentLat = depCoords.lat + (arrCoords.lat - depCoords.lat) * flightProgress;
-      const currentLng = depCoords.lng + (arrCoords.lng - depCoords.lng) * flightProgress;
+      // Calculate great circle distance for realistic flight time
+      const R = 6371; // Earth's radius in km
+      const dLat = (arrCoords.lat - depCoords.lat) * Math.PI / 180;
+      const dLng = (arrCoords.lng - depCoords.lng) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(depCoords.lat * Math.PI / 180) * Math.cos(arrCoords.lat * Math.PI / 180) *
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+      const distance = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       
-      // Generate realistic heading based on direction
-      const deltaLat = arrCoords.lat - depCoords.lat;
-      const deltaLng = arrCoords.lng - depCoords.lng;
-      const heading = (Math.atan2(deltaLng, deltaLat) * 180 / Math.PI + 360) % 360;
+      // Estimate flight duration based on distance (avg 850 km/h)
+      const estimatedFlightHours = distance / 850;
+      const flightDuration = estimatedFlightHours * 60; // minutes
+      
+      // Calculate current flight progress based on time since departure
+      const currentTime = now.getTime();
+      const departureMillis = departureTime.getTime();
+      const timeSinceDeparture = (currentTime - departureMillis) / (1000 * 60); // minutes
+      let flightProgress = Math.max(0, Math.min(1, timeSinceDeparture / flightDuration));
+      
+      // Add some realistic variation for demonstration
+      flightProgress += (Math.random() - 0.5) * 0.1;
+      flightProgress = Math.max(0, Math.min(1, flightProgress));
+      
+      // Generate realistic great circle route position
+      const f = flightProgress;
+      const lat1 = depCoords.lat * Math.PI / 180;
+      const lng1 = depCoords.lng * Math.PI / 180;
+      const lat2 = arrCoords.lat * Math.PI / 180;
+      const lng2 = arrCoords.lng * Math.PI / 180;
+      
+      const currentLat = Math.asin(Math.sin(lat1) * Math.cos(f * distance / R) + 
+                                   Math.cos(lat1) * Math.sin(f * distance / R) * Math.cos(Math.atan2(Math.sin(lng2 - lng1) * Math.cos(lat2), 
+                                   Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1)))) * 180 / Math.PI;
+      
+      const currentLng = (lng1 + Math.atan2(Math.sin(Math.atan2(Math.sin(lng2 - lng1) * Math.cos(lat2), 
+                                            Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1))) * 
+                                            Math.sin(f * distance / R), Math.cos(f * distance / R) - Math.sin(lat1) * Math.sin(currentLat * Math.PI / 180))) * 180 / Math.PI;
+      
+      // Calculate realistic heading (bearing to destination)
+      const dLon = (arrCoords.lng - currentLng) * Math.PI / 180;
+      const y = Math.sin(dLon) * Math.cos(arrCoords.lat * Math.PI / 180);
+      const x = Math.cos(currentLat * Math.PI / 180) * Math.sin(arrCoords.lat * Math.PI / 180) - 
+                Math.sin(currentLat * Math.PI / 180) * Math.cos(arrCoords.lat * Math.PI / 180) * Math.cos(dLon);
+      const heading = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
 
+      // Calculate realistic altitude based on flight phase
+      let altitude = 35000; // Cruise altitude
+      if (flightProgress < 0.1) {
+        altitude = 5000 + (flightProgress * 10 * 30000); // Climbing
+      } else if (flightProgress > 0.9) {
+        altitude = 35000 - ((flightProgress - 0.9) * 10 * 30000); // Descending
+      }
+      
+      // Calculate realistic velocity based on phase and aircraft type
+      let velocity = 450; // Base cruise speed
+      if (flight.aircraft_type.includes('787')) {
+        velocity = 490; // Boeing 787 cruise speed
+      } else if (flight.aircraft_type.includes('A330') || flight.aircraft_type.includes('A350')) {
+        velocity = 470; // Airbus cruise speed
+      }
+      
+      // Adjust velocity for flight phase
+      if (flightProgress < 0.1) {
+        velocity = 250 + (flightProgress * 10 * 240); // Accelerating
+      } else if (flightProgress > 0.9) {
+        velocity = 490 - ((flightProgress - 0.9) * 10 * 240); // Decelerating
+      }
+      
+      // Calculate fuel remaining based on progress and aircraft efficiency
+      const baseFuelCapacity = flight.aircraft_type.includes('787') ? 126372 : 139090; // Liters
+      const fuelConsumed = flightProgress * distance * 3.2; // Realistic fuel consumption
+      const fuelRemaining = Math.max(10, 100 - (fuelConsumed / baseFuelCapacity * 100));
+      
+      // Determine flight status based on progress
+      let flightStatus = 'EN_ROUTE';
+      if (flightProgress < 0.05) {
+        flightStatus = 'DEPARTED';
+      } else if (flightProgress > 0.95) {
+        flightStatus = 'APPROACHING';
+      } else if (flightProgress >= 1.0) {
+        flightStatus = 'LANDED';
+      }
+      
       return {
         ...flight,
         callsign: flight.flight_number,
-        latitude: currentLat,
-        longitude: currentLng,
-        altitude: Math.floor(Math.random() * 10000) + 35000,
-        velocity: Math.floor(Math.random() * 100) + 450,
+        latitude: Number(currentLat.toFixed(6)),
+        longitude: Number(currentLng.toFixed(6)),
+        altitude: Math.round(altitude),
+        velocity: Math.round(velocity),
         heading: Math.round(heading),
         aircraft: flight.aircraft_type,
         origin: depAirport,
         destination: arrAirport,
         scheduled_departure: departureTime.toISOString(),
         scheduled_arrival: arrivalTime.toISOString(),
-        current_status: this.generateRealisticStatus(),
+        current_status: flightStatus,
+        flight_progress: Math.round(flightProgress * 100),
+        distance_remaining: Math.round(distance * (1 - flightProgress)),
         delay_minutes: Math.random() > 0.8 ? Math.floor(Math.random() * 45) : 0,
-        fuel_remaining: Math.floor(Math.random() * 30) + 60,
+        fuel_remaining: Math.round(fuelRemaining),
         warnings: this.generateWarnings()
       };
     });
