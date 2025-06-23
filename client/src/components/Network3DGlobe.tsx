@@ -44,14 +44,162 @@ const latLngToVector3 = (lat: number, lng: number, radius: number = 5) => {
   );
 };
 
-// Earth Globe Component with Satellite Imagery
+// Enhanced Earth Texture Generator with Realistic Geography
+const createEarthTexture = () => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 2048;
+  canvas.height = 1024;
+  const ctx = canvas.getContext('2d')!;
+  
+  // Deep ocean base with gradient
+  const oceanGradient = ctx.createLinearGradient(0, 0, 0, 1024);
+  oceanGradient.addColorStop(0, '#1a365d');
+  oceanGradient.addColorStop(0.5, '#2563eb');
+  oceanGradient.addColorStop(1, '#1e40af');
+  ctx.fillStyle = oceanGradient;
+  ctx.fillRect(0, 0, 2048, 1024);
+  
+  // Continental land masses with terrain gradients
+  const landGradient = ctx.createLinearGradient(0, 0, 0, 1024);
+  landGradient.addColorStop(0, '#065f46');
+  landGradient.addColorStop(0.3, '#059669');
+  landGradient.addColorStop(0.6, '#10b981');
+  landGradient.addColorStop(1, '#34d399');
+  
+  // North America - More detailed shape
+  ctx.fillStyle = landGradient;
+  ctx.beginPath();
+  ctx.moveTo(150, 180);
+  ctx.bezierCurveTo(250, 120, 400, 140, 550, 180);
+  ctx.bezierCurveTo(620, 200, 680, 250, 700, 320);
+  ctx.bezierCurveTo(690, 380, 650, 420, 580, 450);
+  ctx.bezierCurveTo(450, 480, 350, 460, 250, 430);
+  ctx.bezierCurveTo(180, 400, 140, 350, 130, 280);
+  ctx.bezierCurveTo(135, 230, 140, 200, 150, 180);
+  ctx.closePath();
+  ctx.fill();
+  
+  // South America - Elongated shape
+  ctx.beginPath();
+  ctx.moveTo(420, 480);
+  ctx.bezierCurveTo(460, 470, 500, 485, 530, 510);
+  ctx.bezierCurveTo(550, 580, 560, 650, 570, 720);
+  ctx.bezierCurveTo(575, 780, 570, 820, 550, 850);
+  ctx.bezierCurveTo(520, 870, 480, 875, 450, 870);
+  ctx.bezierCurveTo(420, 860, 400, 840, 390, 810);
+  ctx.bezierCurveTo(385, 750, 390, 680, 400, 620);
+  ctx.bezierCurveTo(405, 560, 410, 520, 420, 480);
+  ctx.closePath();
+  ctx.fill();
+  
+  // Europe - Complex coastline
+  ctx.beginPath();
+  ctx.moveTo(780, 220);
+  ctx.bezierCurveTo(850, 200, 920, 210, 980, 230);
+  ctx.bezierCurveTo(1020, 250, 1050, 280, 1060, 320);
+  ctx.bezierCurveTo(1055, 360, 1030, 390, 990, 410);
+  ctx.bezierCurveTo(930, 420, 870, 415, 820, 400);
+  ctx.bezierCurveTo(790, 380, 770, 350, 760, 310);
+  ctx.bezierCurveTo(765, 270, 770, 240, 780, 220);
+  ctx.closePath();
+  ctx.fill();
+  
+  // Africa - Distinctive shape
+  ctx.beginPath();
+  ctx.moveTo(820, 380);
+  ctx.bezierCurveTo(880, 360, 940, 370, 990, 390);
+  ctx.bezierCurveTo(1030, 420, 1060, 460, 1080, 510);
+  ctx.bezierCurveTo(1090, 580, 1095, 650, 1090, 720);
+  ctx.bezierCurveTo(1080, 770, 1050, 800, 1000, 820);
+  ctx.bezierCurveTo(940, 830, 880, 825, 830, 810);
+  ctx.bezierCurveTo(800, 790, 780, 760, 770, 720);
+  ctx.bezierCurveTo(775, 650, 790, 580, 805, 520);
+  ctx.bezierCurveTo(810, 460, 815, 420, 820, 380);
+  ctx.closePath();
+  ctx.fill();
+  
+  // Asia - Large landmass
+  ctx.beginPath();
+  ctx.moveTo(1080, 180);
+  ctx.bezierCurveTo(1200, 140, 1350, 150, 1500, 170);
+  ctx.bezierCurveTo(1650, 190, 1780, 220, 1850, 260);
+  ctx.bezierCurveTo(1880, 320, 1870, 380, 1840, 440);
+  ctx.bezierCurveTo(1800, 500, 1740, 550, 1660, 580);
+  ctx.bezierCurveTo(1550, 600, 1440, 590, 1340, 570);
+  ctx.bezierCurveTo(1240, 550, 1160, 520, 1100, 480);
+  ctx.bezierCurveTo(1060, 440, 1040, 390, 1050, 340);
+  ctx.bezierCurveTo(1060, 280, 1070, 230, 1080, 180);
+  ctx.closePath();
+  ctx.fill();
+  
+  // Australia - Island continent
+  ctx.beginPath();
+  ctx.moveTo(1380, 640);
+  ctx.bezierCurveTo(1450, 625, 1520, 635, 1580, 650);
+  ctx.bezierCurveTo(1620, 670, 1650, 700, 1660, 740);
+  ctx.bezierCurveTo(1655, 780, 1630, 810, 1590, 830);
+  ctx.bezierCurveTo(1530, 840, 1470, 835, 1420, 825);
+  ctx.bezierCurveTo(1385, 810, 1360, 785, 1350, 750);
+  ctx.bezierCurveTo(1355, 710, 1365, 675, 1380, 640);
+  ctx.closePath();
+  ctx.fill();
+  
+  // Antarctica - Bottom edge
+  ctx.fillStyle = '#f8fafc';
+  ctx.fillRect(0, 920, 2048, 104);
+  
+  // Greenland and other islands
+  ctx.fillStyle = landGradient;
+  ctx.beginPath();
+  ctx.arc(650, 120, 40, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Japan islands
+  ctx.beginPath();
+  ctx.arc(1720, 280, 15, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(1740, 300, 12, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // UK islands
+  ctx.beginPath();
+  ctx.arc(750, 250, 10, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Add mountain ranges (darker green)
+  ctx.fillStyle = '#064e3b';
+  ctx.strokeStyle = '#065f46';
+  ctx.lineWidth = 2;
+  
+  // Rocky Mountains
+  ctx.beginPath();
+  ctx.moveTo(300, 200);
+  ctx.lineTo(320, 400);
+  ctx.stroke();
+  
+  // Andes
+  ctx.beginPath();
+  ctx.moveTo(460, 500);
+  ctx.lineTo(480, 850);
+  ctx.stroke();
+  
+  // Himalayas
+  ctx.beginPath();
+  ctx.moveTo(1200, 300);
+  ctx.lineTo(1400, 320);
+  ctx.stroke();
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  return texture;
+};
+
+// Earth Globe Component with Procedural Texture
 const EarthGlobe: React.FC = () => {
   const meshRef = useRef<THREE.Mesh>(null);
-  const [isNightMode, setIsNightMode] = useState(false);
-  
-  // Load Earth textures
-  const dayTexture = useTexture('/textures/earth-day.svg');
-  const nightTexture = useTexture('/textures/earth-night.svg');
+  const [earthTexture] = useState(() => createEarthTexture());
   
   useFrame((state) => {
     if (meshRef.current) {
@@ -59,52 +207,32 @@ const EarthGlobe: React.FC = () => {
     }
   });
 
-  // Toggle between day and night every 30 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsNightMode(prev => !prev);
-    }, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <group>
-      {/* Main Earth sphere with satellite imagery */}
-      <Sphere ref={meshRef} args={[5, 128, 64]}>
+      {/* Main Earth sphere with procedural texture */}
+      <Sphere ref={meshRef} args={[5, 64, 64]}>
         <meshLambertMaterial
-          map={isNightMode ? nightTexture : dayTexture}
-          transparent={false}
-          side={THREE.FrontSide}
+          map={earthTexture}
         />
       </Sphere>
       
-      {/* Atmospheric glow layer */}
+      {/* Atmospheric glow */}
       <Sphere args={[5.15, 32, 32]}>
         <meshBasicMaterial
-          color={isNightMode ? "#1a1a2e" : "#87ceeb"}
+          color="#87ceeb"
           transparent
-          opacity={isNightMode ? 0.1 : 0.15}
+          opacity={0.1}
           side={THREE.BackSide}
         />
       </Sphere>
       
-      {/* Cloud layer overlay */}
-      <Sphere args={[5.02, 64, 32]}>
+      {/* Cloud wisps */}
+      <Sphere args={[5.05, 32, 32]}>
         <meshBasicMaterial
           color="#ffffff"
           transparent
-          opacity={isNightMode ? 0.05 : 0.1}
-          wireframe={false}
-        />
-      </Sphere>
-      
-      {/* Outer space atmosphere */}
-      <Sphere args={[5.4, 16, 16]}>
-        <meshBasicMaterial
-          color={isNightMode ? "#0a0a1a" : "#4299e1"}
-          transparent
-          opacity={0.03}
-          side={THREE.BackSide}
+          opacity={0.05}
+          wireframe={true}
         />
       </Sphere>
     </group>
