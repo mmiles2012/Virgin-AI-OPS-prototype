@@ -100,7 +100,7 @@ export default function NetworkOTPDashboard() {
       hubFlights.get(destination)?.push({ ...flight, hub: destination, direction: 'arrival' });
     });
 
-    // Virgin Atlantic airports - prioritizing main hubs
+    // Complete Virgin Atlantic network - all destinations from authentic schedule
     const hubInfo: { [key: string]: { icao: string, iata: string, name: string, city: string } } = {
       // Primary hubs (priority 1)
       'LHR': { icao: 'EGLL', iata: 'LHR', name: 'London Heathrow', city: 'London' },
@@ -108,19 +108,32 @@ export default function NetworkOTPDashboard() {
       'JFK': { icao: 'KJFK', iata: 'JFK', name: 'John F. Kennedy', city: 'New York' },
       'LAX': { icao: 'KLAX', iata: 'LAX', name: 'Los Angeles International', city: 'Los Angeles' },
       'MCO': { icao: 'KMCO', iata: 'MCO', name: 'Orlando International', city: 'Orlando' },
-      // Secondary destinations
-      'ANU': { icao: 'TAPA', iata: 'ANU', name: 'V.C. Bird International', city: 'Antigua' },
-      'MBJ': { icao: 'MKJS', iata: 'MBJ', name: 'Sangster International', city: 'Montego Bay' },
-      'BGI': { icao: 'TBPB', iata: 'BGI', name: 'Grantley Adams International', city: 'Bridgetown' },
-      'UVF': { icao: 'TLPL', iata: 'UVF', name: 'Hewanorra International', city: 'St. Lucia' },
+      // North America
       'SFO': { icao: 'KSFO', iata: 'SFO', name: 'San Francisco International', city: 'San Francisco' },
       'BOS': { icao: 'KBOS', iata: 'BOS', name: 'Boston Logan', city: 'Boston' },
       'SEA': { icao: 'KSEA', iata: 'SEA', name: 'Seattle-Tacoma International', city: 'Seattle' },
       'ATL': { icao: 'KATL', iata: 'ATL', name: 'Hartsfield-Jackson Atlanta', city: 'Atlanta' },
       'MIA': { icao: 'KMIA', iata: 'MIA', name: 'Miami International', city: 'Miami' },
-      'DEN': { icao: 'KDEN', iata: 'DEN', name: 'Denver International', city: 'Denver' },
       'LAS': { icao: 'KLAS', iata: 'LAS', name: 'McCarran International', city: 'Las Vegas' },
-      'DFW': { icao: 'KDFW', iata: 'DFW', name: 'Dallas/Fort Worth International', city: 'Dallas' }
+      'IAD': { icao: 'KIAD', iata: 'IAD', name: 'Washington Dulles', city: 'Washington' },
+      'TPA': { icao: 'KTPA', iata: 'TPA', name: 'Tampa International', city: 'Tampa' },
+      'YYZ': { icao: 'CYYZ', iata: 'YYZ', name: 'Toronto Pearson', city: 'Toronto' },
+      // Caribbean
+      'ANU': { icao: 'TAPA', iata: 'ANU', name: 'V.C. Bird International', city: 'Antigua' },
+      'MBJ': { icao: 'MKJS', iata: 'MBJ', name: 'Sangster International', city: 'Montego Bay' },
+      'BGI': { icao: 'TBPB', iata: 'BGI', name: 'Grantley Adams International', city: 'Bridgetown' },
+      'GND': { icao: 'TGPY', iata: 'GND', name: 'Maurice Bishop International', city: 'Grenada' },
+      // Europe
+      'EDI': { icao: 'EGPH', iata: 'EDI', name: 'Edinburgh Airport', city: 'Edinburgh' },
+      // Asia
+      'BOM': { icao: 'VABB', iata: 'BOM', name: 'Chhatrapati Shivaji International', city: 'Mumbai' },
+      'BLR': { icao: 'VOBL', iata: 'BLR', name: 'Kempegowda International', city: 'Bangalore' },
+      'DEL': { icao: 'VIDP', iata: 'DEL', name: 'Indira Gandhi International', city: 'Delhi' },
+      'ICN': { icao: 'RKSI', iata: 'ICN', name: 'Incheon International', city: 'Seoul' },
+      // Africa
+      'JNB': { icao: 'FAOR', iata: 'JNB', name: 'O.R. Tambo International', city: 'Johannesburg' },
+      // Middle East
+      'RUH': { icao: 'OERK', iata: 'RUH', name: 'King Khalid International', city: 'Riyadh' }
     };
 
     const performanceData: HubPerformance[] = [];
