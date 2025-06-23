@@ -32,7 +32,7 @@ import EmergencyCommDashboard from "./components/EmergencyCommDashboard";
 import NetworkOTPDashboard from "./components/NetworkOTPDashboard";
 import VirginAtlanticFleetMonitor from "./components/VirginAtlanticFleetMonitor";
 import IntelligenceDashboard from "./components/IntelligenceDashboard";
-import Simple3DGlobe from "./components/Simple3DGlobe";
+
 
 // Flight control mappings
 enum FlightControls {
@@ -212,6 +212,28 @@ function App() {
                     Communications
                   </button>
                   
+                  <button
+                    onClick={() => setViewMode('diversion')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'diversion' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Diversion Engine
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('diversion-support')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'diversion-support' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Diversion Support
+                  </button>
+                  
                   {/* Digital Twins Section */}
                   <div className="border-t border-gray-600 pt-3 mt-3">
                     <div className="text-xs text-gray-400 mb-2 px-2">DIGITAL TWINS</div>
@@ -249,16 +271,7 @@ function App() {
                       Fleet Intelligence
                     </button>
                     
-                    <button
-                      onClick={() => setViewMode('3d-globe')}
-                      className={`w-full px-4 py-2 rounded transition-colors text-sm mt-1 ${
-                        viewMode === '3d-globe' 
-                          ? 'bg-blue-600 text-white' 
-                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                      }`}
-                    >
-                      3D Globe Network
-                    </button>
+
                   </div>
                   
                   {/* API Centre Section */}
@@ -335,6 +348,12 @@ function App() {
             {viewMode === 'diversion' && (
               <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
                 <DiversionDecisionEngine />
+              </div>
+            )}
+            
+            {viewMode === 'diversion-support' && (
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
+                <DiversionSupportDashboard />
               </div>
             )}
             
@@ -416,11 +435,7 @@ function App() {
               </div>
             )}
             
-            {viewMode === '3d-globe' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
-                <Simple3DGlobe />
-              </div>
-            )}
+
             
             {viewMode === 'emergency-comm' && (
               <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-hidden">
