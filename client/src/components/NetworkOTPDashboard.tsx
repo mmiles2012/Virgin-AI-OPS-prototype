@@ -135,7 +135,7 @@ export default function NetworkOTPDashboard() {
       let cancelledFlights = 0;
       let totalDelayMinutes = 0;
 
-      const recentFlights: FlightPerformance[] = flights.slice(0, 8).map(flight => {
+      const recentFlights: FlightPerformance[] = flights.map(flight => {
         // Calculate delay based on flight status and warnings
         const hasWarnings = flight.warnings && flight.warnings.length > 0;
         const isOverspeed = flight.warnings?.includes('OVERSPEED');

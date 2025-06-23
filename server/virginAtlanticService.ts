@@ -196,7 +196,7 @@ class VirginAtlanticService {
       'DFW': { lat: 32.8975, lng: -97.0403 }
     };
     
-    return flights.slice(0, 20).map(flight => {
+    return flights.map(flight => {
       const departureTime = new Date(now);
       departureTime.setHours(parseInt(flight.departure_time.split(':')[0]));
       departureTime.setMinutes(parseInt(flight.departure_time.split(':')[1]));
