@@ -117,6 +117,14 @@ const EmergencyCommDashboard: React.FC = () => {
       participants: ['Aircraft Systems', 'Operations Center', 'Maintenance']
     },
     {
+      id: 'satcom-direct',
+      name: 'SATCOM Direct',
+      type: 'voice',
+      frequency: 'Satellite',
+      active: true,
+      participants: ['Flight Deck', 'Cabin Crew', 'Operations Center']
+    },
+    {
       id: 'ops-center',
       name: 'Operations Center',
       type: 'text',
@@ -335,7 +343,7 @@ const EmergencyCommDashboard: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
-          <h1 className="text-3xl font-bold text-amber-900">Emergency Communication Center</h1>
+          <h1 className="text-3xl font-bold text-amber-900">Communication Center</h1>
         </div>
         <div className="flex items-center gap-4">
           <Badge className={isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
@@ -348,9 +356,10 @@ const EmergencyCommDashboard: React.FC = () => {
       </div>
 
       <Tabs defaultValue="active" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3 bg-amber-100 border-amber-200">
+        <TabsList className="grid w-full grid-cols-4 bg-amber-100 border-amber-200">
           <TabsTrigger value="active" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">Active Alerts</TabsTrigger>
           <TabsTrigger value="communication" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">Communication</TabsTrigger>
+          <TabsTrigger value="satcom" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">SATCOM</TabsTrigger>
           <TabsTrigger value="channels" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">Channels</TabsTrigger>
         </TabsList>
 
@@ -535,6 +544,86 @@ const EmergencyCommDashboard: React.FC = () => {
                       </div>
                     ))
                   )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="satcom" className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <Card className="border-amber-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Radio className="h-5 w-5 text-amber-600" />
+                  SATCOM Direct Call
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Aircraft Callsign</label>
+                    <input
+                      type="text"
+                      placeholder="Enter aircraft callsign (e.g., VS133)"
+                      className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Priority Level</label>
+                    <select className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                      <option value="normal">Normal</option>
+                      <option value="urgent">Urgent</option>
+                      <option value="emergency">Emergency</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Call Recipient</label>
+                    <select className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                      <option value="flight-deck">Flight Deck</option>
+                      <option value="cabin-crew">Cabin Crew</option>
+                      <option value="both">Both Flight Deck & Cabin</option>
+                    </select>
+                  </div>
+                </div>
+
+                <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+                  <Phone className="h-4 w-4 mr-2" />
+                  Initiate SATCOM Call
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-amber-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Volume2 className="h-5 w-5 text-amber-600" />
+                  SATCOM Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                    <div>
+                      <div className="font-medium text-green-900">Satellite Connection</div>
+                      <div className="text-sm text-green-700">Signal: Strong</div>
+                    </div>
+                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="text-sm font-medium text-gray-700">Active SATCOM Connections:</div>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between p-2 bg-amber-50 rounded">
+                        <span className="text-sm">VS133 - Flight Deck</span>
+                        <Badge className="bg-amber-100 text-amber-800">Connected</Badge>
+                      </div>
+                      <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <span className="text-sm">VS134 - Cabin Crew</span>
+                        <Badge className="bg-gray-100 text-gray-800">Standby</Badge>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

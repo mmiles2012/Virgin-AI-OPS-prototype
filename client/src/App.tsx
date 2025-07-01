@@ -237,7 +237,7 @@ function App() {
                           : 'bg-amber-800 text-amber-300 hover:bg-amber-700'
                       }`}
                     >
-                      Emergency Communications
+                      Communications
                     </button>
                   </div>
                   
