@@ -438,6 +438,7 @@ const EmergencyCommDashboard: React.FC = () => {
                         onClick={() => setSelectedAlert(alert)}
                         variant="outline"
                         size="sm"
+                        className="border-amber-600 text-amber-700 hover:bg-amber-50"
                       >
                         Open Communication
                       </Button>
