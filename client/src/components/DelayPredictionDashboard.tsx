@@ -555,7 +555,7 @@ const DelayPredictionDashboard: React.FC = () => {
   }, [statistics]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-6 overflow-y-auto">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -599,7 +599,7 @@ const DelayPredictionDashboard: React.FC = () => {
 
         {/* Overview Tab */}
         {activeTab === 'overview' && statistics && (
-          <div className="space-y-6">
+          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="bg-white p-6 rounded-lg shadow">
@@ -984,7 +984,7 @@ const DelayPredictionDashboard: React.FC = () => {
 
         {/* Holding Analysis Tab */}
         {activeTab === 'holding' && (
-          <div className="space-y-6">
+          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
             <div className="bg-white p-6 rounded-lg shadow">
               <h2 className="text-xl font-semibold mb-4">Holding Pattern Analysis</h2>
               
