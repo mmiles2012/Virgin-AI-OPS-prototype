@@ -331,9 +331,12 @@ const EmergencyCommDashboard: React.FC = () => {
   };
 
   return (
-    <div className="h-full bg-gray-50 p-4 overflow-auto">
+    <div className="h-full bg-gradient-to-br from-amber-50 to-orange-50 p-4 overflow-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Emergency Communication Center</h1>
+        <div className="flex items-center gap-3">
+          <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
+          <h1 className="text-3xl font-bold text-amber-900">Emergency Communication Center</h1>
+        </div>
         <div className="flex items-center gap-4">
           <Badge className={isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
             {isConnected ? 'Connected' : 'Disconnected'}
@@ -345,10 +348,10 @@ const EmergencyCommDashboard: React.FC = () => {
       </div>
 
       <Tabs defaultValue="active" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="active">Active Alerts</TabsTrigger>
-          <TabsTrigger value="communication">Communication</TabsTrigger>
-          <TabsTrigger value="channels">Channels</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 bg-amber-100 border-amber-200">
+          <TabsTrigger value="active" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">Active Alerts</TabsTrigger>
+          <TabsTrigger value="communication" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">Communication</TabsTrigger>
+          <TabsTrigger value="channels" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">Channels</TabsTrigger>
         </TabsList>
 
         <TabsContent value="active" className="space-y-4">
@@ -501,7 +504,7 @@ const EmergencyCommDashboard: React.FC = () => {
                 <Button 
                   onClick={sendMessage}
                   disabled={!selectedAlert || !newMessage.trim()}
-                  className="w-full"
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white border-amber-600"
                 >
                   <Send className="h-4 w-4 mr-2" />
                   Send Urgent Message

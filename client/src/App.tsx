@@ -201,16 +201,7 @@ function App() {
                     Delay Prediction
                   </button>
                   
-                  <button
-                    onClick={() => setViewMode('emergency-comm')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'emergency-comm' 
-                        ? 'bg-red-600 text-white' 
-                        : 'bg-red-800 text-red-300 hover:bg-red-700'
-                    }`}
-                  >
-                    Communications
-                  </button>
+
                   
                   <button
                     onClick={() => setViewMode('diversion')}
@@ -233,6 +224,22 @@ function App() {
                   >
                     Diversion Support
                   </button>
+                  
+                  {/* Communications Section */}
+                  <div className="border-t border-gray-600 pt-3 mt-3">
+                    <div className="text-xs text-amber-400 mb-2 px-2">COMMUNICATIONS</div>
+                    
+                    <button
+                      onClick={() => setViewMode('emergency-comm')}
+                      className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                        viewMode === 'emergency-comm' 
+                          ? 'bg-amber-600 text-white shadow-lg' 
+                          : 'bg-amber-800 text-amber-300 hover:bg-amber-700'
+                      }`}
+                    >
+                      Emergency Communications
+                    </button>
+                  </div>
                   
                   {/* Digital Twins Section */}
                   <div className="border-t border-gray-600 pt-3 mt-3">
