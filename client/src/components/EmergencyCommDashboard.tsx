@@ -551,7 +551,7 @@ const EmergencyCommDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="satcom" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <Card className="border-amber-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -624,6 +624,51 @@ const EmergencyCommDashboard: React.FC = () => {
                       </div>
                     </div>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-amber-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="h-5 w-5 text-red-600" />
+                  ODE-MEDLINk
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="text-sm font-medium text-blue-900 mb-2">Three-Way Medical Conference</div>
+                  <div className="text-xs text-blue-700">
+                    Operations ↔ Aircraft ↔ MedLink USA
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Aircraft Callsign</label>
+                    <input
+                      type="text"
+                      placeholder="Enter aircraft callsign"
+                      className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">Medical Priority</label>
+                    <select className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                      <option value="consultation">Medical Consultation</option>
+                      <option value="urgent">Urgent Medical</option>
+                      <option value="emergency">Medical Emergency</option>
+                    </select>
+                  </div>
+                </div>
+
+                <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                  <Heart className="h-4 w-4 mr-2" />
+                  Connect ODE-MEDLINk
+                </Button>
+
+                <div className="text-xs text-gray-500 text-center">
+                  Connects: Ops Center + Aircraft + MedLink USA
                 </div>
               </CardContent>
             </Card>
