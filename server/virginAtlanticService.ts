@@ -221,7 +221,7 @@ class VirginAtlanticService {
       'RUH': { lat: 24.9576, lng: 46.6988 }   // Riyadh
     };
     
-    return flights.map(flight => {
+    return flights.map((flight, index) => {
       const departureTime = new Date(now);
       departureTime.setHours(parseInt(flight.departure_time.split(':')[0]));
       departureTime.setMinutes(parseInt(flight.departure_time.split(':')[1]));
@@ -365,7 +365,7 @@ class VirginAtlanticService {
 
       return {
         ...flight,
-        callsign: flight.flight_number,
+        callsign: `${flight.flight_number}-${depAirport}${arrAirport}-${index}`,
         latitude: Number(currentLat.toFixed(6)),
         longitude: Number(currentLng.toFixed(6)),
         altitude: Math.round(altitude),

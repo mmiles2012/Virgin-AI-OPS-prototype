@@ -324,7 +324,7 @@ function App() {
             {/* Mode-specific Interfaces - Adjusted for left sidebar */}
             
             {viewMode === 'operations' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 overflow-auto">
                 <OperationsCenter />
               </div>
             )}
@@ -336,13 +336,13 @@ function App() {
             )}
             
             {viewMode === 'airspace' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 overflow-auto">
                 <SafeAirspaceAlerts />
               </div>
             )}
             
             {viewMode === 'realtime' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 overflow-auto">
                 <EnhancedLiveFlightTracker />
               </div>
             )}

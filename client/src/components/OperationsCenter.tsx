@@ -60,7 +60,7 @@ export default function OperationsCenter() {
 
   return (
     <div className="absolute inset-4 pointer-events-auto overflow-auto">
-      <div className="min-h-full grid grid-cols-3 gap-4">
+      <div className="min-h-full grid grid-cols-3 gap-4 pb-8">
         {/* Enhanced Live Flight Tracker */}
         <div className="col-span-2">
           <EnhancedLiveFlightTracker />

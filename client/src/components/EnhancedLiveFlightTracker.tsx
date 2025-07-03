@@ -176,7 +176,7 @@ export default function EnhancedLiveFlightTracker() {
   const selectedFlight = flights.find(f => f.callsign === selectedFlightId);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 h-full overflow-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -216,8 +216,10 @@ export default function EnhancedLiveFlightTracker() {
 
       {/* Flight List */}
       <div className="space-y-3">
-        {flights.map((flight) => (
-          <Card key={flight.callsign} className="bg-gray-800/50 border-gray-600">
+        {flights.map((flight, index) => {
+          const uniqueKey = `${flight.callsign}-${flight.origin}-${flight.destination}-${index}`;
+          return (
+            <Card key={uniqueKey} className="bg-gray-800/50 border-gray-600">
             <CardContent className="p-4">
               <div 
                 className="cursor-pointer"
@@ -438,8 +440,9 @@ export default function EnhancedLiveFlightTracker() {
                 </div>
               )}
             </CardContent>
-          </Card>
-        ))}
+            </Card>
+          );
+        })}
       </div>
 
       {flights.length === 0 && !loading && (
