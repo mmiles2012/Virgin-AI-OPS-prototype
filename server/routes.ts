@@ -36,6 +36,7 @@ import skyGateRouter, { skyGateService } from "./skyGateAirportService";
 import { emergencyCommService } from "./emergencyCommService";
 import { virginAtlanticService } from "./virginAtlanticService";
 import { AircraftTrackingService } from "./aircraftTrackingService";
+import { heathrowConnectionService } from "./heathrowConnectionService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -4799,6 +4800,77 @@ else:
       res.status(500).json({
         success: false,
         error: 'Failed to analyze flight performance',
+        message: error.message
+      });
+    }
+  });
+
+  // Heathrow T3 Connection Management API
+  app.get('/api/heathrow/status', async (req, res) => {
+    try {
+      const status = heathrowConnectionService.getStatus();
+      res.json({
+        success: true,
+        data: status,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get Heathrow T3 status',
+        message: error.message
+      });
+    }
+  });
+
+  app.get('/api/heathrow/connection-risks', async (req, res) => {
+    try {
+      const risks = heathrowConnectionService.getConnectionRisks();
+      res.json({
+        success: true,
+        data: risks,
+        count: risks.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get connection risks',
+        message: error.message
+      });
+    }
+  });
+
+  app.get('/api/heathrow/stand-allocations', async (req, res) => {
+    try {
+      const allocations = heathrowConnectionService.getStandAllocations();
+      res.json({
+        success: true,
+        data: allocations,
+        count: allocations.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get stand allocations',
+        message: error.message
+      });
+    }
+  });
+
+  app.post('/api/heathrow/actions', async (req, res) => {
+    try {
+      await heathrowConnectionService.processAction(req.body);
+      res.json({
+        success: true,
+        message: 'Action processed successfully',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to process action',
         message: error.message
       });
     }

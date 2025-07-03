@@ -10,6 +10,7 @@ import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { AlertTriangle, Plane, MapPin, Clock } from 'lucide-react';
 import EnhancedLiveFlightTracker from './EnhancedLiveFlightTracker';
 import SafeAirspaceAlerts from './SafeAirspaceAlerts';
+import HeathrowT3Dashboard from './HeathrowT3Dashboard';
 
 export default function OperationsCenter() {
   const { 
@@ -241,10 +242,11 @@ export default function OperationsCenter() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="risk-assessment" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-gray-800/50">
+              <TabsList className="grid w-full grid-cols-4 bg-gray-800/50">
                 <TabsTrigger value="risk-assessment" className="text-xs">Risk Assessment</TabsTrigger>
                 <TabsTrigger value="cost-analysis" className="text-xs">Cost Analysis</TabsTrigger>
                 <TabsTrigger value="safety-metrics" className="text-xs">Safety Metrics</TabsTrigger>
+                <TabsTrigger value="heathrow-t3" className="text-xs">Heathrow T3</TabsTrigger>
               </TabsList>
               
               <TabsContent value="risk-assessment" className="space-y-4">
@@ -293,6 +295,12 @@ export default function OperationsCenter() {
                 <div className="border-t border-gray-600 pt-2">
                   <div className="text-blue-300 text-xs">Confidence Score</div>
                   <div className="text-2xl font-mono text-green-400">87%</div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="heathrow-t3" className="space-y-4">
+                <div className="bg-gray-800/30 rounded-lg p-4">
+                  <HeathrowT3Dashboard />
                 </div>
               </TabsContent>
             </Tabs>
