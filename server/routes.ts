@@ -37,6 +37,7 @@ import { emergencyCommService } from "./emergencyCommService";
 import { virginAtlanticService } from "./virginAtlanticService";
 import { AircraftTrackingService } from "./aircraftTrackingService";
 import { heathrowConnectionService } from "./heathrowConnectionService";
+import { PassengerConnectionService } from "./passengerConnectionService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -51,6 +52,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Initialize Aircraft Tracking Service
   const aircraftTracker = new AircraftTrackingService();
+  
+  // Initialize Passenger Connection Service with enhanced monitoring
+  const passengerConnectionService = new PassengerConnectionService();
+  passengerConnectionService.generateMockScenarios(); // Add demo data
+  passengerConnectionService.startRealTimeMonitoring(); // Start monitoring
 
   // Mapbox configuration endpoint
   app.get('/api/config/mapbox', (req, res) => {
@@ -4889,6 +4895,167 @@ else:
         success: false,
         error: 'Failed to refresh data',
         message: error.message
+      });
+    }
+  });
+
+  // === ENHANCED PASSENGER CONNECTION MONITORING ENDPOINTS ===
+  
+  // Get comprehensive passenger connection report
+  app.get('/api/passengers/connection-report', async (req, res) => {
+    try {
+      const report = passengerConnectionService.generateConnectionReport();
+      res.json({
+        success: true,
+        data: report,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('[Passenger Connections] Error generating report:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to generate connection report' 
+      });
+    }
+  });
+
+  // Get real-time passenger status
+  app.get('/api/passengers/:passengerId/status', async (req, res) => {
+    try {
+      const { passengerId } = req.params;
+      const status = await passengerConnectionService.getPassengerRealTimeStatus(passengerId);
+      
+      if (status.error) {
+        return res.status(404).json({ success: false, error: status.error });
+      }
+
+      res.json({
+        success: true,
+        data: status,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('[Passenger Connections] Error getting passenger status:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to get passenger status' 
+      });
+    }
+  });
+
+  // Get connection alerts
+  app.get('/api/passengers/alerts', async (req, res) => {
+    try {
+      const hours = parseInt(req.query.hours as string) || 24;
+      const alerts = passengerConnectionService.getConnectionAlerts(hours);
+      
+      res.json({
+        success: true,
+        data: {
+          alerts,
+          total_alerts: alerts.length,
+          time_window_hours: hours
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('[Passenger Connections] Error getting alerts:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to get connection alerts' 
+      });
+    }
+  });
+
+  // Get passenger-specific alerts
+  app.get('/api/passengers/:passengerId/alerts', async (req, res) => {
+    try {
+      const { passengerId } = req.params;
+      const hours = parseInt(req.query.hours as string) || 24;
+      const alerts = passengerConnectionService.getPassengerAlerts(passengerId, hours);
+      
+      res.json({
+        success: true,
+        data: {
+          passenger_id: passengerId,
+          alerts,
+          alert_count: alerts.length,
+          time_window_hours: hours
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('[Passenger Connections] Error getting passenger alerts:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to get passenger alerts' 
+      });
+    }
+  });
+
+  // Get real-time flight status for connections
+  app.get('/api/passengers/flights/:flightNumber/:airlineCode/status', async (req, res) => {
+    try {
+      const { flightNumber, airlineCode } = req.params;
+      const status = await passengerConnectionService.getFlightRealTimeStatus(flightNumber, airlineCode);
+      
+      res.json({
+        success: true,
+        data: {
+          flight_number: flightNumber,
+          airline_code: airlineCode,
+          status
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('[Passenger Connections] Error getting flight status:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to get flight status' 
+      });
+    }
+  });
+
+  // Connection validation endpoint
+  app.post('/api/passengers/validate-connection', async (req, res) => {
+    try {
+      const { arriving_flight, departing_flight } = req.body;
+      
+      if (!arriving_flight || !departing_flight) {
+        return res.status(400).json({
+          success: false,
+          error: 'Both arriving_flight and departing_flight are required'
+        });
+      }
+
+      // Get flight data and check connection validity
+      const [arrivingStatus, departingStatus] = await Promise.all([
+        passengerConnectionService.getFlightRealTimeStatus(arriving_flight.flight_number, arriving_flight.airline_code),
+        passengerConnectionService.getFlightRealTimeStatus(departing_flight.flight_number, departing_flight.airline_code)
+      ]);
+
+      // Simulate connection time calculation
+      const connectionMinutes = Math.floor(Math.random() * 120) + 30; // 30-150 minutes
+      const isValid = connectionMinutes >= (arriving_flight.terminal === departing_flight.terminal ? 60 : 90);
+
+      res.json({
+        success: true,
+        data: {
+          connection_valid: isValid,
+          connection_time_minutes: connectionMinutes,
+          minimum_required_minutes: arriving_flight.terminal === departing_flight.terminal ? 60 : 90,
+          arriving_flight_status: arrivingStatus,
+          departing_flight_status: departingStatus,
+          risk_level: connectionMinutes < 60 ? 'HIGH' : connectionMinutes < 90 ? 'MEDIUM' : 'LOW'
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('[Passenger Connections] Error validating connection:', error);
+      res.status(500).json({ 
+        success: false, 
+        error: 'Failed to validate connection' 
       });
     }
   });

@@ -1,0 +1,1005 @@
+import json
+import requests
+import asyncio
+import aiohttp
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Set, Tuple
+from dataclasses import dataclass, field
+from enum import Enum
+import time
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
+class FlightStatus(Enum):
+    SCHEDULED = "Scheduled"
+    DEPARTED = "Departed"
+    AIRBORNE = "Airborne"
+    ARRIVED = "Arrived"
+    DELAYED = "Delayed"
+    CANCELLED = "Cancelled"
+    DIVERTED = "Diverted"
+    BOARDING = "Boarding"
+    GATE_CLOSED = "Gate Closed"
+
+class Terminal(Enum):
+    T1 = "Terminal 1"  # Closed but keeping for historical data
+    T2 = "Terminal 2"  # Star Alliance hub
+    T3 = "Terminal 3"  # SkyTeam, Virgin Atlantic, other alliances
+    T4 = "Terminal 4"  # SkyTeam members
+    T5 = "Terminal 5"  # British Airways, OneWorld
+
+class Alliance(Enum):
+    SKYTEAM = "SkyTeam"
+    VIRGIN_ATLANTIC = "Virgin Atlantic"
+    STAR_ALLIANCE = "Star Alliance"
+    ONEWORLD = "OneWorld"
+    INDEPENDENT = "Independent"
+
+@dataclass
+class Airport:
+    code: str
+    name: str
+    country: str
+    region: str
+    
+@dataclass
+class Airline:
+    code: str
+    name: str
+    alliance: Alliance
+    terminal: Terminal
+
+@dataclass
+class RealTimeFlightData:
+    flight_id: str
+    current_status: FlightStatus
+    actual_departure: Optional[datetime] = None
+    actual_arrival: Optional[datetime] = None
+    estimated_departure: Optional[datetime] = None
+    estimated_arrival: Optional[datetime] = None
+    delay_minutes: int = 0
+    gate: Optional[str] = None
+    current_altitude: Optional[int] = None
+    current_speed: Optional[int] = None
+    current_location: Optional[Tuple[float, float]] = None  # (lat, lon)
+    last_updated: datetime = field(default_factory=datetime.now)
+    
+@dataclass
+class Flight:
+    flight_number: str
+    airline: Airline
+    origin: Airport
+    destination: Airport
+    departure_time: datetime
+    arrival_time: datetime
+    terminal: Terminal
+    aircraft_type: str = ""
+    real_time_data: Optional[RealTimeFlightData] = None
+    
+@dataclass
+class Passenger:
+    passenger_id: str
+    name: str
+    origin: Airport
+    final_destination: Airport
+    alliance_status: str = "None"
+    connection_flights: List[Flight] = field(default_factory=list)
+    
+class FlightTracker:
+    """Real-time flight tracking integration"""
+    
+    def __init__(self, api_key: str = None):
+        self.api_key = api_key or "demo_key"  # Replace with actual API key
+        self.base_url = "https://api.aviationstack.com/v1"
+        self.session = requests.Session()
+        self.cache = {}
+        self.cache_duration = 300  # 5 minutes cache
+        
+    def get_flight_status(self, flight_number: str, airline_code: str) -> Optional[RealTimeFlightData]:
+        """Get real-time flight status from API"""
+        cache_key = f"{airline_code}{flight_number}"
+        
+        # Check cache first
+        if cache_key in self.cache:
+            cached_data, timestamp = self.cache[cache_key]
+            if time.time() - timestamp < self.cache_duration:
+                return cached_data
+        
+        try:
+            # In production, use actual API endpoints
+            # This is a simulation of real API response
+            simulated_data = self._simulate_flight_data(flight_number, airline_code)
+            
+            # Cache the result
+            self.cache[cache_key] = (simulated_data, time.time())
+            
+            return simulated_data
+            
+        except Exception as e:
+            print(f"Error fetching flight data for {airline_code}{flight_number}: {e}")
+            return None
+    
+    def _simulate_flight_data(self, flight_number: str, airline_code: str) -> RealTimeFlightData:
+        """Simulate real-time flight data for demo purposes"""
+        import random
+        
+        # Simulate different flight statuses
+        statuses = [FlightStatus.SCHEDULED, FlightStatus.DEPARTED, FlightStatus.AIRBORNE, 
+                   FlightStatus.ARRIVED, FlightStatus.DELAYED, FlightStatus.BOARDING]
+        
+        status = random.choice(statuses)
+        delay = random.randint(0, 120) if status == FlightStatus.DELAYED else 0
+        
+        # Simulate location data for airborne flights
+        lat, lon = None, None
+        altitude, speed = None, None
+        
+        if status == FlightStatus.AIRBORNE:
+            lat = random.uniform(20.0, 60.0)  # Rough Atlantic/European airspace
+            lon = random.uniform(-80.0, 10.0)
+            altitude = random.randint(30000, 42000)
+            speed = random.randint(450, 550)
+        
+        return RealTimeFlightData(
+            flight_id=f"{airline_code}{flight_number}",
+            current_status=status,
+            delay_minutes=delay,
+            gate=f"A{random.randint(1, 50)}" if random.random() > 0.5 else None,
+            current_altitude=altitude,
+            current_speed=speed,
+            current_location=(lat, lon) if lat else None,
+            last_updated=datetime.now()
+        )
+    
+    async def get_multiple_flight_status(self, flight_list: List[Tuple[str, str]]) -> Dict[str, RealTimeFlightData]:
+        """Get status for multiple flights asynchronously"""
+        results = {}
+        
+        async with aiohttp.ClientSession() as session:
+            tasks = []
+            for flight_number, airline_code in flight_list:
+                task = self._async_get_flight_status(session, flight_number, airline_code)
+                tasks.append(task)
+            
+            responses = await asyncio.gather(*tasks, return_exceptions=True)
+            
+            for i, response in enumerate(responses):
+                if not isinstance(response, Exception):
+                    flight_number, airline_code = flight_list[i]
+                    results[f"{airline_code}{flight_number}"] = response
+        
+        return results
+    
+    async def _async_get_flight_status(self, session: aiohttp.ClientSession, 
+                                     flight_number: str, airline_code: str) -> RealTimeFlightData:
+        """Async version of flight status retrieval"""
+        # Simulate API call delay
+        await asyncio.sleep(0.1)
+        return self._simulate_flight_data(flight_number, airline_code)
+
+class ConnectionMonitor:
+    """Monitor passenger connections in real-time"""
+    
+    def __init__(self, flight_tracker: FlightTracker):
+        self.flight_tracker = flight_tracker
+        self.monitored_passengers = {}
+        self.alerts = []
+        self.running = False
+        
+    def add_passenger_monitoring(self, passenger: Passenger):
+        """Add passenger to real-time monitoring"""
+        self.monitored_passengers[passenger.passenger_id] = passenger
+        
+    def start_monitoring(self):
+        """Start real-time monitoring thread"""
+        self.running = True
+        self.monitor_thread = threading.Thread(target=self._monitor_loop)
+        self.monitor_thread.daemon = True
+        self.monitor_thread.start()
+        
+    def stop_monitoring(self):
+        """Stop real-time monitoring"""
+        self.running = False
+        
+    def _monitor_loop(self):
+        """Main monitoring loop"""
+        while self.running:
+            try:
+                self._check_all_passengers()
+                time.sleep(60)  # Check every minute
+            except Exception as e:
+                print(f"Monitoring error: {e}")
+                time.sleep(30)
+    
+    def _check_all_passengers(self):
+        """Check all monitored passengers for connection issues"""
+        for passenger_id, passenger in self.monitored_passengers.items():
+            try:
+                self._check_passenger_connections(passenger)
+            except Exception as e:
+                print(f"Error checking passenger {passenger_id}: {e}")
+    
+    def _check_passenger_connections(self, passenger: Passenger):
+        """Check individual passenger connections"""
+        if not passenger.connection_flights:
+            return
+            
+        for i in range(len(passenger.connection_flights) - 1):
+            arriving_flight = passenger.connection_flights[i]
+            departing_flight = passenger.connection_flights[i + 1]
+            
+            # Get real-time data for both flights
+            arriving_data = self.flight_tracker.get_flight_status(
+                arriving_flight.flight_number, 
+                arriving_flight.airline.code
+            )
+            
+            departing_data = self.flight_tracker.get_flight_status(
+                departing_flight.flight_number, 
+                departing_flight.airline.code
+            )
+            
+            if arriving_data and departing_data:
+                # Update flights with real-time data
+                arriving_flight.real_time_data = arriving_data
+                departing_flight.real_time_data = departing_data
+                
+                # Check for connection issues
+                self._analyze_connection_risk(passenger, arriving_flight, departing_flight)
+    
+    def _analyze_connection_risk(self, passenger: Passenger, arriving_flight: Flight, departing_flight: Flight):
+        """Analyze connection risk based on real-time data"""
+        arriving_data = arriving_flight.real_time_data
+        departing_data = departing_flight.real_time_data
+        
+        # Calculate actual connection time
+        if arriving_data.estimated_arrival and departing_data.estimated_departure:
+            connection_time = departing_data.estimated_departure - arriving_data.estimated_arrival
+            
+            # Check for tight connections
+            min_connection_time = timedelta(minutes=90)  # International connections
+            if connection_time < min_connection_time:
+                alert = {
+                    "type": "TIGHT_CONNECTION",
+                    "passenger_id": passenger.passenger_id,
+                    "passenger_name": passenger.name,
+                    "arriving_flight": arriving_flight.flight_number,
+                    "departing_flight": departing_flight.flight_number,
+                    "connection_time": str(connection_time),
+                    "risk_level": "HIGH" if connection_time < timedelta(minutes=60) else "MEDIUM",
+                    "timestamp": datetime.now()
+                }
+                self.alerts.append(alert)
+                
+        # Check for delays
+        if arriving_data.delay_minutes > 30:
+            alert = {
+                "type": "INBOUND_DELAY",
+                "passenger_id": passenger.passenger_id,
+                "passenger_name": passenger.name,
+                "flight": arriving_flight.flight_number,
+                "delay_minutes": arriving_data.delay_minutes,
+                "risk_level": "HIGH" if arriving_data.delay_minutes > 60 else "MEDIUM",
+                "timestamp": datetime.now()
+            }
+            self.alerts.append(alert)
+    
+    def get_recent_alerts(self, hours: int = 24) -> List[Dict]:
+        """Get recent alerts within specified hours"""
+        cutoff_time = datetime.now() - timedelta(hours=hours)
+        return [alert for alert in self.alerts if alert["timestamp"] > cutoff_time]
+
+class HeathrowConnectionsSystem:
+    def __init__(self, api_key: str = None):
+        self.airlines = self._initialize_airlines()
+        self.airports = self._initialize_airports()
+        self.flights = []
+        self.passengers = []
+        self.flight_tracker = FlightTracker(api_key)
+        self.connection_monitor = ConnectionMonitor(self.flight_tracker)
+        self.real_time_enabled = True
+        
+    def _initialize_airlines(self) -> Dict[str, Airline]:
+        """Initialize airlines with their alliance and terminal information"""
+        return {
+            # SkyTeam Airlines
+            "AF": Airline("AF", "Air France", Alliance.SKYTEAM, Terminal.T4),
+            "KL": Airline("KL", "KLM", Alliance.SKYTEAM, Terminal.T4),
+            "DL": Airline("DL", "Delta Air Lines", Alliance.SKYTEAM, Terminal.T3),
+            "AZ": Airline("AZ", "ITA Airways", Alliance.SKYTEAM, Terminal.T3),
+            "SU": Airline("SU", "Aeroflot", Alliance.SKYTEAM, Terminal.T4),
+            "OK": Airline("OK", "Czech Airlines", Alliance.SKYTEAM, Terminal.T4),
+            "RO": Airline("RO", "Tarom", Alliance.SKYTEAM, Terminal.T4),
+            "ME": Airline("ME", "Middle East Airlines", Alliance.SKYTEAM, Terminal.T3),
+            "KQ": Airline("KQ", "Kenya Airways", Alliance.SKYTEAM, Terminal.T4),
+            
+            # Virgin Atlantic
+            "VS": Airline("VS", "Virgin Atlantic", Alliance.VIRGIN_ATLANTIC, Terminal.T3),
+            
+            # Other airlines for connections
+            "ET": Airline("ET", "Ethiopian Airlines", Alliance.STAR_ALLIANCE, Terminal.T2),
+            "EK": Airline("EK", "Emirates", Alliance.INDEPENDENT, Terminal.T3),
+            "QR": Airline("QR", "Qatar Airways", Alliance.ONEWORLD, Terminal.T4),
+            "AI": Airline("AI", "Air India", Alliance.STAR_ALLIANCE, Terminal.T2),
+            "6E": Airline("6E", "IndiGo", Alliance.INDEPENDENT, Terminal.T2),
+        }
+    
+    def _initialize_airports(self) -> Dict[str, Airport]:
+        """Initialize key airports for connection routing"""
+        return {
+            # UK
+            "LHR": Airport("LHR", "London Heathrow", "United Kingdom", "Europe"),
+            
+            # Europe
+            "CDG": Airport("CDG", "Paris Charles de Gaulle", "France", "Europe"),
+            "AMS": Airport("AMS", "Amsterdam Schiphol", "Netherlands", "Europe"),
+            "FCO": Airport("FCO", "Rome Fiumicino", "Italy", "Europe"),
+            "SVO": Airport("SVO", "Moscow Sheremetyevo", "Russia", "Europe"),
+            "PRG": Airport("PRG", "Prague", "Czech Republic", "Europe"),
+            "OTP": Airport("OTP", "Bucharest", "Romania", "Europe"),
+            
+            # Africa
+            "CAI": Airport("CAI", "Cairo", "Egypt", "Africa"),
+            "ADD": Airport("ADD", "Addis Ababa", "Ethiopia", "Africa"),
+            "NBO": Airport("NBO", "Nairobi", "Kenya", "Africa"),
+            "CPT": Airport("CPT", "Cape Town", "South Africa", "Africa"),
+            "JNB": Airport("JNB", "Johannesburg", "South Africa", "Africa"),
+            "LOS": Airport("LOS", "Lagos", "Nigeria", "Africa"),
+            "ACC": Airport("ACC", "Accra", "Ghana", "Africa"),
+            
+            # India
+            "DEL": Airport("DEL", "New Delhi", "India", "Asia"),
+            "BOM": Airport("BOM", "Mumbai", "India", "Asia"),
+            "BLR": Airport("BLR", "Bangalore", "India", "Asia"),
+            "MAA": Airport("MAA", "Chennai", "India", "Asia"),
+            "HYD": Airport("HYD", "Hyderabad", "India", "Asia"),
+            "CCU": Airport("CCU", "Kolkata", "India", "Asia"),
+            
+            # North America
+            "JFK": Airport("JFK", "New York JFK", "United States", "North America"),
+            "LAX": Airport("LAX", "Los Angeles", "United States", "North America"),
+            "ATL": Airport("ATL", "Atlanta", "United States", "North America"),
+            "DFW": Airport("DFW", "Dallas Fort Worth", "United States", "North America"),
+            "SEA": Airport("SEA", "Seattle", "United States", "North America"),
+            "DTW": Airport("DTW", "Detroit", "United States", "North America"),
+            "MSP": Airport("MSP", "Minneapolis", "United States", "North America"),
+            "YYZ": Airport("YYZ", "Toronto Pearson", "Canada", "North America"),
+            "YVR": Airport("YVR", "Vancouver", "Canada", "North America"),
+            "YUL": Airport("YUL", "Montreal", "Canada", "North America"),
+        }
+    
+    def add_flight(self, flight: Flight):
+        """Add a flight to the system"""
+        self.flights.append(flight)
+        
+        # Enable real-time tracking for this flight
+        if self.real_time_enabled:
+            self.update_flight_real_time_data(flight)
+        
+    def add_passenger(self, passenger: Passenger):
+        """Add a passenger to the system"""
+        self.passengers.append(passenger)
+        
+        # Add to real-time monitoring
+        if self.real_time_enabled:
+            self.connection_monitor.add_passenger_monitoring(passenger)
+    
+    def update_flight_real_time_data(self, flight: Flight):
+        """Update flight with real-time data"""
+        real_time_data = self.flight_tracker.get_flight_status(
+            flight.flight_number, 
+            flight.airline.code
+        )
+        
+        if real_time_data:
+            flight.real_time_data = real_time_data
+            
+            # Update estimated times based on real-time data
+            if real_time_data.estimated_departure:
+                flight.departure_time = real_time_data.estimated_departure
+            if real_time_data.estimated_arrival:
+                flight.arrival_time = real_time_data.estimated_arrival
+    
+    def get_flight_real_time_status(self, flight_number: str, airline_code: str) -> Dict:
+        """Get comprehensive real-time status for a flight"""
+        real_time_data = self.flight_tracker.get_flight_status(flight_number, airline_code)
+        
+        if not real_time_data:
+            return {"status": "No real-time data available"}
+        
+        status_info = {
+            "flight_id": real_time_data.flight_id,
+            "current_status": real_time_data.current_status.value,
+            "delay_minutes": real_time_data.delay_minutes,
+            "gate": real_time_data.gate,
+            "last_updated": real_time_data.last_updated.strftime("%Y-%m-%d %H:%M:%S")
+        }
+        
+        if real_time_data.current_status == FlightStatus.AIRBORNE:
+            status_info.update({
+                "altitude": f"{real_time_data.current_altitude:,} ft" if real_time_data.current_altitude else "N/A",
+                "speed": f"{real_time_data.current_speed} mph" if real_time_data.current_speed else "N/A",
+                "location": real_time_data.current_location
+            })
+        
+        if real_time_data.estimated_departure:
+            status_info["estimated_departure"] = real_time_data.estimated_departure.strftime("%Y-%m-%d %H:%M")
+        if real_time_data.estimated_arrival:
+            status_info["estimated_arrival"] = real_time_data.estimated_arrival.strftime("%Y-%m-%d %H:%M")
+            
+        return status_info
+    
+    def start_real_time_monitoring(self):
+        """Start real-time monitoring for all passengers"""
+        self.connection_monitor.start_monitoring()
+        print("Real-time monitoring started...")
+    
+    def stop_real_time_monitoring(self):
+        """Stop real-time monitoring"""
+        self.connection_monitor.stop_monitoring()
+        print("Real-time monitoring stopped.")
+    
+    def get_connection_alerts(self, hours: int = 24) -> List[Dict]:
+        """Get connection alerts from monitoring system"""
+        return self.connection_monitor.get_recent_alerts(hours)
+    
+    def get_passenger_real_time_status(self, passenger_id: str) -> Dict:
+        """Get real-time status for a specific passenger"""
+        passenger = next((p for p in self.passengers if p.passenger_id == passenger_id), None)
+        
+        if not passenger:
+            return {"error": "Passenger not found"}
+        
+        status = {
+            "passenger_id": passenger_id,
+            "name": passenger.name,
+            "route": f"{passenger.origin.code} → {passenger.final_destination.code}",
+            "connection_flights": []
+        }
+        
+        for flight in passenger.connection_flights:
+            flight_status = self.get_flight_real_time_status(flight.flight_number, flight.airline.code)
+            flight_info = {
+                "flight_number": flight.flight_number,
+                "airline": flight.airline.name,
+                "route": f"{flight.origin.code} → {flight.destination.code}",
+                "terminal": flight.terminal.value,
+                "real_time_status": flight_status
+            }
+            status["connection_flights"].append(flight_info)
+        
+        return status
+    
+    async def bulk_update_flight_status(self, flight_numbers: List[Tuple[str, str]]):
+        """Update multiple flights' real-time status asynchronously"""
+        results = await self.flight_tracker.get_multiple_flight_status(flight_numbers)
+        
+        for flight in self.flights:
+            flight_key = f"{flight.airline.code}{flight.flight_number}"
+            if flight_key in results:
+                flight.real_time_data = results[flight_key]
+        
+    def find_skyteam_connections(self, origin_region: str, destination_region: str) -> List[Dict]:
+        """Find SkyTeam alliance connections through Heathrow"""
+        connections = []
+        
+        # Common SkyTeam connection patterns
+        skyteam_routes = {
+            "Africa": {
+                "airlines": ["KQ", "AF", "KL"],
+                "hubs": ["CDG", "AMS", "NBO"],
+                "terminals": [Terminal.T4, Terminal.T3]
+            },
+            "Europe": {
+                "airlines": ["AF", "KL", "AZ", "SU", "OK", "RO"],
+                "hubs": ["CDG", "AMS", "FCO", "SVO", "PRG", "OTP"],
+                "terminals": [Terminal.T4, Terminal.T3]
+            },
+            "India": {
+                "airlines": ["AF", "KL", "DL"],
+                "hubs": ["CDG", "AMS", "DEL", "BOM"],
+                "terminals": [Terminal.T4, Terminal.T3]
+            }
+        }
+        
+        for route_type, route_info in skyteam_routes.items():
+            if origin_region == route_type:
+                connection = {
+                    "route_type": f"{route_type} to North America via LHR",
+                    "primary_airlines": route_info["airlines"],
+                    "connection_hubs": route_info["hubs"],
+                    "heathrow_terminals": [t.value for t in route_info["terminals"]],
+                    "alliance": "SkyTeam",
+                    "minimum_connection_time": "60 minutes (same terminal) / 90 minutes (different terminals)"
+                }
+                connections.append(connection)
+                
+        return connections
+        
+    def find_virgin_atlantic_connections(self, origin_region: str) -> List[Dict]:
+        """Find Virgin Atlantic connections through Heathrow"""
+        connections = []
+        
+        # Virgin Atlantic operates primarily from Terminal 3
+        virgin_routes = {
+            "Africa": {
+                "destinations": ["JNB", "CPT", "LOS", "ACC"],
+                "connection_cities": ["Johannesburg", "Cape Town", "Lagos", "Accra"],
+                "north_america_destinations": ["JFK", "LAX", "ATL", "SEA", "YYZ", "YVR"]
+            },
+            "Europe": {
+                "destinations": ["CDG", "AMS", "FCO"],
+                "connection_cities": ["Paris", "Amsterdam", "Rome"],
+                "north_america_destinations": ["JFK", "LAX", "ATL", "SEA", "YYZ", "YVR"]
+            },
+            "India": {
+                "destinations": ["DEL", "BOM", "BLR"],
+                "connection_cities": ["Delhi", "Mumbai", "Bangalore"],
+                "north_america_destinations": ["JFK", "LAX", "ATL", "SEA", "YYZ", "YVR"]
+            }
+        }
+        
+        if origin_region in virgin_routes:
+            route_info = virgin_routes[origin_region]
+            connection = {
+                "route_type": f"{origin_region} to North America via LHR",
+                "airline": "Virgin Atlantic",
+                "origin_destinations": route_info["destinations"],
+                "connection_cities": route_info["connection_cities"],
+                "heathrow_terminal": Terminal.T3.value,
+                "north_america_destinations": route_info["north_america_destinations"],
+                "alliance": "Virgin Atlantic Partners",
+                "minimum_connection_time": "60 minutes (domestic) / 75 minutes (international)"
+            }
+            connections.append(connection)
+            
+        return connections
+    
+    def calculate_connection_time(self, arriving_flight: Flight, departing_flight: Flight) -> timedelta:
+        """Calculate connection time between two flights"""
+        return departing_flight.departure_time - arriving_flight.arrival_time
+    
+    def is_valid_connection(self, arriving_flight: Flight, departing_flight: Flight) -> bool:
+        """Check if connection time is sufficient using real-time data"""
+        # Use real-time data if available
+        if (arriving_flight.real_time_data and 
+            departing_flight.real_time_data and
+            arriving_flight.real_time_data.estimated_arrival and
+            departing_flight.real_time_data.estimated_departure):
+            
+            connection_time = (departing_flight.real_time_data.estimated_departure - 
+                             arriving_flight.real_time_data.estimated_arrival)
+        else:
+            connection_time = self.calculate_connection_time(arriving_flight, departing_flight)
+        
+        # Minimum connection times at Heathrow
+        if arriving_flight.terminal == departing_flight.terminal:
+            min_time = timedelta(minutes=60)  # Same terminal
+        else:
+            min_time = timedelta(minutes=90)  # Different terminals
+            
+        return connection_time >= min_time
+    
+    def find_passenger_connections(self, passenger: Passenger) -> List[Dict]:
+        """Find all possible connections for a passenger"""
+        connections = []
+        
+        # Determine origin region
+        origin_region = passenger.origin.region
+        if passenger.origin.country in ["Egypt", "Kenya", "South Africa", "Nigeria", "Ghana", "Ethiopia"]:
+            origin_region = "Africa"
+        elif passenger.origin.country == "India":
+            origin_region = "India"
+        elif passenger.origin.country in ["France", "Netherlands", "Italy", "Russia", "Czech Republic", "Romania"]:
+            origin_region = "Europe"
+            
+        # Find SkyTeam connections
+        skyteam_connections = self.find_skyteam_connections(origin_region, "North America")
+        connections.extend(skyteam_connections)
+        
+        # Find Virgin Atlantic connections
+        virgin_connections = self.find_virgin_atlantic_connections(origin_region)
+        connections.extend(virgin_connections)
+        
+        return connections
+    
+    def generate_connection_report(self) -> Dict:
+        """Generate comprehensive connection report with real-time data"""
+        report = {
+            "heathrow_terminals": {
+                "skyteam_primary": [Terminal.T3.value, Terminal.T4.value],
+                "virgin_atlantic_primary": [Terminal.T3.value]
+            },
+            "connection_patterns": {
+                "africa_to_north_america": {
+                    "skyteam": ["Kenya Airways via NBO", "Air France via CDG", "KLM via AMS"],
+                    "virgin_atlantic": ["Direct from JNB/CPT", "Connect via European hubs"]
+                },
+                "europe_to_north_america": {
+                    "skyteam": ["Air France via CDG", "KLM via AMS", "Delta direct", "ITA Airways via FCO"],
+                    "virgin_atlantic": ["Direct from major European cities"]
+                },
+                "india_to_north_america": {
+                    "skyteam": ["Air France via CDG", "KLM via AMS", "Delta direct connections"],
+                    "virgin_atlantic": ["Direct from DEL/BOM/BLR"]
+                }
+            },
+            "minimum_connection_times": {
+                "same_terminal": "60 minutes",
+                "different_terminals": "90 minutes",
+                "terminal_transfer_time": "15-30 minutes via shuttle/tube"
+            },
+            "real_time_features": {
+                "flight_tracking": "Active",
+                "connection_monitoring": "Active",
+                "alert_system": "Active",
+                "monitored_passengers": len(self.connection_monitor.monitored_passengers),
+                "recent_alerts": len(self.get_connection_alerts(24))
+            }
+        }
+        
+        # Add real-time flight statistics
+        if self.flights:
+            on_time_flights = sum(1 for f in self.flights 
+                                if f.real_time_data and f.real_time_data.delay_minutes < 15)
+            delayed_flights = sum(1 for f in self.flights 
+                                if f.real_time_data and f.real_time_data.delay_minutes >= 15)
+            
+            report["real_time_statistics"] = {
+                "total_tracked_flights": len(self.flights),
+                "on_time_flights": on_time_flights,
+                "delayed_flights": delayed_flights,
+                "on_time_percentage": f"{(on_time_flights / len(self.flights) * 100):.1f}%" if self.flights else "N/A"
+            }
+        
+        return report
+    
+    def get_terminal_info(self, airline_code: str) -> str:
+        """Get terminal information for an airline"""
+        if airline_code in self.airlines:
+            return self.airlines[airline_code].terminal.value
+        return "Terminal information not available"
+
+# Example usage with real-time tracking
+def main():
+    # Initialize the system with API key (use actual API key in production)
+    system = HeathrowConnectionsSystem(api_key="your_aviationstack_api_key_here")
+    
+    # Create sample flights with real-time tracking
+    sample_flights = [
+        Flight(
+            flight_number="KQ100",
+            airline=system.airlines["KQ"],
+            origin=system.airports["NBO"],
+            destination=system.airports["LHR"],
+            departure_time=datetime.now() + timedelta(hours=2),
+            arrival_time=datetime.now() + timedelta(hours=10),
+            terminal=Terminal.T4,
+            aircraft_type="Boeing 787"
+        ),
+        Flight(
+            flight_number="VS25",
+            airline=system.airlines["VS"],
+            origin=system.airports["LHR"],
+            destination=system.airports["JFK"],
+            departure_time=datetime.now() + timedelta(hours=12),
+            arrival_time=datetime.now() + timedelta(hours=20),
+            terminal=Terminal.T3,
+            aircraft_type="Airbus A350"
+        )
+    ]
+    
+    # Add flights to system
+    for flight in sample_flights:
+        system.add_flight(flight)
+    
+    # Create sample passengers with connection flights
+    african_passenger = Passenger(
+        passenger_id="PAX001",
+        name="John Doe",
+        origin=system.airports["NBO"],
+        final_destination=system.airports["JFK"],
+        alliance_status="SkyTeam Elite",
+        connection_flights=sample_flights
+    )
+    
+    indian_passenger = Passenger(
+        passenger_id="PAX002", 
+        name="Priya Sharma",
+        origin=system.airports["DEL"],
+        final_destination=system.airports["YYZ"],
+        alliance_status="Virgin Atlantic Gold"
+    )
+    
+    # Add passengers to system
+    system.add_passenger(african_passenger)
+    system.add_passenger(indian_passenger)
+    
+    # Start real-time monitoring
+    system.start_real_time_monitoring()
+    
+    # Generate comprehensive report
+    report = system.generate_connection_report()
+    print("=== HEATHROW REAL-TIME CONNECTIONS REPORT ===\n")
+    print(json.dumps(report, indent=2))
+    
+    # Show real-time flight status
+    print("\n=== REAL-TIME FLIGHT STATUS ===\n")
+    for flight in sample_flights:
+        status = system.get_flight_real_time_status(flight.flight_number, flight.airline.code)
+        print(f"Flight {flight.flight_number} ({flight.airline.name}):")
+        print(f"  Status: {status.get('current_status', 'Unknown')}")
+        print(f"  Delay: {status.get('delay_minutes', 0)} minutes")
+        print(f"  Gate: {status.get('gate', 'TBD')}")
+        print(f"  Last Updated: {status.get('last_updated', 'N/A')}")
+        
+        if status.get('altitude'):
+            print(f"  Altitude: {status.get('altitude')}")
+            print(f"  Speed: {status.get('speed')}")
+        print("-" * 40)
+    
+    # Show passenger real-time status
+    print("\n=== PASSENGER REAL-TIME STATUS ===\n")
+    for passenger in system.passengers:
+        status = system.get_passenger_real_time_status(passenger.passenger_id)
+        print(f"Passenger: {status['name']} ({status['passenger_id']})")
+        print(f"Route: {status['route']}")
+        
+        for flight_info in status.get('connection_flights', []):
+            print(f"  Flight: {flight_info['flight_number']} - {flight_info['airline']}")
+            print(f"    Route: {flight_info['route']}")
+            print(f"    Terminal: {flight_info['terminal']}")
+            rt_status = flight_info['real_time_status']
+            print(f"    Status: {rt_status.get('current_status', 'Unknown')}")
+            print(f"    Delay: {rt_status.get('delay_minutes', 0)} minutes")
+        print("-" * 50)
+    
+    # Check for connection alerts
+    print("\n=== CONNECTION ALERTS ===\n")
+    alerts = system.get_connection_alerts(24)
+    if alerts:
+        for alert in alerts[-5:]:  # Show last 5 alerts
+            print(f"Alert Type: {alert['type']}")
+            print(f"Passenger: {alert['passenger_name']} ({alert['passenger_id']})")
+            print(f"Risk Level: {alert['risk_level']}")
+            print(f"Time: {alert['timestamp'].strftime('%Y-%m-%d %H:%M:%S')}")
+            print("-" * 30)
+    else:
+        print("No recent alerts")
+    
+    # Simulate running for a short time then stopping
+    print("\n=== SIMULATION COMPLETE ===")
+    print("In production, monitoring would continue running...")
+    print("Call system.stop_real_time_monitoring() to stop monitoring")
+    
+    # For demo purposes, stop monitoring after a short delay
+    import time
+    time.sleep(5)
+    system.stop_real_time_monitoring()
+
+if __name__ == "__main__":
+    main()
+    # Create additional sample flights for more comprehensive testing
+    additional_flights = [
+        Flight(
+            flight_number="AF1580",
+            airline=system.airlines["AF"],
+            origin=system.airports["CDG"],
+            destination=system.airports["LHR"],
+            departure_time=datetime.now() + timedelta(hours=1),
+            arrival_time=datetime.now() + timedelta(hours=2, minutes=30),
+            terminal=Terminal.T4,
+            aircraft_type="Airbus A320"
+        ),
+        Flight(
+            flight_number="DL16",
+            airline=system.airlines["DL"],
+            origin=system.airports["LHR"],
+            destination=system.airports["ATL"],
+            departure_time=datetime.now() + timedelta(hours=4),
+            arrival_time=datetime.now() + timedelta(hours=13),
+            terminal=Terminal.T3,
+            aircraft_type="Boeing 767"
+        ),
+        Flight(
+            flight_number="VS131",
+            airline=system.airlines["VS"],
+            origin=system.airports["DEL"],
+            destination=system.airports["LHR"],
+            departure_time=datetime.now() + timedelta(hours=6),
+            arrival_time=datetime.now() + timedelta(hours=15),
+            terminal=Terminal.T3,
+            aircraft_type="Boeing 787"
+        ),
+        Flight(
+            flight_number="VS3",
+            airline=system.airlines["VS"],
+            origin=system.airports["LHR"],
+            destination=system.airports["YYZ"],
+            departure_time=datetime.now() + timedelta(hours=17),
+            arrival_time=datetime.now() + timedelta(hours=25),
+            terminal=Terminal.T3,
+            aircraft_type="Airbus A330"
+        )
+    ]
+    
+    # Add additional flights
+    for flight in additional_flights:
+        system.add_flight(flight)
+    
+    # Update passenger connection flights
+    indian_passenger.connection_flights = [
+        next(f for f in system.flights if f.flight_number == "VS131"),
+        next(f for f in system.flights if f.flight_number == "VS3")
+    ]
+    
+    # European passenger with Air France/Delta connection
+    european_passenger = Passenger(
+        passenger_id="PAX003",
+        name="Marie Dubois",
+        origin=system.airports["CDG"],
+        final_destination=system.airports["ATL"],
+        alliance_status="SkyTeam Silver",
+        connection_flights=[
+            next(f for f in system.flights if f.flight_number == "AF1580"),
+            next(f for f in system.flights if f.flight_number == "DL16")
+        ]
+    )
+    
+    # Add all passengers to system
+    system.add_passenger(african_passenger)
+    system.add_passenger(indian_passenger)
+    system.add_passenger(european_passenger)
+    
+    # Start real-time monitoring
+    system.start_real_time_monitoring()
+    
+    # Generate comprehensive report
+    report = system.generate_connection_report()
+    print("=== HEATHROW REAL-TIME CONNECTIONS REPORT ===\n")
+    print(json.dumps(report, indent=2))
+    
+    # Show real-time flight status
+    print("\n=== REAL-TIME FLIGHT STATUS ===\n")
+    for flight in system.flights:
+        status = system.get_flight_real_time_status(flight.flight_number, flight.airline.code)
+        print(f"Flight {flight.flight_number} ({flight.airline.name}):")
+        print(f"  Route: {flight.origin.code} → {flight.destination.code}")
+        print(f"  Status: {status.get('current_status', 'Unknown')}")
+        print(f"  Delay: {status.get('delay_minutes', 0)} minutes")
+        print(f"  Gate: {status.get('gate', 'TBD')}")
+        print(f"  Terminal: {flight.terminal.value}")
+        
+        if status.get('altitude'):
+            print(f"  Altitude: {status.get('altitude')}")
+            print(f"  Speed: {status.get('speed')}")
+        
+        if status.get('estimated_departure'):
+            print(f"  Est. Departure: {status.get('estimated_departure')}")
+        if status.get('estimated_arrival'):
+            print(f"  Est. Arrival: {status.get('estimated_arrival')}")
+        
+        print(f"  Last Updated: {status.get('last_updated', 'N/A')}")
+        print("-" * 40)
+    
+    # Show passenger real-time status
+    print("\n=== PASSENGER REAL-TIME STATUS ===\n")
+    for passenger in system.passengers:
+        status = system.get_passenger_real_time_status(passenger.passenger_id)
+        print(f"Passenger: {status['name']} ({status['passenger_id']})")
+        print(f"Route: {status['route']}")
+        print(f"Alliance Status: {passenger.alliance_status}")
+        
+        for i, flight_info in enumerate(status.get('connection_flights', []), 1):
+            print(f"  Connection {i}: {flight_info['flight_number']} - {flight_info['airline']}")
+            print(f"    Route: {flight_info['route']}")
+            print(f"    Terminal: {flight_info['terminal']}")
+            rt_status = flight_info['real_time_status']
+            print(f"    Status: {rt_status.get('current_status', 'Unknown')}")
+            print(f"    Delay: {rt_status.get('delay_minutes', 0)} minutes")
+            print(f"    Gate: {rt_status.get('gate', 'TBD')}")
+        print("-" * 50)
+    
+    # Demonstrate connection validation with real-time data
+    print("\n=== CONNECTION VALIDATION ===\n")
+    for passenger in system.passengers:
+        if len(passenger.connection_flights) >= 2:
+            for i in range(len(passenger.connection_flights) - 1):
+                arriving = passenger.connection_flights[i]
+                departing = passenger.connection_flights[i + 1]
+                
+                is_valid = system.is_valid_connection(arriving, departing)
+                connection_time = system.calculate_connection_time(arriving, departing)
+                
+                print(f"Passenger: {passenger.name}")
+                print(f"Connection: {arriving.flight_number} → {departing.flight_number}")
+                print(f"Terminals: {arriving.terminal.value} → {departing.terminal.value}")
+                print(f"Connection Time: {connection_time}")
+                print(f"Valid Connection: {'✓' if is_valid else '✗'}")
+                
+                if not is_valid:
+                    print(f"⚠️  WARNING: Tight connection!")
+                print("-" * 30)
+    
+    # Check for connection alerts
+    print("\n=== CONNECTION ALERTS ===\n")
+    
+    # Wait a moment for monitoring to generate some alerts
+    import time
+    time.sleep(3)
+    
+    alerts = system.get_connection_alerts(24)
+    if alerts:
+        for alert in alerts[-5:]:  # Show last 5 alerts
+            print(f"🚨 Alert Type: {alert['type']}")
+            print(f"   Passenger: {alert['passenger_name']} ({alert['passenger_id']})")
+            print(f"   Risk Level: {alert['risk_level']}")
+            if 'arriving_flight' in alert:
+                print(f"   Flights: {alert['arriving_flight']} → {alert['departing_flight']}")
+            if 'connection_time' in alert:
+                print(f"   Connection Time: {alert['connection_time']}")
+            if 'delay_minutes' in alert:
+                print(f"   Delay: {alert['delay_minutes']} minutes")
+            print(f"   Time: {alert['timestamp'].strftime('%Y-%m-%d %H:%M:%S')}")
+            print("-" * 30)
+    else:
+        print("No recent alerts")
+    
+    # Demonstrate bulk flight status updates
+    print("\n=== BULK FLIGHT STATUS UPDATE ===\n")
+    flight_list = [(f.flight_number, f.airline.code) for f in system.flights[:3]]
+    print(f"Updating status for {len(flight_list)} flights asynchronously...")
+    
+    # Note: In a real implementation, you would run this async
+    # asyncio.run(system.bulk_update_flight_status(flight_list))
+    print("Bulk update completed (simulated)")
+    
+    # Show connection patterns
+    print("\n=== CONNECTION PATTERNS ANALYSIS ===\n")
+    for passenger in system.passengers:
+        connections = system.find_passenger_connections(passenger)
+        print(f"Passenger: {passenger.name}")
+        print(f"Origin Region: {passenger.origin.region}")
+        print("Available Connection Options:")
+        for i, connection in enumerate(connections, 1):
+            print(f"  {i}. {connection['route_type']}")
+            print(f"     Alliance: {connection['alliance']}")
+            if 'primary_airlines' in connection:
+                print(f"     Airlines: {', '.join(connection['primary_airlines'])}")
+            if 'airline' in connection:
+                print(f"     Airline: {connection['airline']}")
+            if 'heathrow_terminals' in connection:
+                print(f"     Terminals: {', '.join(connection['heathrow_terminals'])}")
+            if 'heathrow_terminal' in connection:
+                print(f"     Terminal: {connection['heathrow_terminal']}")
+            print(f"     Min Connection Time: {connection['minimum_connection_time']}")
+        print("-" * 50)
+    
+    # Performance statistics
+    print("\n=== SYSTEM PERFORMANCE ===\n")
+    print(f"Total Flights Tracked: {len(system.flights)}")
+    print(f"Total Passengers Monitored: {len(system.passengers)}")
+    print(f"Real-time Updates: Active")
+    print(f"Connection Monitoring: Active")
+    print(f"Alert System: Active")
+    print(f"API Calls (simulated): {len(system.flights) * 2}")  # 2 calls per flight
+    
+    # Simulate running for monitoring demonstration
+    print("\n=== MONITORING DEMONSTRATION ===")
+    print("Real-time monitoring active for 10 seconds...")
+    time.sleep(10)
+    
+    # Final alerts check
+    final_alerts = system.get_connection_alerts(1)  # Last hour
+    print(f"Generated {len(final_alerts)} alerts during monitoring period")
+    
+    print("\n=== SIMULATION COMPLETE ===")
+    print("In production, monitoring would continue running...")
+    print("Call system.stop_real_time_monitoring() to stop monitoring")
+    
+    # Stop monitoring
+    system.stop_real_time_monitoring()
+    print("Monitoring stopped.")
+
+if __name__ == "__main__":
+    main()
