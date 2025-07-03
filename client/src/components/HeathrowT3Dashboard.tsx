@@ -87,7 +87,7 @@ const HeathrowT3Dashboard: React.FC = () => {
         if (passengerConnectionData.success) {
           // Fetch individual passenger details
           const passengers = [];
-          const passengerIds = ['PAX001', 'PAX002']; // Known passenger IDs
+          const passengerIds = ['PAX001', 'PAX002', 'PAX003', 'PAX004', 'PAX005']; // All passenger IDs
           
           for (const id of passengerIds) {
             try {
@@ -382,30 +382,49 @@ const HeathrowT3Dashboard: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {passengerAlerts.map((alert) => (
-              <div key={alert.id} className={`border rounded-lg p-4 ${
-                alert.severity === 'critical' ? 'border-red-200 bg-red-50' :
-                alert.severity === 'warning' ? 'border-yellow-200 bg-yellow-50' :
+            {passengerAlerts.map((alert, index) => (
+              <div key={index} className={`border rounded-lg p-4 ${
+                alert.risk_level === 'HIGH' ? 'border-red-200 bg-red-50' :
+                alert.risk_level === 'MEDIUM' ? 'border-yellow-200 bg-yellow-50' :
                 'border-blue-200 bg-blue-50'
               }`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center space-x-2">
                       <AlertTriangle className={`h-4 w-4 ${
-                        alert.severity === 'critical' ? 'text-red-600' :
-                        alert.severity === 'warning' ? 'text-yellow-600' :
+                        alert.risk_level === 'HIGH' ? 'text-red-600' :
+                        alert.risk_level === 'MEDIUM' ? 'text-yellow-600' :
                         'text-blue-600'
                       }`} />
                       <span className="font-medium text-gray-900">{alert.passenger_name}</span>
                       <span className={`px-2 py-1 text-xs rounded-full ${
-                        alert.severity === 'critical' ? 'bg-red-100 text-red-800' :
-                        alert.severity === 'warning' ? 'bg-yellow-100 text-yellow-800' :
+                        alert.risk_level === 'HIGH' ? 'bg-red-100 text-red-800' :
+                        alert.risk_level === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-blue-100 text-blue-800'
                       }`}>
-                        {alert.severity.toUpperCase()}
+                        {alert.risk_level} RISK
+                      </span>
+                      <span className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
+                        {alert.type.replace('_', ' ')}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">{alert.message}</p>
+                    <div className="mt-2 space-y-1">
+                      {alert.arriving_flight && alert.departing_flight && (
+                        <p className="text-sm text-gray-600">
+                          Connection: {alert.arriving_flight} → {alert.departing_flight}
+                        </p>
+                      )}
+                      {alert.flight && alert.delay_minutes && (
+                        <p className="text-sm text-gray-600">
+                          Flight {alert.flight} delayed by {alert.delay_minutes} minutes
+                        </p>
+                      )}
+                      {alert.connection_time && (
+                        <p className="text-sm text-gray-600">
+                          {alert.connection_time}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <div className="text-xs text-gray-500">
                     {new Date(alert.timestamp).toLocaleTimeString()}
