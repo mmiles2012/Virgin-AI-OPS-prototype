@@ -9,6 +9,7 @@ import ScenarioManager from "./components/ScenarioManager";
 import MetricsDisplay from "./components/MetricsDisplay";
 import InlineApiTest from "./components/InlineApiTest";
 import LiveFlightTracker from "./components/LiveFlightTracker";
+import EnhancedLiveFlightTracker from "./components/EnhancedLiveFlightTracker";
 import SimpleFlightMap from "./components/SimpleFlightMap";
 import SatelliteWorldMap from "./components/SatelliteWorldMap";
 import EnhancedSatelliteMap from "./components/EnhancedSatelliteMap";
@@ -341,8 +342,8 @@ function App() {
             )}
             
             {viewMode === 'realtime' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
-                <RealTimeOperationsCenter />
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+                <EnhancedLiveFlightTracker />
               </div>
             )}
             

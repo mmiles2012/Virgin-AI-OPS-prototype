@@ -8,7 +8,7 @@ import { useFlightState } from '../lib/stores/useFlightState';
 import { useScenario } from '../lib/stores/useScenario';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { AlertTriangle, Plane, MapPin, Clock } from 'lucide-react';
-import LiveFlightTracker from './LiveFlightTracker';
+import EnhancedLiveFlightTracker from './EnhancedLiveFlightTracker';
 import SafeAirspaceAlerts from './SafeAirspaceAlerts';
 
 export default function OperationsCenter() {
@@ -61,9 +61,9 @@ export default function OperationsCenter() {
   return (
     <div className="absolute inset-4 pointer-events-auto overflow-auto">
       <div className="min-h-full grid grid-cols-3 gap-4">
-        {/* Live Flight Tracker */}
+        {/* Enhanced Live Flight Tracker */}
         <div className="col-span-2">
-          <LiveFlightTracker />
+          <EnhancedLiveFlightTracker />
         </div>
 
         {/* Flight Status Overview */}
