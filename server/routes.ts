@@ -4740,7 +4740,56 @@ else:
     }
   });
 
-  // Digital Twin Performance API
+  // Standardized Digital Twin API
+  app.get("/api/aviation/digital-twin/:aircraftId", async (req, res) => {
+    try {
+      const { aircraftId } = req.params;
+      const { format } = req.query;
+      const { digitalTwinPerformanceService } = await import('./digitalTwinPerformanceService');
+      const { DigitalTwinPresentationUtils } = await import('../shared/standardizedDigitalTwinFormat');
+      
+      // Get standardized digital twin data
+      const digitalTwinData = await digitalTwinPerformanceService.getStandardizedDigitalTwin(aircraftId);
+      
+      let formattedData = digitalTwinData;
+      
+      // Format data based on requested format
+      switch (format) {
+        case 'operations':
+          formattedData = DigitalTwinPresentationUtils.formatForOperationsCenter(digitalTwinData);
+          break;
+        case 'diversion':
+          formattedData = DigitalTwinPresentationUtils.formatForDiversionEngine(digitalTwinData);
+          break;
+        case 'whatif':
+          formattedData = DigitalTwinPresentationUtils.formatForWhatIfScenarios(digitalTwinData);
+          break;
+        case 'predictions':
+          formattedData = DigitalTwinPresentationUtils.formatForMLPredictions(digitalTwinData);
+          break;
+        default:
+          // Return full standardized format
+          break;
+      }
+
+      res.json({
+        success: true,
+        aircraftId,
+        digitalTwin: formattedData,
+        timestamp: new Date().toISOString(),
+        source: 'AINO_Standardized_Digital_Twin_Engine',
+        format: format || 'full'
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch standardized digital twin data',
+        message: error.message
+      });
+    }
+  })
+
+  // Legacy Digital Twin Performance API (for backward compatibility)
   app.get("/api/aviation/digital-twin-performance/:aircraftType", async (req, res) => {
     try {
       const { aircraftType } = req.params;
