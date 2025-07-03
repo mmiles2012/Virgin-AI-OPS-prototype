@@ -9,6 +9,11 @@ import {
   IStandardizedDigitalTwinService,
   DigitalTwinPresentationUtils 
 } from '../shared/standardizedDigitalTwinFormat';
+import { 
+  VIRGIN_ATLANTIC_FLEET, 
+  VirginAtlanticFleetUtils,
+  VirginAtlanticAircraft 
+} from '../shared/virginAtlanticFleetData';
 
 interface AircraftPerformanceData {
   aircraftType: string;
@@ -405,12 +410,27 @@ export class DigitalTwinPerformanceService implements IStandardizedDigitalTwinSe
    * Get standardized digital twin data for an aircraft
    */
   public async getStandardizedDigitalTwin(aircraftId: string): Promise<StandardizedDigitalTwinData> {
-    // Parse aircraft ID to get type and specific aircraft info
-    const aircraftType = this.extractAircraftTypeFromId(aircraftId);
+    // First try to find the aircraft in Virgin Atlantic fleet
+    let virginAtlanticAircraft: VirginAtlanticAircraft | undefined;
+    let aircraftType: string;
+    
+    // Check if aircraftId is a Virgin Atlantic registration
+    if (aircraftId.startsWith('G-V')) {
+      virginAtlanticAircraft = VirginAtlanticFleetUtils.getAircraftByRegistration(aircraftId);
+      if (virginAtlanticAircraft) {
+        aircraftType = this.mapFleetTypeToSystemType(virginAtlanticAircraft.aircraftType);
+      } else {
+        throw new Error(`Virgin Atlantic aircraft ${aircraftId} not found in fleet database`);
+      }
+    } else {
+      // Fallback to generic aircraft type extraction
+      aircraftType = this.extractAircraftTypeFromId(aircraftId);
+    }
+    
     const aircraft = this.aircraftDatabase.get(aircraftType);
     
     if (!aircraft) {
-      throw new Error(`Aircraft type ${aircraftType} not supported in digital twin database`);
+      throw new Error(`Aircraft type ${aircraftType} not found in digital twin database`);
     }
 
     // Generate realistic current state data
@@ -440,15 +460,29 @@ export class DigitalTwinPerformanceService implements IStandardizedDigitalTwinSe
     // Validate data quality
     const dataQuality = await this.validateDataQuality(aircraftId);
 
+    // Update identity with Virgin Atlantic fleet data if available
+    const identityData = virginAtlanticAircraft ? {
+      aircraftType: virginAtlanticAircraft.aircraftType,
+      manufacturer: virginAtlanticAircraft.aircraftType.includes('Boeing') ? 'Boeing' as const : 'Airbus' as const,
+      series: this.extractSeries(virginAtlanticAircraft.aircraftType),
+      variant: this.extractVariant(virginAtlanticAircraft.aircraftType),
+      tailNumber: virginAtlanticAircraft.registration,
+      fleetId: virginAtlanticAircraft.registration,
+      aircraftName: virginAtlanticAircraft.aircraftName,
+      configuration: virginAtlanticAircraft.configuration,
+      age: virginAtlanticAircraft.ageYears,
+      delivered: virginAtlanticAircraft.delivered
+    } : {
+      aircraftType: aircraftType,
+      manufacturer: aircraftType.startsWith('Boeing') ? 'Boeing' as const : 'Airbus' as const,
+      series: this.extractSeries(aircraftType),
+      variant: this.extractVariant(aircraftType),
+      tailNumber: aircraftId.startsWith('G-') ? aircraftId : `G-${aircraftId.slice(-4).toUpperCase()}`,
+      fleetId: aircraftId
+    };
+
     const standardizedData: StandardizedDigitalTwinData = {
-      identity: {
-        aircraftType: aircraftType,
-        manufacturer: aircraftType.startsWith('Boeing') ? 'Boeing' : 'Airbus',
-        series: this.extractSeries(aircraftType),
-        variant: this.extractVariant(aircraftType),
-        tailNumber: `G-${aircraftId.slice(-4).toUpperCase()}`,
-        fleetId: aircraftId
-      },
+      identity: identityData,
       currentState,
       predictions,
       operationsData,
@@ -719,6 +753,20 @@ export class DigitalTwinPerformanceService implements IStandardizedDigitalTwinSe
 
   // Helper methods
 
+  /**
+   * Map Virgin Atlantic fleet aircraft types to internal system types
+   */
+  private mapFleetTypeToSystemType(fleetType: string): string {
+    const typeMapping: Record<string, string> = {
+      'Airbus A330-300': 'A330-300',
+      'Airbus A330-900': 'A330-900',
+      'Airbus A350-1000': 'A350-1000',
+      'Boeing 787-9 Dreamliner': 'B787-9'
+    };
+    
+    return typeMapping[fleetType] || fleetType;
+  }
+
   private extractAircraftTypeFromId(aircraftId: string): string {
     // Default to Boeing 787-9 for demonstration
     // In real implementation, this would map aircraft IDs to types
@@ -739,6 +787,8 @@ export class DigitalTwinPerformanceService implements IStandardizedDigitalTwinSe
   }
 
   private generateCurrentStateData(aircraft: AircraftPerformanceData, aircraftId: string): StandardizedDigitalTwinData['currentState'] {
+    // Get Virgin Atlantic aircraft info if available
+    const virginAtlanticAircraft = VirginAtlanticFleetUtils.getAircraftByRegistration(aircraftId);
     const now = new Date();
     
     return {
