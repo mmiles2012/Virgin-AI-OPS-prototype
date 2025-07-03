@@ -24,15 +24,19 @@ interface PassengerConnectionData {
   name: string;
   route: string;
   alliance_status: string;
-  connection_risk: 'low' | 'medium' | 'high';
   connection_flights: Array<{
     flight_number: string;
     airline: string;
-    departure: string;
-    arrival: string;
+    route: string;
     terminal: string;
-    gate: string;
-    status: string;
+    aircraft_type: string;
+    real_time_status: {
+      flight_id: string;
+      current_status: string;
+      delay_minutes: number;
+      gate?: string;
+      last_updated: string;
+    };
   }>;
 }
 
@@ -319,8 +323,8 @@ const HeathrowT3Dashboard: React.FC = () => {
                     <p className="text-sm text-gray-600">{passenger.route}</p>
                     <p className="text-sm text-blue-600 font-medium">{passenger.alliance_status}</p>
                   </div>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getConnectionRiskColor(passenger.connection_risk)}`}>
-                    {passenger.connection_risk.toUpperCase()} RISK
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getConnectionRiskColor('low')}`}>
+                    ACTIVE
                   </span>
                 </div>
                 
@@ -334,20 +338,22 @@ const HeathrowT3Dashboard: React.FC = () => {
                           <span className="text-sm text-gray-500 ml-2">({flight.airline})</span>
                         </div>
                         <div className="text-sm text-gray-600">
-                          {flight.departure} → {flight.arrival}
+                          {flight.route}
                         </div>
                         <div className="flex items-center space-x-2">
                           <MapPin className="h-4 w-4 text-gray-500" />
                           <span className="text-sm text-gray-600">{flight.terminal}</span>
-                          <span className="text-sm text-gray-600">Gate {flight.gate}</span>
+                          {flight.real_time_status.gate && (
+                            <span className="text-sm text-gray-600">Gate {flight.real_time_status.gate}</span>
+                          )}
                         </div>
                       </div>
                       <span className={`px-2 py-1 text-xs rounded ${
-                        flight.status === 'On Time' ? 'bg-green-100 text-green-800' :
-                        flight.status === 'Delayed' ? 'bg-red-100 text-red-800' :
+                        flight.real_time_status.current_status === 'On Time' || flight.real_time_status.current_status === 'Departed' ? 'bg-green-100 text-green-800' :
+                        flight.real_time_status.current_status === 'Delayed' ? 'bg-red-100 text-red-800' :
                         'bg-yellow-100 text-yellow-800'
                       }`}>
-                        {flight.status}
+                        {flight.real_time_status.current_status}
                       </span>
                     </div>
                   ))}
