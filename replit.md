@@ -39,12 +39,17 @@ The AINO (Augmented Intelligent Network Operations) Aviation Intelligence Platfo
 - **Random Forest Algorithm**: Ensemble method providing 4.23-minute Mean Absolute Error with 92% confidence
 - **Feature Engineering**: 47 engineered features including weather, operational, and temporal variables
 - **Cross-Validation**: 5-fold stratified validation with temporal splitting for robust model evaluation
+- **Digital Twin Performance Engine**: Aircraft-specific performance calculations using authentic Boeing 787-9, Airbus A350-1000, and A330-300 specifications
 
 ### Operational Intelligence Systems
 - **Virgin Atlantic Flight Analyzer**: ML-powered issue detection and risk assessment for specific fleet operations
 - **News Intelligence Dashboard**: Real-time aviation news analysis with ML classification across 8 categories
 - **NOTAM Integration**: Airspace restriction monitoring and security alert generation
 - **Fuel Optimization Engine**: Aircraft-specific fuel consumption modeling with weather impact calculations
+- **Digital Twin Performance Engine**: Real-time aircraft performance calculations using authentic manufacturer specifications
+  - Boeing 787-9: GEnx-1B engines, 126,372kg fuel capacity, 7,635nm range
+  - Airbus A350-1000: Trent XWB-97 engines, 156,000kg fuel capacity, 8,700nm range
+  - Airbus A330-300: Trent 700 engines, 97,530kg fuel capacity, 6,350nm range
 
 ### Economic Analysis Engine
 - **Cost Impact Modeling**: Comprehensive financial impact analysis for operational decisions

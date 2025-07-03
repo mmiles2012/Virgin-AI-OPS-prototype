@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { digitalTwinPerformanceService } from './digitalTwinPerformanceService';
 
 interface VirginAtlanticFlight {
   flight_number: string;
@@ -295,25 +296,59 @@ class VirginAtlanticService {
         altitude = 35000 - ((flightProgress - 0.9) * 10 * 30000); // Descending
       }
       
-      // Calculate realistic velocity based on phase and aircraft type
+      // Get digital twin performance data for accurate calculations
+      let performanceData = null;
+      try {
+        performanceData = digitalTwinPerformanceService.calculateFlightPerformance(
+          flight.aircraft_type,
+          flight.route,
+          distance * 0.539957, // Convert km to nautical miles
+          Math.floor(180 + Math.random() * 120), // 180-300 passengers
+          Math.floor(Math.random() * 5000) // 0-5000 kg cargo
+        );
+      } catch (error) {
+        console.log(`Digital twin calculation unavailable for ${flight.aircraft_type}, using fallback`);
+      }
+
+      // Calculate realistic velocity based on digital twin performance or fallback
       let velocity = 450; // Base cruise speed
-      if (flight.aircraft_type.includes('787')) {
-        velocity = 490; // Boeing 787 cruise speed
-      } else if (flight.aircraft_type.includes('A330') || flight.aircraft_type.includes('A350')) {
-        velocity = 470; // Airbus cruise speed
+      if (performanceData) {
+        velocity = performanceData.performance.groundSpeed;
+        // Adjust velocity for flight phase
+        if (flightProgress < 0.1) {
+          velocity = 250 + (flightProgress * 10 * (velocity - 250)); // Accelerating to cruise
+        } else if (flightProgress > 0.9) {
+          velocity = velocity - ((flightProgress - 0.9) * 10 * (velocity - 180)); // Decelerating to landing
+        }
+      } else {
+        // Fallback velocity calculation
+        if (flight.aircraft_type.includes('787')) {
+          velocity = 490; // Boeing 787 cruise speed
+        } else if (flight.aircraft_type.includes('A330') || flight.aircraft_type.includes('A350')) {
+          velocity = 470; // Airbus cruise speed
+        }
+        
+        // Adjust velocity for flight phase
+        if (flightProgress < 0.1) {
+          velocity = 250 + (flightProgress * 10 * 240); // Accelerating
+        } else if (flightProgress > 0.9) {
+          velocity = 490 - ((flightProgress - 0.9) * 10 * 240); // Decelerating
+        }
       }
       
-      // Adjust velocity for flight phase
-      if (flightProgress < 0.1) {
-        velocity = 250 + (flightProgress * 10 * 240); // Accelerating
-      } else if (flightProgress > 0.9) {
-        velocity = 490 - ((flightProgress - 0.9) * 10 * 240); // Decelerating
+      // Calculate fuel remaining based on digital twin performance or fallback
+      let fuelRemaining = 50; // Default fallback
+      if (performanceData) {
+        fuelRemaining = performanceData.fuelCalculations.fuelRemainingPercentage;
+        // Adjust fuel based on flight progress
+        const consumedFuel = flightProgress * (100 - fuelRemaining);
+        fuelRemaining = Math.max(10, 100 - consumedFuel);
+      } else {
+        // Fallback fuel calculation
+        const baseFuelCapacity = flight.aircraft_type.includes('787') ? 126372 : 139090; // Liters
+        const fuelConsumed = flightProgress * distance * 3.2; // Realistic fuel consumption
+        fuelRemaining = Math.max(10, 100 - (fuelConsumed / baseFuelCapacity * 100));
       }
-      
-      // Calculate fuel remaining based on progress and aircraft efficiency
-      const baseFuelCapacity = flight.aircraft_type.includes('787') ? 126372 : 139090; // Liters
-      const fuelConsumed = flightProgress * distance * 3.2; // Realistic fuel consumption
-      const fuelRemaining = Math.max(10, 100 - (fuelConsumed / baseFuelCapacity * 100));
       
       // Determine flight status based on progress
       let flightStatus = 'EN_ROUTE';
@@ -325,6 +360,9 @@ class VirginAtlanticService {
         flightStatus = 'LANDED';
       }
       
+      // Get real-time digital twin performance data
+      const realtimePerformance = digitalTwinPerformanceService.getRealtimePerformanceData(flight.aircraft_type);
+
       return {
         ...flight,
         callsign: flight.flight_number,
@@ -343,7 +381,29 @@ class VirginAtlanticService {
         distance_remaining: Math.round(distance * (1 - flightProgress)),
         delay_minutes: Math.random() > 0.8 ? Math.floor(Math.random() * 45) : 0,
         fuel_remaining: Math.round(fuelRemaining),
-        warnings: this.generateWarnings()
+        warnings: this.generateWarnings(),
+        // Enhanced digital twin performance data
+        digital_twin_data: {
+          performance_calculations: performanceData ? {
+            total_flight_time_hours: performanceData.flightPhases.totalFlightTime,
+            fuel_efficiency_kg_per_hour: performanceData.fuelCalculations.fuelEfficiency,
+            operational_cost_usd: performanceData.costs.totalOperationalCost,
+            cost_per_passenger_usd: performanceData.costs.costPerPassenger,
+            engine_thrust_percentage: realtimePerformance?.engines.currentThrust ? 
+              (realtimePerformance.engines.currentThrust / realtimePerformance.engines.thrustPerEngine * 100) : null,
+            fuel_flow_kg_per_hour: realtimePerformance?.engines.currentFuelFlow || null
+          } : null,
+          aircraft_specifications: realtimePerformance ? {
+            max_altitude_ft: realtimePerformance.performance.currentCruiseSpeed ? 43000 : null,
+            cruise_speed_knots: realtimePerformance.performance.currentCruiseSpeed || null,
+            fuel_capacity_kg: flight.aircraft_type.includes('787') ? 126372 : 
+                             flight.aircraft_type.includes('A350') ? 156000 : 97530,
+            engine_type: realtimePerformance.engines.type || 'Unknown',
+            engine_count: realtimePerformance.engines.count || 2
+          } : null,
+          performance_status: realtimePerformance?.status || null,
+          calculated_at: new Date().toISOString()
+        }
       };
     });
   }

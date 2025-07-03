@@ -4,6 +4,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { digitalTwinPerformanceService } from './digitalTwinPerformanceService';
 
 interface AircraftHealthData {
   registration: string;

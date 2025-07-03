@@ -4733,6 +4733,77 @@ else:
     }
   });
 
+  // Digital Twin Performance API
+  app.get("/api/aviation/digital-twin-performance/:aircraftType", async (req, res) => {
+    try {
+      const { aircraftType } = req.params;
+      const { digitalTwinPerformanceService } = await import('./digitalTwinPerformanceService');
+      
+      // Get real-time performance data
+      const performanceData = digitalTwinPerformanceService.getRealtimePerformanceData(aircraftType);
+      const specifications = digitalTwinPerformanceService.getAircraftSpecifications(aircraftType);
+      
+      if (!performanceData || !specifications) {
+        return res.status(404).json({
+          success: false,
+          error: `Aircraft type ${aircraftType} not supported in digital twin database`,
+          supportedTypes: digitalTwinPerformanceService.getSupportedAircraftTypes()
+        });
+      }
+
+      res.json({
+        success: true,
+        aircraftType,
+        performanceData,
+        specifications,
+        timestamp: new Date().toISOString(),
+        source: 'AINO_Digital_Twin_Performance_Engine'
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch digital twin performance data',
+        message: error.message
+      });
+    }
+  });
+
+  // Flight Performance Analysis API
+  app.post("/api/aviation/analyze-flight-performance", async (req, res) => {
+    try {
+      const { aircraftType, route, distanceNm, passengers, cargoWeight } = req.body;
+      const { digitalTwinPerformanceService } = await import('./digitalTwinPerformanceService');
+      
+      if (!aircraftType || !route || !distanceNm) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required parameters: aircraftType, route, distanceNm'
+        });
+      }
+
+      const analysis = digitalTwinPerformanceService.calculateFlightPerformance(
+        aircraftType,
+        route,
+        distanceNm,
+        passengers || 200,
+        cargoWeight || 0
+      );
+
+      res.json({
+        success: true,
+        analysis,
+        timestamp: new Date().toISOString(),
+        source: 'AINO_Digital_Twin_Performance_Analysis'
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to analyze flight performance',
+        message: error.message
+      });
+    }
+  });
+
   return httpServer;
 }
 
