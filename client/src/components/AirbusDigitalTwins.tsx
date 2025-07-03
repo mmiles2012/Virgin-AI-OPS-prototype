@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import StandardizedDigitalTwin from './StandardizedDigitalTwin';
+import SimpleDigitalTwin from './SimpleDigitalTwin';
 
 interface AirbusDigitalTwinProps {
   flightId?: string;
@@ -19,9 +19,9 @@ export default function AirbusDigitalTwins({
   aircraftType = 'A350-1000',
   displayMode = 'full'
 }: AirbusDigitalTwinProps) {
-  // Use the standardized digital twin component
+  // Use the simple digital twin component
   return (
-    <StandardizedDigitalTwin
+    <SimpleDigitalTwin
       aircraftId={aircraftId}
       displayMode={displayMode}
     />
