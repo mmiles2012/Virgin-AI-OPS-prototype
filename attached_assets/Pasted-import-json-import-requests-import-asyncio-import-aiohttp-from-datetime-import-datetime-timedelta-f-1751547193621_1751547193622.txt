@@ -1,0 +1,782 @@
+import json
+import requests
+import asyncio
+import aiohttp
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Set, Tuple
+from dataclasses import dataclass, field
+from enum import Enum
+import time
+import threading
+from concurrent.futures import ThreadPoolExecutor
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingRegressor
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, mean_absolute_error
+import joblib
+import warnings
+warnings.filterwarnings('ignore')
+
+class FlightStatus(Enum):
+    SCHEDULED = "Scheduled"
+    DEPARTED = "Departed"
+    AIRBORNE = "Airborne"
+    ARRIVED = "Arrived"
+    DELAYED = "Delayed"
+    CANCELLED = "Cancelled"
+    DIVERTED = "Diverted"
+    BOARDING = "Boarding"
+    GATE_CLOSED = "Gate Closed"
+
+class Terminal(Enum):
+    T1 = "Terminal 1"  # Closed but keeping for historical data
+    T2 = "Terminal 2"  # Star Alliance hub
+    T3 = "Terminal 3"  # SkyTeam, Virgin Atlantic, other alliances
+    T4 = "Terminal 4"  # SkyTeam members
+    T5 = "Terminal 5"  # British Airways, OneWorld
+
+class Alliance(Enum):
+    SKYTEAM = "SkyTeam"
+    VIRGIN_ATLANTIC = "Virgin Atlantic"
+    STAR_ALLIANCE = "Star Alliance"
+    ONEWORLD = "OneWorld"
+    INDEPENDENT = "Independent"
+
+class ConnectionRisk(Enum):
+    LOW = "Low"
+    MEDIUM = "Medium"
+    HIGH = "High"
+    CRITICAL = "Critical"
+
+@dataclass
+class Airport:
+    code: str
+    name: str
+    country: str
+    region: str
+    
+@dataclass
+class Airline:
+    code: str
+    name: str
+    alliance: Alliance
+    terminal: Terminal
+
+@dataclass
+class RealTimeFlightData:
+    flight_id: str
+    current_status: FlightStatus
+    actual_departure: Optional[datetime] = None
+    actual_arrival: Optional[datetime] = None
+    estimated_departure: Optional[datetime] = None
+    estimated_arrival: Optional[datetime] = None
+    delay_minutes: int = 0
+    gate: Optional[str] = None
+    current_altitude: Optional[int] = None
+    current_speed: Optional[int] = None
+    current_location: Optional[Tuple[float, float]] = None  # (lat, lon)
+    last_updated: datetime = field(default_factory=datetime.now)
+    
+@dataclass
+class Flight:
+    flight_number: str
+    airline: Airline
+    origin: Airport
+    destination: Airport
+    departure_time: datetime
+    arrival_time: datetime
+    terminal: Terminal
+    aircraft_type: str = ""
+    real_time_data: Optional[RealTimeFlightData] = None
+    
+@dataclass
+class Passenger:
+    passenger_id: str
+    name: str
+    origin: Airport
+    final_destination: Airport
+    alliance_status: str = "None"
+    connection_flights: List[Flight] = field(default_factory=list)
+    
+@dataclass
+class MLPrediction:
+    prediction_type: str
+    probability: float
+    confidence: float
+    risk_level: ConnectionRisk
+    factors: Dict[str, float]
+    timestamp: datetime = field(default_factory=datetime.now)
+
+class DelayPredictor:
+    """Machine Learning model to predict flight delays"""
+    
+    def __init__(self):
+        self.model = GradientBoostingRegressor(n_estimators=100, random_state=42)
+        self.scaler = StandardScaler()
+        self.label_encoders = {}
+        self.is_trained = False
+        
+    def generate_training_data(self, flights: List[Flight], num_samples: int = 1000) -> pd.DataFrame:
+        """Generate synthetic training data based on real flight patterns"""
+        np.random.seed(42)
+        
+        data = []
+        for _ in range(num_samples):
+            # Simulate historical flight data
+            hour = np.random.randint(0, 24)
+            day_of_week = np.random.randint(0, 7)
+            month = np.random.randint(1, 13)
+            
+            # Weather impact (simplified)
+            weather_score = np.random.uniform(0, 10)
+            
+            # Aircraft type impact
+            aircraft_types = ['Boeing 737', 'Boeing 777', 'Boeing 787', 'Airbus A320', 'Airbus A330', 'Airbus A350']
+            aircraft_type = np.random.choice(aircraft_types)
+            
+            # Airline reliability (simplified)
+            airline_codes = ['AF', 'KL', 'VS', 'BA', 'DL', 'KQ', 'EK', 'QR']
+            airline = np.random.choice(airline_codes)
+            
+            # Route complexity
+            route_distance = np.random.uniform(500, 8000)  # km
+            
+            # Terminal congestion
+            terminal_congestion = np.random.uniform(0, 1)
+            
+            # Historical delay patterns
+            base_delay = max(0, np.random.normal(15, 30))  # Base delay tendency
+            
+            # Weather impact on delay
+            weather_delay = max(0, np.random.normal(0, 20) * (weather_score / 10))
+            
+            # Time-based delay patterns
+            time_delay = 0
+            if 6 <= hour <= 9 or 17 <= hour <= 20:  # Rush hours
+                time_delay = np.random.normal(10, 15)
+            
+            # Total delay
+            total_delay = max(0, base_delay + weather_delay + time_delay + 
+                            np.random.normal(0, 10))
+            
+            data.append({
+                'hour': hour,
+                'day_of_week': day_of_week,
+                'month': month,
+                'weather_score': weather_score,
+                'aircraft_type': aircraft_type,
+                'airline': airline,
+                'route_distance': route_distance,
+                'terminal_congestion': terminal_congestion,
+                'delay_minutes': total_delay
+            })
+        
+        return pd.DataFrame(data)
+    
+    def train(self, training_data: pd.DataFrame):
+        """Train the delay prediction model"""
+        # Prepare features
+        X = training_data.drop('delay_minutes', axis=1)
+        y = training_data['delay_minutes']
+        
+        # Encode categorical variables
+        categorical_columns = ['aircraft_type', 'airline']
+        for col in categorical_columns:
+            le = LabelEncoder()
+            X[col] = le.fit_transform(X[col])
+            self.label_encoders[col] = le
+        
+        # Scale features
+        X_scaled = self.scaler.fit_transform(X)
+        
+        # Train model
+        self.model.fit(X_scaled, y)
+        self.is_trained = True
+        
+        # Print training results
+        X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+        y_pred = self.model.predict(X_test)
+        mae = mean_absolute_error(y_test, y_pred)
+        print(f"Delay Predictor trained. MAE: {mae:.2f} minutes")
+        
+    def predict_delay(self, flight: Flight, weather_score: float = 5.0, 
+                     terminal_congestion: float = 0.5) -> float:
+        """Predict delay for a specific flight"""
+        if not self.is_trained:
+            return 0.0
+            
+        # Extract features
+        features = {
+            'hour': flight.departure_time.hour,
+            'day_of_week': flight.departure_time.weekday(),
+            'month': flight.departure_time.month,
+            'weather_score': weather_score,
+            'aircraft_type': flight.aircraft_type or 'Boeing 737',
+            'airline': flight.airline.code,
+            'route_distance': 2000,  # Simplified
+            'terminal_congestion': terminal_congestion
+        }
+        
+        # Create DataFrame
+        df = pd.DataFrame([features])
+        
+        # Encode categorical variables
+        for col in ['aircraft_type', 'airline']:
+            if col in self.label_encoders:
+                try:
+                    df[col] = self.label_encoders[col].transform(df[col])
+                except ValueError:
+                    # Handle unseen categories
+                    df[col] = 0
+        
+        # Scale features
+        X_scaled = self.scaler.transform(df)
+        
+        # Predict
+        predicted_delay = self.model.predict(X_scaled)[0]
+        return max(0, predicted_delay)
+
+class ConnectionPredictor:
+    """Machine Learning model to predict connection success probability"""
+    
+    def __init__(self):
+        self.model = RandomForestClassifier(n_estimators=100, random_state=42)
+        self.scaler = StandardScaler()
+        self.label_encoders = {}
+        self.is_trained = False
+        
+    def generate_training_data(self, num_samples: int = 1000) -> pd.DataFrame:
+        """Generate synthetic training data for connection success"""
+        np.random.seed(42)
+        
+        data = []
+        for _ in range(num_samples):
+            # Connection parameters
+            connection_time = np.random.uniform(30, 300)  # 30 minutes to 5 hours
+            inbound_delay = max(0, np.random.normal(15, 30))
+            outbound_delay = max(0, np.random.normal(10, 20))
+            
+            # Terminal factors
+            same_terminal = np.random.choice([0, 1])
+            terminal_distance = np.random.uniform(5, 30) if not same_terminal else 0
+            
+            # Passenger factors
+            alliance_match = np.random.choice([0, 1])
+            passenger_status = np.random.choice(['None', 'Silver', 'Gold', 'Elite'])
+            
+            # Operational factors
+            weather_conditions = np.random.uniform(0, 10)
+            airport_congestion = np.random.uniform(0, 1)
+            
+            # Time factors
+            hour = np.random.randint(0, 24)
+            day_of_week = np.random.randint(0, 7)
+            
+            # Calculate success probability
+            effective_connection_time = connection_time - inbound_delay
+            
+            # Base success probability
+            if effective_connection_time >= 90:
+                base_prob = 0.95
+            elif effective_connection_time >= 60:
+                base_prob = 0.80
+            elif effective_connection_time >= 45:
+                base_prob = 0.60
+            else:
+                base_prob = 0.30
+            
+            # Adjust for factors
+            if same_terminal:
+                base_prob += 0.10
+            if alliance_match:
+                base_prob += 0.05
+            if passenger_status in ['Gold', 'Elite']:
+                base_prob += 0.10
+            
+            # Weather and congestion penalties
+            base_prob -= (weather_conditions / 10) * 0.2
+            base_prob -= airport_congestion * 0.15
+            
+            # Time-based adjustments
+            if 6 <= hour <= 9 or 17 <= hour <= 20:  # Rush hours
+                base_prob -= 0.10
+            
+            success = 1 if np.random.random() < max(0, min(1, base_prob)) else 0
+            
+            data.append({
+                'connection_time': connection_time,
+                'inbound_delay': inbound_delay,
+                'outbound_delay': outbound_delay,
+                'same_terminal': same_terminal,
+                'terminal_distance': terminal_distance,
+                'alliance_match': alliance_match,
+                'passenger_status': passenger_status,
+                'weather_conditions': weather_conditions,
+                'airport_congestion': airport_congestion,
+                'hour': hour,
+                'day_of_week': day_of_week,
+                'success': success
+            })
+        
+        return pd.DataFrame(data)
+    
+    def train(self, training_data: pd.DataFrame):
+        """Train the connection success prediction model"""
+        # Prepare features
+        X = training_data.drop('success', axis=1)
+        y = training_data['success']
+        
+        # Encode categorical variables
+        categorical_columns = ['passenger_status']
+        for col in categorical_columns:
+            le = LabelEncoder()
+            X[col] = le.fit_transform(X[col])
+            self.label_encoders[col] = le
+        
+        # Scale features
+        X_scaled = self.scaler.fit_transform(X)
+        
+        # Train model
+        self.model.fit(X_scaled, y)
+        self.is_trained = True
+        
+        # Print training results
+        X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+        y_pred = self.model.predict(X_test)
+        print("Connection Predictor trained.")
+        print(classification_report(y_test, y_pred))
+        
+    def predict_connection_success(self, arriving_flight: Flight, departing_flight: Flight,
+                                 passenger: Passenger, weather_conditions: float = 5.0,
+                                 airport_congestion: float = 0.5) -> MLPrediction:
+        """Predict connection success probability"""
+        if not self.is_trained:
+            return MLPrediction(
+                prediction_type="connection_success",
+                probability=0.5,
+                confidence=0.0,
+                risk_level=ConnectionRisk.MEDIUM,
+                factors={}
+            )
+        
+        # Calculate connection time
+        connection_time = (departing_flight.departure_time - arriving_flight.arrival_time).total_seconds() / 60
+        
+        # Get predicted delays
+        inbound_delay = arriving_flight.real_time_data.delay_minutes if arriving_flight.real_time_data else 0
+        outbound_delay = departing_flight.real_time_data.delay_minutes if departing_flight.real_time_data else 0
+        
+        # Terminal factors
+        same_terminal = 1 if arriving_flight.terminal == departing_flight.terminal else 0
+        terminal_distance = 15 if not same_terminal else 0  # Simplified
+        
+        # Alliance factors
+        alliance_match = 1 if arriving_flight.airline.alliance == departing_flight.airline.alliance else 0
+        
+        # Prepare features
+        features = {
+            'connection_time': connection_time,
+            'inbound_delay': inbound_delay,
+            'outbound_delay': outbound_delay,
+            'same_terminal': same_terminal,
+            'terminal_distance': terminal_distance,
+            'alliance_match': alliance_match,
+            'passenger_status': passenger.alliance_status,
+            'weather_conditions': weather_conditions,
+            'airport_congestion': airport_congestion,
+            'hour': departing_flight.departure_time.hour,
+            'day_of_week': departing_flight.departure_time.weekday()
+        }
+        
+        # Create DataFrame
+        df = pd.DataFrame([features])
+        
+        # Encode categorical variables
+        for col in ['passenger_status']:
+            if col in self.label_encoders:
+                try:
+                    df[col] = self.label_encoders[col].transform(df[col])
+                except ValueError:
+                    # Handle unseen categories
+                    df[col] = 0
+        
+        # Scale features
+        X_scaled = self.scaler.transform(df)
+        
+        # Predict
+        success_probability = self.model.predict_proba(X_scaled)[0][1]
+        
+        # Get feature importance
+        feature_importance = dict(zip(df.columns, self.model.feature_importances_))
+        
+        # Determine risk level
+        if success_probability >= 0.8:
+            risk_level = ConnectionRisk.LOW
+        elif success_probability >= 0.6:
+            risk_level = ConnectionRisk.MEDIUM
+        elif success_probability >= 0.4:
+            risk_level = ConnectionRisk.HIGH
+        else:
+            risk_level = ConnectionRisk.CRITICAL
+        
+        return MLPrediction(
+            prediction_type="connection_success",
+            probability=success_probability,
+            confidence=0.85,  # Model confidence
+            risk_level=risk_level,
+            factors=feature_importance
+        )
+
+class ConnectionOptimizer:
+    """Optimize passenger connections using ML predictions"""
+    
+    def __init__(self, delay_predictor: DelayPredictor, connection_predictor: ConnectionPredictor):
+        self.delay_predictor = delay_predictor
+        self.connection_predictor = connection_predictor
+        
+    def optimize_connections(self, passengers: List[Passenger], 
+                           available_flights: List[Flight]) -> Dict[str, Dict]:
+        """Optimize connections for all passengers"""
+        optimizations = {}
+        
+        for passenger in passengers:
+            if len(passenger.connection_flights) >= 2:
+                optimization = self._optimize_passenger_connection(passenger, available_flights)
+                optimizations[passenger.passenger_id] = optimization
+        
+        return optimizations
+    
+    def _optimize_passenger_connection(self, passenger: Passenger, 
+                                     available_flights: List[Flight]) -> Dict:
+        """Optimize connections for a single passenger"""
+        current_connections = passenger.connection_flights
+        
+        # Analyze current connection
+        current_prediction = None
+        if len(current_connections) >= 2:
+            current_prediction = self.connection_predictor.predict_connection_success(
+                current_connections[0], current_connections[1], passenger
+            )
+        
+        # Find alternative connections
+        alternatives = self._find_alternative_connections(
+            passenger, available_flights, current_connections
+        )
+        
+        # Rank alternatives
+        ranked_alternatives = self._rank_alternatives(alternatives, passenger)
+        
+        # Generate recommendations
+        recommendations = self._generate_recommendations(
+            passenger, current_prediction, ranked_alternatives
+        )
+        
+        return {
+            'passenger': passenger.name,
+            'current_connection_risk': current_prediction.risk_level.value if current_prediction else "Unknown",
+            'current_success_probability': current_prediction.probability if current_prediction else 0.0,
+            'alternatives_found': len(alternatives),
+            'recommendations': recommendations
+        }
+    
+    def _find_alternative_connections(self, passenger: Passenger, 
+                                    available_flights: List[Flight],
+                                    current_connections: List[Flight]) -> List[Tuple[Flight, Flight]]:
+        """Find alternative connection options"""
+        alternatives = []
+        
+        # For simplicity, look for flights with similar routes
+        for arriving_flight in available_flights:
+            if (arriving_flight.origin.code == passenger.origin.code and
+                arriving_flight.destination.code == "LHR" and
+                arriving_flight.flight_number != current_connections[0].flight_number):
+                
+                for departing_flight in available_flights:
+                    if (departing_flight.origin.code == "LHR" and
+                        departing_flight.destination.code == passenger.final_destination.code and
+                        departing_flight.flight_number != current_connections[1].flight_number):
+                        
+                        # Check if connection time is reasonable
+                        connection_time = (departing_flight.departure_time - arriving_flight.arrival_time).total_seconds() / 60
+                        if 45 <= connection_time <= 480:  # 45 minutes to 8 hours
+                            alternatives.append((arriving_flight, departing_flight))
+        
+        return alternatives
+    
+    def _rank_alternatives(self, alternatives: List[Tuple[Flight, Flight]], 
+                          passenger: Passenger) -> List[Tuple[Tuple[Flight, Flight], MLPrediction]]:
+        """Rank alternative connections by success probability"""
+        ranked = []
+        
+        for arriving_flight, departing_flight in alternatives:
+            prediction = self.connection_predictor.predict_connection_success(
+                arriving_flight, departing_flight, passenger
+            )
+            ranked.append(((arriving_flight, departing_flight), prediction))
+        
+        # Sort by success probability (descending)
+        ranked.sort(key=lambda x: x[1].probability, reverse=True)
+        
+        return ranked
+    
+    def _generate_recommendations(self, passenger: Passenger, 
+                                current_prediction: Optional[MLPrediction],
+                                ranked_alternatives: List[Tuple[Tuple[Flight, Flight], MLPrediction]]) -> List[Dict]:
+        """Generate actionable recommendations"""
+        recommendations = []
+        
+        # Current connection analysis
+        if current_prediction:
+            if current_prediction.risk_level in [ConnectionRisk.HIGH, ConnectionRisk.CRITICAL]:
+                recommendations.append({
+                    'type': 'HIGH_RISK_CONNECTION',
+                    'priority': 'HIGH',
+                    'message': f'Current connection has {current_prediction.risk_level.value.lower()} risk '
+                              f'({current_prediction.probability:.1%} success probability)',
+                    'action': 'Consider rebooking or prepare for potential missed connection'
+                })
+        
+        # Alternative recommendations
+        if ranked_alternatives:
+            best_alternative = ranked_alternatives[0]
+            (alt_arriving, alt_departing), alt_prediction = best_alternative
+            
+            if (current_prediction and 
+                alt_prediction.probability > current_prediction.probability + 0.1):
+                
+                recommendations.append({
+                    'type': 'BETTER_ALTERNATIVE',
+                    'priority': 'MEDIUM',
+                    'message': f'Alternative connection available with {alt_prediction.probability:.1%} success probability',
+                    'action': f'Consider rebooking to {alt_arriving.flight_number} → {alt_departing.flight_number}',
+                    'alternative_flights': {
+                        'arriving': alt_arriving.flight_number,
+                        'departing': alt_departing.flight_number,
+                        'success_probability': alt_prediction.probability
+                    }
+                })
+        
+        # Proactive recommendations
+        if current_prediction and current_prediction.risk_level == ConnectionRisk.MEDIUM:
+            recommendations.append({
+                'type': 'PROACTIVE_MEASURES',
+                'priority': 'LOW',
+                'message': 'Connection has moderate risk. Consider proactive measures.',
+                'action': 'Arrive early at gate, check mobile boarding pass, consider priority services'
+            })
+        
+        return recommendations
+
+class MLConnectionMonitor(ConnectionMonitor):
+    """Enhanced connection monitor with ML predictions"""
+    
+    def __init__(self, flight_tracker, delay_predictor: DelayPredictor, 
+                 connection_predictor: ConnectionPredictor):
+        super().__init__(flight_tracker)
+        self.delay_predictor = delay_predictor
+        self.connection_predictor = connection_predictor
+        self.optimizer = ConnectionOptimizer(delay_predictor, connection_predictor)
+        self.predictions = {}
+        
+    def _check_passenger_connections(self, passenger: Passenger):
+        """Enhanced connection checking with ML predictions"""
+        if not passenger.connection_flights:
+            return
+            
+        for i in range(len(passenger.connection_flights) - 1):
+            arriving_flight = passenger.connection_flights[i]
+            departing_flight = passenger.connection_flights[i + 1]
+            
+            # Get real-time data
+            arriving_data = self.flight_tracker.get_flight_status(
+                arriving_flight.flight_number, 
+                arriving_flight.airline.code
+            )
+            
+            departing_data = self.flight_tracker.get_flight_status(
+                departing_flight.flight_number, 
+                departing_flight.airline.code
+            )
+            
+            if arriving_data and departing_data:
+                # Update flights with real-time data
+                arriving_flight.real_time_data = arriving_data
+                departing_flight.real_time_data = departing_data
+                
+                # ML-based connection analysis
+                self._analyze_connection_ml(passenger, arriving_flight, departing_flight)
+    
+    def _analyze_connection_ml(self, passenger: Passenger, arriving_flight: Flight, departing_flight: Flight):
+        """Analyze connection using ML predictions"""
+        # Get ML prediction
+        prediction = self.connection_predictor.predict_connection_success(
+            arriving_flight, departing_flight, passenger
+        )
+        
+        # Store prediction
+        connection_key = f"{passenger.passenger_id}_{arriving_flight.flight_number}_{departing_flight.flight_number}"
+        self.predictions[connection_key] = prediction
+        
+        # Generate ML-based alerts
+        if prediction.risk_level in [ConnectionRisk.HIGH, ConnectionRisk.CRITICAL]:
+            alert = {
+                "type": "ML_HIGH_RISK_CONNECTION",
+                "passenger_id": passenger.passenger_id,
+                "passenger_name": passenger.name,
+                "arriving_flight": arriving_flight.flight_number,
+                "departing_flight": departing_flight.flight_number,
+                "success_probability": prediction.probability,
+                "risk_level": prediction.risk_level.value,
+                "ml_confidence": prediction.confidence,
+                "key_factors": self._get_key_factors(prediction),
+                "timestamp": datetime.now()
+            }
+            self.alerts.append(alert)
+        
+        # Predict delays and generate proactive alerts
+        predicted_arrival_delay = self.delay_predictor.predict_delay(arriving_flight)
+        predicted_departure_delay = self.delay_predictor.predict_delay(departing_flight)
+        
+        if predicted_arrival_delay > 30:
+            alert = {
+                "type": "ML_PREDICTED_DELAY",
+                "passenger_id": passenger.passenger_id,
+                "passenger_name": passenger.name,
+                "flight": arriving_flight.flight_number,
+                "predicted_delay": predicted_arrival_delay,
+                "risk_level": "HIGH" if predicted_arrival_delay > 60 else "MEDIUM",
+                "timestamp": datetime.now()
+            }
+            self.alerts.append(alert)
+    
+    def _get_key_factors(self, prediction: MLPrediction) -> List[str]:
+        """Extract key factors from ML prediction"""
+        # Get top 3 factors
+        sorted_factors = sorted(prediction.factors.items(), key=lambda x: abs(x[1]), reverse=True)
+        return [factor[0] for factor in sorted_factors[:3]]
+    
+    def get_ml_predictions(self) -> Dict[str, MLPrediction]:
+        """Get all ML predictions"""
+        return self.predictions.copy()
+
+class HeathrowMLConnectionsSystem(HeathrowConnectionsSystem):
+    """Enhanced Heathrow connections system with ML capabilities"""
+    
+    def __init__(self, api_key: str = None):
+        super().__init__(api_key)
+        
+        # Initialize ML models
+        self.delay_predictor = DelayPredictor()
+        self.connection_predictor = ConnectionPredictor()
+        
+        # Replace connection monitor with ML version
+        self.connection_monitor = MLConnectionMonitor(
+            self.flight_tracker, self.delay_predictor, self.connection_predictor
+        )
+        
+        # Initialize and train ML models
+        self._initialize_ml_models()
+        
+    def _initialize_ml_models(self):
+        """Initialize and train ML models"""
+        print("Initializing ML models...")
+        
+        # Train delay predictor
+        delay_training_data = self.delay_predictor.generate_training_data(self.flights)
+        self.delay_predictor.train(delay_training_data)
+        
+        # Train connection predictor
+        connection_training_data = self.connection_predictor.generate_training_data()
+        self.connection_predictor.train(connection_training_data)
+        
+        print("ML models initialized and trained successfully!")
+    
+    def get_ml_insights(self, passenger_id: str) -> Dict:
+        """Get ML insights for a specific passenger"""
+        passenger = next((p for p in self.passengers if p.passenger_id == passenger_id), None)
+        
+        if not passenger:
+            return {"error": "Passenger not found"}
+        
+        insights = {
+            "passenger_id": passenger_id,
+            "ml_predictions": [],
+            "optimization_recommendations": {},
+            "risk_assessment": {}
+        }
+        
+        # Get ML predictions for connections
+        for i in range(len(passenger.connection_flights) - 1):
+            arriving_flight = passenger.connection_flights[i]
+            departing_flight = passenger.connection_flights[i + 1]
+            
+            # Connection success prediction
+            connection_prediction = self.connection_predictor.predict_connection_success(
+                arriving_flight, departing_flight, passenger
+            )
+            
+            # Delay predictions
+            arrival_delay = self.delay_predictor.predict_delay(arriving_flight)
+            departure_delay = self.delay_predictor.predict_delay(departing_flight)
+            
+            insights["ml_predictions"].append({
+                "connection": f"{arriving_flight.flight_number} → {departing_flight.flight_number}",
+                "success_probability": connection_prediction.probability,
+                "risk_level": connection_prediction.risk_level.value,
+                "predicted_arrival_delay": arrival_delay,
+                "predicted_departure_delay": departure_delay,
+                "key_factors": self._get_key_factors(connection_prediction)
+            })
+        
+        # Get optimization recommendations
+        optimizer = ConnectionOptimizer(self.delay_predictor, self.connection_predictor)
+        optimizations = optimizer.optimize_connections([passenger], self.flights)
+        
+        if passenger_id in optimizations:
+            insights["optimization_recommendations"] = optimizations[passenger_id]
+        
+        # Risk assessment
+        insights["risk_assessment"] = self._assess_passenger_risk(passenger)
+        
+        return insights
+    
+    def _assess_passenger_risk(self, passenger: Passenger) -> Dict:
+        """Assess overall risk for passenger journey"""
+        if not passenger.connection_flights:
+            return {"overall_risk": "No connections"}
+        
+        risks = []
+        total_success_prob = 1.0
+        
+        for i in range(len(passenger.connection_flights) - 1):
+            arriving_flight = passenger.connection_flights[i]
+            departing_flight = passenger.connection_flights[i + 1]
+            
+            prediction = self.connection_predictor.predict_connection_success(
+                arriving_flight, departing_flight, passenger
+            )
+            
+            risks.append(prediction.risk_level)
+            total_success_prob *= prediction.probability
+        
+        # Determine overall risk
+        if ConnectionRisk.CRITICAL in risks:
+            overall_risk = "CRITICAL"
+        elif ConnectionRisk.HIGH in risks:
+            overall_risk = "HIGH"
+        elif ConnectionRisk.MEDIUM in risks:
+            overall_risk = "MEDIUM"
+        else:
+            overall_risk = "LOW"
+        
+        return {
+            "overall_risk": overall_risk,
+            "journey_success_probability": total_success_prob,
+            "connection_risks": [risk.value for risk in risks],
+            "recommendations": self._generate_risk_recommendations(overall_risk, total_success_prob)
+        }
+    
+    def _generate_risk_recommendations(self, overall_risk

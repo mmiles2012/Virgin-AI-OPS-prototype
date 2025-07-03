@@ -4901,68 +4901,73 @@ else:
 
   // === ENHANCED PASSENGER CONNECTION MONITORING ENDPOINTS ===
   
-  // Get comprehensive passenger connection report
+  // Get comprehensive Virgin Atlantic/SkyTeam passenger connection report
   app.get('/api/passengers/connection-report', async (req, res) => {
     try {
-      const report = passengerConnectionService.generateConnectionReport();
+      const { virginAtlanticConnectionService } = await import('./virginAtlanticConnectionService');
+      const report = virginAtlanticConnectionService.getConnectionReport();
       res.json({
         success: true,
         data: report,
         timestamp: new Date().toISOString()
       });
     } catch (error) {
-      console.error('[Passenger Connections] Error generating report:', error);
+      console.error('[Virgin Atlantic Connections] Error generating report:', error);
       res.status(500).json({ 
         success: false, 
-        error: 'Failed to generate connection report' 
+        error: 'Failed to generate Virgin Atlantic connection report' 
       });
     }
   });
 
-  // Get real-time passenger status
+  // Get real-time Virgin Atlantic/SkyTeam passenger status
   app.get('/api/passengers/:passengerId/status', async (req, res) => {
     try {
       const { passengerId } = req.params;
-      const status = await passengerConnectionService.getPassengerRealTimeStatus(passengerId);
+      const { virginAtlanticConnectionService } = await import('./virginAtlanticConnectionService');
+      const passenger = virginAtlanticConnectionService.getPassenger(passengerId);
       
-      if (status.error) {
-        return res.status(404).json({ success: false, error: status.error });
+      if (!passenger) {
+        return res.status(404).json({ 
+          success: false, 
+          error: 'Virgin Atlantic/SkyTeam passenger not found' 
+        });
       }
 
       res.json({
         success: true,
-        data: status,
+        data: passenger,
         timestamp: new Date().toISOString()
       });
     } catch (error) {
-      console.error('[Passenger Connections] Error getting passenger status:', error);
+      console.error('[Virgin Atlantic Connections] Error getting passenger status:', error);
       res.status(500).json({ 
         success: false, 
-        error: 'Failed to get passenger status' 
+        error: 'Failed to get Virgin Atlantic passenger status' 
       });
     }
   });
 
-  // Get connection alerts
+  // Get Virgin Atlantic/SkyTeam connection alerts
   app.get('/api/passengers/alerts', async (req, res) => {
     try {
-      const hours = parseInt(req.query.hours as string) || 24;
-      const alerts = passengerConnectionService.getConnectionAlerts(hours);
+      const { virginAtlanticConnectionService } = await import('./virginAtlanticConnectionService');
+      const alerts = virginAtlanticConnectionService.getAlerts();
       
       res.json({
         success: true,
         data: {
           alerts,
           total_alerts: alerts.length,
-          time_window_hours: hours
+          focus: 'Virgin Atlantic and SkyTeam connections'
         },
         timestamp: new Date().toISOString()
       });
     } catch (error) {
-      console.error('[Passenger Connections] Error getting alerts:', error);
+      console.error('[Virgin Atlantic Connections] Error getting alerts:', error);
       res.status(500).json({ 
         success: false, 
-        error: 'Failed to get connection alerts' 
+        error: 'Failed to get Virgin Atlantic connection alerts' 
       });
     }
   });

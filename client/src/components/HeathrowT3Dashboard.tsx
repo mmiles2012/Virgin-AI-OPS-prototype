@@ -41,13 +41,16 @@ interface PassengerConnectionData {
 }
 
 interface PassengerAlert {
-  id: string;
+  type: string;
   passenger_id: string;
   passenger_name: string;
-  type: string;
-  severity: 'info' | 'warning' | 'critical';
-  message: string;
+  risk_level: 'HIGH' | 'MEDIUM' | 'LOW' | 'CRITICAL';
   timestamp: string;
+  arriving_flight?: string;
+  departing_flight?: string;
+  flight?: string;
+  delay_minutes?: number;
+  connection_time?: string;
 }
 
 interface HeathrowT3Status {

@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { addIntelligenceRoutes } from "./intelligenceRoutes";
 import { setupVite, serveStatic, log } from "./vite";
+import { virginAtlanticConnectionService } from "./virginAtlanticConnectionService";
 import dotenv from "dotenv";
 
 // Load environment variables
