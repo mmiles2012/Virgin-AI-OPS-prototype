@@ -24,6 +24,7 @@ import DelayPredictionDashboard from "./components/DelayPredictionDashboard";
 import { ApiTestingCenter } from "./components/ApiTestingCenter";
 import { NewsIntelligenceDashboard } from "./components/NewsIntelligenceDashboard";
 import Boeing787DigitalTwin from "./components/Boeing787DigitalTwin";
+import AirbusDigitalTwins from "./components/AirbusDigitalTwins";
 import AinoTrainingSimulator from "./components/AinoTrainingSimulator";
 import AirbusOperationsCenter from "./components/AirbusOperationsCenter";
 import FinancialAnalyticsDashboard from "./components/FinancialAnalyticsDashboard";
@@ -402,8 +403,8 @@ function App() {
             )}
             
             {viewMode === 'airbus-ops' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
-                <AirbusOperationsCenter />
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
+                <AirbusDigitalTwins />
               </div>
             )}
             
