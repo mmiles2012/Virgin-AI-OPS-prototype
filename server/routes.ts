@@ -4876,6 +4876,23 @@ else:
     }
   });
 
+  app.post('/api/heathrow/refresh', async (req, res) => {
+    try {
+      heathrowConnectionService.refreshData();
+      res.json({
+        success: true,
+        message: 'Heathrow T3 data refreshed with updated stand numbers',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to refresh data',
+        message: error.message
+      });
+    }
+  });
+
   return httpServer;
 }
 

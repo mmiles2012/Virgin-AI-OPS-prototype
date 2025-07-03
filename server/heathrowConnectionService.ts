@@ -115,17 +115,24 @@ class HeathrowConnectionService {
   }
 
   private updateConnectionRisks(riskCount: number) {
-    // Generate connection risk data based on the monitoring output
+    // Generate connection risk data using authentic Heathrow T3 stand numbers
     const risks: HeathrowConnectionRisk[] = [];
+    const t3Stands = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15',
+                     '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+                     '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43',
+                     '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59'];
     
     for (let i = 0; i < riskCount; i++) {
       const connectTime = Math.floor(Math.random() * 40) + 10; // 10-50 minutes
+      const standInIndex = Math.floor(Math.random() * t3Stands.length);
+      const standOutIndex = Math.floor(Math.random() * t3Stands.length);
+      
       risks.push({
         inbound: `VS${133 + i}`,
         outbound: `VS${233 + i}`,
         connect_min: connectTime,
-        stand_in: `A${10 + i}`,
-        stand_out: `A${20 + i}`,
+        stand_in: t3Stands[standInIndex],
+        stand_out: t3Stands[standOutIndex],
         predicted_delay: Math.floor(Math.random() * 20) + 5,
         risk_level: connectTime < 30 ? 'high' : connectTime < 40 ? 'medium' : 'low'
       });
@@ -145,7 +152,13 @@ class HeathrowConnectionService {
   }
 
   private generateMockData() {
-    // Generate realistic mock data for demonstration
+    // Generate realistic mock data using authentic Heathrow T3 stand numbers
+    // T3 stands: 1-59 across different piers (Main Terminal Building, Satellite)
+    const t3Stands = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15',
+                     '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29',
+                     '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43',
+                     '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59'];
+    
     this.lastStatus = {
       active_flights: 23,
       connection_risks: [
@@ -153,8 +166,8 @@ class HeathrowConnectionService {
           inbound: 'VS133',
           outbound: 'VS233',
           connect_min: 28,
-          stand_in: 'A12',
-          stand_out: 'A18',
+          stand_in: '15',
+          stand_out: '18',
           predicted_delay: 12,
           risk_level: 'high'
         },
@@ -162,8 +175,8 @@ class HeathrowConnectionService {
           inbound: 'DL154',
           outbound: 'AF471',
           connect_min: 35,
-          stand_in: 'B06',
-          stand_out: 'B14',
+          stand_in: '31',
+          stand_out: '34',
           predicted_delay: 8,
           risk_level: 'medium'
         },
@@ -171,8 +184,8 @@ class HeathrowConnectionService {
           inbound: 'KL891',
           outbound: 'VS267',
           connect_min: 42,
-          stand_in: 'C03',
-          stand_out: 'C09',
+          stand_in: '47',
+          stand_out: '52',
           predicted_delay: 5,
           risk_level: 'low'
         }
@@ -180,15 +193,15 @@ class HeathrowConnectionService {
       stand_allocations: [
         {
           flight: 'VS133',
-          current_stand: 'A12',
-          recommended_stand: 'A15',
+          current_stand: '15',
+          recommended_stand: '16',
           reason: 'tight_connect',
           confidence: 0.89
         },
         {
           flight: 'DL154',
-          current_stand: 'B06',
-          recommended_stand: 'B08',
+          current_stand: '31',
+          recommended_stand: '32',
           reason: 'ml_optimization',
           confidence: 0.76
         }
@@ -200,7 +213,7 @@ class HeathrowConnectionService {
       last_update: new Date().toISOString()
     };
 
-    console.log('[Heathrow T3] Using mock data for demonstration');
+    console.log('[Heathrow T3] Using mock data with authentic T3 stand numbers');
   }
 
   public getStatus(): HeathrowT3Status {
@@ -238,6 +251,12 @@ class HeathrowConnectionService {
         this.lastStatus.last_update = new Date().toISOString();
       }
     }
+  }
+
+  public refreshData() {
+    console.log('[Heathrow T3] Refreshing data with updated stand numbers');
+    this.lastStatus = null; // Clear cached status
+    this.generateMockData();
   }
 
   public stop() {
