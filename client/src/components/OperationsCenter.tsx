@@ -8,7 +8,7 @@ import { useFlightState } from '../lib/stores/useFlightState';
 import { useScenario } from '../lib/stores/useScenario';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { AlertTriangle, Plane, MapPin, Clock } from 'lucide-react';
-import EnhancedLiveFlightTracker from './EnhancedLiveFlightTracker';
+
 import SafeAirspaceAlerts from './SafeAirspaceAlerts';
 import HeathrowT3Dashboard from './HeathrowT3Dashboard';
 
@@ -62,9 +62,19 @@ export default function OperationsCenter() {
   return (
     <div className="absolute inset-4 pointer-events-auto overflow-auto">
       <div className="min-h-full grid grid-cols-3 gap-4 pb-8">
-        {/* Enhanced Live Flight Tracker */}
+        {/* Heathrow T3 Connection Management - Primary Focus */}
         <div className="col-span-2">
-          <EnhancedLiveFlightTracker />
+          <Card className="aviation-panel h-full">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Plane className="w-5 h-5" />
+                Heathrow T3 Connection Management Centre
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="h-full">
+              <HeathrowT3Dashboard />
+            </CardContent>
+          </Card>
         </div>
 
         {/* Flight Status Overview */}
@@ -242,11 +252,10 @@ export default function OperationsCenter() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="risk-assessment" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 bg-gray-800/50">
+              <TabsList className="grid w-full grid-cols-3 bg-gray-800/50">
                 <TabsTrigger value="risk-assessment" className="text-xs">Risk Assessment</TabsTrigger>
                 <TabsTrigger value="cost-analysis" className="text-xs">Cost Analysis</TabsTrigger>
                 <TabsTrigger value="safety-metrics" className="text-xs">Safety Metrics</TabsTrigger>
-                <TabsTrigger value="heathrow-t3" className="text-xs">Heathrow T3</TabsTrigger>
               </TabsList>
               
               <TabsContent value="risk-assessment" className="space-y-4">
@@ -298,11 +307,7 @@ export default function OperationsCenter() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="heathrow-t3" className="space-y-4">
-                <div className="bg-gray-800/30 rounded-lg p-4">
-                  <HeathrowT3Dashboard />
-                </div>
-              </TabsContent>
+
             </Tabs>
           </CardContent>
         </Card>

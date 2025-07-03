@@ -114,6 +114,7 @@ The AINO (Augmented Intelligent Network Operations) Aviation Intelligence Platfo
 
 ## Changelog
 
+- July 03, 2025. Reorganized UI structure - Operations Centre now focuses exclusively on Heathrow T3 Connection Management; Live Flight Operations tab created for dedicated flight tracking; eliminated duplication between components
 - July 03, 2025. Enhanced scrollability across all dashboard pages, resolved duplicate key warnings with unique flight identifiers
 - July 01, 2025. Initial setup
 
