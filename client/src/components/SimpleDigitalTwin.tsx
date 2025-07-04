@@ -96,8 +96,15 @@ export default function SimpleDigitalTwin({
     setSelectedAircraft(aircraftId);
   }, [aircraftId]);
 
+  // Find current aircraft with fallback to first in fleet or authentic Virgin Atlantic data
   const currentAircraft = fleetData.find(a => a.registration === selectedAircraft) || 
-    { registration: selectedAircraft, aircraftType: 'Unknown', name: 'Unknown Aircraft', deliveryDate: '2018-01-01' };
+    fleetData[0] || 
+    { 
+      registration: selectedAircraft, 
+      aircraftType: aircraftType === 'boeing' ? 'Boeing 787-9' : 'Airbus A350-1000', 
+      name: aircraftType === 'boeing' ? 'Red Velvet' : 'Fearless Lady', 
+      deliveryDate: '2018-01-01' 
+    };
 
   // Generate aircraft-specific data based on selected aircraft
   const getAircraftSpecificData = (aircraft: Aircraft) => {
@@ -185,8 +192,8 @@ export default function SimpleDigitalTwin({
   console.log('Current aircraft data:', currentAircraft);
   console.log('Fleet data:', fleetData);
   return (
-    <div className="h-full w-full bg-white p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="h-full w-full bg-white p-6 overflow-y-auto">
+      <div className="max-w-7xl mx-auto space-y-6">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-bold text-gray-900">
@@ -367,27 +374,31 @@ export default function SimpleDigitalTwin({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <button
               onClick={() => handleGenerateScenario('technical')}
-              className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+              disabled={scenarioLoading}
+              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-red-600 hover:bg-red-700'} text-white font-medium py-3 px-4 rounded-lg transition-colors`}
             >
-              Technical Emergency
+              {scenarioLoading ? 'Loading...' : 'Technical Emergency'}
             </button>
             <button
               onClick={() => handleGenerateScenario('medical')}
-              className="bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+              disabled={scenarioLoading}
+              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-orange-600 hover:bg-orange-700'} text-white font-medium py-3 px-4 rounded-lg transition-colors`}
             >
-              Medical Emergency
+              {scenarioLoading ? 'Loading...' : 'Medical Emergency'}
             </button>
             <button
               onClick={() => handleGenerateScenario('weather')}
-              className="bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+              disabled={scenarioLoading}
+              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-yellow-600 hover:bg-yellow-700'} text-white font-medium py-3 px-4 rounded-lg transition-colors`}
             >
-              Weather Emergency
+              {scenarioLoading ? 'Loading...' : 'Weather Emergency'}
             </button>
             <button
               onClick={() => handleGenerateScenario('security')}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+              disabled={scenarioLoading}
+              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-purple-600 hover:bg-purple-700'} text-white font-medium py-3 px-4 rounded-lg transition-colors`}
             >
-              Security Emergency
+              {scenarioLoading ? 'Loading...' : 'Security Emergency'}
             </button>
           </div>
           
@@ -463,9 +474,10 @@ export default function SimpleDigitalTwin({
               <div className="mt-4 flex space-x-3">
                 <button
                   onClick={handleAnalyzeScenario}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors"
+                  disabled={scenarioLoading}
+                  className={`${scenarioLoading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'} text-white font-medium py-2 px-4 rounded transition-colors`}
                 >
-                  Analyze What-If Outcomes
+                  {scenarioLoading ? 'Analyzing...' : 'Analyze What-If Outcomes'}
                 </button>
                 <button
                   onClick={() => setScenarioData(null)}
