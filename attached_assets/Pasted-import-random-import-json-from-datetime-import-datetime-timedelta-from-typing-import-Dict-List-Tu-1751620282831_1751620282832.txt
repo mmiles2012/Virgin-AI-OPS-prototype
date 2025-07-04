@@ -1,0 +1,958 @@
+import random
+import json
+from datetime import datetime, timedelta
+from typing import Dict, List, Tuple, Optional
+import uuid
+
+class VirginAtlanticScenarioGenerator:
+    def __init__(self):
+        self.aircraft_types = {
+            'B789': {
+                'name': 'Boeing 787-9',
+                'capacity': 330,
+                'range_nm': 7565,
+                'fuel_capacity': 33384,
+                'compatible_airports': ['EGLL', 'KJFK', 'KLAX', 'KORD', 'KBOS', 'EGKK', 'LFPG', 'EHAM', 'EDDF', 'OMDB', 'VHHH', 'NZAA', 'YSSY', 'YMML', 'GMMN', 'FACT', 'SBGR', 'SAEZ', 'TNCM', 'TQPF', 'EGPH', 'EGCC', 'EIDW', 'BIKF', 'CYYZ', 'CYVR', 'PANC', 'PHNL', 'KLAS', 'KDEN', 'KIAH', 'KATL', 'KMIA', 'KORD', 'KJFK', 'EGKK', 'LEMD', 'LIRF', 'LOWW', 'UUEE', 'LTBA', 'OTHH', 'OKBK', 'OERK', 'OJAI', 'VABB', 'VIDP', 'VECC', 'VTBS', 'VOMM', 'WSSS', 'WIII', 'RPLL', 'RJAA', 'RKSI', 'ZSSS', 'ZSPD', 'ZBAA', 'ZGTM', 'RCTP', 'RJTT'],
+                'special_requirements': []
+            },
+            'A333': {
+                'name': 'Airbus A330-300',
+                'capacity': 299,
+                'range_nm': 6350,
+                'fuel_capacity': 36740,
+                'compatible_airports': ['EGLL', 'KJFK', 'KLAX', 'KORD', 'KBOS', 'EGKK', 'LFPG', 'EHAM', 'EDDF', 'OMDB', 'VHHH', 'NZAA', 'YSSY', 'YMML', 'GMMN', 'FACT', 'SBGR', 'SAEZ', 'TNCM', 'TQPF', 'EGPH', 'EGCC', 'EIDW', 'BIKF', 'CYYZ', 'CYVR', 'PANC', 'PHNL', 'KLAS', 'KDEN', 'KIAH', 'KATL', 'KMIA', 'LEMD', 'LIRF', 'LOWW', 'UUEE', 'LTBA', 'OTHH', 'OKBK', 'OERK', 'OJAI', 'VABB', 'VIDP', 'VECC', 'VTBS', 'VOMM', 'WSSS', 'WIII', 'RPLL', 'RJAA', 'RKSI', 'ZSSS', 'ZSPD', 'ZBAA', 'ZGTM', 'RCTP', 'RJTT'],
+                'special_requirements': []
+            },
+            'A339': {
+                'name': 'Airbus A330-900neo',
+                'capacity': 331,
+                'range_nm': 7200,
+                'fuel_capacity': 36740,
+                'compatible_airports': ['EGLL', 'KJFK', 'KLAX', 'KORD', 'KBOS', 'EGKK', 'LFPG', 'EHAM', 'EDDF', 'OMDB', 'VHHH', 'NZAA', 'YSSY', 'YMML', 'GMMN', 'FACT', 'SBGR', 'SAEZ', 'TNCM', 'TQPF', 'EGPH', 'EGCC', 'EIDW', 'BIKF', 'CYYZ', 'CYVR', 'PANC', 'PHNL', 'KLAS', 'KDEN', 'KIAH', 'KATL', 'KMIA', 'LEMD', 'LIRF', 'LOWW', 'UUEE', 'LTBA', 'OTHH', 'OKBK', 'OERK', 'OJAI', 'VABB', 'VIDP', 'VECC', 'VTBS', 'VOMM', 'WSSS', 'WIII', 'RPLL', 'RJAA', 'RKSI', 'ZSSS', 'ZSPD', 'ZBAA', 'ZGTM', 'RCTP', 'RJTT'],
+                'special_requirements': []
+            },
+            'A351': {
+                'name': 'Airbus A350-1000',
+                'capacity': 335,
+                'range_nm': 8700,
+                'fuel_capacity': 37464,
+                'compatible_airports': ['EGLL', 'KJFK', 'KLAX', 'KORD', 'KBOS', 'EGKK', 'LFPG', 'EHAM', 'EDDF', 'OMDB', 'VHHH', 'NZAA', 'YSSY', 'YMML', 'GMMN', 'FACT', 'SBGR', 'SAEZ', 'TNCM', 'TQPF', 'EGPH', 'EGCC', 'EIDW', 'BIKF', 'CYYZ', 'CYVR', 'PANC', 'PHNL', 'KLAS', 'KDEN', 'KIAH', 'KATL', 'KMIA', 'LEMD', 'LIRF', 'LOWW', 'UUEE', 'LTBA', 'OTHH', 'OKBK', 'OERK', 'OJAI', 'VABB', 'VIDP', 'VECC', 'VTBS', 'VOMM', 'WSSS', 'WIII', 'RPLL', 'RJAA', 'RKSI', 'ZSSS', 'ZSPD', 'ZBAA', 'ZGTM', 'RCTP', 'RJTT'],
+                'special_requirements': []
+            }
+        }
+        
+        # Virgin Atlantic major routes
+        self.routes = [
+            ('EGLL', 'KJFK'), ('EGLL', 'KBOS'), ('EGLL', 'KLAX'), ('EGLL', 'KLAS'), 
+            ('EGLL', 'KORD'), ('EGLL', 'KATL'), ('EGLL', 'KMIA'), ('EGLL', 'KIAH'),
+            ('EGLL', 'CYVR'), ('EGLL', 'CYYZ'), ('EGLL', 'SBGR'), ('EGLL', 'SAEZ'),
+            ('EGLL', 'FACT'), ('EGLL', 'GMMN'), ('EGLL', 'VABB'), ('EGLL', 'VIDP'),
+            ('EGLL', 'VECC'), ('EGLL', 'VTBS'), ('EGLL', 'VOMM'), ('EGLL', 'WSSS'),
+            ('EGLL', 'VHHH'), ('EGLL', 'RJAA'), ('EGLL', 'RKSI'), ('EGLL', 'ZSSS'),
+            ('EGLL', 'ZSPD'), ('EGLL', 'YSSY'), ('EGLL', 'YMML'), ('EGLL', 'NZAA'),
+            ('EGLL', 'TQPF'), ('EGLL', 'TNCM'), ('EGLL', 'OMDB'), ('EGLL', 'OTHH'),
+            ('EGKK', 'KJFK'), ('EGKK', 'KBOS'), ('EGKK', 'KLAX'), ('EGKK', 'KLAS'),
+            ('EGKK', 'CYVR'), ('EGKK', 'CYYZ'), ('EGKK', 'TQPF'), ('EGKK', 'TNCM'),
+            ('EGCC', 'KJFK'), ('EGCC', 'KBOS'), ('EGCC', 'KORD'), ('EGCC', 'KATL'),
+            ('EGCC', 'CYVR'), ('EGCC', 'CYYZ'), ('EGCC', 'TQPF'), ('EGCC', 'TNCM')
+        ]
+        
+        self.airport_info = {
+            'EGLL': {'name': 'London Heathrow', 'city': 'London', 'country': 'UK', 'timezone': 'GMT'},
+            'EGKK': {'name': 'London Gatwick', 'city': 'London', 'country': 'UK', 'timezone': 'GMT'},
+            'EGCC': {'name': 'Manchester', 'city': 'Manchester', 'country': 'UK', 'timezone': 'GMT'},
+            'KJFK': {'name': 'John F Kennedy Intl', 'city': 'New York', 'country': 'USA', 'timezone': 'EST'},
+            'KBOS': {'name': 'Boston Logan', 'city': 'Boston', 'country': 'USA', 'timezone': 'EST'},
+            'KLAX': {'name': 'Los Angeles Intl', 'city': 'Los Angeles', 'country': 'USA', 'timezone': 'PST'},
+            'KLAS': {'name': 'Las Vegas McCarran', 'city': 'Las Vegas', 'country': 'USA', 'timezone': 'PST'},
+            'KORD': {'name': 'Chicago O\'Hare', 'city': 'Chicago', 'country': 'USA', 'timezone': 'CST'},
+            'KATL': {'name': 'Atlanta Hartsfield', 'city': 'Atlanta', 'country': 'USA', 'timezone': 'EST'},
+            'KMIA': {'name': 'Miami Intl', 'city': 'Miami', 'country': 'USA', 'timezone': 'EST'},
+            'CYVR': {'name': 'Vancouver Intl', 'city': 'Vancouver', 'country': 'Canada', 'timezone': 'PST'},
+            'CYYZ': {'name': 'Toronto Pearson', 'city': 'Toronto', 'country': 'Canada', 'timezone': 'EST'},
+            'TQPF': {'name': 'St Lucia Hewanorra', 'city': 'St Lucia', 'country': 'St Lucia', 'timezone': 'AST'},
+            'TNCM': {'name': 'St Maarten Princess Juliana', 'city': 'St Maarten', 'country': 'St Maarten', 'timezone': 'AST'},
+            'OMDB': {'name': 'Dubai Intl', 'city': 'Dubai', 'country': 'UAE', 'timezone': 'GST'},
+            'VHHH': {'name': 'Hong Kong Intl', 'city': 'Hong Kong', 'country': 'Hong Kong', 'timezone': 'HKT'},
+            'YSSY': {'name': 'Sydney Kingsford Smith', 'city': 'Sydney', 'country': 'Australia', 'timezone': 'AEST'},
+            'YMML': {'name': 'Melbourne Tullamarine', 'city': 'Melbourne', 'country': 'Australia', 'timezone': 'AEST'},
+            # Additional airports for diversions
+            'LFPG': {'name': 'Paris Charles de Gaulle', 'city': 'Paris', 'country': 'France', 'timezone': 'CET'},
+            'EHAM': {'name': 'Amsterdam Schiphol', 'city': 'Amsterdam', 'country': 'Netherlands', 'timezone': 'CET'},
+            'EDDF': {'name': 'Frankfurt Main', 'city': 'Frankfurt', 'country': 'Germany', 'timezone': 'CET'},
+            'BIKF': {'name': 'Keflavik', 'city': 'Reykjavik', 'country': 'Iceland', 'timezone': 'GMT'},
+            'PANC': {'name': 'Anchorage', 'city': 'Anchorage', 'country': 'USA', 'timezone': 'AKST'},
+            'PHNL': {'name': 'Honolulu', 'city': 'Honolulu', 'country': 'USA', 'timezone': 'HST'},
+            'KDEN': {'name': 'Denver', 'city': 'Denver', 'country': 'USA', 'timezone': 'MST'},
+            'KIAH': {'name': 'Houston Bush', 'city': 'Houston', 'country': 'USA', 'timezone': 'CST'},
+            'LEMD': {'name': 'Madrid Barajas', 'city': 'Madrid', 'country': 'Spain', 'timezone': 'CET'},
+            'LIRF': {'name': 'Rome Fiumicino', 'city': 'Rome', 'country': 'Italy', 'timezone': 'CET'},
+            'LOWW': {'name': 'Vienna', 'city': 'Vienna', 'country': 'Austria', 'timezone': 'CET'},
+            'UUEE': {'name': 'Moscow Sheremetyevo', 'city': 'Moscow', 'country': 'Russia', 'timezone': 'MSK'},
+            'LTBA': {'name': 'Istanbul', 'city': 'Istanbul', 'country': 'Turkey', 'timezone': 'TRT'},
+            'OTHH': {'name': 'Doha Hamad', 'city': 'Doha', 'country': 'Qatar', 'timezone': 'AST'},
+            'OKBK': {'name': 'Kuwait', 'city': 'Kuwait City', 'country': 'Kuwait', 'timezone': 'AST'},
+            'OERK': {'name': 'Riyadh', 'city': 'Riyadh', 'country': 'Saudi Arabia', 'timezone': 'AST'},
+            'OJAI': {'name': 'Amman', 'city': 'Amman', 'country': 'Jordan', 'timezone': 'EET'},
+            'VABB': {'name': 'Mumbai', 'city': 'Mumbai', 'country': 'India', 'timezone': 'IST'},
+            'VIDP': {'name': 'Delhi', 'city': 'New Delhi', 'country': 'India', 'timezone': 'IST'},
+            'VECC': {'name': 'Kolkata', 'city': 'Kolkata', 'country': 'India', 'timezone': 'IST'},
+            'VTBS': {'name': 'Bangkok Suvarnabhumi', 'city': 'Bangkok', 'country': 'Thailand', 'timezone': 'ICT'},
+            'VOMM': {'name': 'Chennai', 'city': 'Chennai', 'country': 'India', 'timezone': 'IST'},
+            'WSSS': {'name': 'Singapore Changi', 'city': 'Singapore', 'country': 'Singapore', 'timezone': 'SGT'},
+            'WIII': {'name': 'Jakarta Soekarno-Hatta', 'city': 'Jakarta', 'country': 'Indonesia', 'timezone': 'WIB'},
+            'RPLL': {'name': 'Manila Ninoy Aquino', 'city': 'Manila', 'country': 'Philippines', 'timezone': 'PHT'},
+            'RJAA': {'name': 'Tokyo Narita', 'city': 'Tokyo', 'country': 'Japan', 'timezone': 'JST'},
+            'RJTT': {'name': 'Tokyo Haneda', 'city': 'Tokyo', 'country': 'Japan', 'timezone': 'JST'},
+            'RKSI': {'name': 'Seoul Incheon', 'city': 'Seoul', 'country': 'South Korea', 'timezone': 'KST'},
+            'ZSSS': {'name': 'Shanghai Hongqiao', 'city': 'Shanghai', 'country': 'China', 'timezone': 'CST'},
+            'ZSPD': {'name': 'Shanghai Pudong', 'city': 'Shanghai', 'country': 'China', 'timezone': 'CST'},
+            'ZBAA': {'name': 'Beijing Capital', 'city': 'Beijing', 'country': 'China', 'timezone': 'CST'},
+            'ZGTM': {'name': 'Guangzhou Baiyun', 'city': 'Guangzhou', 'country': 'China', 'timezone': 'CST'},
+            'RCTP': {'name': 'Taipei Taoyuan', 'city': 'Taipei', 'country': 'Taiwan', 'timezone': 'CST'},
+            'NZAA': {'name': 'Auckland', 'city': 'Auckland', 'country': 'New Zealand', 'timezone': 'NZST'},
+            'FACT': {'name': 'Cape Town', 'city': 'Cape Town', 'country': 'South Africa', 'timezone': 'SAST'},
+            'GMMN': {'name': 'Casablanca Mohammed V', 'city': 'Casablanca', 'country': 'Morocco', 'timezone': 'WET'},
+            'SBGR': {'name': 'São Paulo Guarulhos', 'city': 'São Paulo', 'country': 'Brazil', 'timezone': 'BRT'},
+            'SAEZ': {'name': 'Buenos Aires Ezeiza', 'city': 'Buenos Aires', 'country': 'Argentina', 'timezone': 'ART'},
+            'EGPH': {'name': 'Edinburgh', 'city': 'Edinburgh', 'country': 'UK', 'timezone': 'GMT'},
+            'EIDW': {'name': 'Dublin', 'city': 'Dublin', 'country': 'Ireland', 'timezone': 'GMT'}
+        }
+        
+        self.scenario_templates = {
+            'technical': {
+                'electrical_failure': {
+                    'title': 'Major Electrical System Failure',
+                    'description': 'Loss of main electrical bus affecting critical systems',
+                    'severity': ['minor', 'major', 'critical'],
+                    'impact': ['backup_power_only', 'limited_navigation', 'communication_issues'],
+                    'time_critical': True,
+                    'requires_diversion': True
+                },
+                'hydraulic_failure': {
+                    'title': 'Hydraulic System Failure',
+                    'description': 'Loss of hydraulic pressure affecting flight controls',
+                    'severity': ['minor', 'major', 'critical'],
+                    'impact': ['reduced_control_authority', 'manual_reversion', 'emergency_landing'],
+                    'time_critical': True,
+                    'requires_diversion': True
+                },
+                'engine_failure': {
+                    'title': 'Engine Failure',
+                    'description': 'In-flight engine shutdown or malfunction',
+                    'severity': ['minor', 'major', 'critical'],
+                    'impact': ['reduced_performance', 'fuel_burn_increase', 'altitude_restriction'],
+                    'time_critical': True,
+                    'requires_diversion': True
+                },
+                'pressurization_failure': {
+                    'title': 'Cabin Pressurization Failure',
+                    'description': 'Loss of cabin pressure requiring emergency descent',
+                    'severity': ['major', 'critical'],
+                    'impact': ['emergency_descent', 'oxygen_masks', 'altitude_restriction'],
+                    'time_critical': True,
+                    'requires_diversion': True
+                }
+            },
+            'medical': {
+                'serious_medical': {
+                    'title': 'Serious Medical Emergency',
+                    'description': 'Passenger requires immediate medical attention',
+                    'severity': ['minor', 'major', 'critical'],
+                    'impact': ['doctor_onboard', 'medical_diversion', 'life_threatening'],
+                    'time_critical': True,
+                    'requires_diversion': False
+                },
+                'crew_incapacitation': {
+                    'title': 'Crew Incapacitation',
+                    'description': 'Flight crew member unable to perform duties',
+                    'severity': ['minor', 'major', 'critical'],
+                    'impact': ['pilot_incapacitation', 'cabin_crew_shortage', 'medical_assistance'],
+                    'time_critical': True,
+                    'requires_diversion': True
+                }
+            },
+            'weather': {
+                'severe_turbulence': {
+                    'title': 'Severe Turbulence',
+                    'description': 'Unexpected severe turbulence causing injuries',
+                    'severity': ['minor', 'major'],
+                    'impact': ['passenger_injuries', 'crew_injuries', 'aircraft_damage'],
+                    'time_critical': False,
+                    'requires_diversion': False
+                },
+                'destination_weather': {
+                    'title': 'Destination Weather Below Minimums',
+                    'description': 'Destination airport weather below landing minimums',
+                    'severity': ['minor', 'major'],
+                    'impact': ['hold_fuel_burn', 'alternate_required', 'fuel_critical'],
+                    'time_critical': False,
+                    'requires_diversion': True
+                }
+            },
+            'airport': {
+                'runway_closure': {
+                    'title': 'Runway Closure',
+                    'description': 'Destination runway closed due to emergency or maintenance',
+                    'severity': ['minor', 'major'],
+                    'impact': ['delay_expected', 'alternate_required', 'fuel_planning'],
+                    'time_critical': False,
+                    'requires_diversion': True
+                },
+                'airport_closure': {
+                    'title': 'Airport Closure',
+                    'description': 'Destination airport closed due to emergency or security',
+                    'severity': ['major', 'critical'],
+                    'impact': ['immediate_alternate', 'passenger_care', 'crew_duty_time'],
+                    'time_critical': True,
+                    'requires_diversion': True
+                },
+                'atc_restrictions': {
+                    'title': 'ATC Flow Restrictions',
+                    'description': 'Air traffic control imposing significant delays',
+                    'severity': ['minor', 'major'],
+                    'impact': ['holding_delays', 'fuel_burn', 'crew_duty_time'],
+                    'time_critical': False,
+                    'requires_diversion': False
+                }
+            }
+        }
+    
+    def get_nearby_airports(self, current_airport: str, max_distance: int = 500) -> List[str]:
+        """Get nearby compatible airports for diversions"""
+        # This is a simplified distance calculation - in reality you'd use great circle distance
+        compatible_airports = []
+        
+        # Define airport groups by region for realistic nearby options
+        airport_groups = {
+            'UK': ['EGLL', 'EGKK', 'EGCC', 'EGPH', 'EIDW'],
+            'US_EAST': ['KJFK', 'KBOS', 'KORD', 'KATL', 'KMIA', 'KIAH'],
+            'US_WEST': ['KLAX', 'KLAS', 'KDEN', 'CYVR'],
+            'EUROPE': ['LFPG', 'EHAM', 'EDDF', 'LEMD', 'LIRF', 'LOWW', 'BIKF'],
+            'MIDDLE_EAST': ['OMDB', 'OTHH', 'OKBK', 'OERK', 'OJAI', 'LTBA'],
+            'ASIA': ['VHHH', 'RJAA', 'RKSI', 'ZSSS', 'ZSPD', 'ZBAA', 'VTBS', 'WSSS'],
+            'OCEANIA': ['YSSY', 'YMML', 'NZAA'],
+            'AFRICA': ['FACT', 'GMMN'],
+            'SOUTH_AMERICA': ['SBGR', 'SAEZ'],
+            'CARIBBEAN': ['TQPF', 'TNCM'],
+            'INDIA': ['VABB', 'VIDP', 'VECC', 'VOMM']
+        }
+        
+        # Find which group the current airport belongs to
+        current_group = None
+        for group, airports in airport_groups.items():
+            if current_airport in airports:
+                current_group = group
+                break
+        
+        if current_group:
+            # Return other airports in the same group
+            compatible_airports = [apt for apt in airport_groups[current_group] 
+                                 if apt != current_airport]
+        
+        # Add some cross-regional options for long-haul flights
+        if current_group in ['US_EAST', 'US_WEST']:
+            compatible_airports.extend(['CYYZ', 'BIKF', 'PANC'])
+        elif current_group == 'EUROPE':
+            compatible_airports.extend(['UUEE', 'LTBA'])
+        elif current_group == 'ASIA':
+            compatible_airports.extend(['OMDB', 'OTHH'])
+        
+        return compatible_airports[:6]  # Limit to 6 options
+    
+    def generate_flight_data(self) -> Dict:
+        """Generate realistic flight data"""
+        route = random.choice(self.routes)
+        aircraft_type = random.choice(list(self.aircraft_types.keys()))
+        
+        # Generate flight number
+        flight_number = f"VS{random.randint(1, 999):03d}"
+        
+        # Generate realistic departure time
+        dep_hour = random.randint(6, 23)
+        dep_minute = random.choice([0, 15, 30, 45])
+        departure_time = datetime.now().replace(hour=dep_hour, minute=dep_minute, second=0, microsecond=0)
+        
+        # Calculate flight duration (simplified)
+        flight_durations = {
+            ('EGLL', 'KJFK'): 480, ('EGLL', 'KBOS'): 420, ('EGLL', 'KLAX'): 660,
+            ('EGLL', 'KLAS'): 630, ('EGLL', 'KORD'): 510, ('EGLL', 'KATL'): 540,
+            ('EGLL', 'VHHH'): 720, ('EGLL', 'YSSY'): 1260, ('EGLL', 'OMDB'): 420
+        }
+        
+        duration = flight_durations.get(route, 480)  # Default 8 hours
+        arrival_time = departure_time + timedelta(minutes=duration)
+        
+        # Current flight progress (20-80% complete)
+        progress_percent = random.randint(20, 80)
+        current_time = departure_time + timedelta(minutes=int(duration * progress_percent / 100))
+        
+        pax_count = random.randint(
+            int(self.aircraft_types[aircraft_type]['capacity'] * 0.7),
+            int(self.aircraft_types[aircraft_type]['capacity'] * 0.95)
+        )
+        
+        return {
+            'flight_number': flight_number,
+            'aircraft_type': aircraft_type,
+            'aircraft_name': self.aircraft_types[aircraft_type]['name'],
+            'departure_airport': route[0],
+            'arrival_airport': route[1],
+            'departure_time': departure_time.strftime('%Y-%m-%d %H:%M'),
+            'arrival_time': arrival_time.strftime('%Y-%m-%d %H:%M'),
+            'current_time': current_time.strftime('%Y-%m-%d %H:%M'),
+            'progress_percent': progress_percent,
+            'passenger_count': pax_count,
+            'crew_count': random.randint(12, 16),
+            'fuel_remaining_kg': random.randint(15000, 25000),
+            'altitude_ft': random.randint(35000, 42000),
+            'speed_kts': random.randint(450, 520)
+        }
+    
+    def calculate_flight_phase(self, progress_percent: int) -> str:
+        """Determine current flight phase based on progress"""
+        if progress_percent < 5:
+            return 'takeoff'
+        elif progress_percent < 15:
+            return 'initial_climb'
+        elif progress_percent < 25:
+            return 'climb'
+        elif progress_percent < 75:
+            return 'cruise'
+        elif progress_percent < 90:
+            return 'descent'
+        elif progress_percent < 95:
+            return 'approach'
+        else:
+            return 'landing'
+    
+    def calculate_distance_to_airport(self, from_airport: str, to_airport: str) -> int:
+        """Simplified distance calculation (in reality would use great circle)"""
+        # This is a simplified lookup - in production you'd use actual coordinates
+        distance_matrix = {
+            ('EGLL', 'EGKK'): 30, ('EGLL', 'EGCC'): 180, ('EGLL', 'LFPG'): 215,
+            ('EGLL', 'EHAM'): 230, ('EGLL', 'EDDF'): 400, ('EGLL', 'BIKF'): 820,
+            ('KJFK', 'KBOS'): 190, ('KJFK', 'KORD'): 740, ('KJFK', 'KATL'): 760,
+            ('KJFK', 'PANC'): 3370, ('KLAX', 'KLAS'): 240, ('KLAX', 'KDEN'): 860,
+            ('VHHH', 'RJAA'): 1800, ('VHHH', 'RKSI'): 1100, ('VHHH', 'VTBS'): 1100,
+            ('OMDB', 'OTHH'): 240, ('OMDB', 'OKBK'): 520, ('OMDB', 'OERK'): 580
+        }
+        
+        key = (from_airport, to_airport)
+        reverse_key = (to_airport, from_airport)
+        
+        return distance_matrix.get(key, distance_matrix.get(reverse_key, 500))
+    
+    def generate_pilot_options(self, flight_data: Dict, scenario_template: Dict, 
+                             nearby_airports: List[str], severity: str) -> List[Dict]:
+        """Generate pilot-specific decision options with performance calculations"""
+        flight_phase = self.calculate_flight_phase(flight_data['progress_percent'])
+        aircraft_type = flight_data['aircraft_type']
+        options = []
+        
+        # Continue to destination option
+        if severity != 'critical' and flight_phase in ['cruise', 'descent']:
+            fuel_required = self.calculate_fuel_requirement(
+                flight_data, flight_data['arrival_airport']
+            )
+            options.append({
+                'option_id': 'continue_dest',
+                'title': 'Continue to Destination',
+                'description': f"Continue to {flight_data['arrival_airport']} as planned",
+                'flight_time_minutes': self.calculate_flight_time(flight_data, flight_data['arrival_airport']),
+                'fuel_required_kg': fuel_required,
+                'fuel_margin_kg': flight_data['fuel_remaining_kg'] - fuel_required,
+                'risk_level': 'medium' if severity == 'major' else 'low',
+                'crew_actions': self.get_crew_actions(scenario_template, 'continue'),
+                'performance_impact': self.get_performance_impact(aircraft_type, scenario_template, severity),
+                'airport_requirements': self.get_airport_requirements(flight_data['arrival_airport'], aircraft_type, scenario_template),
+                'passenger_impact': 'minimal'
+            })
+        
+        # Diversion options
+        for airport in nearby_airports:
+            distance = self.calculate_distance_to_airport(
+                flight_data['departure_airport'] if flight_data['progress_percent'] < 50 
+                else flight_data['arrival_airport'], airport
+            )
+            
+            fuel_required = self.calculate_diversion_fuel(flight_data, airport, distance)
+            flight_time = self.calculate_diversion_time(distance, flight_data['speed_kts'])
+            
+            options.append({
+                'option_id': f'divert_{airport}',
+                'title': f'Divert to {airport}',
+                'description': f"Divert to {self.airport_info[airport]['name']} ({self.airport_info[airport]['city']})",
+                'flight_time_minutes': flight_time,
+                'distance_nm': distance,
+                'fuel_required_kg': fuel_required,
+                'fuel_margin_kg': flight_data['fuel_remaining_kg'] - fuel_required,
+                'risk_level': self.assess_diversion_risk(distance, fuel_required, flight_data['fuel_remaining_kg']),
+                'crew_actions': self.get_crew_actions(scenario_template, 'divert'),
+                'performance_impact': self.get_performance_impact(aircraft_type, scenario_template, severity),
+                'airport_requirements': self.get_airport_requirements(airport, aircraft_type, scenario_template),
+                'passenger_impact': 'significant',
+                'ground_time_estimate': self.estimate_ground_time(scenario_template, severity),
+                'onward_travel_options': self.get_onward_travel_options(airport, flight_data['arrival_airport'])
+            })
+        
+        # Emergency landing option for critical scenarios
+        if severity == 'critical' and flight_phase in ['takeoff', 'initial_climb', 'climb']:
+            nearest_airport = self.get_nearest_suitable_airport(flight_data['departure_airport'])
+            if nearest_airport:
+                options.append({
+                    'option_id': 'emergency_return',
+                    'title': 'Emergency Return',
+                    'description': f"Immediate return to {nearest_airport}",
+                    'flight_time_minutes': 30,
+                    'fuel_required_kg': 5000,
+                    'fuel_margin_kg': flight_data['fuel_remaining_kg'] - 5000,
+                    'risk_level': 'high',
+                    'crew_actions': self.get_crew_actions(scenario_template, 'emergency'),
+                    'performance_impact': self.get_performance_impact(aircraft_type, scenario_template, severity),
+                    'airport_requirements': self.get_airport_requirements(nearest_airport, aircraft_type, scenario_template),
+                    'passenger_impact': 'high',
+                    'priority': 'immediate'
+                })
+        
+        return sorted(options, key=lambda x: x['fuel_margin_kg'], reverse=True)
+    
+    def calculate_fuel_requirement(self, flight_data: Dict, destination: str) -> int:
+        """Calculate fuel required to reach destination"""
+        # Simplified calculation - in reality would use flight management system data
+        remaining_progress = 100 - flight_data['progress_percent']
+        base_fuel_rate = 3000  # kg per hour (simplified)
+        
+        if 'engine_failure' in flight_data.get('scenario_type', ''):
+            base_fuel_rate *= 1.15  # 15% increase for single engine
+        
+        flight_hours_remaining = (remaining_progress / 100) * 8  # Assuming 8hr average flight
+        return int(flight_hours_remaining * base_fuel_rate + 3000)  # Plus reserve
+    
+    def calculate_diversion_fuel(self, flight_data: Dict, airport: str, distance: int) -> int:
+        """Calculate fuel required for diversion"""
+        # Simplified fuel calculation
+        fuel_per_nm = 4.5  # kg per nautical mile
+        base_fuel = distance * fuel_per_nm
+        reserve_fuel = 2000  # Fixed reserve
+        
+        return int(base_fuel + reserve_fuel)
+    
+    def calculate_diversion_time(self, distance: int, current_speed: int) -> int:
+        """Calculate time to diversion airport"""
+        return int((distance / current_speed) * 60)  # Convert to minutes
+    
+    def calculate_flight_time(self, flight_data: Dict, destination: str) -> int:
+        """Calculate remaining flight time to destination"""
+        remaining_progress = 100 - flight_data['progress_percent']
+        total_flight_time = 480  # minutes (8 hours average)
+        return int((remaining_progress / 100) * total_flight_time)
+    
+    def assess_diversion_risk(self, distance: int, fuel_required: int, fuel_available: int) -> str:
+        """Assess risk level of diversion"""
+        fuel_margin = fuel_available - fuel_required
+        
+        if fuel_margin < 1000:
+            return 'critical'
+        elif fuel_margin < 3000:
+            return 'high'
+        elif distance > 400:
+            return 'medium'
+        else:
+            return 'low'
+    
+    def get_crew_actions(self, scenario_template: Dict, option_type: str) -> List[str]:
+        """Get required crew actions for each option"""
+        actions = []
+        
+        if option_type == 'continue':
+            actions = [
+                'Monitor system status continuously',
+                'Prepare for non-normal approach if required',
+                'Brief cabin crew on potential issues',
+                'Calculate fuel requirements',
+                'Coordinate with dispatch'
+            ]
+        elif option_type == 'divert':
+            actions = [
+                'Declare emergency if required',
+                'Request radar vectors to diversion airport',
+                'Run appropriate checklists',
+                'Brief cabin crew on diversion',
+                'Coordinate with ATC for priority handling',
+                'Notify passengers of diversion'
+            ]
+        elif option_type == 'emergency':
+            actions = [
+                'Declare MAYDAY if required',
+                'Request immediate return clearance',
+                'Dump fuel if necessary and permitted',
+                'Prepare cabin for emergency landing',
+                'Run emergency checklists',
+                'Coordinate with emergency services'
+            ]
+        
+        return actions
+    
+    def get_performance_impact(self, aircraft_type: str, scenario_template: Dict, severity: str) -> Dict:
+        """Calculate performance impact on aircraft"""
+        impact = {
+            'max_altitude_ft': 42000,
+            'max_speed_kts': 500,
+            'fuel_burn_increase_percent': 0,
+            'range_reduction_percent': 0,
+            'landing_distance_increase_percent': 0
+        }
+        
+        if 'engine_failure' in scenario_template.get('title', ''):
+            impact.update({
+                'max_altitude_ft': 25000,
+                'max_speed_kts': 350,
+                'fuel_burn_increase_percent': 15,
+                'range_reduction_percent': 25,
+                'landing_distance_increase_percent': 10
+            })
+        elif 'hydraulic' in scenario_template.get('title', ''):
+            impact.update({
+                'max_speed_kts': 450,
+                'landing_distance_increase_percent': 30,
+                'approach_speed_increase_kts': 15
+            })
+        elif 'electrical' in scenario_template.get('title', ''):
+            impact.update({
+                'max_altitude_ft': 35000,
+                'fuel_burn_increase_percent': 5,
+                'navigation_limitation': True
+            })
+        
+        return impact
+    
+    def get_airport_requirements(self, airport: str, aircraft_type: str, scenario_template: Dict) -> Dict:
+        """Get specific airport requirements for the scenario"""
+        requirements = {
+            'runway_length_required_ft': 8000,
+            'emergency_services': False,
+            'maintenance_capability': False,
+            'passenger_facilities': True,
+            'fuel_available': True,
+            'customs_available': True
+        }
+        
+        if 'engine_failure' in scenario_template.get('title', ''):
+            requirements.update({
+                'runway_length_required_ft': 9000,
+                'emergency_services': True,
+                'maintenance_capability': True
+            })
+        elif 'medical' in scenario_template.get('title', ''):
+            requirements.update({
+                'medical_facilities': True,
+                'ambulance_required': True
+            })
+        
+        return requirements
+    
+    def get_nearest_suitable_airport(self, departure_airport: str) -> str:
+        """Get nearest suitable airport for emergency return"""
+        nearby = self.get_nearby_airports(departure_airport)
+        return nearby[0] if nearby else departure_airport
+    
+    def estimate_ground_time(self, scenario_template: Dict, severity: str) -> str:
+        """Estimate ground time required for scenario resolution"""
+        if severity == 'critical':
+            return '4-8 hours'
+        elif severity == 'major':
+            return '2-4 hours'
+        else:
+            return '1-2 hours'
+    
+    def get_onward_travel_options(self, diversion_airport: str, original_destination: str) -> List[str]:
+        """Get options for passengers to continue to destination"""
+        options = []
+        
+        # Check if Virgin Atlantic operates from diversion airport
+        va_airports = ['EGLL', 'EGKK', 'EGCC', 'KJFK', 'KBOS', 'KLAX', 'KLAS']
+        
+        if diversion_airport in va_airports:
+            options.append('Virgin Atlantic connecting flight')
+        
+        options.extend([
+            'Partner airline connection',
+            'Ground transportation if within reasonable distance',
+            'Accommodation and next-day flight'
+        ])
+        
+        return options
+    
+    def generate_flight_plan_integration(self, flight_data: Dict) -> Dict:
+        """Generate flight plan integration data for pilots"""
+        # Generate multiple scenarios at different flight phases
+        scenarios_by_phase = {}
+        
+        phases = ['takeoff', 'climb', 'cruise', 'descent', 'approach']
+        
+        for phase in phases:
+            # Simulate different progress percentages for each phase
+            phase_progress = {
+                'takeoff': 2, 'climb': 15, 'cruise': 50, 'descent': 80, 'approach': 92
+            }
+            
+            # Create temporary flight data for this phase
+            temp_flight_data = flight_data.copy()
+            temp_flight_data['progress_percent'] = phase_progress[phase]
+            
+            # Generate engine failure scenario (most common critical scenario)
+            scenario_template = self.scenario_templates['technical']['engine_failure']
+            nearby_airports = self.get_nearby_airports(temp_flight_data['departure_airport'])
+            if temp_flight_data['progress_percent'] > 50:
+                nearby_airports.extend(self.get_nearby_airports(temp_flight_data['arrival_airport']))
+            nearby_airports = list(set(nearby_airports))[:3]
+            
+            pilot_options = self.generate_pilot_options(
+                temp_flight_data, scenario_template, nearby_airports, 'major'
+            )
+            
+            scenarios_by_phase[phase] = {
+                'scenario': 'Engine Failure',
+                'phase_specific_actions': self.get_phase_specific_actions(phase),
+                'options': pilot_options,
+                'decision_time_seconds': self.get_decision_time(phase),
+                'immediate_actions': self.get_immediate_actions(phase, 'engine_failure')
+            }
+        
+        return {
+            'flight_number': flight_data['flight_number'],
+            'route': f"{flight_data['departure_airport']}-{flight_data['arrival_airport']}",
+            'aircraft_type': flight_data['aircraft_type'],
+            'scenarios_by_phase': scenarios_by_phase,
+            'emergency_contacts': self.get_emergency_contacts(),
+            'weather_alternates': self.get_weather_alternates(flight_data),
+            'fuel_planning': self.get_fuel_planning_data(flight_data)
+        }
+    
+    def get_phase_specific_actions(self, phase: str) -> List[str]:
+        """Get phase-specific actions for pilots"""
+        actions = {
+            'takeoff': [
+                'Maintain directional control',
+                'Continue takeoff if V1 exceeded',
+                'Climb to safe altitude before troubleshooting'
+            ],
+            'climb': [
+                'Level off at current altitude',
+                'Reduce thrust on remaining engine',
+                'Consider immediate return'
+            ],
+            'cruise': [
+                'Maintain current altitude if possible',
+                'Assess fuel situation',
+                'Plan for diversion'
+            ],
+            'descent': [
+                'Continue descent as planned',
+                'Prepare for single-engine approach',
+                'Review emergency procedures'
+            ],
+            'approach': [
+                'Configure for single-engine landing',
+                'Ensure emergency services alerted',
+                'Prepare for go-around if required'
+            ]
+        }
+        return actions.get(phase, [])
+    
+    def get_decision_time(self, phase: str) -> int:
+        """Get typical decision time for each phase"""
+        times = {
+            'takeoff': 30,
+            'climb': 120,
+            'cruise': 300,
+            'descent': 180,
+            'approach': 60
+        }
+        return times.get(phase, 120)
+    
+    def get_immediate_actions(self, phase: str, scenario_type: str) -> List[str]:
+        """Get immediate actions required"""
+        if scenario_type == 'engine_failure':
+            return [
+                'Maintain aircraft control',
+                'Identify failed engine',
+                'Reduce thrust on operating engine',
+                'Follow engine failure checklist',
+                'Assess aircraft performance'
+            ]
+        return []
+    
+    def get_emergency_contacts(self) -> Dict:
+        """Get emergency contact information"""
+        return {
+            'operations_control': '+44 1293 562345',
+            'maintenance_control': '+44 1293 562346',
+            'medical_desk': '+44 1293 562347',
+            'dispatch': '+44 1293 562348'
+        }
+    
+    def get_weather_alternates(self, flight_data: Dict) -> List[str]:
+        """Get weather alternate airports"""
+        alternates = self.get_nearby_airports(flight_data['arrival_airport'])
+        return alternates[:2]  # Return top 2 weather alternates
+    
+    def get_fuel_planning_data(self, flight_data: Dict) -> Dict:
+        """Get fuel planning data for the flight"""
+        return {
+            'current_fuel_kg': flight_data['fuel_remaining_kg'],
+            'fuel_to_destination_kg': self.calculate_fuel_requirement(flight_data, flight_data['arrival_airport']),
+            'reserve_fuel_kg': 3000,
+            'alternate_fuel_kg': 2000,
+            'minimum_fuel_kg': 1500
+        }
+    
+    def generate_scenario(self, scenario_type: str = None) -> Dict:
+        """Generate a complete scenario with options"""
+        # Select scenario type
+        if not scenario_type:
+            scenario_type = random.choice(list(self.scenario_templates.keys()))
+        
+        scenario_category = random.choice(list(self.scenario_templates[scenario_type].keys()))
+        scenario_template = self.scenario_templates[scenario_type][scenario_category]
+        
+        # Generate flight data
+        flight_data = self.generate_flight_data()
+        
+        # Generate scenario details
+        severity = random.choice(scenario_template['severity'])
+        impact = random.choice(scenario_template['impact'])
+        
+        # Generate nearby airports for diversion options
+        nearby_airports = self.get_nearby_airports(flight_data['departure_airport'])
+        if flight_data['progress_percent'] > 50:
+            nearby_airports.extend(self.get_nearby_airports(flight_data['arrival_airport']))
+        
+        # Remove duplicates and limit options
+        nearby_airports = list(set(nearby_airports))[:5]
+        
+        # Generate pilot-specific options
+        pilot_options = self.generate_pilot_options(
+            flight_data, scenario_template, nearby_airports, severity
+        )
+        
+        # Generate operations center options
+        ops_options = self.generate_decision_options(
+            scenario_template, flight_data, nearby_airports, severity
+        )
+        
+        # Generate constraints
+        constraints = self.generate_constraints(flight_data, scenario_template, severity)
+        
+        scenario = {
+            'scenario_id': str(uuid.uuid4()),
+            'timestamp': datetime.now().isoformat(),
+            'scenario_type': scenario_type,
+            'scenario_category': scenario_category,
+            'title': scenario_template['title'],
+            'description': scenario_template['description'],
+            'severity': severity,
+            'impact': impact,
+            'flight_data': flight_data,
+            'flight_phase': self.calculate_flight_phase(flight_data['progress_percent']),
+            'pilot_options': pilot_options,
+            'ops_center_options': ops_options,
+            'constraints': constraints,
+            'nearby_airports': [
+                {
+                    'icao': airport,
+                    'name': self.airport_info[airport]['name'],
+                    'city': self.airport_info[airport]['city'],
+                    'distance_nm': self.calculate_distance_to_airport(
+                        flight_data['departure_airport'], airport
+                    )
+                }
+                for airport in nearby_airports
+            ],
+            'time_critical': scenario_template['time_critical'],
+            'requires_diversion': scenario_template['requires_diversion']
+        }
+        
+        return scenario
+    
+    def generate_decision_options(self, scenario_template: Dict, flight_data: Dict, 
+                                nearby_airports: List[str], severity: str) -> List[Dict]:
+        """Generate operations center decision options"""
+        options = []
+        
+        # Continue option
+        if severity != 'critical':
+            options.append({
+                'option_id': 'continue',
+                'title': 'Continue to Destination',
+                'description': 'Monitor situation and continue as planned',
+                'risk_level': 'medium' if severity == 'major' else 'low',
+                'resource_requirements': ['monitoring', 'standby_crew'],
+                'estimated_cost': 'minimal',
+                'passenger_impact': 'none'
+            })
+        
+        # Diversion options
+        for airport in nearby_airports:
+            options.append({
+                'option_id': f'divert_{airport}',
+                'title': f'Divert to {airport}',
+                'description': f'Divert to {self.airport_info[airport]["name"]}',
+                'risk_level': 'medium',
+                'resource_requirements': ['ground_crew', 'passenger_services', 'maintenance'],
+                'estimated_cost': 'high',
+                'passenger_impact': 'significant'
+            })
+        
+        return options
+    
+    def generate_constraints(self, flight_data: Dict, scenario_template: Dict, severity: str) -> List[str]:
+        """Generate operational constraints"""
+        constraints = []
+        
+        if flight_data['fuel_remaining_kg'] < 20000:
+            constraints.append('Limited fuel - diversion options restricted')
+        
+        if flight_data['progress_percent'] > 80:
+            constraints.append('Close to destination - limited diversion benefit')
+        
+        if severity == 'critical':
+            constraints.append('Safety critical - immediate action required')
+        
+        return constraints
+
+# Usage Examples and Main Execution
+def main():
+    """Main function demonstrating usage"""
+    generator = VirginAtlanticScenarioGenerator()
+    
+    print("=== Virgin Atlantic Scenario Generator ===\n")
+    
+    # Generate a random scenario
+    print("1. Random Scenario for Operations Center:")
+    scenario = generator.generate_scenario()
+    print(f"Flight: {scenario['flight_data']['flight_number']}")
+    print(f"Route: {scenario['flight_data']['departure_airport']}-{scenario['flight_data']['arrival_airport']}")
+    print(f"Aircraft: {scenario['flight_data']['aircraft_name']}")
+    print(f"Scenario: {scenario['title']} (Severity: {scenario['severity']})")
+    print(f"Flight Phase: {scenario['flight_phase']}")
+    print(f"Progress: {scenario['flight_data']['progress_percent']}%")
+    print(f"Fuel Remaining: {scenario['flight_data']['fuel_remaining_kg']} kg")
+    
+    print("\nPilot Options:")
+    for i, option in enumerate(scenario['pilot_options'], 1):
+        print(f"{i}. {option['title']}")
+        print(f"   Risk: {option['risk_level']}")
+        print(f"   Fuel Required: {option['fuel_required_kg']} kg")
+        print(f"   Fuel Margin: {option['fuel_margin_kg']} kg")
+        if 'flight_time_minutes' in option:
+            print(f"   Flight Time: {option['flight_time_minutes']} minutes")
+        print()
+    
+    print("\n" + "="*60 + "\n")
+    
+    # Generate flight plan integration
+    print("2. Flight Plan Integration Data:")
+    flight_plan_data = generator.generate_flight_plan_integration(scenario['flight_data'])
+    
+    print(f"Flight: {flight_plan_data['flight_number']}")
+    print(f"Route: {flight_plan_data['route']}")
+    print(f"Aircraft: {flight_plan_data['aircraft_type']}")
+    
+    print("\nEngine Failure Scenarios by Flight Phase:")
+    for phase, data in flight_plan_data['scenarios_by_phase'].items():
+        print(f"\n{phase.upper()} Phase:")
+        print(f"  Decision Time: {data['decision_time_seconds']} seconds")
+        print(f"  Immediate Actions: {', '.join(data['immediate_actions'][:2])}")
+        print(f"  Options Available: {len(data['options'])}")
+        
+        # Show best option
+        if data['options']:
+            best_option = data['options'][0]
+            print(f"  Recommended: {best_option['title']} (Risk: {best_option['risk_level']})")
+    
+    print(f"\nEmergency Contacts:")
+    for contact, number in flight_plan_data['emergency_contacts'].items():
+        print(f"  {contact.replace('_', ' ').title()}: {number}")
+    
+    print("\n" + "="*60 + "\n")
+    
+    # Generate specific scenario type
+    print("3. Specific Technical Scenario:")
+    tech_scenario = generator.generate_scenario('technical')
+    print(f"Scenario: {tech_scenario['title']}")
+    print(f"Description: {tech_scenario['description']}")
+    print(f"Flight Phase: {tech_scenario['flight_phase']}")
+    
+    print("\nConstraints:")
+    for constraint in tech_scenario['constraints']:
+        print(f"  - {constraint}")
+    
+    print("\nNearby Airports:")
+    for airport in tech_scenario['nearby_airports']:
+        print(f"  - {airport['icao']}: {airport['name']} ({airport['distance_nm']} nm)")
+    
+    print("\n" + "="*60 + "\n")
+    
+    # Performance impact analysis
+    print("4. Performance Impact Analysis:")
+    if tech_scenario['pilot_options']:
+        for option in tech_scenario['pilot_options']:
+            if 'performance_impact' in option:
+                print(f"\nOption: {option['title']}")
+                perf = option['performance_impact']
+                print(f"  Max Altitude: {perf['max_altitude_ft']} ft")
+                print(f"  Max Speed: {perf['max_speed_kts']} kts")
+                print(f"  Fuel Burn Increase: {perf['fuel_burn_increase_percent']}%")
+                print(f"  Range Reduction: {perf['range_reduction_percent']}%")
+                break
+
+def generate_training_dataset(num_scenarios: int = 100) -> List[Dict]:
+    """Generate a dataset for ML training"""
+    generator = VirginAtlanticScenarioGenerator()
+    dataset = []
+    
+    print(f"Generating {num_scenarios} scenarios for ML training...")
+    
+    for i in range(num_scenarios):
+        scenario = generator.generate_scenario()
+        
+        # Extract features for ML
+        features = {
+            'aircraft_type': scenario['flight_data']['aircraft_type'],
+            'progress_percent': scenario['flight_data']['progress_percent'],
+            'fuel_remaining_kg': scenario['flight_data']['fuel_remaining_kg'],
+            'passenger_count': scenario['flight_data']['passenger_count'],
+            'flight_phase': scenario['flight_phase'],
+            'scenario_type': scenario['scenario_type'],
+            'severity': scenario['severity'],
+            'time_critical': scenario['time_critical'],
+            'requires_diversion': scenario['requires_diversion']
+        }
+        
+        # Extract decisions (labels for ML)
+        decisions = []
+        for option in scenario['pilot_options']:
+            decisions.append({
+                'option_id': option['option_id'],
+                'risk_level': option['risk_level'],
+                'fuel_margin_kg': option['fuel_margin_kg'],
+                'passenger_impact': option['passenger_impact']
+            })
+        
+        dataset.append({
+            'scenario_id': scenario['scenario_id'],
+            'features': features,
+            'options': decisions,
+            'constraints': scenario['constraints']
+        })
+        
+        if (i + 1) % 10 == 0:
+            print(f"Generated {i + 1} scenarios...")
+    
+    return dataset
+
+def export_for_flight_plan(flight_number: str, route: str, aircraft_type: str) -> str:
+    """Export scenario data for flight plan integration"""
+    generator
