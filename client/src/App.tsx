@@ -361,7 +361,7 @@ function App() {
             )}
             
             {viewMode === 'diversion-support' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto">
                 <DiversionSupportDashboard />
               </div>
             )}
