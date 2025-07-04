@@ -43,6 +43,8 @@ import { PassengerConnectionService } from "./passengerConnectionService";
 import { scenarioGeneratorService } from "./scenarioGeneratorService";
 import { routePositionService } from "./routePositionService";
 import { virginAtlanticFlightTracker } from "./routeMatcher";
+import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
+import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -6323,6 +6325,156 @@ else:
       res.status(500).json({
         success: false,
         error: 'Failed to load corrected airport support data'
+      });
+    }
+  });
+
+  // Emergency Response Coordinator API endpoints
+  app.post('/api/aviation/emergency/detect', (req, res) => {
+    try {
+      const { flightState, additionalData } = req.body;
+      const emergency = emergencyCoordinator.detectEmergency(flightState, additionalData);
+      
+      if (emergency) {
+        const response = emergencyCoordinator.generateResponse(emergency);
+        res.json({
+          success: true,
+          emergency_detected: true,
+          emergency: response,
+          message: `${emergency.severity.toUpperCase()} ${emergency.type} emergency detected for ${emergency.flightNumber}`
+        });
+      } else {
+        res.json({
+          success: true,
+          emergency_detected: false,
+          message: 'No emergency conditions detected'
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Emergency detection failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  app.get('/api/aviation/emergency/active', (req, res) => {
+    try {
+      const activeEmergencies = emergencyCoordinator.getActiveEmergencies();
+      res.json({
+        success: true,
+        active_count: activeEmergencies.length,
+        emergencies: activeEmergencies,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get active emergencies'
+      });
+    }
+  });
+
+  app.put('/api/aviation/emergency/:emergencyId/action/:actionId', (req, res) => {
+    try {
+      const { emergencyId, actionId } = req.params;
+      const { status } = req.body;
+      
+      const updated = emergencyCoordinator.updateEmergencyStatus(emergencyId, actionId, status);
+      
+      if (updated) {
+        res.json({
+          success: true,
+          message: `Action ${actionId} updated to ${status}`
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          error: 'Emergency or action not found'
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to update emergency action'
+      });
+    }
+  });
+
+  // UK CAA Punctuality Analysis API endpoints
+  app.get('/api/aviation/punctuality/route/:airport/:destination/:airline/:direction', (req, res) => {
+    try {
+      const { airport, destination, airline, direction } = req.params;
+      const analysis = ukCaaProcessor.getRouteAnalysis(airport, destination, airline, direction as 'A' | 'D');
+      
+      if (analysis) {
+        res.json({
+          success: true,
+          analysis,
+          data_source: 'UK CAA January 2025 Official Statistics'
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          error: 'No punctuality data found for this route'
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get punctuality analysis'
+      });
+    }
+  });
+
+  app.get('/api/aviation/punctuality/enhanced-prediction', (req, res) => {
+    try {
+      const { airport, destination, airline, direction, weather_impact, traffic_congestion, aircraft_maintenance } = req.query;
+      
+      const currentConditions = {
+        weather_impact: weather_impact === 'true',
+        traffic_congestion: traffic_congestion === 'true', 
+        aircraft_maintenance: aircraft_maintenance === 'true'
+      };
+
+      const prediction = ukCaaProcessor.getEnhancedPrediction(
+        airport as string,
+        destination as string,
+        airline as string,
+        direction as 'A' | 'D',
+        currentConditions
+      );
+
+      res.json({
+        success: true,
+        prediction,
+        enhanced_with: 'UK CAA historical data + current conditions',
+        data_quality: prediction.historical_performance ? 'High (authentic data)' : 'Medium (estimated)'
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Enhanced prediction failed'
+      });
+    }
+  });
+
+  app.get('/api/aviation/punctuality/airport-summary/:airport', (req, res) => {
+    try {
+      const { airport } = req.params;
+      const summary = ukCaaProcessor.getAirportSummary(airport);
+      
+      res.json({
+        success: true,
+        airport,
+        summary,
+        data_source: 'UK CAA January 2025 Punctuality Statistics'
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get airport summary'
       });
     }
   });
