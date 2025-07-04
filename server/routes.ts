@@ -39,6 +39,8 @@ import { AircraftTrackingService } from "./aircraftTrackingService";
 import { heathrowConnectionService } from "./heathrowConnectionService";
 import { PassengerConnectionService } from "./passengerConnectionService";
 import { scenarioGeneratorService } from "./scenarioGeneratorService";
+import { routePositionService } from "./routePositionService";
+import { virginAtlanticFlightTracker } from "./routeMatcher";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -5298,6 +5300,105 @@ else:
       res.status(500).json({ 
         success: false, 
         error: 'Failed to validate connection' 
+      });
+    }
+  });
+
+  // Authentic Virgin Atlantic Route Network APIs
+  app.get('/api/aviation/route-positions', (req, res) => {
+    try {
+      const positions = routePositionService.getCurrentPositions();
+      res.json({
+        success: true,
+        positions,
+        timestamp: new Date().toISOString(),
+        data_source: 'authentic_virgin_atlantic_route_charts'
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get route positions'
+      });
+    }
+  });
+
+  // Comprehensive authentic route network from PDF-extracted waypoints
+  app.get('/api/aviation/authentic-routes', (req, res) => {
+    try {
+      const routes = virginAtlanticFlightTracker.routeLibrary.getAllRoutes();
+      const authenticRoutes = routes.map(route => ({
+        origin: route.origin,
+        destination: route.destination,
+        total_distance_nm: route.total_nm,
+        waypoint_count: route.waypoints.length,
+        waypoints: route.waypoints.map(wp => ({
+          name: wp.name,
+          lat: Math.round(wp.lat * 10000) / 10000,
+          lon: Math.round(wp.lon * 10000) / 10000,
+          cumulative_nm: wp.cumulative_nm ? Math.round(wp.cumulative_nm * 10) / 10 : 0
+        }))
+      }));
+
+      const routeSummary = {
+        total_routes: authenticRoutes.length,
+        route_sources: [
+          'VS158 KBOS-EGLL: Authentic NAT track from route chart',
+          'VS355 VABB-EGLL: Authentic Gulf/Egypt corridor from route chart', 
+          'VS24 KLAX-EGLL: Authentic Pacific-Atlantic route from route chart',
+          'VS166 MKJS-EGLL: Authentic Caribbean route from operational flight plan'
+        ],
+        geographic_coverage: [
+          'North Atlantic NAT tracks',
+          'Indian subcontinent via Middle East',
+          'Pacific-Atlantic corridor',
+          'Caribbean to Europe routing'
+        ]
+      };
+
+      res.json({
+        success: true,
+        summary: routeSummary,
+        authentic_routes: authenticRoutes,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get authentic routes'
+      });
+    }
+  });
+
+  // Live flight demonstration using authentic waypoints
+  app.get('/api/aviation/live-flight-demo/:flightNumber', (req, res) => {
+    try {
+      const { flightNumber } = req.params;
+      const position = routePositionService.getFlightPosition(flightNumber);
+      
+      if (!position) {
+        return res.status(404).json({
+          success: false,
+          error: `Flight ${flightNumber} not found in live tracking system`
+        });
+      }
+
+      const waypoints = routePositionService.getRouteWaypoints(flightNumber);
+      const diversionOptions = routePositionService.getDiversionOptions(flightNumber);
+
+      res.json({
+        success: true,
+        flight_data: {
+          ...position,
+          authentic_waypoints: waypoints,
+          diversion_analysis: diversionOptions
+        },
+        data_source: 'Authentic Virgin Atlantic route charts and operational flight plans',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get live flight demo'
       });
     }
   });

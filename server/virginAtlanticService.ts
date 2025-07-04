@@ -46,9 +46,12 @@ class VirginAtlanticService {
 
   private generateEnhancedNetworkData(): void {
     // Virgin Atlantic's actual fleet and routes based on their current network
+    // Now includes authentic route positioning using route matcher
     const authenticRoutes = [
       { route: 'LHR-JFK', aircraft: 'Boeing 787-9', freq: 'Daily', dep: '11:00', arr: '15:00' },
       { route: 'LHR-LAX', aircraft: 'Airbus A350-1000', freq: 'Daily', dep: '14:30', arr: '18:30' },
+      { route: 'KBOS-LHR', aircraft: 'Boeing 787-9', freq: 'Daily', dep: '21:45', arr: '08:30+1' }, // VS158 with authentic waypoints
+      { route: 'VABB-LHR', aircraft: 'Boeing 787-9', freq: 'Daily', dep: '14:35', arr: '19:00' }, // VS355 with authentic waypoints
       { route: 'LHR-SFO', aircraft: 'Airbus A350-1000', freq: 'Daily', dep: '12:15', arr: '15:45' },
       { route: 'LHR-BOS', aircraft: 'Boeing 787-9', freq: 'Daily', dep: '16:20', arr: '19:15' },
       { route: 'LHR-MIA', aircraft: 'Airbus A330-300', freq: 'Daily', dep: '13:45', arr: '19:30' },
