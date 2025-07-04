@@ -1,0 +1,6 @@
+icao,iata,name,country,hasGround,hasFuel,lat,lon
+EGLL,LHR,London Heathrow,UK,True,True,51.47,-0.4543
+OMDB,DXB,Dubai International,UAE,True,False,25.2532,55.3657
+WSSS,SIN,Singapore Changi,Singapore,True,False,1.3644,103.9915
+LSZH,ZRH,Zurich Airport,Switzerland,False,True,47.4647,8.5492
+LFPG,CDG,Paris Charles de Gaulle,France,False,True,49.0097,2.5479

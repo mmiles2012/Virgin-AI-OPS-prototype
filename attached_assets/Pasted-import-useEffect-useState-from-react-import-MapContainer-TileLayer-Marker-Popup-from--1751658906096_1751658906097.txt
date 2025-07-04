@@ -1,0 +1,112 @@
+import { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import Papa from 'papaparse';
+
+export default function GroundFuelMapViewer() {
+  const [airportData, setAirportData] = useState([]);
+  const [filter, setFilter] = useState('all');
+
+  useEffect(() => {
+    const fetchCSVData = async () => {
+      const [groundRes, fuelRes] = await Promise.all([
+        fetch('/worldwide_ground_handlers.csv'),
+        fetch('/worldwide_fuel_suppliers.csv')
+      ]);
+      const [groundText, fuelText] = await Promise.all([
+        groundRes.text(),
+        fuelRes.text()
+      ]);
+
+      const groundParsed = Papa.parse(groundText, { header: true }).data;
+      const fuelParsed = Papa.parse(fuelText, { header: true }).data;
+
+      const combined = {};
+
+      groundParsed.forEach(entry => {
+        if (!combined[entry.ICAO]) {
+          combined[entry.ICAO] = {
+            icao: entry.ICAO,
+            iata: entry.IATA,
+            name: entry['Airport Name'],
+            country: entry.Country,
+            hasGround: true,
+            hasFuel: false,
+            lat: 0,
+            lon: 0
+          };
+        } else {
+          combined[entry.ICAO].hasGround = true;
+        }
+      });
+
+      fuelParsed.forEach(entry => {
+        if (!combined[entry.ICAO]) {
+          combined[entry.ICAO] = {
+            icao: entry.ICAO,
+            iata: entry.IATA,
+            name: entry['Airport Name'],
+            country: entry.Country,
+            hasGround: false,
+            hasFuel: true,
+            lat: 0,
+            lon: 0
+          };
+        } else {
+          combined[entry.ICAO].hasFuel = true;
+        }
+      });
+
+      // Dummy lat/lon lookup (can be replaced with real coordinates API or file)
+      Object.values(combined).forEach((entry, i) => {
+        entry.lat = 20 + (i % 20); // dummy lat
+        entry.lon = -20 + (i % 20); // dummy lon
+      });
+
+      setAirportData(Object.values(combined));
+    };
+
+    fetchCSVData();
+  }, []);
+
+  const filteredAirports = airportData.filter(a => {
+    if (filter === 'all') return true;
+    if (filter === 'fuel') return a.hasFuel;
+    if (filter === 'ground') return a.hasGround;
+    if (filter === 'both') return a.hasFuel && a.hasGround;
+    return true;
+  });
+
+  return (
+    <div className="h-screen w-full">
+      <div className="p-2 flex gap-2 bg-white z-10">
+        <label>Filter:</label>
+        <select value={filter} onChange={e => setFilter(e.target.value)} className="border p-1 rounded">
+          <option value="all">All Airports</option>
+          <option value="fuel">Fuel Only</option>
+          <option value="ground">Ground Handling Only</option>
+          <option value="both">Fuel + Ground Support</option>
+        </select>
+      </div>
+
+      <MapContainer center={[20, 0]} zoom={2} scrollWheelZoom={true} className="h-full w-full z-0">
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {filteredAirports.map((airport, index) => (
+          <Marker key={index} position={[airport.lat, airport.lon]}>
+            <Popup>
+              <strong>{airport.name}</strong><br />
+              ICAO: {airport.icao}<br />
+              IATA: {airport.iata}<br />
+              Country: {airport.country}<br />
+              Fuel: {airport.hasFuel ? '✅' : '❌'}<br />
+              Ground: {airport.hasGround ? '✅' : '❌'}
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
+  );
+}

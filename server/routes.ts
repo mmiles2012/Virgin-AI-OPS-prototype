@@ -1240,6 +1240,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all ground handlers for map visualization
+  app.get("/api/aviation/ground-handlers/all", (req, res) => {
+    try {
+      const handlers = groundHandlerService.getAllHandlers();
+      res.json({
+        success: true,
+        handlers: handlers,
+        count: handlers.length
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Failed to get ground handlers: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
+  // Get all fuel suppliers for map visualization
+  app.get("/api/aviation/fuel-suppliers/all", (req, res) => {
+    try {
+      const suppliers = fuelSupplierService.getAllSuppliers();
+      res.json({
+        success: true,
+        suppliers: suppliers,
+        count: suppliers.length
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: `Failed to get fuel suppliers: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
   // Clear flight data cache
   app.post("/api/aviation/clear-cache", (req, res) => {
     try {

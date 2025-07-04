@@ -34,6 +34,7 @@ import EmergencyCommDashboard from "./components/EmergencyCommDashboard";
 import NetworkOTPDashboard from "./components/NetworkOTPDashboard";
 import VirginAtlanticFleetMonitor from "./components/VirginAtlanticFleetMonitor";
 import IntelligenceDashboard from "./components/IntelligenceDashboard";
+import GroundFuelMapViewer from "./components/GroundFuelMapViewer";
 
 
 // Flight control mappings
@@ -72,7 +73,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'service-coverage';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -203,6 +204,16 @@ function App() {
                     Delay Prediction
                   </button>
                   
+                  <button
+                    onClick={() => setViewMode('service-coverage')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'service-coverage' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Service Coverage Map
+                  </button>
 
                   
                   <button
@@ -440,6 +451,11 @@ function App() {
               </div>
             )}
             
+            {viewMode === 'service-coverage' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+                <GroundFuelMapViewer />
+              </div>
+            )}
 
             
             {viewMode === 'emergency-comm' && (
