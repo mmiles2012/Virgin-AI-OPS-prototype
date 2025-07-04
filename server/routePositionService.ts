@@ -107,6 +107,19 @@ export class RoutePositionService {
       this.liveFlights.set('VS166', vs166);
     }
 
+    // VS103 London to Atlanta - using authentic A350-1000 with complete OFP waypoints
+    const vs103 = virginAtlanticFlightTracker.createFlightPath(
+      'VS103',
+      'EGLL',
+      'KATL',
+      new Date(currentTime.getTime() - 4 * 60 * 60 * 1000), // Departed 4 hours ago
+      'Airbus A350-1000'
+    );
+    
+    if (vs103) {
+      this.liveFlights.set('VS103', vs103);
+    }
+
     console.log('Route Position Service: Initialized with authentic Virgin Atlantic waypoints');
   }
 
@@ -184,7 +197,8 @@ export class RoutePositionService {
       'VS004': 'Boeing 787-9', 
       'VS024': 'Boeing 787-9',
       'VS166': 'Boeing 787-9', // Authentic from OFP
-      'VS025': 'Airbus A350-1000'
+      'VS025': 'Airbus A350-1000',
+      'VS103': 'Airbus A350-1000' // Authentic from OFP (G-VPRD)
     };
     return aircraftTypes[flightNumber] || 'Boeing 787-9';
   }

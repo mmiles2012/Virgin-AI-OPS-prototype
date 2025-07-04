@@ -208,6 +208,47 @@ export class VirginAtlanticRouteLibrary {
       { name: 'SBGR', lat: -23.4356, lon: -46.4731 }
     ]);
 
+    // VS103 EGLL-KATL - Authentic transatlantic route from complete OFP (A350-1000)
+    this.addRoute('EGLL', 'KATL', [
+      { name: 'EGLL', lat: 51.4706, lon: -0.4619 },
+      { name: 'GOGSI', lat: 51.2919, lon: -1.0 },
+      { name: 'EVTES', lat: 51.0817, lon: -1.2167 },
+      { name: 'EXARO', lat: 50.0017, lon: -2.3800 },
+      { name: 'OSNUG', lat: 50.8933, lon: -2.0033 },
+      { name: 'ADKIK', lat: 50.7967, lon: -2.5467 },
+      { name: 'JOZMA', lat: 50.6267, lon: -3.9433 },
+      { name: 'GAPLI', lat: 50.0, lon: -8.0 },
+      { name: 'BEDRA', lat: 49.0, lon: -15.0 },
+      { name: '4820N', lat: 48.0, lon: -20.0 },
+      { name: '4630N', lat: 46.0, lon: -30.0 },
+      { name: '4440N', lat: 44.0, lon: -40.0 },
+      { name: '4350N', lat: 43.0, lon: -50.0 },
+      { name: 'JEBBY', lat: 43.0717, lon: -57.8683 },
+      { name: 'CARAC', lat: 43.0, lon: -60.0 },
+      { name: 'WHALE', lat: 42.1983, lon: -67.0 },
+      { name: 'BOS', lat: 42.3561, lon: -70.9900 },
+      { name: 'BAF', lat: 42.1617, lon: -72.7167 },
+      { name: 'BIGGO', lat: 41.9550, lon: -73.0683 },
+      { name: 'TRIBS', lat: 41.6583, lon: -73.3183 },
+      { name: 'BASYE', lat: 41.3433, lon: -73.7983 },
+      { name: 'DBABE', lat: 41.1417, lon: -74.0967 },
+      { name: 'LANNA', lat: 40.5600, lon: -75.0283 },
+      { name: 'PTW', lat: 40.2217, lon: -75.5600 },
+      { name: 'BYRDD', lat: 40.0917, lon: -75.8183 },
+      { name: 'HAAGN', lat: 39.9617, lon: -76.0767 },
+      { name: 'PENSY', lat: 39.9067, lon: -76.1833 },
+      { name: 'EMI', lat: 39.4950, lon: -76.9783 },
+      { name: 'CSN', lat: 38.6417, lon: -77.8650 },
+      { name: 'MOL', lat: 37.9000, lon: -79.1067 },
+      { name: 'FLASK', lat: 37.0183, lon: -80.3167 },
+      { name: 'YEOLD', lat: 36.3217, lon: -81.1967 },
+      { name: 'SCHUL', lat: 35.7917, lon: -81.8533 },
+      { name: 'TDUNN', lat: 35.4250, lon: -82.2900 },
+      { name: 'WLLSN', lat: 35.1617, lon: -82.6183 },
+      { name: 'OZZZI', lat: 34.0950, lon: -83.8350 },
+      { name: 'KATL', lat: 33.6367, lon: -84.4281 }
+    ]);
+
     // Load additional routes from authentic route charts
     this.loadFromRouteCharts();
 
