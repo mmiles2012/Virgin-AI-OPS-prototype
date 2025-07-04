@@ -12,6 +12,8 @@ interface AirportData {
   lat: number;
   lon: number;
   support: string;
+  contact?: string;
+  phone?: string;
 }
 
 export default function GroundFuelMapViewer() {
@@ -30,7 +32,9 @@ export default function GroundFuelMapViewer() {
         country: entry.Country,
         lat: parseFloat(entry.Latitude),
         lon: parseFloat(entry.Longitude),
-        support: entry.Support.toLowerCase()
+        support: entry.Support.toLowerCase(),
+        contact: entry.Contact || 'Not available',
+        phone: entry.Phone || 'Not available'
       })).filter((a: AirportData) => !isNaN(a.lat) && !isNaN(a.lon));
       setAirportData(cleaned);
     };
@@ -111,6 +115,12 @@ export default function GroundFuelMapViewer() {
                     {airport.support.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   </span>
                 </p>
+                {airport.contact && (
+                  <p className="text-sm text-gray-600 mt-1">Contact: {airport.contact}</p>
+                )}
+                {airport.phone && (
+                  <p className="text-sm text-gray-600">Phone: {airport.phone}</p>
+                )}
               </div>
             </Popup>
           </Marker>
