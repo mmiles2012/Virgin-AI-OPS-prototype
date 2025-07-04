@@ -1,0 +1,151 @@
+# ofp_scraper.py
+# ---------------------------------------------------------------------------
+# Extract performance-relevant data from Virgin Atlantic OFP PDFs.
+# ---------------------------------------------------------------------------
+# Usage:
+#     python ofp_scraper.py VS103_OFP.pdf VS158_OFP.pdf VS166_OFP.pdf > perf_data.json
+#
+# The script emits a JSON array – one record per OFP – containing fields
+# that the diversion optimiser and fuel-model can load directly.
+#
+# Dependencies:
+#   pip install pdfminer.six python-dateutil click
+# ---------------------------------------------------------------------------
+
+from __future__ import annotations
+
+import json
+import re
+import sys
+from pathlib import Path
+from typing import Dict, List, Optional
+
+from pdfminer.high_level import extract_text
+from pdfminer.pdfparser import PDFSyntaxError
+from dateutil import parser as dtparser
+
+# ---------------------------------------------------------------------------
+# Regex catalogue – tuned for VS OFP template (Sabre / NavBlue style)
+# ---------------------------------------------------------------------------
+_PAT_FLIGHT_NR = re.compile(r"^VIR(\d+[A-Z]?)", re.MULTILINE)
+_PAT_TYPE = re.compile(r"TYPE\s+([A-Z0-9\-]+)")
+_PAT_ORIGIN_DEST = re.compile(r"([A-Z]{4})-([A-Z]{4})")
+_PAT_COST_INDEX = re.compile(r"COST\s+INDEX\s+(\d+)")
+_PAT_MACH = re.compile(r"MACH\s+(0\.\d{2})")
+_PAT_DIST = re.compile(r"DIST\s+(\d{3,4})\b")
+_PAT_BASIC_WGT = re.compile(r"BASIC\s+WGT\s+(\d+)KG")
+_PAT_SENSITIVITY = re.compile(r"INCREASE/DECREASE FUEL BURN BY\s+(\d+)kg", re.I)
+_PAT_TRIP = re.compile(r"TRIP\s+(\d+)\s+(\d+\.\d{2})")
+_PAT_CONT = re.compile(r"CONT\s+(\d+)")
+_PAT_ALTN = re.compile(r"ALTN\s+(\d+)")
+_PAT_FNL = re.compile(r"FNL\s+RES\s+(\d+)")
+_PAT_TAXI = re.compile(r"TAXI/APU\s+(\d+)")
+_PAT_EXTRA = re.compile(r"EXTRA\s+(\d+)")
+_PAT_ETD = re.compile(r"ETD\s+(\d{4}/\d{2})")  # e.g. '1020/04'
+_PAT_PLAN_DATE = re.compile(r"PRTD\s+(\d{2}[A-Z]{3}\d{2})")  # '04JUL25'
+
+# ---------------------------------------------------------------------------
+# Helper – parse ETD string like '1020/04' given plan date 04JUL25
+# ---------------------------------------------------------------------------
+
+def _make_etd(date_str: str, etd_str: str) -> Optional[str]:
+    try:
+        date_dt = dtparser.parse(date_str, dayfirst=False, yearfirst=False)
+        time_part, day_part = etd_str.split("/")
+        hhmm = f"{time_part[:2]}:{time_part[2:]}"
+        etd_dt = dtparser.parse(f"{day_part}{date_dt.strftime('%b%y')} {hhmm}")
+        return etd_dt.isoformat(timespec="minutes")
+    except Exception:
+        return None
+
+
+# ---------------------------------------------------------------------------
+# Main extraction function
+# ---------------------------------------------------------------------------
+
+def parse_ofp(path: Path) -> Dict:
+    try:
+        text = extract_text(path)
+    except (PDFSyntaxError, FileNotFoundError) as e:
+        raise RuntimeError(f"Failed to read {path}: {e}")
+
+    def m(pat, default=None):
+        m = pat.search(text)
+        return m.group(1) if m else default
+
+    flight_nr = m(_PAT_FLIGHT_NR, default=path.stem[:6])
+    ac_type = m(_PAT_TYPE, default="UNKNOWN")
+    origin, dest = (None, None)
+    od = _PAT_ORIGIN_DEST.search(text)
+    if od:
+        origin, dest = od.group(1), od.group(2)
+
+    cost_index = m(_PAT_COST_INDEX)
+    mach = m(_PAT_MACH)
+    dist_nm = m(_PAT_DIST)
+    basic_wgt = m(_PAT_BASIC_WGT)
+    sensitivity = m(_PAT_SENSITIVITY)
+    trip_fuel = m(_PAT_TRIP)
+    cont_fuel = m(_PAT_CONT)
+    altn_fuel = m(_PAT_ALTN)
+    fnl_fuel = m(_PAT_FNL)
+    taxi_fuel = m(_PAT_TAXI)
+    extra_fuel = m(_PAT_EXTRA, default="0")
+
+    plan_date = m(_PAT_PLAN_DATE)
+    etd = None
+    if plan_date:
+        etd_match = _PAT_ETD.search(text)
+        if etd_match:
+            etd = _make_etd(plan_date, etd_match.group(1))
+
+    # Trip fuel/time capture returns two groups – handle if present
+    trip_fuel_kg = None
+    trip_time_hr = None
+    if _PAT_TRIP.search(text):
+        tfm = _PAT_TRIP.search(text)
+        trip_fuel_kg = tfm.group(1)
+        trip_time_hr = tfm.group(2)
+
+    return {
+        "source_pdf": path.name,
+        "flight_number": flight_nr,
+        "aircraft_type": ac_type,
+        "origin": origin,
+        "destination": dest,
+        "etd_utc": etd,
+        "plan_date": plan_date,
+        "distance_nm": int(dist_nm) if dist_nm else None,
+        "cost_index": int(cost_index) if cost_index else None,
+        "cruise_mach": float(mach) if mach else None,
+        "basic_weight_kg": int(basic_wgt) if basic_wgt else None,
+        "fuel_sensitivity_kg_per_tow": int(sensitivity) if sensitivity else None,
+        "trip_fuel_kg": int(trip_fuel_kg) if trip_fuel_kg else None,
+        "trip_time_hr": trip_time_hr,
+        "fuel_breakdown": {
+            "cont_kg": int(cont_fuel) if cont_fuel else None,
+            "altn_kg": int(altn_fuel) if altn_fuel else None,
+            "final_reserve_kg": int(fnl_fuel) if fnl_fuel else None,
+            "taxi_apu_kg": int(taxi_fuel) if taxi_fuel else None,
+            "extra_kg": int(extra_fuel) if extra_fuel else 0,
+        },
+    }
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+def main(paths: List[str]):
+    records: List[Dict] = []
+    for p in paths:
+        rec = parse_ofp(Path(p))
+        records.append(rec)
+    json.dump(records, sys.stdout, indent=2)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python ofp_scraper.py <ofp1.pdf> [ofp2.pdf ...]", file=sys.stderr)
+        sys.exit(1)
+    main(sys.argv[1:])

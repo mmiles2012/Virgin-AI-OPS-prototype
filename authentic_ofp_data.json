@@ -1,0 +1,25 @@
+[
+  {
+    "source_pdf": "VS103_OFP.pdf",
+    "flight_number": "VIR103M",
+    "aircraft_type": "350X",
+    "origin": "EGLL",
+    "destination": "KATL",
+    "etd_utc": "2025-07-04T10:20",
+    "plan_date": "04JUL25",
+    "distance_nm": 3945,
+    "cost_index": 9,
+    "cruise_mach": 0.85,
+    "basic_weight_kg": 147867,
+    "fuel_sensitivity_kg_per_tow": 209,
+    "trip_fuel_kg": 56400,
+    "trip_time_hr": "08.32",
+    "fuel_breakdown": {
+      "cont_kg": 1700,
+      "altn_kg": 3500,
+      "final_reserve_kg": 2900,
+      "taxi_apu_kg": 900,
+      "extra_kg": 0
+    }
+  }
+]

@@ -41,6 +41,8 @@ import { PassengerConnectionService } from "./passengerConnectionService";
 import { scenarioGeneratorService } from "./scenarioGeneratorService";
 import { routePositionService } from "./routePositionService";
 import { virginAtlanticFlightTracker } from "./routeMatcher";
+import * as fs from 'fs';
+import * as path from 'path';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -4561,6 +4563,92 @@ print(json.dumps(weather))
         message: 'Failed to retrieve network coverage',
         error: error.message,
         timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // =======================
+  // Authentic OFP Performance Data
+  // =======================
+  app.get('/api/aviation/authentic-performance/:flightNumber', async (req, res) => {
+    try {
+      const flightNumber = req.params.flightNumber.toUpperCase();
+      
+      // Load authentic OFP data
+      const ofpDataPath = path.join(process.cwd(), 'authentic_ofp_data.json');
+      console.log('Looking for OFP data at:', ofpDataPath);
+      
+      if (fs.existsSync(ofpDataPath)) {
+        const ofpData = JSON.parse(fs.readFileSync(ofpDataPath, 'utf8'));
+        console.log('OFP data loaded:', ofpData.length, 'flights');
+        console.log('Looking for flight:', flightNumber);
+        console.log('Available flights:', ofpData.map((f: any) => f.flight_number));
+        
+        const flightData = ofpData.find((flight: any) => 
+          flight.flight_number === `VIR${flightNumber.replace('VS', '')}M` ||
+          flight.flight_number === `VIR${flightNumber.replace('VS', '')}`
+        );
+        
+        console.log('Found flight data:', !!flightData);
+        
+        if (flightData) {
+          // Calculate fuel burn rate for real-time estimates
+          const tripTimeDecimal = parseFloat(flightData.trip_time_hr);
+          const fuelBurnRate = flightData.trip_fuel_kg / tripTimeDecimal;
+          
+          res.json({
+            success: true,
+            flight_performance: {
+              flight_number: flightNumber,
+              aircraft_type_code: flightData.aircraft_type,
+              aircraft_type_name: flightData.aircraft_type === '350X' ? 'Airbus A350-1000' : flightData.aircraft_type,
+              route: `${flightData.origin}-${flightData.destination}`,
+              authentic_specs: {
+                basic_weight_kg: flightData.basic_weight_kg,
+                cruise_mach: flightData.cruise_mach,
+                cost_index: flightData.cost_index,
+                distance_nm: flightData.distance_nm,
+                fuel_sensitivity_kg_per_tow: flightData.fuel_sensitivity_kg_per_tow
+              },
+              fuel_planning: {
+                trip_fuel_kg: flightData.trip_fuel_kg,
+                trip_time_hours: tripTimeDecimal,
+                fuel_burn_rate_kg_per_hour: Math.round(fuelBurnRate),
+                contingency_kg: flightData.fuel_breakdown.cont_kg,
+                alternate_kg: flightData.fuel_breakdown.altn_kg,
+                final_reserve_kg: flightData.fuel_breakdown.final_reserve_kg,
+                taxi_apu_kg: flightData.fuel_breakdown.taxi_apu_kg,
+                total_planned_fuel_kg: flightData.trip_fuel_kg + 
+                                     flightData.fuel_breakdown.cont_kg + 
+                                     flightData.fuel_breakdown.altn_kg + 
+                                     flightData.fuel_breakdown.final_reserve_kg + 
+                                     flightData.fuel_breakdown.taxi_apu_kg
+              },
+              operational_data: {
+                etd_utc: flightData.etd_utc,
+                plan_date: flightData.plan_date,
+                source_document: flightData.source_pdf
+              }
+            }
+          });
+        } else {
+          res.json({
+            success: false,
+            error: `No authentic performance data found for flight ${flightNumber}`
+          });
+        }
+      } else {
+        res.json({
+          success: false,
+          error: 'Authentic OFP data file not found'
+        });
+      }
+    } catch (error) {
+      console.error('OFP API Error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve authentic performance data',
+        debug: error.message
       });
     }
   });
