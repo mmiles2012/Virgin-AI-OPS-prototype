@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import MLEnhancedDigitalTwin from './MLEnhancedDigitalTwin';
+import SimpleDigitalTwin from './SimpleDigitalTwin';
 
 interface AirbusDigitalTwinProps {
   flightId?: string;
@@ -19,12 +19,12 @@ export default function AirbusDigitalTwins({
   aircraftType = 'A350-1000',
   displayMode = 'full'
 }: AirbusDigitalTwinProps) {
-  // Use the ML-enhanced digital twin component with live diversion capabilities
+  // Use the simple digital twin component (stable version)
   return (
-    <MLEnhancedDigitalTwin
+    <SimpleDigitalTwin
       aircraftId={aircraftId}
-      flightNumber={flightId}
-      displayMode={displayMode === 'full' ? 'full' : 'compact'}
+      displayMode={displayMode}
+      aircraftType="airbus"
     />
   );
 }
