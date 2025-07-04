@@ -174,6 +174,44 @@ export class DigitalTwinPerformanceService implements IStandardizedDigitalTwinSe
         descentRate: 1500 // feet per minute
       }
     });
+
+    // Airbus A330-900 Performance Data (A330neo)
+    this.aircraftDatabase.set('Airbus A330-900', {
+      aircraftType: 'Airbus A330-900',
+      engines: {
+        type: 'Trent 7000',
+        count: 2,
+        thrustPerEngine: 72840, // lbf
+        fuelFlowCruise: 950, // kg/hour per engine
+        fuelFlowClimb: 1500, // kg/hour per engine
+        fuelFlowDescent: 380 // kg/hour per engine
+      },
+      aerodynamics: {
+        maxAltitude: 42000,
+        serviceCeiling: 42000,
+        cruiseSpeed: 475, // knots
+        maxSpeed: 516, // knots
+        stallSpeed: 140, // knots
+        wingSpan: 64.0, // meters
+        wingArea: 363.1 // square meters
+      },
+      weights: {
+        emptyWeight: 132000, // kg
+        maxTakeoffWeight: 251000, // kg
+        maxLandingWeight: 191000, // kg
+        maxFuelCapacity: 139090, // kg
+        maxPayload: 28000 // kg
+      },
+      performance: {
+        rangeMaxPax: 7200, // nautical miles
+        rangeMaxFuel: 8150, // nautical miles
+        fuelBurnPerHour: 1900, // kg/hour at cruise
+        costPerHour: 7400, // USD operational cost
+        cruiseAltitude: 39000, // feet
+        climbRate: 2100, // feet per minute
+        descentRate: 1700 // feet per minute
+      }
+    });
   }
 
   /**
