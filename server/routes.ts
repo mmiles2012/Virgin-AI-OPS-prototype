@@ -4762,6 +4762,59 @@ print(json.dumps(weather))
     }
   });
 
+  // Authentic Virgin Atlantic Fleet Registry
+  app.get('/api/fleet/virgin-atlantic/authentic-registry', async (req, res) => {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const Papa = await import('papaparse');
+      
+      const csvFilePath = path.join(process.cwd(), 'data/virgin_atlantic_authentic_fleet.csv');
+      
+      if (fs.existsSync(csvFilePath)) {
+        const csvContent = fs.readFileSync(csvFilePath, 'utf8');
+        const parsedData = Papa.parse(csvContent, { header: true });
+        
+        const fleetRegistry = parsedData.data.filter((aircraft: any) => aircraft.Registration).map((aircraft: any) => ({
+          registration: aircraft.Registration,
+          aircraftType: aircraft['Type & Series'],
+          aircraftName: aircraft['Aircraft Name'],
+          passengerCapacity: parseInt(aircraft['Passenger Capacity']) || 0,
+          jClassSeats: parseInt(aircraft['J Class Seats']) || 0,
+          wClassSeats: parseInt(aircraft['W Class Seats']) || 0,
+          yClassSeats: parseInt(aircraft['Y Class Seats']) || 0,
+          ifeSystem: aircraft['IFE System'] || 'Not specified',
+          status: aircraft.Status || 'Current'
+        }));
+
+        res.json({
+          success: true,
+          fleet_count: fleetRegistry.length,
+          aircraft_types: {
+            'B787-9': fleetRegistry.filter((a: any) => a.aircraftType === 'B787-9').length,
+            'A350-1041': fleetRegistry.filter((a: any) => a.aircraftType === 'A350-1041').length,
+            'A330-941': fleetRegistry.filter((a: any) => a.aircraftType === 'A330-941').length,
+            'A330-343': fleetRegistry.filter((a: any) => a.aircraftType === 'A330-343').length
+          },
+          fleet_registry: fleetRegistry,
+          data_source: 'Authentic Virgin Atlantic Fleet Records',
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          error: 'Authentic fleet registry file not found'
+        });
+      }
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to load authentic fleet registry',
+        message: error.message
+      });
+    }
+  });
+
   app.get('/api/fleet/virgin-atlantic/health-summary', (req, res) => {
     try {
       const fleetStatus = virginAtlanticFleet.getFleetStatus();
