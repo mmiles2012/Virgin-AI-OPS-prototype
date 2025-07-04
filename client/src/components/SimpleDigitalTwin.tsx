@@ -58,7 +58,9 @@ export default function SimpleDigitalTwin({
             }
           });
           
-          setFleetData(Array.from(aircraftMap.values()));
+          const fleetArray = Array.from(aircraftMap.values());
+          console.log(`Fleet data loaded for ${aircraftType}:`, fleetArray);
+          setFleetData(fleetArray);
         }
       } catch (error) {
         console.error('Error fetching fleet data:', error);
@@ -108,6 +110,10 @@ export default function SimpleDigitalTwin({
   };
 
   const aircraftData = getAircraftSpecificData(currentAircraft);
+  
+  console.log('Current aircraft:', selectedAircraft);
+  console.log('Current aircraft data:', currentAircraft);
+  console.log('Fleet data:', fleetData);
   return (
     <div className="h-full w-full bg-white p-6">
       <div className="max-w-7xl mx-auto">
@@ -122,7 +128,10 @@ export default function SimpleDigitalTwin({
               <label className="text-sm font-medium text-gray-700">Select Aircraft:</label>
               <select
                 value={selectedAircraft}
-                onChange={(e) => setSelectedAircraft(e.target.value)}
+                onChange={(e) => {
+                  console.log('Dropdown changed:', e.target.value);
+                  setSelectedAircraft(e.target.value);
+                }}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white min-w-[200px]"
                 disabled={loading}
               >
