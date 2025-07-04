@@ -1,0 +1,165 @@
+{
+  "schedule_info": {
+    "season": "S25",
+    "season_name": "Summer 2025",
+    "period_start": "2025-03-30",
+    "period_end": "2025-10-25",
+    "source": "Virgin Atlantic Official S25 Schedule",
+    "extraction_date": "2025-07-04"
+  },
+  "routes": {
+    "LHR-ATL": {
+      "route_name": "London Heathrow to Atlanta",
+      "flights": [
+        {
+          "flight_number": "VS103",
+          "origin": "LHR",
+          "destination": "ATL",
+          "departure_time": "11:20",
+          "arrival_time": "15:35",
+          "aircraft_types": ["351", "339", "333"],
+          "service_class": "J",
+          "frequency_patterns": [
+            {"from": "2025-03-30", "to": "2025-04-06", "frequency": "12___67", "aircraft": "351"},
+            {"from": "2025-04-02", "to": "2025-04-04", "frequency": "__345__", "aircraft": "339"},
+            {"from": "2025-04-28", "to": "2025-05-04", "frequency": "12_4567", "aircraft": "351"},
+            {"from": "2025-04-30", "to": "2025-04-30", "frequency": "__3____", "aircraft": "333"},
+            {"from": "2025-05-05", "to": "2025-10-25", "frequency": "1234567", "aircraft": "351"},
+            {"from": "2025-04-07", "to": "2025-04-27", "frequency": "1234567", "aircraft": "351"}
+          ]
+        },
+        {
+          "flight_number": "VS104",
+          "origin": "ATL",
+          "destination": "LHR",
+          "departure_time": "18:15",
+          "arrival_time": "07:15",
+          "aircraft_types": ["351", "339", "333"],
+          "service_class": "J",
+          "frequency_patterns": [
+            {"from": "2025-03-30", "to": "2025-04-06", "frequency": "12___67", "aircraft": "351"},
+            {"from": "2025-04-02", "to": "2025-04-04", "frequency": "__345__", "aircraft": "339"},
+            {"from": "2025-04-28", "to": "2025-05-04", "frequency": "12_4567", "aircraft": "351"},
+            {"from": "2025-04-30", "to": "2025-04-30", "frequency": "__3____", "aircraft": "333"},
+            {"from": "2025-05-05", "to": "2025-10-24", "frequency": "1234567", "aircraft": "351"},
+            {"from": "2025-04-07", "to": "2025-04-27", "frequency": "1234567", "aircraft": "351"},
+            {"from": "2025-10-25", "to": "2025-10-25", "frequency": "_____6_", "aircraft": "351", "arrival_time": "06:15"}
+          ]
+        }
+      ]
+    },
+    "LHR-BOS": {
+      "route_name": "London Heathrow to Boston",
+      "flights": [
+        {
+          "flight_number": "VS11",
+          "origin": "LHR",
+          "destination": "BOS",
+          "departure_time": "18:15",
+          "arrival_time": "21:00",
+          "aircraft_types": ["333", "339"],
+          "service_class": "J",
+          "frequency_patterns": [
+            {"from": "2025-04-05", "to": "2025-04-06", "frequency": "_____67", "aircraft": "333"},
+            {"from": "2025-04-28", "to": "2025-07-06", "frequency": "123_567", "aircraft": "339"},
+            {"from": "2025-07-14", "to": "2025-09-07", "frequency": "12345_7", "aircraft": "339"},
+            {"from": "2025-09-08", "to": "2025-10-12", "frequency": "123_567", "aircraft": "339"},
+            {"from": "2025-04-07", "to": "2025-04-26", "frequency": "1234567", "aircraft": "339"},
+            {"from": "2025-04-27", "to": "2025-05-01", "frequency": "___4__7", "aircraft": "333"}
+          ]
+        },
+        {
+          "flight_number": "VS12",
+          "origin": "BOS",
+          "destination": "LHR",
+          "departure_time": "22:45",
+          "arrival_time": "10:30",
+          "aircraft_types": ["333", "339"],
+          "service_class": "J",
+          "frequency_patterns": [
+            {"from": "2025-04-05", "to": "2025-04-06", "frequency": "_____67", "aircraft": "333"},
+            {"from": "2025-04-28", "to": "2025-07-06", "frequency": "123_567", "aircraft": "339"},
+            {"from": "2025-07-14", "to": "2025-09-07", "frequency": "12345_7", "aircraft": "339"},
+            {"from": "2025-09-08", "to": "2025-10-12", "frequency": "123_567", "aircraft": "339"},
+            {"from": "2025-04-07", "to": "2025-04-26", "frequency": "1234567", "aircraft": "339"},
+            {"from": "2025-10-25", "to": "2025-10-25", "frequency": "_____6_", "aircraft": "339", "departure_time": "22:30", "arrival_time": "09:15"}
+          ]
+        },
+        {
+          "flight_number": "VS157",
+          "origin": "LHR",
+          "destination": "BOS",
+          "departure_time": "12:45",
+          "arrival_time": "15:40",
+          "aircraft_types": ["339", "333"],
+          "service_class": "J",
+          "frequency_patterns": [
+            {"from": "2025-03-30", "to": "2025-04-13", "frequency": "12_4567", "aircraft": "339"},
+            {"from": "2025-04-28", "to": "2025-05-04", "frequency": "1__4_67", "aircraft": "339"},
+            {"from": "2025-04-29", "to": "2025-05-02", "frequency": "_2__5__", "aircraft": "333"},
+            {"from": "2025-05-05", "to": "2025-05-11", "frequency": "12_4_67", "aircraft": "339"},
+            {"from": "2025-07-07", "to": "2025-09-07", "frequency": "12_4567", "aircraft": "339"},
+            {"from": "2025-09-29", "to": "2025-10-25", "frequency": "12_4567", "aircraft": "339"},
+            {"from": "2025-04-02", "to": "2025-07-09", "frequency": "__3____", "aircraft": "339", "departure_time": "12:25", "arrival_time": "15:20"}
+          ]
+        },
+        {
+          "flight_number": "VS158",
+          "origin": "BOS",
+          "destination": "LHR",
+          "departure_time": "20:15",
+          "arrival_time": "08:05",
+          "aircraft_types": ["339", "333"],
+          "service_class": "J",
+          "frequency_patterns": [
+            {"from": "2025-03-30", "to": "2025-04-06", "frequency": "1_34_67", "aircraft": "339"},
+            {"from": "2025-04-01", "to": "2025-04-04", "frequency": "_2__5__", "aircraft": "339"},
+            {"from": "2025-04-28", "to": "2025-05-04", "frequency": "1_34_67", "aircraft": "339"},
+            {"from": "2025-05-05", "to": "2025-05-11", "frequency": "1234_67", "aircraft": "339"},
+            {"from": "2025-07-14", "to": "2025-09-07", "frequency": "12_4567", "aircraft": "339"},
+            {"from": "2025-09-29", "to": "2025-10-24", "frequency": "1234567", "aircraft": "339"},
+            {"from": "2025-10-25", "to": "2025-10-25", "frequency": "_____6_", "aircraft": "339", "arrival_time": "07:05"}
+          ]
+        }
+      ]
+    },
+    "LHR-IAD": {
+      "route_name": "London Heathrow to Washington Dulles",
+      "flights": [
+        {
+          "flight_number": "VS21",
+          "origin": "LHR",
+          "destination": "IAD",
+          "departure_time": "12:35",
+          "arrival_time": "16:00",
+          "aircraft_types": ["339", "333"],
+          "service_class": "J",
+          "frequency_patterns": [
+            {"from": "2025-03-30", "to": "2025-04-06", "frequency": "12345_7", "aircraft": "339"},
+            {"from": "2025-04-05", "to": "2025-04-12", "frequency": "1____6_", "aircraft": "333"},
+            {"from": "2025-04-28", "to": "2025-05-03", "frequency": "1___56_", "aircraft": "333"},
+            {"from": "2025-04-29", "to": "2025-05-04", "frequency": "_234__7", "aircraft": "339"},
+            {"from": "2025-05-05", "to": "2025-05-11", "frequency": "123__67", "aircraft": "333"},
+            {"from": "2025-07-14", "to": "2025-07-15", "frequency": "12_____", "aircraft": "333"},
+            {"from": "2025-09-08", "to": "2025-09-14", "frequency": "123__67", "aircraft": "333"}
+          ]
+        }
+      ]
+    }
+  },
+  "aircraft_type_mappings": {
+    "351": "A350-1000",
+    "339": "A330-900neo",
+    "333": "A330-300"
+  },
+  "frequency_code_explanation": {
+    "1": "Monday",
+    "2": "Tuesday", 
+    "3": "Wednesday",
+    "4": "Thursday",
+    "5": "Friday",
+    "6": "Saturday",
+    "7": "Sunday",
+    "_": "Not operating"
+  }
+}

@@ -4815,6 +4815,71 @@ print(json.dumps(weather))
     }
   });
 
+  // Authentic Virgin Atlantic S25 Summer Schedule
+  app.get('/api/fleet/virgin-atlantic/s25-schedule', async (req, res) => {
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      const scheduleFilePath = path.join(process.cwd(), 'data/virgin_atlantic_s25_schedule.json');
+      
+      if (fs.existsSync(scheduleFilePath)) {
+        const scheduleData = JSON.parse(fs.readFileSync(scheduleFilePath, 'utf8'));
+        
+        // Get current date to show relevant schedule periods
+        const now = new Date();
+        const currentDate = now.toISOString().split('T')[0];
+        
+        // Calculate schedule statistics
+        let totalFlights = 0;
+        let activeRoutes = 0;
+        const aircraftUtilization = {};
+        
+        Object.keys(scheduleData.routes).forEach(routeKey => {
+          activeRoutes++;
+          const route = scheduleData.routes[routeKey];
+          route.flights.forEach(flight => {
+            totalFlights++;
+            flight.frequency_patterns.forEach(pattern => {
+              const aircraft = pattern.aircraft;
+              if (!aircraftUtilization[aircraft]) {
+                aircraftUtilization[aircraft] = 0;
+              }
+              aircraftUtilization[aircraft]++;
+            });
+          });
+        });
+
+        res.json({
+          success: true,
+          schedule_overview: {
+            season: scheduleData.schedule_info.season,
+            season_name: scheduleData.schedule_info.season_name,
+            period: `${scheduleData.schedule_info.period_start} to ${scheduleData.schedule_info.period_end}`,
+            total_routes: activeRoutes,
+            total_flight_patterns: totalFlights,
+            aircraft_utilization: aircraftUtilization,
+            current_status: currentDate >= scheduleData.schedule_info.period_start && 
+                           currentDate <= scheduleData.schedule_info.period_end ? 'ACTIVE' : 'INACTIVE'
+          },
+          schedule_data: scheduleData,
+          data_source: 'Virgin Atlantic Official S25 Schedule',
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          error: 'S25 schedule file not found'
+        });
+      }
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to load S25 schedule',
+        message: error.message
+      });
+    }
+  });
+
   app.get('/api/fleet/virgin-atlantic/health-summary', (req, res) => {
     try {
       const fleetStatus = virginAtlanticFleet.getFleetStatus();
