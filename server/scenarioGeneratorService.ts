@@ -109,11 +109,21 @@ export class VirginAtlanticScenarioGenerator {
 
   private initializeRoutes(): void {
     this.routes = [
+      // North America routes
       ['EGLL', 'KJFK'], ['EGLL', 'KBOS'], ['EGLL', 'KLAX'], ['EGLL', 'KLAS'],
       ['EGLL', 'KORD'], ['EGLL', 'KATL'], ['EGLL', 'KMIA'], ['EGLL', 'KIAH'],
-      ['EGLL', 'CYVR'], ['EGLL', 'CYYZ'], ['EGLL', 'OMDB'], ['EGLL', 'VHHH'],
-      ['EGLL', 'YSSY'], ['EGLL', 'YMML'], ['EGLL', 'NZAA'], ['EGLL', 'VABB'],
+      ['EGLL', 'CYVR'], ['EGLL', 'CYUL'], 
+      // Asia routes
+      ['EGLL', 'VABB'], ['EGLL', 'VIDP'], ['EGLL', 'VOBL'], ['EGLL', 'OMDB'], ['EGLL', 'VHHH'],
+      // Oceania routes  
+      ['EGLL', 'YSSY'], ['EGLL', 'YMML'], ['EGLL', 'NZAA'],
+      // South America routes
+      ['EGLL', 'SBGR'], ['EGLL', 'SAEZ'],
+      // Africa routes
+      ['EGLL', 'FAOR'],
+      // Gatwick routes
       ['EGKK', 'KJFK'], ['EGKK', 'KBOS'], ['EGKK', 'KLAX'], ['EGKK', 'CYVR'],
+      // Manchester routes
       ['EGCC', 'KJFK'], ['EGCC', 'KBOS'], ['EGCC', 'KORD'], ['EGCC', 'CYVR']
     ];
   }
@@ -128,6 +138,13 @@ export class VirginAtlanticScenarioGenerator {
       'KLAX': { name: 'Los Angeles Intl', city: 'Los Angeles', country: 'USA', timezone: 'PST' },
       'KLAS': { name: 'Las Vegas McCarran', city: 'Las Vegas', country: 'USA', timezone: 'PST' },
       'KORD': { name: 'Chicago O\'Hare', city: 'Chicago', country: 'USA', timezone: 'CST' },
+      'VABB': { name: 'Chhatrapati Shivaji', city: 'Mumbai', country: 'India', timezone: 'IST' },
+      'VIDP': { name: 'Indira Gandhi Intl', city: 'Delhi', country: 'India', timezone: 'IST' },
+      'VOBL': { name: 'Bangalore Intl', city: 'Bangalore', country: 'India', timezone: 'IST' },
+      'SBGR': { name: 'Guarulhos Intl', city: 'São Paulo', country: 'Brazil', timezone: 'BRT' },
+      'SAEZ': { name: 'Ezeiza Intl', city: 'Buenos Aires', country: 'Argentina', timezone: 'ART' },
+      'FAOR': { name: 'OR Tambo Intl', city: 'Johannesburg', country: 'South Africa', timezone: 'SAST' },
+      'CYUL': { name: 'Montreal Trudeau', city: 'Montreal', country: 'Canada', timezone: 'EST' },
       'KATL': { name: 'Atlanta Hartsfield', city: 'Atlanta', country: 'USA', timezone: 'EST' },
       'KMIA': { name: 'Miami Intl', city: 'Miami', country: 'USA', timezone: 'EST' },
       'KIAH': { name: 'Houston Bush', city: 'Houston', country: 'USA', timezone: 'CST' },
@@ -138,7 +155,6 @@ export class VirginAtlanticScenarioGenerator {
       'YSSY': { name: 'Sydney Kingsford Smith', city: 'Sydney', country: 'Australia', timezone: 'AEST' },
       'YMML': { name: 'Melbourne Tullamarine', city: 'Melbourne', country: 'Australia', timezone: 'AEST' },
       'NZAA': { name: 'Auckland', city: 'Auckland', country: 'New Zealand', timezone: 'NZST' },
-      'VABB': { name: 'Mumbai', city: 'Mumbai', country: 'India', timezone: 'IST' },
       // Additional diversion airports
       'LFPG': { name: 'Paris Charles de Gaulle', city: 'Paris', country: 'France', timezone: 'CET' },
       'EHAM': { name: 'Amsterdam Schiphol', city: 'Amsterdam', country: 'Netherlands', timezone: 'CET' },
@@ -333,13 +349,23 @@ export class VirginAtlanticScenarioGenerator {
   }
 
   private getAirportCoordinates(icao: string) {
-    // Simplified coordinates mapping
+    // Enhanced coordinates mapping for Virgin Atlantic network
     const coords: { [key: string]: { lat: number; lng: number } } = {
-      'EGLL': { lat: 51.4700, lng: -0.4543 },
-      'KJFK': { lat: 40.6413, lng: -73.7781 },
-      'KLAX': { lat: 33.9425, lng: -118.4081 },
-      'KBOS': { lat: 42.3656, lng: -71.0096 },
-      'YSSY': { lat: -33.9399, lng: 151.1753 },
+      'EGLL': { lat: 51.4700, lng: -0.4543 },   // London Heathrow
+      'KJFK': { lat: 40.6413, lng: -73.7781 },  // New York JFK
+      'KLAX': { lat: 33.9425, lng: -118.4081 }, // Los Angeles
+      'KBOS': { lat: 42.3656, lng: -71.0096 },  // Boston
+      'YSSY': { lat: -33.9399, lng: 151.1753 }, // Sydney
+      'VABB': { lat: 19.0896, lng: 72.8656 },   // Mumbai (Bombay)
+      'VIDP': { lat: 28.5665, lng: 77.1031 },   // Delhi
+      'VOBL': { lat: 13.1986, lng: 77.7066 },   // Bangalore
+      'SBGR': { lat: -23.4356, lng: -46.4731 }, // São Paulo
+      'SAEZ': { lat: -34.8222, lng: -58.5358 }, // Buenos Aires
+      'OMDB': { lat: 25.2532, lng: 55.3657 },   // Dubai
+      'CYUL': { lat: 45.4706, lng: -73.7408 },  // Montreal
+      'CYVR': { lat: 49.1967, lng: -123.1815 }, // Vancouver
+      'FAOR': { lat: -26.1392, lng: 28.2460 },  // Johannesburg
+      'EGKK': { lat: 51.1481, lng: -0.1903 },   // London Gatwick
       // Add more as needed
     };
     return coords[icao] || { lat: 0, lng: 0 };

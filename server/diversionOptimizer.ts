@@ -138,6 +138,36 @@ export function getAtlanticDiversionAirports(): Waypoint[] {
   ];
 }
 
+// Indian subcontinent airports for flights to/from India (BOM, DEL, BLR, etc)
+export function getIndianSubcontinentAirports(): Waypoint[] {
+  return [
+    { name: 'VABB', lat: 19.0896, lon: 72.8656 },   // Mumbai (Bombay)
+    { name: 'VIDP', lat: 28.5665, lon: 77.1031 },   // Delhi
+    { name: 'VOBL', lat: 13.1986, lon: 77.7066 },   // Bangalore
+    { name: 'VOMM', lat: 13.0827, lon: 80.2707 },   // Chennai
+    { name: 'VECC', lat: 22.6546, lon: 88.4467 },   // Kolkata
+    { name: 'VOPB', lat: 11.1364, lon: 78.0066 },   // Puducherry
+    { name: 'VOHS', lat: 17.2403, lon: 78.4294 },   // Hyderabad
+    { name: 'VAJJ', lat: 26.8242, lon: 75.8120 },   // Jaipur
+    { name: 'VAAH', lat: 23.0772, lon: 72.6347 },   // Ahmedabad
+    { name: 'VEGY', lat: 15.3808, lon: 73.8314 }    // Goa
+  ];
+}
+
+// Middle East airports for Europe-Asia routes
+export function getMiddleEastAirports(): Waypoint[] {
+  return [
+    { name: 'OMDB', lat: 25.2532, lon: 55.3657 },   // Dubai
+    { name: 'OOMS', lat: 23.5932, lon: 58.2844 },   // Muscat
+    { name: 'OTBD', lat: 29.7040, lon: 50.9633 },   // Doha
+    { name: 'OKBK', lat: 29.2267, lon: 47.9689 },   // Kuwait
+    { name: 'OERK', lat: 24.9576, lon: 46.6988 },   // Riyadh
+    { name: 'OEJN', lat: 21.6796, lon: 39.1565 },   // Jeddah
+    { name: 'LTBA', lat: 40.9769, lon: 28.8146 },   // Istanbul
+    { name: 'OIIE', lat: 35.4161, lon: 51.1522 }    // Tehran
+  ];
+}
+
 // Simple weather model for demonstration
 export class SimpleMet {
   constructor(
@@ -256,10 +286,22 @@ export function enhancedDiversionAnalysis(
     crew_actions: string[];
   };
 } {
-  // Determine appropriate airport list based on route
-  const alternates = route.includes('JFK') || route.includes('BOS') || route.includes('LAX') 
-    ? getAtlanticDiversionAirports()
-    : getEuropeanDiversionAirports();
+  // Determine appropriate airport list based on route and current position
+  let alternates: Waypoint[];
+  
+  if (route.includes('BOM') || route.includes('DEL') || route.includes('BLR') || route.includes('VABB') || route.includes('VIDP')) {
+    // Routes to/from India - use Indian subcontinent airports
+    alternates = getIndianSubcontinentAirports();
+  } else if (route.includes('JFK') || route.includes('BOS') || route.includes('LAX') || route.includes('YYZ')) {
+    // Transatlantic routes - use North Atlantic diversions
+    alternates = getAtlanticDiversionAirports();
+  } else if (currentLat > 20 && currentLon > 30 && currentLon < 80) {
+    // Over Middle East/Asia corridor
+    alternates = getMiddleEastAirports();
+  } else {
+    // European routes or default
+    alternates = getEuropeanDiversionAirports();
+  }
 
   const weather = windConditions || { dir: 270, speed: 30, temp: 5 };
   const optimizer = new DiversionOptimizer(aircraftType, weather.dir, weather.speed, weather.temp);

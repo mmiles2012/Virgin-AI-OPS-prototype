@@ -65,7 +65,7 @@ export class DigitalTwinPerformanceService implements IStandardizedDigitalTwinSe
     this.aircraftDatabase.set('Boeing 787-9', {
       aircraftType: 'Boeing 787-9',
       engines: {
-        type: 'GEnx-1B / Trent 1000',
+        type: 'Rolls-Royce Trent 1000',
         count: 2,
         thrustPerEngine: 74500, // lbf
         fuelFlowCruise: 840, // kg/hour per engine
