@@ -37,11 +37,17 @@ export default function SimpleDigitalTwin({
           // Extract unique aircraft and filter by type
           const aircraftMap = new Map();
           
+          console.log('Raw flight data sample:', data.flights.slice(0, 2));
+          
           data.flights.forEach((flight: any) => {
-            if (flight.aircraft && flight.aircraft.registration) {
-              const reg = flight.aircraft.registration;
-              const type = flight.aircraft.aircraftType || 'Unknown';
-              
+            // Check multiple possible aircraft data structures
+            const aircraft = flight.aircraft || flight;
+            const reg = aircraft.registration || aircraft.aircraft_registration || flight.callsign;
+            const type = aircraft.aircraftType || aircraft.aircraft_type || aircraft.aircraft || 'Unknown';
+            
+            console.log('Processing flight:', { reg, type, flight: flight });
+            
+            if (reg && type) {
               // Filter by aircraft type
               const isBoeing = type.includes('787') || type.includes('Boeing');
               const isAirbus = type.includes('A33') || type.includes('A35') || type.includes('Airbus');
@@ -51,8 +57,8 @@ export default function SimpleDigitalTwin({
                 aircraftMap.set(reg, {
                   registration: reg,
                   aircraftType: type,
-                  name: `${type} ${reg}`,
-                  deliveryDate: flight.aircraft.deliveryDate || '2018-01-01'
+                  name: aircraft.name || `${type} ${reg}`,
+                  deliveryDate: aircraft.deliveryDate || flight.deliveryDate || '2018-01-01'
                 });
               }
             }
