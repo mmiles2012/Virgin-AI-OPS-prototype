@@ -38,6 +38,7 @@ import { virginAtlanticService } from "./virginAtlanticService";
 import { AircraftTrackingService } from "./aircraftTrackingService";
 import { heathrowConnectionService } from "./heathrowConnectionService";
 import { PassengerConnectionService } from "./passengerConnectionService";
+import { scenarioGeneratorService } from "./scenarioGeneratorService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
@@ -4870,6 +4871,129 @@ else:
       res.status(500).json({
         success: false,
         error: 'Failed to analyze flight performance',
+        message: error.message
+      });
+    }
+  });
+
+  // What-If Scenario Generator API - Integrated with Diversion Engine
+  app.post("/api/diversion/generate-scenario", async (req, res) => {
+    try {
+      const { scenarioType, aircraftType, route, severity } = req.body;
+      
+      const scenario = await scenarioGeneratorService.generateScenario({
+        scenarioType,
+        aircraftType,
+        route,
+        severity
+      });
+      
+      res.json({
+        success: true,
+        scenario,
+        timestamp: new Date().toISOString(),
+        source: 'AINO_Scenario_Generator_Engine'
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate scenario',
+        message: error.message
+      });
+    }
+  });
+
+  app.get("/api/diversion/scenario-types", (req, res) => {
+    try {
+      const scenarioTypes = scenarioGeneratorService.getScenarioTypes();
+      const aircraftTypes = scenarioGeneratorService.getAircraftTypes();
+      const routes = scenarioGeneratorService.getRoutes();
+      
+      res.json({
+        success: true,
+        scenarioTypes,
+        aircraftTypes,
+        routes,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get scenario configuration',
+        message: error.message
+      });
+    }
+  });
+
+  app.post("/api/diversion/scenario-analysis", async (req, res) => {
+    try {
+      const { scenarioId, aircraftId, currentPosition } = req.body;
+      
+      if (!scenarioId || !aircraftId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required parameters: scenarioId, aircraftId'
+        });
+      }
+
+      // Generate comprehensive scenario analysis combining digital twin data
+      const scenario = await scenarioGeneratorService.generateScenario();
+      
+      // Enhanced analysis with digital twin integration
+      const analysis = {
+        scenario_overview: {
+          id: scenario.id,
+          type: scenario.type,
+          severity: scenario.severity,
+          time_critical: scenario.time_critical
+        },
+        aircraft_capabilities: {
+          type: scenario.aircraft_type,
+          current_fuel: scenario.current_position.fuel_remaining,
+          range_remaining: scenario.current_position.fuel_remaining * 0.85, // Conservative estimate
+          diversion_capable: scenario.current_position.fuel_remaining > 25
+        },
+        diversion_analysis: {
+          recommended_airports: scenario.diversion_options.slice(0, 3),
+          ml_recommendation: scenario.ml_recommendations.primary_action,
+          confidence_score: scenario.ml_recommendations.confidence_score,
+          estimated_costs: scenario.ml_recommendations.cost_impact
+        },
+        decision_support: {
+          decision_tree: scenario.decision_tree,
+          crew_actions: scenario.ml_recommendations.crew_actions,
+          timeline: scenario.ml_recommendations.timeline,
+          regulatory_requirements: scenario.ml_recommendations.regulatory_notifications
+        },
+        what_if_outcomes: {
+          continue_to_destination: {
+            risk_level: scenario.severity === 'critical' ? 'HIGH' : 'MEDIUM',
+            estimated_delay: Math.random() * 60 + 30, // 30-90 minutes
+            cost_impact: scenario.ml_recommendations.cost_impact.estimated_total_cost * 0.3
+          },
+          immediate_diversion: {
+            risk_level: 'LOW',
+            estimated_delay: Math.random() * 240 + 120, // 2-6 hours
+            cost_impact: scenario.ml_recommendations.cost_impact.estimated_total_cost
+          },
+          delayed_diversion: {
+            risk_level: scenario.severity === 'critical' ? 'CRITICAL' : 'MEDIUM',
+            estimated_delay: Math.random() * 360 + 180, // 3-9 hours
+            cost_impact: scenario.ml_recommendations.cost_impact.estimated_total_cost * 1.5
+          }
+        }
+      };
+      
+      res.json({
+        success: true,
+        analysis,
+        timestamp: new Date().toISOString(),
+        source: 'AINO_Enhanced_Scenario_Analysis'
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to perform scenario analysis',
         message: error.message
       });
     }

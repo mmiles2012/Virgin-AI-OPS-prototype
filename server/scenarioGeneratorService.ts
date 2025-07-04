@@ -58,10 +58,10 @@ interface GeneratedScenario {
 }
 
 export class VirginAtlanticScenarioGenerator {
-  private aircraftTypes: { [key: string]: AircraftType };
-  private routes: [string, string][];
-  private airportInfo: { [key: string]: AirportInfo };
-  private scenarioTemplates: { [category: string]: { [type: string]: ScenarioTemplate } };
+  private aircraftTypes: { [key: string]: AircraftType } = {};
+  private routes: [string, string][] = [];
+  private airportInfo: { [key: string]: AirportInfo } = {};
+  private scenarioTemplates: { [category: string]: { [type: string]: ScenarioTemplate } } = {};
 
   constructor() {
     this.initializeAircraftTypes();

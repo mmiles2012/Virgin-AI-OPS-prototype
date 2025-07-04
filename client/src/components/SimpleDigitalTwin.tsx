@@ -25,6 +25,8 @@ export default function SimpleDigitalTwin({
   const [selectedAircraft, setSelectedAircraft] = useState(aircraftId);
   const [fleetData, setFleetData] = useState<Aircraft[]>([]);
   const [loading, setLoading] = useState(true);
+  const [scenarioData, setScenarioData] = useState<any>(null);
+  const [scenarioLoading, setScenarioLoading] = useState(false);
 
   // Fetch fleet data
   useEffect(() => {
@@ -116,6 +118,68 @@ export default function SimpleDigitalTwin({
   };
 
   const aircraftData = getAircraftSpecificData(currentAircraft);
+
+  // Scenario generator handlers
+  const handleGenerateScenario = async (scenarioType: string) => {
+    setScenarioLoading(true);
+    try {
+      const response = await fetch('/api/diversion/generate-scenario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scenarioType,
+          aircraftType: currentAircraft.aircraftType.includes('787') ? 'B789' : 
+                       currentAircraft.aircraftType.includes('A350') ? 'A351' :
+                       currentAircraft.aircraftType.includes('A330-900') ? 'A339' : 'A333',
+          route: ['EGLL', 'KJFK'], // Default route
+          severity: 'major'
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        setScenarioData(data.scenario);
+      } else {
+        console.error('Failed to generate scenario:', data.error);
+      }
+    } catch (error) {
+      console.error('Error generating scenario:', error);
+    } finally {
+      setScenarioLoading(false);
+    }
+  };
+
+  const handleAnalyzeScenario = async () => {
+    if (!scenarioData) return;
+    
+    setScenarioLoading(true);
+    try {
+      const response = await fetch('/api/diversion/scenario-analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scenarioId: scenarioData.id,
+          aircraftId: selectedAircraft,
+          currentPosition: scenarioData.current_position
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        // Update scenario with analysis results
+        setScenarioData({
+          ...scenarioData,
+          analysis: data.analysis
+        });
+      } else {
+        console.error('Failed to analyze scenario:', data.error);
+      }
+    } catch (error) {
+      console.error('Error analyzing scenario:', error);
+    } finally {
+      setScenarioLoading(false);
+    }
+  };
   
   console.log('Current aircraft:', selectedAircraft);
   console.log('Current aircraft data:', currentAircraft);
@@ -295,6 +359,123 @@ export default function SimpleDigitalTwin({
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Diversion Engine & What-If Scenarios */}
+        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">🚨 Diversion Engine & What-If Scenarios</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <button
+              onClick={() => handleGenerateScenario('technical')}
+              className="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+            >
+              Technical Emergency
+            </button>
+            <button
+              onClick={() => handleGenerateScenario('medical')}
+              className="bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+            >
+              Medical Emergency
+            </button>
+            <button
+              onClick={() => handleGenerateScenario('weather')}
+              className="bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+            >
+              Weather Emergency
+            </button>
+            <button
+              onClick={() => handleGenerateScenario('security')}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+            >
+              Security Emergency
+            </button>
+          </div>
+          
+          {scenarioData && (
+            <div className="mt-6 bg-white border border-gray-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Generated Scenario: {scenarioData.title}</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h5 className="font-medium text-gray-700 mb-2">Scenario Details</h5>
+                  <div className="space-y-1 text-sm">
+                    <p><span className="font-medium">Type:</span> {scenarioData.type}</p>
+                    <p><span className="font-medium">Severity:</span> 
+                      <span className={`ml-1 px-2 py-1 rounded text-xs ${
+                        scenarioData.severity === 'critical' ? 'bg-red-100 text-red-800' :
+                        scenarioData.severity === 'major' ? 'bg-orange-100 text-orange-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {scenarioData.severity.toUpperCase()}
+                      </span>
+                    </p>
+                    <p><span className="font-medium">Flight:</span> {scenarioData.flight_id}</p>
+                    <p><span className="font-medium">Aircraft:</span> {scenarioData.aircraft_type}</p>
+                    <p><span className="font-medium">Route:</span> {scenarioData.route.join(' → ')}</p>
+                  </div>
+                </div>
+                
+                <div>
+                  <h5 className="font-medium text-gray-700 mb-2">ML Recommendations</h5>
+                  <div className="space-y-1 text-sm">
+                    <p><span className="font-medium">Primary Action:</span> {scenarioData.ml_recommendations?.primary_action}</p>
+                    <p><span className="font-medium">Confidence:</span> {Math.round((scenarioData.ml_recommendations?.confidence_score || 0) * 100)}%</p>
+                    <p><span className="font-medium">Recommended Diversion:</span> {scenarioData.ml_recommendations?.recommended_diversion || 'None'}</p>
+                    {scenarioData.diversion_options && scenarioData.diversion_options.length > 0 && (
+                      <div className="mt-3">
+                        <p className="font-medium">Top Diversion Options:</p>
+                        <ul className="list-disc list-inside ml-2">
+                          {scenarioData.diversion_options.slice(0, 3).map((option: any, index: number) => (
+                            <li key={index} className="text-xs">
+                              {option.airport} ({Math.round(option.distance)} nm, Score: {Math.round(option.suitability_score)})
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              {scenarioData.ml_recommendations?.cost_impact && (
+                <div className="mt-4 p-4 bg-gray-50 rounded">
+                  <h5 className="font-medium text-gray-700 mb-2">Cost Impact Analysis</h5>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600">Total Cost:</span>
+                      <p className="font-medium">${Math.round(scenarioData.ml_recommendations.cost_impact.estimated_total_cost).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Fuel Cost:</span>
+                      <p className="font-medium">${Math.round(scenarioData.ml_recommendations.cost_impact.fuel_cost).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Crew Cost:</span>
+                      <p className="font-medium">${Math.round(scenarioData.ml_recommendations.cost_impact.crew_cost).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Compensation:</span>
+                      <p className="font-medium">${Math.round(scenarioData.ml_recommendations.cost_impact.passenger_compensation).toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div className="mt-4 flex space-x-3">
+                <button
+                  onClick={handleAnalyzeScenario}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors"
+                >
+                  Analyze What-If Outcomes
+                </button>
+                <button
+                  onClick={() => setScenarioData(null)}
+                  className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded transition-colors"
+                >
+                  Clear Scenario
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Status Bar */}
