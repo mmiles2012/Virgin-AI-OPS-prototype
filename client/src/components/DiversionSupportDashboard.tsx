@@ -879,7 +879,12 @@ export default function DiversionSupportDashboard() {
                     </div>
                     <div>
                       <span className="text-blue-600 font-medium">Diversion Airport:</span>
-                      <div className="font-semibold text-lg text-blue-800">{diversionResponse.flightDetails.diversionAirport}</div>
+                      <div className="font-semibold text-lg text-blue-800">
+                        {diversionResponse.flightDetails.diversionAirport}
+                        {diversionResponse.flightDetails.diversionAirportName && 
+                          ` - ${diversionResponse.flightDetails.diversionAirportName}`
+                        }
+                      </div>
                     </div>
                     <div>
                       <span className="text-blue-600 font-medium">Reason:</span>
