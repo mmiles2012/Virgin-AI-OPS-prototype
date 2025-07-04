@@ -60,24 +60,46 @@ class FuelSupplierService {
       const line = lines[i].trim();
       if (!line) continue;
       
-      const values = line.split(',');
+      const values = this.parseCSVLine(line);
       if (values.length >= 9) {
         const supplier: FuelSupplier = {
-          icao: values[0],
-          iata: values[1],
-          airportName: values[2],
-          country: values[3],
-          fuelSupplier: values[4],
-          contactEmail: values[5],
-          phone: values[6],
-          fuelTypes: this.parseArray(values[7]),
-          notes: values[8]
+          icao: values[0].trim(),
+          iata: values[1].trim(),
+          airportName: values[2].trim(),
+          country: values[3].trim(),
+          fuelSupplier: values[4].trim(),
+          contactEmail: values[5].trim(),
+          phone: values[6].trim(),
+          fuelTypes: this.parseArray(values[7].trim()),
+          notes: values[8].trim()
         };
         suppliers.push(supplier);
       }
     }
     
     return suppliers;
+  }
+
+  private parseCSVLine(line: string): string[] {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        result.push(current);
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    
+    result.push(current);
+    return result;
   }
   
   private parseArray(arrayString: string): string[] {

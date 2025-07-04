@@ -6160,6 +6160,55 @@ else:
     }
   });
 
+  // Corrected Airport Support Coverage API
+  app.get('/api/aviation/airport-support/corrected', async (req, res) => {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      
+      const csvPath = path.join(__dirname, '../data/corrected_airport_support.csv');
+      const csvData = fs.readFileSync(csvPath, 'utf8');
+      
+      const lines = csvData.split('\n');
+      const airports = [];
+      
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        const values = line.split(',');
+        if (values.length >= 7) {
+          airports.push({
+            icao: values[0].trim(),
+            iata: values[1].trim(),
+            airportName: values[2].trim(),
+            country: values[3].trim(),
+            latitude: parseFloat(values[4]) || 0,
+            longitude: parseFloat(values[5]) || 0,
+            support: values[6].trim(),
+            hasGround: values[6].trim() === 'both' || values[6].trim() === 'ground_only',
+            hasFuel: values[6].trim() === 'both' || values[6].trim() === 'fuel_only',
+            groundHandlers: values[6].trim() === 'both' || values[6].trim() === 'ground_only' ? 1 : 0,
+            fuelSuppliers: values[6].trim() === 'both' || values[6].trim() === 'fuel_only' ? 1 : 0
+          });
+        }
+      }
+      
+      res.json({
+        success: true,
+        airports,
+        total: airports.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Corrected airport support error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to load corrected airport support data'
+      });
+    }
+  });
+
   return httpServer;
 }
 
