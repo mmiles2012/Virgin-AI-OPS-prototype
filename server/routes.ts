@@ -3554,6 +3554,16 @@ print(json.dumps(weather))
       const diversionResponse: any = {
         diversionId,
         status: 'confirmed',
+        flightDetails: {
+          flightNumber,
+          aircraftType,
+          diversionAirport,
+          diversionReason,
+          urgencyLevel,
+          passengerCount,
+          crewCount,
+          estimatedDelayHours
+        },
         totalEstimatedCost: 0,
         timeline: {
           initiatedAt: new Date().toISOString(),

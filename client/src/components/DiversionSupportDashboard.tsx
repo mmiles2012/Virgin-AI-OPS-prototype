@@ -104,6 +104,16 @@ interface DiversionRequest {
 interface DiversionSupportResponse {
   diversionId: string;
   status: 'initiated' | 'in-progress' | 'confirmed' | 'completed';
+  flightDetails?: {
+    flightNumber: string;
+    aircraftType: string;
+    diversionAirport: string;
+    diversionReason: string;
+    urgencyLevel: string;
+    passengerCount: number;
+    crewCount: number;
+    estimatedDelayHours: number;
+  };
   hotelBooking?: {
     bookingId: string;
     hotelName: string;
@@ -853,6 +863,49 @@ export default function DiversionSupportDashboard() {
                   {diversionResponse.status.toUpperCase()}
                 </span>
               </div>
+              
+              {/* Flight Details Section */}
+              {diversionResponse.flightDetails && (
+                <div className="mb-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
+                  <h3 className="text-lg font-semibold text-blue-900 mb-3">Flight Information</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <span className="text-blue-600 font-medium">Flight:</span>
+                      <div className="font-semibold">{diversionResponse.flightDetails.flightNumber}</div>
+                    </div>
+                    <div>
+                      <span className="text-blue-600 font-medium">Aircraft:</span>
+                      <div className="font-semibold">{diversionResponse.flightDetails.aircraftType}</div>
+                    </div>
+                    <div>
+                      <span className="text-blue-600 font-medium">Diversion Airport:</span>
+                      <div className="font-semibold text-lg text-blue-800">{diversionResponse.flightDetails.diversionAirport}</div>
+                    </div>
+                    <div>
+                      <span className="text-blue-600 font-medium">Reason:</span>
+                      <div className="font-semibold capitalize">{diversionResponse.flightDetails.diversionReason}</div>
+                    </div>
+                    <div>
+                      <span className="text-blue-600 font-medium">Passengers:</span>
+                      <div className="font-semibold">{diversionResponse.flightDetails.passengerCount}</div>
+                    </div>
+                    <div>
+                      <span className="text-blue-600 font-medium">Crew:</span>
+                      <div className="font-semibold">{diversionResponse.flightDetails.crewCount}</div>
+                    </div>
+                    <div>
+                      <span className="text-blue-600 font-medium">Est. Delay:</span>
+                      <div className="font-semibold">{diversionResponse.flightDetails.estimatedDelayHours}h</div>
+                    </div>
+                    <div>
+                      <span className="text-blue-600 font-medium">Priority:</span>
+                      <div className={`font-semibold capitalize ${getUrgencyColor(diversionResponse.flightDetails.urgencyLevel).split(' ')[0]}`}>
+                        {diversionResponse.flightDetails.urgencyLevel}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="flex items-center space-x-3">
