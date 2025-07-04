@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import SimpleDigitalTwin from './SimpleDigitalTwin';
+import MLEnhancedDigitalTwin from './MLEnhancedDigitalTwin';
 
 interface Boeing787DigitalTwinProps {
   flightId?: string;
@@ -17,12 +17,12 @@ export default function Boeing787DigitalTwin({
   aircraftId = 'G-VAHH',
   displayMode = 'full'
 }: Boeing787DigitalTwinProps) {
-  // Use the simple digital twin component
+  // Use the ML-enhanced digital twin component with live diversion capabilities
   return (
-    <SimpleDigitalTwin
+    <MLEnhancedDigitalTwin
       aircraftId={aircraftId}
-      displayMode={displayMode}
-      aircraftType="boeing"
+      flightNumber={flightId}
+      displayMode={displayMode === 'full' ? 'full' : 'compact'}
     />
   );
 }
