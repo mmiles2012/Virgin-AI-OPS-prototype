@@ -2,27 +2,136 @@
  * Simple Digital Twin Component - Basic fallback for stability
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface SimpleDigitalTwinProps {
   aircraftId: string;
   displayMode?: string;
+  aircraftType?: 'boeing' | 'airbus';
+}
+
+interface Aircraft {
+  registration: string;
+  aircraftType: string;
+  name: string;
+  deliveryDate: string;
 }
 
 export default function SimpleDigitalTwin({ 
   aircraftId, 
-  displayMode = 'full' 
+  displayMode = 'full',
+  aircraftType = 'boeing'
 }: SimpleDigitalTwinProps) {
+  const [selectedAircraft, setSelectedAircraft] = useState(aircraftId);
+  const [fleetData, setFleetData] = useState<Aircraft[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch fleet data
+  useEffect(() => {
+    const fetchFleetData = async () => {
+      try {
+        const response = await fetch('/api/aviation/virgin-atlantic-flights');
+        const data = await response.json();
+        
+        if (data.success && data.flights) {
+          // Extract unique aircraft and filter by type
+          const aircraftMap = new Map();
+          
+          data.flights.forEach((flight: any) => {
+            if (flight.aircraft && flight.aircraft.registration) {
+              const reg = flight.aircraft.registration;
+              const type = flight.aircraft.aircraftType || 'Unknown';
+              
+              // Filter by aircraft type
+              const isBoeing = type.includes('787') || type.includes('Boeing');
+              const isAirbus = type.includes('A33') || type.includes('A35') || type.includes('Airbus');
+              
+              if ((aircraftType === 'boeing' && isBoeing) || 
+                  (aircraftType === 'airbus' && isAirbus)) {
+                aircraftMap.set(reg, {
+                  registration: reg,
+                  aircraftType: type,
+                  name: `${type} ${reg}`,
+                  deliveryDate: flight.aircraft.deliveryDate || '2018-01-01'
+                });
+              }
+            }
+          });
+          
+          setFleetData(Array.from(aircraftMap.values()));
+        }
+      } catch (error) {
+        console.error('Error fetching fleet data:', error);
+        // Fallback data
+        const fallbackData = aircraftType === 'boeing' ? [
+          { registration: 'G-VAHH', aircraftType: 'Boeing 787-9', name: 'Red Velvet', deliveryDate: '2018-03-15' },
+          { registration: 'G-VNEW', aircraftType: 'Boeing 787-9', name: 'Birthday Girl', deliveryDate: '2019-06-20' },
+          { registration: 'G-VBEL', aircraftType: 'Boeing 787-9', name: 'Cosmic Girl', deliveryDate: '2020-01-10' }
+        ] : [
+          { registration: 'G-VDOT', aircraftType: 'Airbus A350-1000', name: 'Fearless Lady', deliveryDate: '2019-08-15' },
+          { registration: 'G-VEII', aircraftType: 'Airbus A330-900', name: 'Maiden Voyage', deliveryDate: '2020-02-28' },
+          { registration: 'G-VGEM', aircraftType: 'Airbus A330-300', name: 'Ruby Tuesday', deliveryDate: '2017-11-05' }
+        ];
+        setFleetData(fallbackData);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFleetData();
+  }, [aircraftType]);
+
+  // Update selected aircraft when aircraftId prop changes
+  useEffect(() => {
+    setSelectedAircraft(aircraftId);
+  }, [aircraftId]);
+
+  const currentAircraft = fleetData.find(a => a.registration === selectedAircraft) || 
+    { registration: selectedAircraft, aircraftType: 'Unknown', name: 'Unknown Aircraft', deliveryDate: '2018-01-01' };
   return (
     <div className="h-full w-full bg-white p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Digital Twin Dashboard
-          </h1>
-          <p className="text-gray-600">
-            Aircraft: {aircraftId} | Mode: {displayMode}
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Digital Twin Dashboard
+            </h1>
+            
+            {/* Aircraft Selector */}
+            <div className="flex items-center space-x-4">
+              <label className="text-sm font-medium text-gray-700">Select Aircraft:</label>
+              <select
+                value={selectedAircraft}
+                onChange={(e) => setSelectedAircraft(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white min-w-[200px]"
+                disabled={loading}
+              >
+                {loading ? (
+                  <option>Loading aircraft...</option>
+                ) : (
+                  fleetData.map((aircraft) => (
+                    <option key={aircraft.registration} value={aircraft.registration}>
+                      {aircraft.registration} - {aircraft.name}
+                    </option>
+                  ))
+                )}
+              </select>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-4 text-gray-600">
+            <span>Aircraft: {currentAircraft.registration}</span>
+            <span>•</span>
+            <span>Type: {currentAircraft.aircraftType}</span>
+            <span>•</span>
+            <span>Mode: {displayMode}</span>
+            {currentAircraft.name && currentAircraft.name !== currentAircraft.aircraftType + ' ' + currentAircraft.registration && (
+              <>
+                <span>•</span>
+                <span>Name: {currentAircraft.name}</span>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -32,11 +141,15 @@ export default function SimpleDigitalTwin({
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-600">Registration:</span>
-                <span className="font-medium">{aircraftId}</span>
+                <span className="font-medium">{currentAircraft.registration}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Type:</span>
-                <span className="font-medium">Boeing 787-9</span>
+                <span className="font-medium">{currentAircraft.aircraftType}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Delivered:</span>
+                <span className="font-medium">{new Date(currentAircraft.deliveryDate).toLocaleDateString()}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Status:</span>

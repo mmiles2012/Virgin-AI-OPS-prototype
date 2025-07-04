@@ -24,6 +24,7 @@ export default function AirbusDigitalTwins({
     <SimpleDigitalTwin
       aircraftId={aircraftId}
       displayMode={displayMode}
+      aircraftType="airbus"
     />
   );
 }

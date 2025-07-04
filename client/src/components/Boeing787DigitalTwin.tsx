@@ -22,6 +22,7 @@ export default function Boeing787DigitalTwin({
     <SimpleDigitalTwin
       aircraftId={aircraftId}
       displayMode={displayMode}
+      aircraftType="boeing"
     />
   );
 }
