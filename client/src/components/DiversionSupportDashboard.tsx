@@ -225,12 +225,63 @@ export default function DiversionSupportDashboard() {
   const handleInitiateDiversion = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/diversion/initiate', {
+      // Step 1: Get ML-enhanced diversion analysis
+      const mlResponse = await fetch('/api/aviation/ml-diversion-analysis', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(diversionRequest),
+        body: JSON.stringify({
+          flight_number: diversionRequest.flightNumber,
+          current_position: { lat: 60.0, lon: -30.0 },
+          scenario_type: diversionRequest.diversionReason === 'technical' ? 'engine_failure' : 'weather_diversion'
+        }),
+      });
+      
+      const mlData = await mlResponse.json();
+      if (mlData.success) {
+        setMlDiversionAnalysis(mlData.analysis);
+      }
+      
+      // Step 2: Automatically coordinate comprehensive support services
+      const response = await fetch('/api/diversion/initiate-comprehensive', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...diversionRequest,
+          mlAnalysis: mlData.success ? mlData.analysis : null,
+          autoBookServices: true,
+          serviceRequirements: {
+            // Passenger accommodation
+            passengerAccommodation: true,
+            hotelRooms: Math.ceil(diversionRequest.passengerCount / 2), // 2 passengers per room
+            crewRooms: diversionRequest.crewCount,
+            
+            // Fuel coordination
+            fuelCoordination: true,
+            estimatedFuelNeeded: mlData.success ? mlData.analysis.fuel_analysis?.fuel_required_kg : 15000,
+            
+            // Engineering support (for technical diversions)
+            engineeringSupport: diversionRequest.diversionReason === 'technical',
+            engineeringLevel: diversionRequest.diversionReason === 'technical' ? 'specialist' : 'routine',
+            
+            // Ground handling services
+            groundHandling: true,
+            groundServices: ['baggage_handling', 'passenger_services', 'aircraft_cleaning', 'cargo_handling'],
+            
+            // Additional services based on delay duration
+            cateringServices: diversionRequest.estimatedDelayHours > 4,
+            passportControl: true,
+            customsSupport: diversionRequest.estimatedDelayHours > 6,
+            transportServices: diversionRequest.estimatedDelayHours > 8,
+            
+            // Emergency services coordination
+            medicalSupport: diversionRequest.urgencyLevel === 'emergency',
+            securityCoordination: true
+          }
+        }),
       });
       
       const data = await response.json();
@@ -239,7 +290,7 @@ export default function DiversionSupportDashboard() {
         setActiveTab('status');
       }
     } catch (error) {
-      console.error('Failed to initiate diversion:', error);
+      console.error('Failed to initiate comprehensive diversion support:', error);
     } finally {
       setIsLoading(false);
     }
@@ -500,21 +551,66 @@ export default function DiversionSupportDashboard() {
               </div>
             )}
 
+            {/* Automated Services Summary */}
+            <div className="bg-blue-50 rounded-lg p-4 mt-6 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <span>🤖</span>
+                <span>Automated Support Services</span>
+              </h3>
+              <p className="text-sm text-gray-600 mb-3">
+                When you initiate diversion support, the system will automatically coordinate all necessary services:
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span>Hotel Bookings</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span>Fuel Supply</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span>Engineering Support</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span>Ground Handling</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span>Passenger Services</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span>EU261 Compliance</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span>Customs Support</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  <span>Emergency Contacts</span>
+                </div>
+              </div>
+            </div>
+
             <div className="mt-6">
               <button
                 onClick={handleInitiateDiversion}
                 disabled={isLoading || !diversionRequest.flightNumber || !diversionRequest.diversionAirport}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
               >
                 {isLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Initiating Diversion Support...</span>
+                    <span>Initiating Comprehensive Diversion Support...</span>
                   </>
                 ) : (
                   <>
                     <AlertTriangle size={20} />
-                    <span>Initiate Diversion Support</span>
+                    <span>🚨 Initiate Automated Diversion Support</span>
                   </>
                 )}
               </button>
@@ -528,9 +624,16 @@ export default function DiversionSupportDashboard() {
             {/* Status Overview */}
             <div className="bg-white rounded-xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Diversion Status: {diversionResponse.diversionId}
-                </h2>
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    🚨 Comprehensive Diversion Support: {diversionResponse.diversionId}
+                  </h2>
+                  <div className="text-sm text-green-600 mt-1 flex items-center gap-2">
+                    <span>✅ All services automatically coordinated</span>
+                    <span className="text-gray-400">•</span>
+                    <span>Hotels • Fuel • Engineering • Ground Handling</span>
+                  </div>
+                </div>
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(diversionResponse.status)}`}>
                   {diversionResponse.status.toUpperCase()}
                 </span>
