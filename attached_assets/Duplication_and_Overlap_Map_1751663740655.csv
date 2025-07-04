@@ -1,0 +1,46 @@
+File,Relevant Topics
+flightSimulation.ts,"diversion, flight state, simulation, emergency"
+scenarioEngine.ts,"decision, emergency"
+decisionEngine.ts,"diversion, fuel burn, simulation, decision, emergency"
+newsApiService.ts,"emergency, routing, connection"
+weatherApiService.ts,connection
+newsApiService_simplified.ts,"emergency, routing, connection"
+enhancedNewsMonitor.ts,emergency
+diversionSupportService.ts,"diversion, emergency"
+diversionSupport.ts,"diversion, emergency"
+sustainableFuelService.ts,"emergency, connection"
+openDataSoftService.ts,"diversion, emergency"
+ukCaaDelayService.ts,"weather impact, connection"
+delayPredictionService.ts,"weather impact, alternate airport, routing, connection"
+tensorflowDelayModel.py,"delay prediction, weather impact, decision, tensorflow, model.predict"
+tensorflowIntegration.ts,"delay prediction, tensorflow, alternate airport"
+ukCaaDelayModel.py,"delay prediction, decision, tensorflow, model.predict"
+ukCaaIntegration.ts,"delay prediction, weather impact, tensorflow, routing"
+dualModelAI.py,"delay prediction, tensorflow, model.predict"
+dualModelIntegration.ts,"delay prediction, weather impact, tensorflow, alternate airport"
+metarTafService.ts,weather impact
+weatherDataCollector.ts,weather impact
+demoFlightData.ts,emergency
+maintrolIntegration.ts,connection
+aviationApiService.ts,"diversion, fuel burn, simulation, decision, emergency, routing"
+notamService.ts,emergency
+icaoApiService.ts,"emergency, connection"
+icaoDemo.ts,"emergency, routing"
+newsMLTraining.ts,emergency
+icaoMLIntegration.ts,"weather impact, emergency"
+emergencyCommService.ts,"emergency, alternate airport, connection"
+skyGateAirportService.ts,"diversion, decision, emergency"
+mlNewsClassifier.ts,emergency
+intelligenceRoutes.ts,emergency
+heathrowConnectionService.ts,connection
+passengerConnectionService.ts,connection
+mlConnectionPredictor.py,"delay prediction, weather impact, model.predict, connection"
+index.ts,connection
+virginAtlanticConnectionService.ts,connection
+digitalTwinPerformanceService.ts,"diversion, emergency, connection"
+scenarioGeneratorService.ts,"diversion, flight state, decision, emergency"
+diversionOptimizer.ts,"diversion, routing"
+routeMatcher.ts,diversion
+routePositionService.ts,diversion
+fuelSupplierService.ts,emergency
+routes.ts,"delay prediction, diversion, fuel burn, simulation, decision, tensorflow, emergency, routing, connection"
