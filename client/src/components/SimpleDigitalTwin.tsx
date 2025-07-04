@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import DiversionMap from './DiversionMap';
 
 interface SimpleDigitalTwinProps {
   aircraftId: string;

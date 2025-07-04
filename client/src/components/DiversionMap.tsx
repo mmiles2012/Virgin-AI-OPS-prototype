@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -12,6 +12,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { AlertCircle, CheckCircle2, Plane, Fuel, Clock } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  LabelList,
+  Cell,
+} from "recharts";
 
 // Fix leaflet default markers
 import L from 'leaflet';
@@ -44,6 +54,7 @@ export interface DiversionResult {
 export interface DiversionMapProps {
   current: { lat: number; lon: number };
   results: DiversionResult[];
+  onRefresh?: () => void;
   height?: string;
   zoom?: number;
   aircraftType?: string;
@@ -59,7 +70,7 @@ function FitBounds({ current, results }: { current: [number, number]; results: D
     return pts;
   }, [current, results]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (bounds.length > 1) {
       map.fitBounds(bounds as any, { padding: [50, 50] });
     }
@@ -68,9 +79,44 @@ function FitBounds({ current, results }: { current: [number, number]; results: D
   return null;
 }
 
+// Fuel-margin bar chart overlay
+interface FuelChartProps {
+  data: { name: string; margin: number; reachable: boolean }[];
+}
+
+const FuelMarginChart: React.FC<FuelChartProps> = ({ data }) => (
+  <Card className="w-full md:w-auto overflow-hidden">
+    <CardContent className="p-4 sm:p-6 w-[320px] h-[240px]">
+      <h2 className="text-lg font-semibold mb-4">Fuel Margin (kg)</h2>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} layout="vertical" margin={{ left: 30 }}>
+          <XAxis type="number" hide domain={[0, "dataMax"]} />
+          <YAxis type="category" dataKey="name" width={80} />
+          <Tooltip formatter={(v: number) => `${v} kg`} />
+          <Bar dataKey="margin" isAnimationActive={false}>
+            <LabelList
+              dataKey="margin"
+              position="right"
+              formatter={(v: number) => `${v} kg`}
+            />
+            {/* Each bar coloured based on reachability */}
+            {data.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.reachable ? "#16a34a" : "#dc2626"}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </CardContent>
+  </Card>
+);
+
 const DiversionMap: React.FC<DiversionMapProps> = ({ 
   current, 
   results, 
+  onRefresh,
   height = "500px", 
   zoom = 6,
   aircraftType = "Boeing 787-9"
@@ -80,6 +126,16 @@ const DiversionMap: React.FC<DiversionMapProps> = ({
   const sorted = useMemo(
     () => [...results].sort((a, b) => Number(b.reachable) - Number(a.reachable)),
     [results]
+  );
+
+  const chartData = useMemo(
+    () =>
+      sorted.map(r => ({
+        name: r.alternate.name,
+        margin: r.remaining_fuel_kg,
+        reachable: r.reachable,
+      })),
+    [sorted]
   );
 
   const reachableCount = results.filter(r => r.reachable).length;
@@ -300,6 +356,16 @@ const DiversionMap: React.FC<DiversionMapProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Fuel margin chart overlay */}
+      <FuelMarginChart data={chartData} />
+
+      {/* Optional actions */}
+      <div className="flex justify-end">
+        <Button size="sm" variant="outline" onClick={onRefresh ?? (() => window.location.reload())}>
+          Refresh Data
+        </Button>
+      </div>
     </div>
   );
 };
