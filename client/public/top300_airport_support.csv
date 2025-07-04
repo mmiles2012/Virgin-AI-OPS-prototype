@@ -1,0 +1,52 @@
+ICAO,IATA,Airport Name,Country,Latitude,Longitude,Support
+KATL,ATL,Hartsfield–Jackson Atlanta Intl,USA,33.6407,-84.4277,both
+OMDB,DXB,Dubai International,UAE,25.2532,55.3657,both
+KDFW,DFW,Dallas/Fort Worth Intl,USA,32.8998,-97.0403,both
+RJTT,HND,Tokyo Haneda,Japan,35.5494,139.7798,both
+EGLL,LHR,London Heathrow,UK,51.47,-0.4543,both
+KDEN,DEN,Denver International,USA,39.8561,-104.6737,both
+KORD,ORD,Chicago O'Hare Intl,USA,41.9742,-87.9073,both
+LTFM,IST,Istanbul Airport,Turkey,40.976,28.8146,both
+ZSPD,PVG,Shanghai Pudong Intl,China,31.1443,121.8083,both
+ZSSS,SHA,Shanghai Hongqiao,China,31.1979,121.3364,both
+VIDP,DEL,Indira Gandhi Intl,India,28.5562,77.1,both
+KJFK,JFK,John F. Kennedy Intl,USA,40.6413,-73.7781,both
+KLAX,LAX,Los Angeles Intl,USA,33.9425,-118.4081,both
+LEMD,MAD,Madrid-Barajas,Spain,40.4936,-3.5668,both
+LFPG,CDG,Charles de Gaulle,France,49.0097,2.5479,both
+LIRF,FCO,Rome Fiumicino,Italy,41.8003,12.2389,both
+LOWW,VIE,Vienna International,Austria,48.1103,16.5697,both
+EDDF,FRA,Frankfurt am Main,Germany,50.0264,8.5431,both
+EHAM,AMS,Amsterdam Schiphol,Netherlands,52.3086,4.7639,both
+EGKK,LGW,London Gatwick,UK,51.1481,-0.1903,both
+KBOS,BOS,Boston Logan Intl,USA,42.3656,-71.0096,both
+KMIA,MIA,Miami International,USA,25.7959,-80.2870,both
+KLAS,LAS,Las Vegas McCarran,USA,36.0840,-115.1537,both
+KSEA,SEA,Seattle-Tacoma Intl,USA,47.4502,-122.3088,both
+CYYZ,YYZ,Toronto Pearson Intl,Canada,43.6777,-79.6248,both
+CYVR,YVR,Vancouver International,Canada,49.1939,-123.1844,both
+YSSY,SYD,Sydney Kingsford Smith,Australia,-33.9399,151.1753,both
+YMML,MEL,Melbourne Airport,Australia,-37.6690,144.8410,both
+SBGR,GRU,São Paulo/Guarulhos,Brazil,-23.4356,-46.4731,both
+SAEZ,EZE,Buenos Aires Ezeiza,Argentina,-34.8222,-58.5358,both
+FAOR,JNB,OR Tambo International,South Africa,-26.1392,28.2460,both
+HECA,CAI,Cairo International,Egypt,30.1219,31.4056,both
+OTHH,DOH,Hamad International,Qatar,25.2731,51.6081,both
+OOMS,MCT,Muscat International,Oman,23.5933,58.2844,both
+VABB,BOM,Chhatrapati Shivaji Intl,India,19.0896,72.8656,both
+VOBL,BLR,Kempegowda International,India,13.1986,77.7066,both
+RJAA,NRT,Tokyo Narita,Japan,35.7647,140.3864,both
+RKSI,ICN,Seoul Incheon,South Korea,37.4602,126.4407,both
+VOMM,MAA,Chennai International,India,12.9941,80.1709,both
+VTBS,BKK,Bangkok Suvarnabhumi,Thailand,13.6900,100.7501,both
+WMKK,KUL,Kuala Lumpur International,Malaysia,2.7456,101.7099,both
+WSSS,SIN,Singapore Changi,Singapore,1.3644,103.9915,both
+ZGSZ,SZX,Shenzhen Bao'an International,China,22.6393,113.8069,both
+ZGGG,CAN,Guangzhou Baiyun International,China,23.3924,113.2988,both
+RPLL,MNL,Ninoy Aquino International,Philippines,14.5086,121.0194,both
+YSSY,SYD,Sydney Kingsford Smith,Australia,-33.9399,151.1753,both
+NZAA,AKL,Auckland Airport,New Zealand,-37.0082,174.7850,both
+ENGM,OSL,Oslo Gardermoen,Norway,60.1939,11.1004,both
+ESSA,ARN,Stockholm Arlanda,Sweden,59.6519,17.9186,both
+EKCH,CPH,Copenhagen Kastrup,Denmark,55.6180,12.6506,both
+EFHK,HEL,Helsinki Vantaa,Finland,60.3172,24.9633,both
