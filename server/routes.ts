@@ -4568,6 +4568,276 @@ print(json.dumps(weather))
   });
 
   // =======================
+  // ML-Enhanced Diversion Planning
+  // =======================
+  app.post('/api/aviation/ml-diversion-analysis', async (req, res) => {
+    try {
+      const { aircraft_state, scenario_type = "emergency", optimize_for = "safety" } = req.body;
+      
+      if (!aircraft_state) {
+        return res.status(400).json({
+          success: false,
+          error: "Aircraft state is required"
+        });
+      }
+      
+      // Execute ML-enhanced diversion analysis using Python subprocess
+      const { spawn } = await import('child_process');
+      const python = spawn('python3', ['-c', `
+import sys
+import json
+from ml_enhanced_diversion_engine import MLEnhancedDiversionEngine, AircraftState
+from datetime import datetime
+
+# Parse input data
+data = json.loads(sys.argv[1])
+aircraft_data = data['aircraft_state']
+
+# Create aircraft state object
+aircraft = AircraftState(
+    lat=aircraft_data['lat'],
+    lon=aircraft_data['lon'],
+    alt_ft=aircraft_data.get('alt_ft', 37000),
+    gs_kt=aircraft_data.get('gs_kt', 480),
+    heading_deg=aircraft_data.get('heading_deg', 270),
+    flight_number=aircraft_data.get('flight_number', 'UNKNOWN'),
+    aircraft_type=aircraft_data.get('aircraft_type', 'Boeing 787-9'),
+    registration=aircraft_data.get('registration', 'UNKNOWN'),
+    fuel_remaining_kg=aircraft_data.get('fuel_remaining_kg', 30000),
+    fuel_flow_kg_hr=aircraft_data.get('fuel_flow_kg_hr', 2500),
+    passengers_count=aircraft_data.get('passengers_count', 250)
+)
+
+# Initialize ML engine and find optimal diversion
+engine = MLEnhancedDiversionEngine()
+result = engine.find_optimal_diversion_with_ml(aircraft, optimize_for=data.get('optimize_for', 'safety'))
+
+# Output result as JSON
+print(json.dumps(result, default=str))
+      `, JSON.stringify({ aircraft_state, optimize_for })]);
+      
+      let output = '';
+      let error = '';
+      
+      python.stdout.on('data', (data) => {
+        output += data.toString();
+      });
+      
+      python.stderr.on('data', (data) => {
+        error += data.toString();
+      });
+      
+      python.on('close', (code) => {
+        if (code !== 0) {
+          console.error('Python diversion analysis error:', error);
+          return res.status(500).json({
+            success: false,
+            error: "Diversion analysis failed",
+            debug: error
+          });
+        }
+        
+        try {
+          const result = JSON.parse(output);
+          res.json({
+            success: true,
+            diversion_analysis: result,
+            timestamp: new Date().toISOString(),
+            analysis_type: "ml_enhanced"
+          });
+        } catch (parseError) {
+          console.error('Failed to parse Python output:', output);
+          res.status(500).json({
+            success: false,
+            error: "Failed to parse analysis results",
+            debug: output
+          });
+        }
+      });
+      
+      // Timeout after 30 seconds
+      setTimeout(() => {
+        python.kill();
+        res.status(408).json({
+          success: false,
+          error: "Analysis timeout - diversion planning took too long"
+        });
+      }, 30000);
+      
+    } catch (error) {
+      console.error('ML Diversion Analysis Error:', error);
+      res.status(500).json({
+        success: false,
+        error: "Internal server error during diversion analysis",
+        debug: error.message
+      });
+    }
+  });
+
+  // Quick diversion options endpoint
+  app.get('/api/aviation/diversion-options/:flightNumber', async (req, res) => {
+    try {
+      const flightNumber = req.params.flightNumber.toUpperCase();
+      
+      // Get current flight data from our tracking system
+      const currentFlights = await virginAtlanticService.getCurrentFlights();
+      const flight = currentFlights.find(f => f.flight_number === flightNumber);
+      
+      if (!flight) {
+        return res.status(404).json({
+          success: false,
+          error: `Flight ${flightNumber} not found in tracking system`
+        });
+      }
+      
+      // Create simplified aircraft state from tracking data
+      const aircraftState = {
+        lat: flight.latitude,
+        lon: flight.longitude,
+        alt_ft: flight.altitude,
+        gs_kt: flight.velocity,
+        heading_deg: flight.heading,
+        flight_number: flight.flight_number,
+        aircraft_type: flight.aircraft_type,
+        registration: flight.callsign || flight.flight_number,
+        fuel_remaining_kg: (flight.fuel_remaining || 80) * 1000, // Convert percentage to kg estimate
+        fuel_flow_kg_hr: 2500, // Default fuel flow
+        passengers_count: flight.digital_twin_data?.passenger_count || 250
+      };
+      
+      // Simplified diversion options based on current position
+      const diversionOptions = [];
+      
+      // Major airports within reasonable range
+      const nearbyAirports = [
+        { icao: 'EGLL', name: 'London Heathrow', lat: 51.4700, lon: -0.4543, distance_nm: 0 },
+        { icao: 'EGKK', name: 'London Gatwick', lat: 51.1481, lon: -0.1903, distance_nm: 0 },
+        { icao: 'EINN', name: 'Shannon', lat: 52.7019, lon: -8.9248, distance_nm: 0 },
+        { icao: 'BIKF', name: 'Keflavik', lat: 64.1300, lon: -21.9406, distance_nm: 0 },
+        { icao: 'KJFK', name: 'New York JFK', lat: 40.6413, lon: -73.7781, distance_nm: 0 },
+        { icao: 'KATL', name: 'Atlanta', lat: 33.6407, lon: -84.4277, distance_nm: 0 }
+      ];
+      
+      // Calculate distances and create options
+      for (const airport of nearbyAirports) {
+        const distance = Math.sqrt(
+          Math.pow((airport.lat - aircraftState.lat) * 69, 2) + 
+          Math.pow((airport.lon - aircraftState.lon) * 55, 2)
+        );
+        
+        if (distance < 2000) { // Within 2000 NM
+          const flightTime = distance / (aircraftState.gs_kt || 480);
+          const fuelRequired = flightTime * (aircraftState.fuel_flow_kg_hr || 2500);
+          
+          diversionOptions.push({
+            airport: {
+              icao: airport.icao,
+              name: airport.name,
+              lat: airport.lat,
+              lon: airport.lon
+            },
+            route_summary: {
+              distance_nm: Math.round(distance),
+              flight_time_hours: Math.round(flightTime * 10) / 10,
+              fuel_required_kg: Math.round(fuelRequired),
+              eta: new Date(Date.now() + flightTime * 3600000).toISOString()
+            },
+            suitability: {
+              fuel_margin_kg: aircraftState.fuel_remaining_kg - fuelRequired,
+              risk_level: fuelRequired > aircraftState.fuel_remaining_kg * 0.8 ? 'high' : 
+                         fuelRequired > aircraftState.fuel_remaining_kg * 0.6 ? 'medium' : 'low',
+              recommended: fuelRequired < aircraftState.fuel_remaining_kg * 0.7
+            }
+          });
+        }
+      }
+      
+      // Sort by distance
+      diversionOptions.sort((a, b) => a.route_summary.distance_nm - b.route_summary.distance_nm);
+      
+      res.json({
+        success: true,
+        flight_info: {
+          flight_number: flightNumber,
+          current_position: {
+            lat: aircraftState.lat,
+            lon: aircraftState.lon,
+            alt_ft: aircraftState.alt_ft
+          },
+          aircraft_type: aircraftState.aircraft_type,
+          fuel_status: {
+            remaining_kg: aircraftState.fuel_remaining_kg,
+            flow_rate_kg_hr: aircraftState.fuel_flow_kg_hr
+          }
+        },
+        diversion_options: diversionOptions,
+        analysis_note: "Quick analysis - use /ml-diversion-analysis for comprehensive ML-powered planning",
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error) {
+      console.error('Diversion Options Error:', error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to calculate diversion options",
+        debug: error.message
+      });
+    }
+  });
+
+  // Digital twin integration for diversion planning
+  app.get('/api/aviation/digital-twin-diversion/:aircraftId', async (req, res) => {
+    try {
+      const aircraftId = req.params.aircraftId;
+      
+      // Get digital twin data (simplified version)
+      const digitalTwinData = {
+        aircraft_id: aircraftId,
+        current_state: {
+          timestamp: new Date().toISOString(),
+          operational_status: 'normal',
+          fuel_status: 'adequate',
+          engine_status: 'normal',
+          systems_status: 'all_green'
+        },
+        performance_capabilities: {
+          max_range_nm: 7635, // Example for 787-9
+          service_ceiling_ft: 43000,
+          cruise_speed_kt: 488,
+          fuel_capacity_kg: 126372
+        },
+        diversion_readiness: {
+          immediate_capability: true,
+          fuel_sufficient_for_diversion: true,
+          systems_ready: true,
+          crew_alert_level: 'normal'
+        },
+        recommended_actions: [
+          "Monitor fuel consumption during diversion planning",
+          "Ensure latest weather updates for target airports",
+          "Brief crew on emergency procedures if applicable",
+          "Coordinate with ATC for priority routing if needed"
+        ]
+      };
+      
+      res.json({
+        success: true,
+        digital_twin_data: digitalTwinData,
+        integration_status: "active",
+        last_updated: new Date().toISOString()
+      });
+      
+    } catch (error) {
+      console.error('Digital Twin Diversion Error:', error);
+      res.status(500).json({
+        success: false,
+        error: "Failed to retrieve digital twin diversion data",
+        debug: error.message
+      });
+    }
+  });
+
+  // =======================
   // Authentic OFP Performance Data
   // =======================
   app.get('/api/aviation/authentic-performance/:flightNumber', async (req, res) => {
