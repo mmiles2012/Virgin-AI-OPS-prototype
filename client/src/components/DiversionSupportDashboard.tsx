@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertTriangle, Phone, Clock, DollarSign, Users, Plane, MapPin, CheckCircle, Zap } from 'lucide-react';
+import { AlertTriangle, Phone, Clock, DollarSign, Users, Plane, MapPin, CheckCircle, Zap, XCircle, Building, Fuel, Wrench, Wifi } from 'lucide-react';
 // Temporary fix: Define basic aircraft specs locally to avoid circular imports
 const AIRBUS_FLEET_SPECS = {
   'A330-300': { wingspan: 60.3, length: 63.7, height: 16.8, mtow: 233000, passengers: { typical: 277 }, runway_requirements: { takeoff: 2500 }, engines: 'Trent 700', gate_requirements: { bridge_compatibility: 'Wide-body' } },
@@ -177,6 +177,73 @@ export default function DiversionSupportDashboard() {
   const [airportIntelligenceLoading, setAirportIntelligenceLoading] = useState(false);
   const [mlDiversionAnalysis, setMlDiversionAnalysis] = useState<any>(null);
   const [mlAnalysisLoading, setMlAnalysisLoading] = useState(false);
+  const [processingLog, setProcessingLog] = useState<any[]>([]);
+  const [serviceStatus, setServiceStatus] = useState({
+    hotel: { status: 'pending', progress: 0 },
+    fuel: { status: 'pending', progress: 0 },
+    engineering: { status: 'pending', progress: 0 },
+    groundHandling: { status: 'pending', progress: 0 },
+    catering: { status: 'pending', progress: 0 },
+    customs: { status: 'pending', progress: 0 }
+  });
+
+  const addLog = (message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') => {
+    const timestamp = new Date().toLocaleTimeString();
+    setProcessingLog(prev => [...prev, { timestamp, message, type }]);
+  };
+
+  const updateServiceStatus = (service: string, status: 'pending' | 'processing' | 'confirmed' | 'failed', progress: number = 0) => {
+    setServiceStatus(prev => ({
+      ...prev,
+      [service]: { status, progress }
+    }));
+  };
+
+  const simulateServiceBooking = async (service: string, serviceName: string, delay: number = 1000) => {
+    updateServiceStatus(service, 'processing', 25);
+    addLog(`Initiating ${serviceName} coordination...`, 'info');
+    
+    await new Promise(resolve => setTimeout(resolve, delay * 0.3));
+    updateServiceStatus(service, 'processing', 50);
+    addLog(`Contacting ${serviceName} providers...`, 'info');
+    
+    await new Promise(resolve => setTimeout(resolve, delay * 0.4));
+    updateServiceStatus(service, 'processing', 75);
+    addLog(`Negotiating ${serviceName} terms...`, 'info');
+    
+    await new Promise(resolve => setTimeout(resolve, delay * 0.3));
+    
+    // 95% success rate for automated bookings
+    const success = Math.random() > 0.05;
+    
+    if (success) {
+      updateServiceStatus(service, 'confirmed', 100);
+      addLog(`${serviceName} booking confirmed and secured`, 'success');
+    } else {
+      updateServiceStatus(service, 'failed', 0);
+      addLog(`${serviceName} booking failed - escalating to manual coordination`, 'error');
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'confirmed': return <CheckCircle className="w-5 h-5 text-green-500" />;
+      case 'processing': return <Clock className="w-5 h-5 text-blue-500 animate-spin" />;
+      case 'failed': return <XCircle className="w-5 h-5 text-red-500" />;
+      default: return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'bg-green-100 text-green-800';
+      case 'processing': return 'bg-blue-100 text-blue-800';
+      case 'failed': return 'bg-red-100 text-red-800';
+      default: return 'bg-yellow-100 text-yellow-800';
+    }
+  };
+
+
 
   const handleAirportIntelligenceSearch = async (airportCode: string) => {
     setAirportIntelligenceLoading(true);
@@ -223,9 +290,18 @@ export default function DiversionSupportDashboard() {
   };
 
   const handleInitiateDiversion = async () => {
+    if (!diversionRequest.flightNumber || !diversionRequest.diversionAirport || !diversionRequest.passengerCount) {
+      addLog('Please fill in required fields: Flight Number, Diversion Airport, and Passenger Count', 'error');
+      return;
+    }
+
     setIsLoading(true);
+    setProcessingLog([]); // Clear previous logs
+    addLog(`Diversion request received for ${diversionRequest.flightNumber} - initiating automated support services`, 'info');
+
     try {
       // Step 1: Get ML-enhanced diversion analysis
+      addLog('Running ML-enhanced diversion analysis...', 'info');
       const mlResponse = await fetch('/api/aviation/ml-diversion-analysis', {
         method: 'POST',
         headers: {
@@ -241,9 +317,47 @@ export default function DiversionSupportDashboard() {
       const mlData = await mlResponse.json();
       if (mlData.success) {
         setMlDiversionAnalysis(mlData.analysis);
+        addLog('ML analysis complete - optimal diversion airport and fuel requirements calculated', 'success');
       }
-      
-      // Step 2: Automatically coordinate comprehensive support services
+
+      // Step 2: Start automated service coordination in parallel
+      addLog('Initiating parallel coordination of all support services...', 'info');
+
+      // Start hotel booking
+      simulateServiceBooking('hotel', `Hotel accommodation for ${diversionRequest.passengerCount} passengers and ${diversionRequest.crewCount} crew`, 2000);
+
+      // Start fuel coordination
+      setTimeout(() => {
+        simulateServiceBooking('fuel', `Fuel supply coordination (${mlData.success ? Math.round(mlData.analysis.fuel_analysis?.fuel_required_kg || 15000) : 15000} kg)`, 1500);
+      }, 300);
+
+      // Start ground handling
+      setTimeout(() => {
+        simulateServiceBooking('groundHandling', 'Ground handling services (baggage, passenger services, cleaning)', 1800);
+      }, 600);
+
+      // Start engineering support (for technical diversions)
+      if (diversionRequest.diversionReason === 'technical') {
+        setTimeout(() => {
+          simulateServiceBooking('engineering', `Engineering support (${diversionRequest.aircraftType} specialist technicians)`, 2500);
+        }, 900);
+      }
+
+      // Start catering services
+      if (diversionRequest.estimatedDelayHours > 4) {
+        setTimeout(() => {
+          simulateServiceBooking('catering', `Passenger catering and EU261 compensation processing`, 1200);
+        }, 1200);
+      }
+
+      // Start customs coordination
+      if (diversionRequest.estimatedDelayHours > 6) {
+        setTimeout(() => {
+          simulateServiceBooking('customs', 'Customs and immigration support coordination', 1000);
+        }, 1500);
+      }
+
+      // Step 3: Send comprehensive request to backend
       const response = await fetch('/api/diversion/initiate-comprehensive', {
         method: 'POST',
         headers: {
@@ -254,30 +368,19 @@ export default function DiversionSupportDashboard() {
           mlAnalysis: mlData.success ? mlData.analysis : null,
           autoBookServices: true,
           serviceRequirements: {
-            // Passenger accommodation
             passengerAccommodation: true,
-            hotelRooms: Math.ceil(diversionRequest.passengerCount / 2), // 2 passengers per room
+            hotelRooms: Math.ceil(diversionRequest.passengerCount / 2),
             crewRooms: diversionRequest.crewCount,
-            
-            // Fuel coordination
             fuelCoordination: true,
             estimatedFuelNeeded: mlData.success ? mlData.analysis.fuel_analysis?.fuel_required_kg : 15000,
-            
-            // Engineering support (for technical diversions)
             engineeringSupport: diversionRequest.diversionReason === 'technical',
             engineeringLevel: diversionRequest.diversionReason === 'technical' ? 'specialist' : 'routine',
-            
-            // Ground handling services
             groundHandling: true,
             groundServices: ['baggage_handling', 'passenger_services', 'aircraft_cleaning', 'cargo_handling'],
-            
-            // Additional services based on delay duration
             cateringServices: diversionRequest.estimatedDelayHours > 4,
             passportControl: true,
             customsSupport: diversionRequest.estimatedDelayHours > 6,
             transportServices: diversionRequest.estimatedDelayHours > 8,
-            
-            // Emergency services coordination
             medicalSupport: diversionRequest.urgencyLevel === 'emergency',
             securityCoordination: true
           }
@@ -287,10 +390,12 @@ export default function DiversionSupportDashboard() {
       const data = await response.json();
       if (data.success) {
         setDiversionResponse(data.diversion);
+        addLog(`Comprehensive diversion support confirmed. Total cost: $${data.diversion.totalEstimatedCost.toLocaleString()}`, 'success');
         setActiveTab('status');
       }
     } catch (error) {
       console.error('Failed to initiate comprehensive diversion support:', error);
+      addLog('System error occurred - escalating to manual coordination', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -328,15 +433,7 @@ export default function DiversionSupportDashboard() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'text-green-600 bg-green-100';
-      case 'confirmed': return 'text-blue-600 bg-blue-100';
-      case 'in-progress': return 'text-yellow-600 bg-yellow-100';
-      case 'initiated': return 'text-purple-600 bg-purple-100';
-      default: return 'text-gray-600 bg-gray-100';
-    }
-  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 p-6">
@@ -615,6 +712,121 @@ export default function DiversionSupportDashboard() {
                 )}
               </button>
             </div>
+
+            {/* Real-time Service Status (shown during processing) */}
+            {isLoading && (
+              <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Service Status Panel */}
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <Wifi className="w-5 h-5 text-blue-600" />
+                    Live Service Status
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <Building className="w-5 h-5 text-gray-600" />
+                        <span className="font-medium">Hotel Accommodation</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {getStatusIcon(serviceStatus.hotel.status)}
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(serviceStatus.hotel.status)}`}>
+                          {serviceStatus.hotel.status}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <Fuel className="w-5 h-5 text-gray-600" />
+                        <span className="font-medium">Fuel Supply</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {getStatusIcon(serviceStatus.fuel.status)}
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(serviceStatus.fuel.status)}`}>
+                          {serviceStatus.fuel.status}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <Users className="w-5 h-5 text-gray-600" />
+                        <span className="font-medium">Ground Handling</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {getStatusIcon(serviceStatus.groundHandling.status)}
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(serviceStatus.groundHandling.status)}`}>
+                          {serviceStatus.groundHandling.status}
+                        </span>
+                      </div>
+                    </div>
+
+                    {diversionRequest.diversionReason === 'technical' && (
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <Wrench className="w-5 h-5 text-gray-600" />
+                          <span className="font-medium">Engineering Support</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {getStatusIcon(serviceStatus.engineering.status)}
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(serviceStatus.engineering.status)}`}>
+                            {serviceStatus.engineering.status}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {diversionRequest.estimatedDelayHours > 4 && (
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <Users className="w-5 h-5 text-gray-600" />
+                          <span className="font-medium">Passenger Services</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {getStatusIcon(serviceStatus.catering.status)}
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(serviceStatus.catering.status)}`}>
+                            {serviceStatus.catering.status}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Processing Log */}
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-green-600" />
+                    Processing Log
+                  </h3>
+                  <div className="h-64 overflow-y-auto">
+                    <div className="space-y-2">
+                      {processingLog.map((log, index) => (
+                        <div key={index} className="flex items-start space-x-3 text-sm">
+                          <span className="text-gray-500 text-xs mt-0.5 min-w-16">
+                            {log.timestamp}
+                          </span>
+                          <div className={`flex-1 ${
+                            log.type === 'success' ? 'text-green-700' :
+                            log.type === 'error' ? 'text-red-700' :
+                            log.type === 'warning' ? 'text-yellow-700' :
+                            'text-gray-700'
+                          }`}>
+                            {log.message}
+                          </div>
+                        </div>
+                      ))}
+                      {processingLog.length === 0 && (
+                        <div className="text-gray-500 text-sm italic">
+                          Processing log will appear here...
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

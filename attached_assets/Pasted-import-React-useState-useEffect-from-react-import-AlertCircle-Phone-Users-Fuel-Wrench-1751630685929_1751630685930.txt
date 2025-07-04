@@ -1,0 +1,410 @@
+import React, { useState, useEffect } from 'react';
+import { AlertCircle, Phone, Users, Fuel, Wrench, Building, Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+
+const FlightDiversionSystem = () => {
+  const [diversionData, setDiversionData] = useState({
+    flightNumber: '',
+    originalDestination: '',
+    diversionAirport: '',
+    aircraftType: '',
+    passengerCount: '',
+    crewCount: '',
+    fuelRequired: '',
+    estimatedArrival: '',
+    diversionReason: '',
+    specialRequirements: ''
+  });
+
+  const [serviceRequests, setServiceRequests] = useState({
+    hotel: { status: 'pending', details: {} },
+    fuel: { status: 'pending', details: {} },
+    groundHandling: { status: 'pending', details: {} },
+    engineering: { status: 'pending', details: {} },
+    catering: { status: 'pending', details: {} }
+  });
+
+  const [automatedCalls, setAutomatedCalls] = useState({
+    hotelProvider: { status: 'pending', lastAttempt: null },
+    fuelProvider: { status: 'pending', lastAttempt: null },
+    groundHandler: { status: 'pending', lastAttempt: null },
+    engineeringTeam: { status: 'pending', lastAttempt: null },
+    airportOps: { status: 'pending', lastAttempt: null }
+  });
+
+  const [systemStatus, setSystemStatus] = useState('ready');
+  const [processingLog, setProcessingLog] = useState([]);
+
+  const addLog = (message, type = 'info') => {
+    const timestamp = new Date().toLocaleTimeString();
+    setProcessingLog(prev => [...prev, { timestamp, message, type }]);
+  };
+
+  const updateServiceStatus = (service, status, details = {}) => {
+    setServiceRequests(prev => ({
+      ...prev,
+      [service]: { status, details }
+    }));
+  };
+
+  const updateCallStatus = (provider, status) => {
+    setAutomatedCalls(prev => ({
+      ...prev,
+      [provider]: { status, lastAttempt: new Date().toLocaleTimeString() }
+    }));
+  };
+
+  const simulateServiceBooking = async (service, delay = 1000) => {
+    await new Promise(resolve => setTimeout(resolve, delay));
+    
+    const success = Math.random() > 0.2; // 80% success rate
+    
+    if (success) {
+      updateServiceStatus(service, 'confirmed');
+      addLog(`${service} booking confirmed`, 'success');
+    } else {
+      updateServiceStatus(service, 'failed');
+      addLog(`${service} booking failed - retrying...`, 'error');
+    }
+  };
+
+  const simulateAutomatedCall = async (provider, delay = 800) => {
+    await new Promise(resolve => setTimeout(resolve, delay));
+    
+    const success = Math.random() > 0.3; // 70% success rate
+    
+    if (success) {
+      updateCallStatus(provider, 'connected');
+      addLog(`Call to ${provider} successful`, 'success');
+    } else {
+      updateCallStatus(provider, 'failed');
+      addLog(`Call to ${provider} failed - will retry`, 'error');
+    }
+  };
+
+  const handleDiversionSubmit = async () => {
+    if (!diversionData.flightNumber || !diversionData.diversionAirport || !diversionData.passengerCount) {
+      addLog('Please fill in required fields', 'error');
+      return;
+    }
+    setSystemStatus('processing');
+    addLog('Diversion request received - initiating support services', 'info');
+
+    // Start hotel booking
+    updateServiceStatus('hotel', 'processing');
+    addLog('Initiating hotel booking for passengers and crew', 'info');
+    simulateServiceBooking('hotel', 2000);
+
+    // Start fuel coordination
+    updateServiceStatus('fuel', 'processing');
+    addLog(`Arranging ${diversionData.fuelRequired} lbs of fuel`, 'info');
+    simulateServiceBooking('fuel', 1500);
+
+    // Start ground handling
+    updateServiceStatus('groundHandling', 'processing');
+    addLog('Coordinating ground handling services', 'info');
+    simulateServiceBooking('groundHandling', 1800);
+
+    // Start engineering if needed
+    if (diversionData.diversionReason.includes('technical')) {
+      updateServiceStatus('engineering', 'processing');
+      addLog('Technical diversion detected - arranging engineering support', 'info');
+      simulateServiceBooking('engineering', 2500);
+    }
+
+    // Start catering
+    updateServiceStatus('catering', 'processing');
+    addLog('Arranging passenger catering services', 'info');
+    simulateServiceBooking('catering', 1200);
+
+    // Initiate automated calls
+    setTimeout(() => {
+      addLog('Initiating automated notification calls', 'info');
+      Object.keys(automatedCalls).forEach((provider, index) => {
+        setTimeout(() => {
+          simulateAutomatedCall(provider);
+        }, index * 500);
+      });
+    }, 1000);
+
+    setSystemStatus('active');
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'confirmed': return <CheckCircle className="w-5 h-5 text-green-500" />;
+      case 'processing': return <Clock className="w-5 h-5 text-blue-500 animate-spin" />;
+      case 'failed': return <XCircle className="w-5 h-5 text-red-500" />;
+      case 'connected': return <CheckCircle className="w-5 h-5 text-green-500" />;
+      default: return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'confirmed': case 'connected': return 'bg-green-100 text-green-800';
+      case 'processing': return 'bg-blue-100 text-blue-800';
+      case 'failed': return 'bg-red-100 text-red-800';
+      default: return 'bg-yellow-100 text-yellow-800';
+    }
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen">
+      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div className="flex items-center space-x-3 mb-6">
+          <AlertCircle className="w-8 h-8 text-red-500" />
+          <h1 className="text-2xl font-bold text-gray-800">Flight Diversion Support System</h1>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Flight Number</label>
+            <input
+              type="text"
+              value={diversionData.flightNumber}
+              onChange={(e) => setDiversionData(prev => ({ ...prev, flightNumber: e.target.value }))}
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., BA123"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Original Destination</label>
+            <input
+              type="text"
+              value={diversionData.originalDestination}
+              onChange={(e) => setDiversionData(prev => ({ ...prev, originalDestination: e.target.value }))}
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., LHR"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Diversion Airport</label>
+            <input
+              type="text"
+              value={diversionData.diversionAirport}
+              onChange={(e) => setDiversionData(prev => ({ ...prev, diversionAirport: e.target.value }))}
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., MAN"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Aircraft Type</label>
+            <input
+              type="text"
+              value={diversionData.aircraftType}
+              onChange={(e) => setDiversionData(prev => ({ ...prev, aircraftType: e.target.value }))}
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., A320"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Passenger Count</label>
+            <input
+              type="number"
+              value={diversionData.passengerCount}
+              onChange={(e) => setDiversionData(prev => ({ ...prev, passengerCount: e.target.value }))}
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              placeholder="150"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Crew Count</label>
+            <input
+              type="number"
+              value={diversionData.crewCount}
+              onChange={(e) => setDiversionData(prev => ({ ...prev, crewCount: e.target.value }))}
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              placeholder="6"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Fuel Required (lbs)</label>
+            <input
+              type="number"
+              value={diversionData.fuelRequired}
+              onChange={(e) => setDiversionData(prev => ({ ...prev, fuelRequired: e.target.value }))}
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              placeholder="12000"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Arrival</label>
+            <input
+              type="datetime-local"
+              value={diversionData.estimatedArrival}
+              onChange={(e) => setDiversionData(prev => ({ ...prev, estimatedArrival: e.target.value }))}
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Diversion Reason</label>
+            <select
+              value={diversionData.diversionReason}
+              onChange={(e) => setDiversionData(prev => ({ ...prev, diversionReason: e.target.value }))}
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select reason</option>
+              <option value="weather">Weather</option>
+              <option value="technical">Technical Issue</option>
+              <option value="medical">Medical Emergency</option>
+              <option value="fuel">Fuel Emergency</option>
+              <option value="security">Security</option>
+              <option value="airport-closure">Airport Closure</option>
+            </select>
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Special Requirements</label>
+            <textarea
+              value={diversionData.specialRequirements}
+              onChange={(e) => setDiversionData(prev => ({ ...prev, specialRequirements: e.target.value }))}
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+              rows="3"
+              placeholder="Any special requirements or notes..."
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <button
+              onClick={handleDiversionSubmit}
+              disabled={systemStatus === 'processing'}
+              className="w-full bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 disabled:opacity-50 font-medium"
+            >
+              {systemStatus === 'processing' ? 'Processing Diversion...' : 'Initiate Diversion Support'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {systemStatus !== 'ready' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Service Status Panel */}
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Service Status</h2>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <Building className="w-5 h-5 text-gray-600" />
+                  <span className="font-medium">Hotel Accommodation</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {getStatusIcon(serviceRequests.hotel.status)}
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(serviceRequests.hotel.status)}`}>
+                    {serviceRequests.hotel.status}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <Fuel className="w-5 h-5 text-gray-600" />
+                  <span className="font-medium">Fuel Services</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {getStatusIcon(serviceRequests.fuel.status)}
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(serviceRequests.fuel.status)}`}>
+                    {serviceRequests.fuel.status}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <Users className="w-5 h-5 text-gray-600" />
+                  <span className="font-medium">Ground Handling</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {getStatusIcon(serviceRequests.groundHandling.status)}
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(serviceRequests.groundHandling.status)}`}>
+                    {serviceRequests.groundHandling.status}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <Wrench className="w-5 h-5 text-gray-600" />
+                  <span className="font-medium">Engineering Support</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {getStatusIcon(serviceRequests.engineering.status)}
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(serviceRequests.engineering.status)}`}>
+                    {serviceRequests.engineering.status}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Automated Calls Panel */}
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Automated Calls</h2>
+            <div className="space-y-3">
+              {Object.entries(automatedCalls).map(([provider, call]) => (
+                <div key={provider} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Phone className="w-5 h-5 text-gray-600" />
+                    <div>
+                      <span className="font-medium capitalize">{provider.replace(/([A-Z])/g, ' $1').trim()}</span>
+                      {call.lastAttempt && (
+                        <div className="text-xs text-gray-500">Last: {call.lastAttempt}</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {getStatusIcon(call.status)}
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(call.status)}`}>
+                      {call.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Processing Log */}
+      {processingLog.length > 0 && (
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Processing Log</h2>
+          <div className="max-h-64 overflow-y-auto space-y-2">
+            {processingLog.map((log, index) => (
+              <div key={index} className="flex items-start space-x-3 p-2 rounded">
+                <span className="text-xs text-gray-500 font-mono whitespace-nowrap">
+                  {log.timestamp}
+                </span>
+                <span className={`text-sm ${
+                  log.type === 'success' ? 'text-green-600' : 
+                  log.type === 'error' ? 'text-red-600' : 
+                  'text-gray-700'
+                }`}>
+                  {log.message}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FlightDiversionSystem;
