@@ -4936,8 +4936,37 @@ else:
         });
       }
 
+      // Import the enhanced diversion optimizer
+      const { enhancedDiversionAnalysis } = await import('./diversionOptimizer');
+      
       // Generate comprehensive scenario analysis combining digital twin data
       const scenario = await scenarioGeneratorService.generateScenario();
+      
+      // Get aircraft data to determine type for diversion analysis
+      let aircraftType = 'Boeing 787-9'; // Default
+      try {
+        const virginAtlanticService = await import('./virginAtlanticService');
+        const aircraftData = await virginAtlanticService.getAircraftById(aircraftId);
+        if (aircraftData?.aircraftType) {
+          aircraftType = aircraftData.aircraftType;
+        }
+      } catch (error) {
+        console.log('Using default aircraft type for diversion analysis');
+      }
+
+      // Enhanced diversion analysis with real flight physics
+      const diversionData = enhancedDiversionAnalysis(
+        aircraftType,
+        scenario.current_position.lat,
+        scenario.current_position.lng,
+        scenario.current_position.fuel_remaining * 1000, // Convert to kg
+        scenario.route.join('-'),
+        {
+          dir: 270,
+          speed: 30 + Math.random() * 20, // 30-50 kt winds
+          temp: -5 + Math.random() * 15   // -5 to +10°C ISA deviation
+        }
+      );
       
       // Enhanced analysis with digital twin integration
       const analysis = {
@@ -4948,39 +4977,59 @@ else:
           time_critical: scenario.time_critical
         },
         aircraft_capabilities: {
-          type: scenario.aircraft_type,
+          type: aircraftType,
           current_fuel: scenario.current_position.fuel_remaining,
-          range_remaining: scenario.current_position.fuel_remaining * 0.85, // Conservative estimate
+          range_remaining: scenario.current_position.fuel_remaining * 0.85,
           diversion_capable: scenario.current_position.fuel_remaining > 25
         },
         diversion_analysis: {
           recommended_airports: scenario.diversion_options.slice(0, 3),
           ml_recommendation: scenario.ml_recommendations.primary_action,
           confidence_score: scenario.ml_recommendations.confidence_score,
-          estimated_costs: scenario.ml_recommendations.cost_impact
+          estimated_costs: scenario.ml_recommendations.cost_impact,
+          // Enhanced diversion data
+          advanced_routing: {
+            optimal_alternate: diversionData.optimizer_results.best,
+            all_alternates: diversionData.optimizer_results.all,
+            flight_physics: diversionData.flight_physics,
+            operational_guidance: diversionData.operational_guidance
+          }
         },
         decision_support: {
           decision_tree: scenario.decision_tree,
-          crew_actions: scenario.ml_recommendations.crew_actions,
+          crew_actions: diversionData.operational_guidance.crew_actions,
           timeline: scenario.ml_recommendations.timeline,
-          regulatory_requirements: scenario.ml_recommendations.regulatory_notifications
+          regulatory_requirements: scenario.ml_recommendations.regulatory_notifications,
+          primary_recommendation: diversionData.operational_guidance.primary_recommendation,
+          backup_options: diversionData.operational_guidance.backup_options
         },
         what_if_outcomes: {
           continue_to_destination: {
             risk_level: scenario.severity === 'critical' ? 'HIGH' : 'MEDIUM',
-            estimated_delay: Math.random() * 60 + 30, // 30-90 minutes
+            estimated_delay: Math.random() * 60 + 30,
             cost_impact: scenario.ml_recommendations.cost_impact.estimated_total_cost * 0.3
           },
           immediate_diversion: {
             risk_level: 'LOW',
-            estimated_delay: Math.random() * 240 + 120, // 2-6 hours
-            cost_impact: scenario.ml_recommendations.cost_impact.estimated_total_cost
+            estimated_delay: Math.random() * 240 + 120,
+            cost_impact: scenario.ml_recommendations.cost_impact.estimated_total_cost,
+            optimal_route: diversionData.optimizer_results.best
           },
           delayed_diversion: {
             risk_level: scenario.severity === 'critical' ? 'CRITICAL' : 'MEDIUM',
-            estimated_delay: Math.random() * 360 + 180, // 3-9 hours
+            estimated_delay: Math.random() * 360 + 180,
             cost_impact: scenario.ml_recommendations.cost_impact.estimated_total_cost * 1.5
           }
+        },
+        // Enhanced diversion mapping data
+        diversion_map_data: {
+          current_position: {
+            lat: scenario.current_position.lat,
+            lon: scenario.current_position.lng
+          },
+          diversion_results: diversionData.optimizer_results.all,
+          aircraft_type: aircraftType,
+          weather_conditions: diversionData.flight_physics
         }
       };
       
@@ -4988,7 +5037,7 @@ else:
         success: true,
         analysis,
         timestamp: new Date().toISOString(),
-        source: 'AINO_Enhanced_Scenario_Analysis'
+        source: 'AINO_Enhanced_Diversion_Analysis_v2'
       });
     } catch (error: any) {
       res.status(500).json({

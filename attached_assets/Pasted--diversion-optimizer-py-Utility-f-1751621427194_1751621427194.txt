@@ -1,0 +1,251 @@
+# diversion_optimizer.py
+# -------------------------------------------------------------
+# Utility for flight‑ops platforms: determine the optimum
+# diversion routing from the decision point in‑flight to an
+# alternate aerodrome, accounting for remaining fuel, upper‑wind
+# and temperature effects.
+# -------------------------------------------------------------
+# The code is deliberately modular so that any EFB/dispatch back‑end
+# can wire its own data sources (fuel state, wind/temperature grids,
+# alternate lists, aircraft performance tables).
+#
+# *Assumptions / Simplifications*
+# • Great‑circle track between points (sufficiently accurate <1000 NM).
+# • Single cruise flight level for the diversion (altitude_ft in Aircraft).
+# • Average wind/temperature sampled at the mid‑point of the track – in
+#   practice you would integrate along multiple segments; the hooks are
+#   here but kept lean for clarity.
+# • Constant fuel‑flow (kg/h) during diversion cruise. If you have a
+#   performance table vs. weight, altitude, ISA, inject a custom
+#   `fuel_flow_fn` when constructing the Aircraft model.
+# -------------------------------------------------------------
+
+from __future__ import annotations
+
+import math
+from dataclasses import dataclass, field
+from typing import Callable, Iterable, List, Optional, Tuple
+
+EARTH_RADIUS_NM = 3440.065  # Mean Earth radius in nautical miles
+DEG2RAD = math.pi / 180.0
+RAD2DEG = 180.0 / math.pi
+
+
+def haversine_nm(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Great‑circle distance in nautical miles using the haversine formula."""
+    lat1, lon1, lat2, lon2 = map(lambda x: x * DEG2RAD, (lat1, lon1, lat2, lon2))
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    )
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return EARTH_RADIUS_NM * c
+
+
+def initial_course_deg(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Initial true course from point 1 to point 2 in degrees."""
+    lat1, lon1, lat2, lon2 = map(lambda x: x * DEG2RAD, (lat1, lon1, lat2, lon2))
+    dlon = lon2 - lon1
+    x = math.sin(dlon) * math.cos(lat2)
+    y = math.cos(lat1) * math.sin(lat2) - (
+        math.sin(lat1) * math.cos(lat2) * math.cos(dlon)
+    )
+    course = math.atan2(x, y) * RAD2DEG
+    return (course + 360) % 360
+
+
+def tailwind_component(wind_dir_deg: float, wind_speed_kt: float, track_deg: float) -> float:
+    """Positive result = tailwind, negative = headwind."""
+    # Wind direction is *from*; convert to vector and project onto track
+    # Track direction is *to*
+    relative = math.radians(wind_dir_deg - track_deg + 180)  # invert wind dir to *to*
+    return wind_speed_kt * math.cos(relative)
+
+
+def isa_tas_correction_cas(
+    cas_kt: float, altitude_ft: float, isa_dev_c: float
+) -> float:
+    """Very rough approximation converting CAS to TAS with ISA deviation.
+    We use the classical rule‑of‑thumb:
+        TAS ≈ CAS + (2% of CAS per 1000 ft) + (ISA deviation × 0.02 × CAS)
+    For detailed work use atmospheric package or aircraft perf tables.
+    """
+    tas = cas_kt * (1 + 0.02 * altitude_ft / 1000) * (1 + 0.02 * isa_dev_c / 15)
+    return tas
+
+
+@dataclass
+class Aircraft:
+    """Minimal aircraft performance model for diversion planning."""
+
+    identifier: str
+    cruise_cas_kt: float  # calibrated airspeed intended during diversion cruise
+    altitude_ft: float
+    fuel_flow_kg_per_hr: float  # average cruise fuel flow – override with perf table
+    fuel_reserve_kg: float = 30.0  # minimum landing reserve to maintain
+    fuel_flow_fn: Optional[
+        Callable[[float, float, float], float]
+    ] = None  # custom fuel flow as f(tas, weight, isa_dev)
+
+    def tas_knots(self, isa_dev_c: float = 0.0) -> float:
+        return isa_tas_correction_cas(self.cruise_cas_kt, self.altitude_ft, isa_dev_c)
+
+    def fuel_flow(self, tas_kt: float, isa_dev_c: float = 0.0) -> float:
+        if self.fuel_flow_fn:
+            return self.fuel_flow_fn(tas_kt, self.altitude_ft, isa_dev_c)
+        return self.fuel_flow_kg_per_hr
+
+
+@dataclass
+class Waypoint:
+    name: str
+    lat: float
+    lon: float
+
+
+@dataclass
+class MetSample:
+    wind_dir_deg: float  # wind is *from* this direction
+    wind_speed_kt: float
+    isa_dev_c: float  # ISA deviation at altitude (OAT - ISA)
+
+
+class MetProvider:
+    """Callable interface to supply wind/temperature along track.
+
+    Implement __call__(self, lat, lon, altitude_ft) -> MetSample.
+    In real‑world ops you would pull from GRIB or a WX API.
+    """
+
+    def __call__(self, lat: float, lon: float, altitude_ft: float) -> MetSample:  # noqa: D401
+        raise NotImplementedError
+
+
+@dataclass
+class DiversionResult:
+    alternate: Waypoint
+    distance_nm: float
+    ground_speed_kt: float
+    time_hr: float
+    fuel_required_kg: float
+    remaining_fuel_kg: float
+    reachable: bool
+    notes: str = field(default="")
+
+
+class DiversionOptimiser:
+    """Core engine to evaluate and select the optimum alternate."""
+
+    def __init__(self, aircraft: Aircraft, met_provider: MetProvider):
+        self.acft = aircraft
+        self.wx = met_provider
+
+    def evaluate_route(
+        self, current_lat: float, current_lon: float, fuel_remaining_kg: float, alt: Waypoint
+    ) -> DiversionResult:
+        # 1. Geometry
+        dist_nm = haversine_nm(current_lat, current_lon, alt.lat, alt.lon)
+        track_deg = initial_course_deg(current_lat, current_lon, alt.lat, alt.lon)
+
+        # 2. Atmosphere at mid‑point (very rough – replace w/ integration if desired)
+        mid_lat = (current_lat + alt.lat) / 2
+        mid_lon = (current_lon + alt.lon) / 2
+        met = self.wx(mid_lat, mid_lon, self.acft.altitude_ft)
+
+        # 3. Aircraft kinematics
+        tas = self.acft.tas_knots(met.isa_dev_c)
+        twc = tailwind_component(met.wind_dir_deg, met.wind_speed_kt, track_deg)
+        gs = max(tas + twc, 50)  # guard against pathological headwind → never <50 kt
+
+        # 4. Fuel & time
+        time_hr = dist_nm / gs
+        fuel_flow = self.acft.fuel_flow(tas, met.isa_dev_c)
+        fuel_req = time_hr * fuel_flow + self.acft.fuel_reserve_kg
+        remaining = fuel_remaining_kg - fuel_req
+        reachable = remaining >= 0
+
+        return DiversionResult(
+            alternate=alt,
+            distance_nm=round(dist_nm, 1),
+            ground_speed_kt=round(gs, 1),
+            time_hr=round(time_hr, 2),
+            fuel_required_kg=round(fuel_req, 1),
+            remaining_fuel_kg=round(remaining, 1),
+            reachable=reachable,
+            notes="Mid‑point met sampled" if reachable else "Not enough fuel",
+        )
+
+    def optimum_alternate(
+        self,
+        current_lat: float,
+        current_lon: float,
+        fuel_remaining_kg: float,
+        alternates: Iterable[Waypoint],
+    ) -> Tuple[DiversionResult, List[DiversionResult]]:
+        """Return the best reachable alternate and list of all evaluations."""
+        results: List[DiversionResult] = [
+            self.evaluate_route(current_lat, current_lon, fuel_remaining_kg, a)
+            for a in alternates
+        ]
+
+        reachable = [r for r in results if r.reachable]
+        if not reachable:
+            # Pick the *least impossible* (largest remaining fuel) to show pilot
+            best = max(results, key=lambda r: r.remaining_fuel_kg)
+        else:
+            # Lowest fuel required wins; tie‑break shortest distance
+            reachable.sort(key=lambda r: (r.fuel_required_kg, r.distance_nm))
+            best = reachable[0]
+        return best, results
+
+
+# ---------------------------------------------------------------------------
+# Example stub usage – remove or adapt when integrating into larger system.
+# ---------------------------------------------------------------------------
+
+if __name__ == "__main__":
+
+    class DummyMet(MetProvider):
+        """Simple constant wind model for demonstration."""
+
+        def __init__(self, wind_dir_deg: float, wind_speed_kt: float, isa_dev: float):
+            self.wind_dir = wind_dir_deg
+            self.wind_speed = wind_speed_kt
+            self.isa_dev = isa_dev
+
+        def __call__(self, lat, lon, altitude_ft):  # noqa: D401,E251
+            return MetSample(self.wind_dir, self.wind_speed, self.isa_dev)
+
+    # Aircraft: generic turboprop
+    acft = Aircraft(
+        identifier="DH8D",
+        cruise_cas_kt=210,
+        altitude_ft=17000,
+        fuel_flow_kg_per_hr=500,
+        fuel_reserve_kg=200,
+    )
+
+    # Current state
+    current_lat = 51.0  # N51°00'
+    current_lon = -2.0  # W002°00'
+    fuel_left = 1200  # kg
+
+    # Candidate alternates
+    alternates = [
+        Waypoint("EGFF", 51.3967, -3.3433),  # Cardiff
+        Waypoint("EGHH", 50.78, -1.84),      # Bournemouth
+        Waypoint("EGMC", 51.5714, 0.6956),   # Southend
+    ]
+
+    wx = DummyMet(wind_dir_deg=270, wind_speed_kt=25, isa_dev=5)
+    optimiser = DiversionOptimiser(acft, wx)
+
+    best, all_results = optimiser.optimum_alternate(
+        current_lat, current_lon, fuel_left, alternates
+    )
+
+    print("Best alternate:", best)
+    for r in all_results:
+        print(r)

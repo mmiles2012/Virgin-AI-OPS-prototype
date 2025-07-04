@@ -489,101 +489,146 @@ export default function SimpleDigitalTwin({
 
               {/* What-If Analysis Results */}
               {scenarioData.analysis && (
-                <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
-                  <h4 className="text-xl font-bold text-blue-900 mb-4">🎯 What-If Analysis Results</h4>
-                  
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Continue to Destination */}
-                    <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-yellow-500">
-                      <h5 className="font-semibold text-gray-800 mb-3">🛫 Continue to Destination</h5>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span>Risk Level:</span>
-                          <span className={`font-medium px-2 py-1 rounded text-xs ${
-                            scenarioData.analysis.what_if_outcomes.continue_to_destination.risk_level === 'HIGH' 
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {scenarioData.analysis.what_if_outcomes.continue_to_destination.risk_level}
-                          </span>
+                <div className="mt-6 space-y-6">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+                    <h4 className="text-xl font-bold text-blue-900 mb-4">🎯 What-If Analysis Results</h4>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      {/* Continue to Destination */}
+                      <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-yellow-500">
+                        <h5 className="font-semibold text-gray-800 mb-3">🛫 Continue to Destination</h5>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span>Risk Level:</span>
+                            <span className={`font-medium px-2 py-1 rounded text-xs ${
+                              scenarioData.analysis.what_if_outcomes.continue_to_destination.risk_level === 'HIGH' 
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-yellow-100 text-yellow-800'
+                            }`}>
+                              {scenarioData.analysis.what_if_outcomes.continue_to_destination.risk_level}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Est. Delay:</span>
+                            <span className="font-medium">{Math.round(scenarioData.analysis.what_if_outcomes.continue_to_destination.estimated_delay)} min</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Cost Impact:</span>
+                            <span className="font-medium">${Math.round(scenarioData.analysis.what_if_outcomes.continue_to_destination.cost_impact).toLocaleString()}</span>
+                          </div>
                         </div>
-                        <div className="flex justify-between">
-                          <span>Est. Delay:</span>
-                          <span className="font-medium">{Math.round(scenarioData.analysis.what_if_outcomes.continue_to_destination.estimated_delay)} min</span>
+                      </div>
+
+                      {/* Immediate Diversion */}
+                      <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-green-500">
+                        <h5 className="font-semibold text-gray-800 mb-3">🚨 Immediate Diversion</h5>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span>Risk Level:</span>
+                            <span className="font-medium px-2 py-1 rounded text-xs bg-green-100 text-green-800">
+                              {scenarioData.analysis.what_if_outcomes.immediate_diversion.risk_level}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Est. Delay:</span>
+                            <span className="font-medium">{Math.round(scenarioData.analysis.what_if_outcomes.immediate_diversion.estimated_delay)} min</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Cost Impact:</span>
+                            <span className="font-medium">${Math.round(scenarioData.analysis.what_if_outcomes.immediate_diversion.cost_impact).toLocaleString()}</span>
+                          </div>
+                          {scenarioData.analysis.what_if_outcomes.immediate_diversion.optimal_route && (
+                            <div className="pt-2 border-t">
+                              <span className="text-xs text-gray-600">
+                                Optimal: {scenarioData.analysis.what_if_outcomes.immediate_diversion.optimal_route.alternate.name}
+                              </span>
+                            </div>
+                          )}
                         </div>
-                        <div className="flex justify-between">
-                          <span>Cost Impact:</span>
-                          <span className="font-medium">${Math.round(scenarioData.analysis.what_if_outcomes.continue_to_destination.cost_impact).toLocaleString()}</span>
+                      </div>
+
+                      {/* Delayed Diversion */}
+                      <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-red-500">
+                        <h5 className="font-semibold text-gray-800 mb-3">⏱️ Delayed Diversion</h5>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span>Risk Level:</span>
+                            <span className={`font-medium px-2 py-1 rounded text-xs ${
+                              scenarioData.analysis.what_if_outcomes.delayed_diversion.risk_level === 'CRITICAL' 
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-orange-100 text-orange-800'
+                            }`}>
+                              {scenarioData.analysis.what_if_outcomes.delayed_diversion.risk_level}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Est. Delay:</span>
+                            <span className="font-medium">{Math.round(scenarioData.analysis.what_if_outcomes.delayed_diversion.estimated_delay)} min</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Cost Impact:</span>
+                            <span className="font-medium">${Math.round(scenarioData.analysis.what_if_outcomes.delayed_diversion.cost_impact).toLocaleString()}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Immediate Diversion */}
-                    <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-green-500">
-                      <h5 className="font-semibold text-gray-800 mb-3">🚨 Immediate Diversion</h5>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span>Risk Level:</span>
-                          <span className="font-medium px-2 py-1 rounded text-xs bg-green-100 text-green-800">
-                            {scenarioData.analysis.what_if_outcomes.immediate_diversion.risk_level}
-                          </span>
+                    {/* Decision Support Summary */}
+                    <div className="mt-6 bg-white rounded-lg p-4 shadow-sm">
+                      <h5 className="font-semibold text-gray-800 mb-3">🧠 AI Decision Support</h5>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="font-medium text-gray-700">Aircraft Capability:</span>
+                          <p className="mt-1">
+                            Fuel: {scenarioData.analysis.aircraft_capabilities.current_fuel}% | 
+                            Range: {Math.round(scenarioData.analysis.aircraft_capabilities.range_remaining)}% | 
+                            Diversion Capable: {scenarioData.analysis.aircraft_capabilities.diversion_capable ? '✅ Yes' : '❌ No'}
+                          </p>
                         </div>
-                        <div className="flex justify-between">
-                          <span>Est. Delay:</span>
-                          <span className="font-medium">{Math.round(scenarioData.analysis.what_if_outcomes.immediate_diversion.estimated_delay)} min</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Cost Impact:</span>
-                          <span className="font-medium">${Math.round(scenarioData.analysis.what_if_outcomes.immediate_diversion.cost_impact).toLocaleString()}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Delayed Diversion */}
-                    <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-red-500">
-                      <h5 className="font-semibold text-gray-800 mb-3">⏱️ Delayed Diversion</h5>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span>Risk Level:</span>
-                          <span className={`font-medium px-2 py-1 rounded text-xs ${
-                            scenarioData.analysis.what_if_outcomes.delayed_diversion.risk_level === 'CRITICAL' 
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-orange-100 text-orange-800'
-                          }`}>
-                            {scenarioData.analysis.what_if_outcomes.delayed_diversion.risk_level}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Est. Delay:</span>
-                          <span className="font-medium">{Math.round(scenarioData.analysis.what_if_outcomes.delayed_diversion.estimated_delay)} min</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Cost Impact:</span>
-                          <span className="font-medium">${Math.round(scenarioData.analysis.what_if_outcomes.delayed_diversion.cost_impact).toLocaleString()}</span>
+                        <div>
+                          <span className="font-medium text-gray-700">ML Recommendation:</span>
+                          <p className="mt-1">{scenarioData.analysis.diversion_analysis.ml_recommendation}</p>
+                          <p className="text-xs text-gray-600">Confidence: {Math.round(scenarioData.analysis.diversion_analysis.confidence_score * 100)}%</p>
                         </div>
                       </div>
+                      
+                      {/* Enhanced Operational Guidance */}
+                      {scenarioData.analysis.decision_support?.primary_recommendation && (
+                        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                          <h6 className="font-medium text-blue-900 mb-2">Primary Recommendation:</h6>
+                          <p className="text-sm text-blue-800">{scenarioData.analysis.decision_support.primary_recommendation}</p>
+                          
+                          {scenarioData.analysis.decision_support.backup_options && scenarioData.analysis.decision_support.backup_options.length > 0 && (
+                            <div className="mt-2">
+                              <span className="text-xs text-blue-700 font-medium">Backup Options: </span>
+                              <span className="text-xs text-blue-600">
+                                {scenarioData.analysis.decision_support.backup_options.join(', ')}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  {/* Decision Support Summary */}
-                  <div className="mt-6 bg-white rounded-lg p-4 shadow-sm">
-                    <h5 className="font-semibold text-gray-800 mb-3">🧠 AI Decision Support</h5>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium text-gray-700">Aircraft Capability:</span>
-                        <p className="mt-1">
-                          Fuel: {scenarioData.analysis.aircraft_capabilities.current_fuel}% | 
-                          Range: {Math.round(scenarioData.analysis.aircraft_capabilities.range_remaining)}% | 
-                          Diversion Capable: {scenarioData.analysis.aircraft_capabilities.diversion_capable ? '✅ Yes' : '❌ No'}
-                        </p>
+                  {/* Advanced Diversion Map */}
+                  {scenarioData.analysis.diversion_map_data && (
+                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                      <div className="p-4 bg-gradient-to-r from-green-50 to-blue-50 border-b">
+                        <h4 className="text-xl font-bold text-gray-900 mb-2">🗺️ Interactive Diversion Analysis</h4>
+                        <p className="text-sm text-gray-700">Advanced flight physics calculations with fuel, wind, and performance modeling</p>
                       </div>
-                      <div>
-                        <span className="font-medium text-gray-700">ML Recommendation:</span>
-                        <p className="mt-1">{scenarioData.analysis.diversion_analysis.ml_recommendation}</p>
-                        <p className="text-xs text-gray-600">Confidence: {Math.round(scenarioData.analysis.diversion_analysis.confidence_score * 100)}%</p>
+                      <div className="p-6">
+                        <DiversionMap
+                          current={scenarioData.analysis.diversion_map_data.current_position}
+                          results={scenarioData.analysis.diversion_map_data.diversion_results}
+                          aircraftType={scenarioData.analysis.diversion_map_data.aircraft_type}
+                          height="600px"
+                          zoom={5}
+                        />
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               )}
             </div>
