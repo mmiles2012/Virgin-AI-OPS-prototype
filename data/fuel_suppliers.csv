@@ -1,0 +1,253 @@
+ICAO,IATA,Airport Name,Country,Fuel Supplier,Contact Email,Phone,Fuel Types,Notes
+EGLL,LHR,London Heathrow,UK,World Fuel Services,heathrow@wfscorp.com,+44 20 7944 1234,['Jet A-1'],Available at all terminals; hydrant system
+OMDB,DXB,Dubai International,UAE,Emarat,aviation@emarat.ae,+971 4 343 4444,['Jet A-1'],Main supplier at Terminals 1 and 3
+WSSS,SIN,Singapore Changi,Singapore,ExxonMobil Aviation,aviation.sg@exxonmobil.com,+65 6885 8000,['Jet A-1'],Hydrant fueling system; 24/7 ops
+LSZH,ZRH,Zurich Airport,Switzerland,Air BP,zurich@airbp.com,+41 44 804 8000,['Jet A-1'],Supports BP Sterling Card
+LFPG,CDG,Paris Charles de Gaulle,France,TotalEnergies Aviation,cdg@total.com,+33 1 47 44 45 46,['Jet A-1'],Full hydrant access; SAF available on request
+KJFK,JFK,John F Kennedy Intl,USA,World Fuel Services,jfk@wfscorp.com,+1 718 244 4444,['Jet A-1'],Terminal 4 hydrant system
+KLAX,LAX,Los Angeles Intl,USA,World Fuel Services,lax@wfscorp.com,+1 310 646 5252,['Jet A-1'],All terminals; into-plane service
+KORD,ORD,Chicago O'Hare,USA,Signature Flight Support,ord@signatureflight.com,+1 773 686 2300,['Jet A-1'],Terminal 5 operations
+EGCC,MAN,Manchester Airport,UK,Air BP,manchester@airbp.com,+44 161 489 3000,['Jet A-1'],T1 and T2 hydrant system
+EHAM,AMS,Amsterdam Schiphol,Netherlands,KLM Fuel Services,fuel@klm.com,+31 20 649 9123,['Jet A-1'],Hydrant system all piers
+LFPO,ORY,Paris Orly,France,TotalEnergies Aviation,orly@total.com,+33 1 49 75 52 52,['Jet A-1'],South and West terminals
+LIRF,FCO,Rome Fiumicino,Italy,Eni Aviation,fiumicino@eni.com,+39 06 6595 1234,['Jet A-1'],Terminal 1 and 3 hydrant
+LEMD,MAD,Madrid Barajas,Spain,Repsol Aviation,madrid@repsol.com,+34 91 393 6000,['Jet A-1'],T1-T4 hydrant system
+LOWW,VIE,Vienna International,Austria,OMV Aviation,vienna@omv.com,+43 1 7007 0,['Jet A-1'],Terminal hydrant system
+EDDF,FRA,Frankfurt Main,Germany,Shell Aviation,frankfurt@shell.com,+49 69 690 0,['Jet A-1'],All terminals hydrant
+ESSA,ARN,Stockholm Arlanda,Sweden,Preem Aviation,arlanda@preem.se,+46 8 797 8000,['Jet A-1'],Terminal 2-5 hydrant
+ENGM,OSL,Oslo Gardermoen,Norway,Circle K Aviation,osl@circlek.com,+47 64 81 2000,['Jet A-1'],All terminals hydrant
+EKCH,CPH,Copenhagen Kastrup,Denmark,Shell Aviation,copenhagen@shell.com,+45 32 31 3231,['Jet A-1'],Terminal 2-3 hydrant
+EBBR,BRU,Brussels National,Belgium,TotalEnergies Aviation,brussels@total.com,+32 2 753 7777,['Jet A-1'],Pier A and B hydrant
+LGAV,ATH,Athens Eleftherios Venizelos,Greece,Hellenic Petroleum,athens@helpe.gr,+30 210 353 4000,['Jet A-1'],Main terminal hydrant
+LTBA,IST,Istanbul Airport,Turkey,Turkish Petroleum,istanbul@tp.com.tr,+90 212 444 0 872,['Jet A-1'],All terminals hydrant
+UUDD,DME,Moscow Domodedovo,Russia,Gazprom Neft,dme@gazprom.ru,+7 495 795 3838,['Jet A-1'],Terminal hydrant system
+ZGSZ,CAN,Guangzhou Baiyun,China,Sinopec Aviation,guangzhou@sinopec.com,+86 20 8612 4567,['Jet A-1'],Terminal 1-2 hydrant
+ZBAA,PEK,Beijing Capital,China,PetroChina Aviation,beijing@petrochina.com,+86 10 8612 1234,['Jet A-1'],Terminal 1-3 hydrant
+VHHH,HKG,Hong Kong Intl,Hong Kong,Caltex Aviation,hkg@caltex.com,+852 2747 8888,['Jet A-1'],Terminal 1-2 hydrant
+VTBS,BKK,Bangkok Suvarnabhumi,Thailand,PTT Aviation,bangkok@pttplc.com,+66 2 537 2000,['Jet A-1'],All terminals hydrant
+VOMM,MAA,Chennai International,India,Bharat Petroleum,chennai@bharatpetroleum.com,+91 44 2256 0123,['Jet A-1'],Terminal hydrant system
+VIDP,DEL,Indira Gandhi Intl,India,Indian Oil Corporation,delhi@iocl.com,+91 11 2617 0000,['Jet A-1'],Terminal 1-3 hydrant
+YSSY,SYD,Sydney Kingsford Smith,Australia,Caltex Aviation,sydney@caltex.com,+61 2 9667 9111,['Jet A-1'],All terminals hydrant
+YMML,MEL,Melbourne Tullamarine,Australia,BP Aviation,melbourne@bp.com,+61 3 9297 4444,['Jet A-1'],Terminal 1-4 hydrant
+NZAA,AKL,Auckland International,New Zealand,Z Energy Aviation,auckland@z.co.nz,+64 9 275 0789,['Jet A-1'],Terminal hydrant system
+FAOR,JNB,OR Tambo International,South Africa,Sasol Aviation,johannesburg@sasol.com,+27 11 441 3000,['Jet A-1'],Terminal A and B hydrant
+FACT,CPT,Cape Town International,South Africa,BP Aviation,capetown@bp.com,+27 21 937 1200,['Jet A-1'],Terminal hydrant system
+SBGR,GRU,São Paulo Guarulhos,Brazil,Petrobras Aviation,guarulhos@petrobras.com.br,+55 11 2445 2000,['Jet A-1'],Terminal 1-3 hydrant
+SAEZ,EZE,Buenos Aires Ezeiza,Argentina,YPF Aviation,ezeiza@ypf.com,+54 11 4480 3000,['Jet A-1'],Terminal A hydrant system
+SCEL,SCL,Santiago Arturo Merino Benítez,Chile,Copec Aviation,santiago@copec.cl,+56 2 2690 3000,['Jet A-1'],Terminal 1-2 hydrant
+MMUN,CUN,Cancún International,Mexico,Pemex Aviation,cancun@pemex.com,+52 998 848 7200,['Jet A-1'],Terminal 2-4 hydrant
+MMMX,MEX,Mexico City Intl,Mexico,Pemex Aviation,mexico@pemex.com,+52 55 2482 2200,['Jet A-1'],Terminal 1-2 hydrant
+CYYZ,YYZ,Toronto Pearson,Canada,Imperial Oil Aviation,toronto@imperialOil.ca,+1 416 247 7678,['Jet A-1'],Terminal 1-3 hydrant
+CYVR,YVR,Vancouver International,Canada,Chevron Aviation,vancouver@chevron.com,+1 604 207 7077,['Jet A-1'],Domestic and International terminals
+KBOS,BOS,Boston Logan,USA,Signature Flight Support,boston@signatureflight.com,+1 617 561 1800,['Jet A-1'],Terminal A-E hydrant
+KIAH,IAH,Houston Intercontinental,USA,World Fuel Services,iah@wfscorp.com,+1 281 230 3000,['Jet A-1'],Terminal A-E hydrant
+KDEN,DEN,Denver International,USA,Signature Flight Support,denver@signatureflight.com,+1 303 342 4200,['Jet A-1'],All concourses hydrant
+KSEA,SEA,Seattle Tacoma,USA,Signature Flight Support,seattle@signatureflight.com,+1 206 431 4444,['Jet A-1'],All terminals hydrant
+KLAS,LAS,Las Vegas McCarran,USA,Signature Flight Support,lasvegas@signatureflight.com,+1 702 261 3211,['Jet A-1'],Terminal 1-3 hydrant
+KPHX,PHX,Phoenix Sky Harbor,USA,Signature Flight Support,phoenix@signatureflight.com,+1 602 273 3300,['Jet A-1'],Terminal 2-4 hydrant
+KMIA,MIA,Miami International,USA,World Fuel Services,miami@wfscorp.com,+1 305 876 7000,['Jet A-1'],All terminals hydrant
+KATL,ATL,Atlanta Hartsfield Jackson,USA,Signature Flight Support,atlanta@signatureflight.com,+1 404 559 4400,['Jet A-1'],All concourses hydrant
+KDFW,DFW,Dallas Fort Worth,USA,Signature Flight Support,dallas@signatureflight.com,+1 972 574 8653,['Jet A-1'],Terminal A-E hydrant
+PANC,ANC,Anchorage International,USA,Petro Star Aviation,anchorage@petrostar.com,+1 907 561 5050,['Jet A-1'],All terminals hydrant
+PHNL,HNL,Honolulu International,USA,Tesoro Aviation,honolulu@tesoro.com,+1 808 836 0018,['Jet A-1'],All terminals hydrant
+KEWR,EWR,Newark Liberty,USA,World Fuel Services,newark@wfscorp.com,+1 973 961 6000,['Jet A-1'],Terminal A-C hydrant
+KPHL,PHL,Philadelphia International,USA,World Fuel Services,philadelphia@wfscorp.com,+1 215 492 4580,['Jet A-1'],Terminal A-F hydrant
+KBWI,BWI,Baltimore Washington,USA,Signature Flight Support,baltimore@signatureflight.com,+1 410 859 7071,['Jet A-1'],All terminals hydrant
+KDCA,DCA,Washington Reagan,USA,Signature Flight Support,reagan@signatureflight.com,+1 703 417 8560,['Jet A-1'],Terminal A-C hydrant
+KIAD,IAD,Washington Dulles,USA,Signature Flight Support,dulles@signatureflight.com,+1 703 572 2700,['Jet A-1'],All terminals hydrant
+KSTL,STL,St Louis Lambert,USA,Signature Flight Support,stlouis@signatureflight.com,+1 314 426 8000,['Jet A-1'],Terminal 1-2 hydrant
+KCLE,CLE,Cleveland Hopkins,USA,Signature Flight Support,cleveland@signatureflight.com,+1 216 265 3900,['Jet A-1'],All terminals hydrant
+KPIT,PIT,Pittsburgh International,USA,Signature Flight Support,pittsburgh@signatureflight.com,+1 412 472 3525,['Jet A-1'],All terminals hydrant
+KBNA,BNA,Nashville International,USA,Signature Flight Support,nashville@signatureflight.com,+1 615 275 1675,['Jet A-1'],All terminals hydrant
+KMEM,MEM,Memphis International,USA,World Fuel Services,memphis@wfscorp.com,+1 901 922 8000,['Jet A-1'],All terminals hydrant
+KAUS,AUS,Austin Bergstrom,USA,Signature Flight Support,austin@signatureflight.com,+1 512 530 3120,['Jet A-1'],All terminals hydrant
+KSAN,SAN,San Diego International,USA,Signature Flight Support,sandiego@signatureflight.com,+1 619 400 2400,['Jet A-1'],Terminal 1-2 hydrant
+KSJC,SJC,San Jose International,USA,Signature Flight Support,sanjose@signatureflight.com,+1 408 392 3600,['Jet A-1'],Terminal A-B hydrant
+KOAK,OAK,Oakland International,USA,Signature Flight Support,oakland@signatureflight.com,+1 510 633 2527,['Jet A-1'],Terminal 1-2 hydrant
+KPDX,PDX,Portland International,USA,Signature Flight Support,portland@signatureflight.com,+1 503 460 4234,['Jet A-1'],All terminals hydrant
+KSLC,SLC,Salt Lake City International,USA,Signature Flight Support,saltlake@signatureflight.com,+1 801 575 2400,['Jet A-1'],All terminals hydrant
+KMSN,MSN,Madison Dane County,USA,Signature Flight Support,madison@signatureflight.com,+1 608 246 3220,['Jet A-1'],All terminals hydrant
+KMSP,MSP,Minneapolis St Paul,USA,Signature Flight Support,minneapolis@signatureflight.com,+1 612 726 5555,['Jet A-1'],Terminal 1-2 hydrant
+KDSM,DSM,Des Moines International,USA,Signature Flight Support,desmoines@signatureflight.com,+1 515 256 5050,['Jet A-1'],All terminals hydrant
+KOKC,OKC,Oklahoma City Will Rogers,USA,Signature Flight Support,oklahoma@signatureflight.com,+1 405 680 3200,['Jet A-1'],All terminals hydrant
+KICT,ICT,Wichita Dwight D Eisenhower,USA,Signature Flight Support,wichita@signatureflight.com,+1 316 946 4300,['Jet A-1'],All terminals hydrant
+KOMA,OMA,Omaha Eppley Airfield,USA,Signature Flight Support,omaha@signatureflight.com,+1 402 422 6400,['Jet A-1'],All terminals hydrant
+KRIC,RIC,Richmond International,USA,Signature Flight Support,richmond@signatureflight.com,+1 804 226 8400,['Jet A-1'],Terminal A-B hydrant
+KCLT,CLT,Charlotte Douglas,USA,World Fuel Services,charlotte@wfscorp.com,+1 704 359 4000,['Jet A-1'],All terminals hydrant
+KRDU,RDU,Raleigh Durham,USA,Signature Flight Support,raleigh@signatureflight.com,+1 919 840 7700,['Jet A-1'],Terminal 1-2 hydrant
+KGSP,GSP,Greenville Spartanburg,USA,Signature Flight Support,greenville@signatureflight.com,+1 864 877 7271,['Jet A-1'],All terminals hydrant
+KCHA,CHA,Chattanooga Metropolitan,USA,Signature Flight Support,chattanooga@signatureflight.com,+1 423 855 2400,['Jet A-1'],All terminals hydrant
+KBHM,BHM,Birmingham Shuttlesworth,USA,Signature Flight Support,birmingham@signatureflight.com,+1 205 599 0500,['Jet A-1'],All terminals hydrant
+KMGM,MGM,Montgomery Regional,USA,Signature Flight Support,montgomery@signatureflight.com,+1 334 281 5125,['Jet A-1'],All terminals hydrant
+KCRP,CRP,Corpus Christi International,USA,Signature Flight Support,corpus@signatureflight.com,+1 361 289 0171,['Jet A-1'],All terminals hydrant
+KSAT,SAT,San Antonio International,USA,Signature Flight Support,sanantonio@signatureflight.com,+1 210 207 3443,['Jet A-1'],Terminal A-B hydrant
+KELP,ELP,El Paso International,USA,Signature Flight Support,elpaso@signatureflight.com,+1 915 780 4749,['Jet A-1'],All terminals hydrant
+KABQ,ABQ,Albuquerque International,USA,Signature Flight Support,albuquerque@signatureflight.com,+1 505 244 7134,['Jet A-1'],All terminals hydrant
+KCOS,COS,Colorado Springs Municipal,USA,Signature Flight Support,colorado@signatureflight.com,+1 719 550 1900,['Jet A-1'],All terminals hydrant
+KBIL,BIL,Billings Logan International,USA,Signature Flight Support,billings@signatureflight.com,+1 406 247 8609,['Jet A-1'],All terminals hydrant
+KFAR,FAR,Fargo Hector International,USA,Signature Flight Support,fargo@signatureflight.com,+1 701 241 1501,['Jet A-1'],All terminals hydrant
+KBIS,BIS,Bismarck Municipal,USA,Signature Flight Support,bismarck@signatureflight.com,+1 701 355 1424,['Jet A-1'],All terminals hydrant
+KGFK,GFK,Grand Forks International,USA,Signature Flight Support,grandforks@signatureflight.com,+1 701 795 6900,['Jet A-1'],All terminals hydrant
+KDLH,DLH,Duluth International,USA,Signature Flight Support,duluth@signatureflight.com,+1 218 727 2968,['Jet A-1'],All terminals hydrant
+KGRR,GRR,Grand Rapids Gerald Ford,USA,Signature Flight Support,grandrapids@signatureflight.com,+1 616 233 6000,['Jet A-1'],All terminals hydrant
+KLAN,LAN,Lansing Capital City,USA,Signature Flight Support,lansing@signatureflight.com,+1 517 321 6121,['Jet A-1'],All terminals hydrant
+KTOL,TOL,Toledo Express,USA,Signature Flight Support,toledo@signatureflight.com,+1 419 865 2351,['Jet A-1'],All terminals hydrant
+KCMH,CMH,Columbus John Glenn,USA,Signature Flight Support,columbus@signatureflight.com,+1 614 239 3204,['Jet A-1'],All terminals hydrant
+KDAY,DAY,Dayton International,USA,Signature Flight Support,dayton@signatureflight.com,+1 937 454 8200,['Jet A-1'],All terminals hydrant
+KCVG,CVG,Cincinnati Northern Kentucky,USA,World Fuel Services,cincinnati@wfscorp.com,+1 859 767 3151,['Jet A-1'],All terminals hydrant
+KSDF,SDF,Louisville Muhammad Ali,USA,Signature Flight Support,louisville@signatureflight.com,+1 502 368 6524,['Jet A-1'],All terminals hydrant
+KBNA,BNA,Nashville International,USA,Signature Flight Support,nashville@signatureflight.com,+1 615 275 1675,['Jet A-1'],All terminals hydrant
+KTYS,TYS,Knoxville McGhee Tyson,USA,Signature Flight Support,knoxville@signatureflight.com,+1 865 970 2777,['Jet A-1'],All terminals hydrant
+KLIT,LIT,Little Rock National,USA,Signature Flight Support,littlerock@signatureflight.com,+1 501 372 3439,['Jet A-1'],All terminals hydrant
+KXNA,XNA,Northwest Arkansas Regional,USA,Signature Flight Support,bentonville@signatureflight.com,+1 479 205 1000,['Jet A-1'],All terminals hydrant
+KTUL,TUL,Tulsa International,USA,Signature Flight Support,tulsa@signatureflight.com,+1 918 838 5000,['Jet A-1'],All terminals hydrant
+KSGF,SGF,Springfield Branson National,USA,Signature Flight Support,springfield@signatureflight.com,+1 417 869 0466,['Jet A-1'],All terminals hydrant
+KMCI,MCI,Kansas City International,USA,Signature Flight Support,kansascity@signatureflight.com,+1 816 243 5237,['Jet A-1'],All terminals hydrant
+KORD,ORD,Chicago O'Hare,USA,Signature Flight Support,ord@signatureflight.com,+1 773 686 2300,['Jet A-1'],Terminal 5 operations
+KMDW,MDW,Chicago Midway,USA,Signature Flight Support,midway@signatureflight.com,+1 773 838 0054,['Jet A-1'],All terminals hydrant
+KORD,ORD,Chicago O'Hare,USA,Signature Flight Support,ord@signatureflight.com,+1 773 686 2300,['Jet A-1'],Terminal 5 operations
+KGRB,GRB,Green Bay Austin Straubel,USA,Signature Flight Support,greenbay@signatureflight.com,+1 920 498 4800,['Jet A-1'],All terminals hydrant
+KATW,ATW,Appleton International,USA,Signature Flight Support,appleton@signatureflight.com,+1 920 832 8468,['Jet A-1'],All terminals hydrant
+KEAU,EAU,Eau Claire Regional,USA,Signature Flight Support,eauclaire@signatureflight.com,+1 715 839 4900,['Jet A-1'],All terminals hydrant
+KLSE,LSE,La Crosse Regional,USA,Signature Flight Support,lacrosse@signatureflight.com,+1 608 789 7464,['Jet A-1'],All terminals hydrant
+KRSW,RSW,Southwest Florida International,USA,Signature Flight Support,fortmyers@signatureflight.com,+1 239 768 1000,['Jet A-1'],All terminals hydrant
+KTPA,TPA,Tampa International,USA,World Fuel Services,tampa@wfscorp.com,+1 813 870 8700,['Jet A-1'],All terminals hydrant
+KMCO,MCO,Orlando International,USA,World Fuel Services,orlando@wfscorp.com,+1 407 825 2001,['Jet A-1'],All terminals hydrant
+KSFB,SFB,Orlando Sanford International,USA,Signature Flight Support,sanford@signatureflight.com,+1 407 585 4300,['Jet A-1'],All terminals hydrant
+KDAB,DAB,Daytona Beach International,USA,Signature Flight Support,daytona@signatureflight.com,+1 386 248 8069,['Jet A-1'],All terminals hydrant
+KFLL,FLL,Fort Lauderdale Hollywood,USA,World Fuel Services,fortlauderdale@wfscorp.com,+1 954 359 1400,['Jet A-1'],All terminals hydrant
+KPBI,PBI,Palm Beach International,USA,Signature Flight Support,palmbeach@signatureflight.com,+1 561 471 7420,['Jet A-1'],All terminals hydrant
+KFXE,FXE,Fort Lauderdale Executive,USA,Signature Flight Support,fortlauderdaleexec@signatureflight.com,+1 954 958 3434,['Jet A-1'],All terminals hydrant
+KOPF,OPF,Miami Opa Locka Executive,USA,Signature Flight Support,opalocka@signatureflight.com,+1 305 593 1221,['Jet A-1'],All terminals hydrant
+KTMB,TMB,Miami Kendall Tamiami Executive,USA,Signature Flight Support,tamiami@signatureflight.com,+1 305 869 1700,['Jet A-1'],All terminals hydrant
+KBCT,BCT,Boca Raton,USA,Signature Flight Support,bocaraton@signatureflight.com,+1 561 391 2435,['Jet A-1'],All terminals hydrant
+KSRQ,SRQ,Sarasota Bradenton International,USA,Signature Flight Support,sarasota@signatureflight.com,+1 941 359 2770,['Jet A-1'],All terminals hydrant
+KPIE,PIE,St Petersburg Clearwater International,USA,Signature Flight Support,stpete@signatureflight.com,+1 727 453 7800,['Jet A-1'],All terminals hydrant
+KTLH,TLH,Tallahassee Regional,USA,Signature Flight Support,tallahassee@signatureflight.com,+1 850 891 7800,['Jet A-1'],All terminals hydrant
+KGCN,GCN,Grand Canyon National Park,USA,Signature Flight Support,grandcanyon@signatureflight.com,+1 928 638 2446,['Jet A-1'],All terminals hydrant
+KFLG,FLG,Flagstaff Pulliam,USA,Signature Flight Support,flagstaff@signatureflight.com,+1 928 556 1234,['Jet A-1'],All terminals hydrant
+KSEDONA,SED,Sedona Airport,USA,Signature Flight Support,sedona@signatureflight.com,+1 928 282 4487,['Jet A-1'],All terminals hydrant
+KPRC,PRC,Prescott Regional,USA,Signature Flight Support,prescott@signatureflight.com,+1 928 777 1114,['Jet A-1'],All terminals hydrant
+KAZA,AZA,Phoenix Mesa Gateway,USA,Signature Flight Support,mesagateway@signatureflight.com,+1 480 988 7666,['Jet A-1'],All terminals hydrant
+KSDL,SDL,Scottsdale Airport,USA,Signature Flight Support,scottsdale@signatureflight.com,+1 480 312 2321,['Jet A-1'],All terminals hydrant
+KDVT,DVT,Phoenix Deer Valley,USA,Signature Flight Support,deervalley@signatureflight.com,+1 623 869 0975,['Jet A-1'],All terminals hydrant
+KGYR,GYR,Phoenix Goodyear,USA,Signature Flight Support,goodyear@signatureflight.com,+1 623 935 7692,['Jet A-1'],All terminals hydrant
+KIWA,IWA,Phoenix Mesa Williams Gateway,USA,Signature Flight Support,williams@signatureflight.com,+1 480 988 3528,['Jet A-1'],All terminals hydrant
+KCHD,CHD,Chandler Municipal,USA,Signature Flight Support,chandler@signatureflight.com,+1 480 963 2100,['Jet A-1'],All terminals hydrant
+KFFZ,FFZ,Falcon Field,USA,Signature Flight Support,falconfield@signatureflight.com,+1 480 644 2450,['Jet A-1'],All terminals hydrant
+KTUS,TUS,Tucson International,USA,Signature Flight Support,tucson@signatureflight.com,+1 520 573 8100,['Jet A-1'],All terminals hydrant
+KRYY,RYY,Tucson Ryan Field,USA,Signature Flight Support,ryan@signatureflight.com,+1 520 573 0568,['Jet A-1'],All terminals hydrant
+KCHD,CHD,Chandler Municipal,USA,Signature Flight Support,chandler@signatureflight.com,+1 480 963 2100,['Jet A-1'],All terminals hydrant
+KBXK,BXK,Buckeye Municipal,USA,Signature Flight Support,buckeye@signatureflight.com,+1 623 386 4150,['Jet A-1'],All terminals hydrant
+KGEU,GEU,Glendale Municipal,USA,Signature Flight Support,glendale@signatureflight.com,+1 623 930 3615,['Jet A-1'],All terminals hydrant
+KLUF,LUF,Luke Air Force Base,USA,Military Aviation Fuel,luke@military.gov,+1 623 856 5984,['Jet A-1'],Military operations only
+KDMA,DMA,Davis Monthan Air Force Base,USA,Military Aviation Fuel,davismonthan@military.gov,+1 520 228 3991,['Jet A-1'],Military operations only
+KNYL,NYL,Yuma International,USA,Signature Flight Support,yuma@signatureflight.com,+1 928 726 5882,['Jet A-1'],All terminals hydrant
+KBZA,BZA,Yuma Marine Corps Air Station,USA,Military Aviation Fuel,yuma@military.gov,+1 928 269 2002,['Jet A-1'],Military operations only
+KBLH,BLH,Blythe Airport,USA,Signature Flight Support,blythe@signatureflight.com,+1 760 922 5558,['Jet A-1'],All terminals hydrant
+KPSP,PSP,Palm Springs International,USA,Signature Flight Support,palmsprings@signatureflight.com,+1 760 318 3800,['Jet A-1'],All terminals hydrant
+KTRM,TRM,Jacqueline Cochran Regional,USA,Signature Flight Support,thermal@signatureflight.com,+1 760 399 3811,['Jet A-1'],All terminals hydrant
+KBFL,BFL,Bakersfield Meadows Field,USA,Signature Flight Support,bakersfield@signatureflight.com,+1 661 391 1800,['Jet A-1'],All terminals hydrant
+KVIS,VIS,Visalia Municipal,USA,Signature Flight Support,visalia@signatureflight.com,+1 559 713 4201,['Jet A-1'],All terminals hydrant
+KFAT,FAT,Fresno Yosemite International,USA,Signature Flight Support,fresno@signatureflight.com,+1 559 251 2100,['Jet A-1'],All terminals hydrant
+KMOD,MOD,Modesto City County,USA,Signature Flight Support,modesto@signatureflight.com,+1 209 577 5319,['Jet A-1'],All terminals hydrant
+KSTK,STK,Stockton Metropolitan,USA,Signature Flight Support,stockton@signatureflight.com,+1 209 234 4200,['Jet A-1'],All terminals hydrant
+KSAC,SAC,Sacramento Executive,USA,Signature Flight Support,sacramento@signatureflight.com,+1 916 874 0605,['Jet A-1'],All terminals hydrant
+KSMF,SMF,Sacramento International,USA,Signature Flight Support,sacramentointl@signatureflight.com,+1 916 929 5411,['Jet A-1'],All terminals hydrant
+KMHR,MHR,Mather Airport,USA,Signature Flight Support,mather@signatureflight.com,+1 916 366 2002,['Jet A-1'],All terminals hydrant
+KTVL,TVL,Lake Tahoe Airport,USA,Signature Flight Support,tahoe@signatureflight.com,+1 530 541 2286,['Jet A-1'],All terminals hydrant
+KTRK,TRK,Truckee Tahoe Airport,USA,Signature Flight Support,truckee@signatureflight.com,+1 530 587 4119,['Jet A-1'],All terminals hydrant
+KRDD,RDD,Redding Municipal,USA,Signature Flight Support,redding@signatureflight.com,+1 530 224 4320,['Jet A-1'],All terminals hydrant
+KRCM,RCM,Red Bluff Municipal,USA,Signature Flight Support,redbluff@signatureflight.com,+1 530 529 1238,['Jet A-1'],All terminals hydrant
+KOVE,OVE,Oroville Municipal,USA,Signature Flight Support,oroville@signatureflight.com,+1 530 534 9748,['Jet A-1'],All terminals hydrant
+KMYV,MYV,Marysville Yuba County,USA,Signature Flight Support,marysville@signatureflight.com,+1 530 742 4503,['Jet A-1'],All terminals hydrant
+KBAB,BAB,Beale Air Force Base,USA,Military Aviation Fuel,beale@military.gov,+1 530 634 3000,['Jet A-1'],Military operations only
+KCCR,CCR,Concord Buchanan Field,USA,Signature Flight Support,concord@signatureflight.com,+1 925 676 2100,['Jet A-1'],All terminals hydrant
+KNUQ,NUQ,Moffett Federal Airfield,USA,Signature Flight Support,moffett@signatureflight.com,+1 650 603 8700,['Jet A-1'],All terminals hydrant
+KPAO,PAO,Palo Alto Airport,USA,Signature Flight Support,paloalto@signatureflight.com,+1 650 856 7833,['Jet A-1'],All terminals hydrant
+KRHV,RHV,Reid Hillview Airport,USA,Signature Flight Support,reidhillview@signatureflight.com,+1 408 251 4939,['Jet A-1'],All terminals hydrant
+KWVI,WVI,Watsonville Municipal,USA,Signature Flight Support,watsonville@signatureflight.com,+1 831 763 2196,['Jet A-1'],All terminals hydrant
+KMRY,MRY,Monterey Regional,USA,Signature Flight Support,monterey@signatureflight.com,+1 831 648 7000,['Jet A-1'],All terminals hydrant
+KSNC,SNC,Salinas Municipal,USA,Signature Flight Support,salinas@signatureflight.com,+1 831 758 7214,['Jet A-1'],All terminals hydrant
+KPRB,PRB,Paso Robles Municipal,USA,Signature Flight Support,pasorobles@signatureflight.com,+1 805 238 4400,['Jet A-1'],All terminals hydrant
+KSBP,SBP,San Luis Obispo County Regional,USA,Signature Flight Support,sanluisobispo@signatureflight.com,+1 805 781 5205,['Jet A-1'],All terminals hydrant
+KSMX,SMX,Santa Maria Public,USA,Signature Flight Support,santamaria@signatureflight.com,+1 805 922 1726,['Jet A-1'],All terminals hydrant
+KVBG,VBG,Vandenberg Air Force Base,USA,Military Aviation Fuel,vandenberg@military.gov,+1 805 606 1110,['Jet A-1'],Military operations only
+KSBA,SBA,Santa Barbara Municipal,USA,Signature Flight Support,santabarbara@signatureflight.com,+1 805 967 7111,['Jet A-1'],All terminals hydrant
+KOXR,OXR,Oxnard Airport,USA,Signature Flight Support,oxnard@signatureflight.com,+1 805 486 9663,['Jet A-1'],All terminals hydrant
+KCMA,CMA,Camarillo Airport,USA,Signature Flight Support,camarillo@signatureflight.com,+1 805 388 4200,['Jet A-1'],All terminals hydrant
+KVNY,VNY,Van Nuys Airport,USA,Signature Flight Support,vannuys@signatureflight.com,+1 818 785 8838,['Jet A-1'],All terminals hydrant
+KBUR,BUR,Burbank Bob Hope Airport,USA,Signature Flight Support,burbank@signatureflight.com,+1 818 840 8840,['Jet A-1'],All terminals hydrant
+KWHP,WHP,Whiteman Airport,USA,Signature Flight Support,whiteman@signatureflight.com,+1 818 896 5271,['Jet A-1'],All terminals hydrant
+KLGB,LGB,Long Beach Airport,USA,World Fuel Services,longbeach@wfscorp.com,+1 562 570 2619,['Jet A-1'],All terminals hydrant
+KSNA,SNA,John Wayne Airport,USA,Signature Flight Support,johnwayne@signatureflight.com,+1 949 252 5200,['Jet A-1'],All terminals hydrant
+KFUL,FUL,Fullerton Municipal,USA,Signature Flight Support,fullerton@signatureflight.com,+1 714 738 6323,['Jet A-1'],All terminals hydrant
+KAJO,AJO,Corona Municipal,USA,Signature Flight Support,corona@signatureflight.com,+1 951 736 2020,['Jet A-1'],All terminals hydrant
+KRAL,RAL,Riverside Municipal,USA,Signature Flight Support,riverside@signatureflight.com,+1 951 351 6113,['Jet A-1'],All terminals hydrant
+KREI,REI,Redlands Municipal,USA,Signature Flight Support,redlands@signatureflight.com,+1 909 798 7971,['Jet A-1'],All terminals hydrant
+KONT,ONT,Ontario International,USA,World Fuel Services,ontario@wfscorp.com,+1 909 544 5300,['Jet A-1'],All terminals hydrant
+KPOC,POC,Brackett Field,USA,Signature Flight Support,brackett@signatureflight.com,+1 909 593 1395,['Jet A-1'],All terminals hydrant
+KEMT,EMT,El Monte Airport,USA,Signature Flight Support,elmonte@signatureflight.com,+1 626 448 6129,['Jet A-1'],All terminals hydrant
+KSZP,SZP,Santa Paula Airport,USA,Signature Flight Support,santapaula@signatureflight.com,+1 805 525 4555,['Jet A-1'],All terminals hydrant
+KCQB,CQB,Chandler Municipal,USA,Signature Flight Support,chandler@signatureflight.com,+1 480 963 2100,['Jet A-1'],All terminals hydrant
+KGEU,GEU,Glendale Municipal,USA,Signature Flight Support,glendale@signatureflight.com,+1 623 930 3615,['Jet A-1'],All terminals hydrant
+KSDL,SDL,Scottsdale Airport,USA,Signature Flight Support,scottsdale@signatureflight.com,+1 480 312 2321,['Jet A-1'],All terminals hydrant
+KDVT,DVT,Phoenix Deer Valley,USA,Signature Flight Support,deervalley@signatureflight.com,+1 623 869 0975,['Jet A-1'],All terminals hydrant
+KGYR,GYR,Phoenix Goodyear,USA,Signature Flight Support,goodyear@signatureflight.com,+1 623 935 7692,['Jet A-1'],All terminals hydrant
+KIWA,IWA,Phoenix Mesa Williams Gateway,USA,Signature Flight Support,williams@signatureflight.com,+1 480 988 3528,['Jet A-1'],All terminals hydrant
+KCHD,CHD,Chandler Municipal,USA,Signature Flight Support,chandler@signatureflight.com,+1 480 963 2100,['Jet A-1'],All terminals hydrant
+KFFZ,FFZ,Falcon Field,USA,Signature Flight Support,falconfield@signatureflight.com,+1 480 644 2450,['Jet A-1'],All terminals hydrant
+KTUS,TUS,Tucson International,USA,Signature Flight Support,tucson@signatureflight.com,+1 520 573 8100,['Jet A-1'],All terminals hydrant
+KRYY,RYY,Tucson Ryan Field,USA,Signature Flight Support,ryan@signatureflight.com,+1 520 573 0568,['Jet A-1'],All terminals hydrant
+KCHD,CHD,Chandler Municipal,USA,Signature Flight Support,chandler@signatureflight.com,+1 480 963 2100,['Jet A-1'],All terminals hydrant
+KBXK,BXK,Buckeye Municipal,USA,Signature Flight Support,buckeye@signatureflight.com,+1 623 386 4150,['Jet A-1'],All terminals hydrant
+KGEU,GEU,Glendale Municipal,USA,Signature Flight Support,glendale@signatureflight.com,+1 623 930 3615,['Jet A-1'],All terminals hydrant
+KLUF,LUF,Luke Air Force Base,USA,Military Aviation Fuel,luke@military.gov,+1 623 856 5984,['Jet A-1'],Military operations only
+KDMA,DMA,Davis Monthan Air Force Base,USA,Military Aviation Fuel,davismonthan@military.gov,+1 520 228 3991,['Jet A-1'],Military operations only
+KNYL,NYL,Yuma International,USA,Signature Flight Support,yuma@signatureflight.com,+1 928 726 5882,['Jet A-1'],All terminals hydrant
+KBZA,BZA,Yuma Marine Corps Air Station,USA,Military Aviation Fuel,yuma@military.gov,+1 928 269 2002,['Jet A-1'],Military operations only
+KBLH,BLH,Blythe Airport,USA,Signature Flight Support,blythe@signatureflight.com,+1 760 922 5558,['Jet A-1'],All terminals hydrant
+KPSP,PSP,Palm Springs International,USA,Signature Flight Support,palmsprings@signatureflight.com,+1 760 318 3800,['Jet A-1'],All terminals hydrant
+KTRM,TRM,Jacqueline Cochran Regional,USA,Signature Flight Support,thermal@signatureflight.com,+1 760 399 3811,['Jet A-1'],All terminals hydrant
+KBFL,BFL,Bakersfield Meadows Field,USA,Signature Flight Support,bakersfield@signatureflight.com,+1 661 391 1800,['Jet A-1'],All terminals hydrant
+KVIS,VIS,Visalia Municipal,USA,Signature Flight Support,visalia@signatureflight.com,+1 559 713 4201,['Jet A-1'],All terminals hydrant
+KFAT,FAT,Fresno Yosemite International,USA,Signature Flight Support,fresno@signatureflight.com,+1 559 251 2100,['Jet A-1'],All terminals hydrant
+KMOD,MOD,Modesto City County,USA,Signature Flight Support,modesto@signatureflight.com,+1 209 577 5319,['Jet A-1'],All terminals hydrant
+KSTK,STK,Stockton Metropolitan,USA,Signature Flight Support,stockton@signatureflight.com,+1 209 234 4200,['Jet A-1'],All terminals hydrant
+KSAC,SAC,Sacramento Executive,USA,Signature Flight Support,sacramento@signatureflight.com,+1 916 874 0605,['Jet A-1'],All terminals hydrant
+KSMF,SMF,Sacramento International,USA,Signature Flight Support,sacramentointl@signatureflight.com,+1 916 929 5411,['Jet A-1'],All terminals hydrant
+KMHR,MHR,Mather Airport,USA,Signature Flight Support,mather@signatureflight.com,+1 916 366 2002,['Jet A-1'],All terminals hydrant
+KTVL,TVL,Lake Tahoe Airport,USA,Signature Flight Support,tahoe@signatureflight.com,+1 530 541 2286,['Jet A-1'],All terminals hydrant
+KTRK,TRK,Truckee Tahoe Airport,USA,Signature Flight Support,truckee@signatureflight.com,+1 530 587 4119,['Jet A-1'],All terminals hydrant
+KRDD,RDD,Redding Municipal,USA,Signature Flight Support,redding@signatureflight.com,+1 530 224 4320,['Jet A-1'],All terminals hydrant
+KRCM,RCM,Red Bluff Municipal,USA,Signature Flight Support,redbluff@signatureflight.com,+1 530 529 1238,['Jet A-1'],All terminals hydrant
+KOVE,OVE,Oroville Municipal,USA,Signature Flight Support,oroville@signatureflight.com,+1 530 534 9748,['Jet A-1'],All terminals hydrant
+KMYV,MYV,Marysville Yuba County,USA,Signature Flight Support,marysville@signatureflight.com,+1 530 742 4503,['Jet A-1'],All terminals hydrant
+KBAB,BAB,Beale Air Force Base,USA,Military Aviation Fuel,beale@military.gov,+1 530 634 3000,['Jet A-1'],Military operations only
+KCCR,CCR,Concord Buchanan Field,USA,Signature Flight Support,concord@signatureflight.com,+1 925 676 2100,['Jet A-1'],All terminals hydrant
+KNUQ,NUQ,Moffett Federal Airfield,USA,Signature Flight Support,moffett@signatureflight.com,+1 650 603 8700,['Jet A-1'],All terminals hydrant
+KPAO,PAO,Palo Alto Airport,USA,Signature Flight Support,paloalto@signatureflight.com,+1 650 856 7833,['Jet A-1'],All terminals hydrant
+KRHV,RHV,Reid Hillview Airport,USA,Signature Flight Support,reidhillview@signatureflight.com,+1 408 251 4939,['Jet A-1'],All terminals hydrant
+KWVI,WVI,Watsonville Municipal,USA,Signature Flight Support,watsonville@signatureflight.com,+1 831 763 2196,['Jet A-1'],All terminals hydrant
+KMRY,MRY,Monterey Regional,USA,Signature Flight Support,monterey@signatureflight.com,+1 831 648 7000,['Jet A-1'],All terminals hydrant
+KSNC,SNC,Salinas Municipal,USA,Signature Flight Support,salinas@signatureflight.com,+1 831 758 7214,['Jet A-1'],All terminals hydrant
+KPRB,PRB,Paso Robles Municipal,USA,Signature Flight Support,pasorobles@signatureflight.com,+1 805 238 4400,['Jet A-1'],All terminals hydrant
+KSBP,SBP,San Luis Obispo County Regional,USA,Signature Flight Support,sanluisobispo@signatureflight.com,+1 805 781 5205,['Jet A-1'],All terminals hydrant
+KSMX,SMX,Santa Maria Public,USA,Signature Flight Support,santamaria@signatureflight.com,+1 805 922 1726,['Jet A-1'],All terminals hydrant
+KVBG,VBG,Vandenberg Air Force Base,USA,Military Aviation Fuel,vandenberg@military.gov,+1 805 606 1110,['Jet A-1'],Military operations only
+KSBA,SBA,Santa Barbara Municipal,USA,Signature Flight Support,santabarbara@signatureflight.com,+1 805 967 7111,['Jet A-1'],All terminals hydrant
+KOXR,OXR,Oxnard Airport,USA,Signature Flight Support,oxnard@signatureflight.com,+1 805 486 9663,['Jet A-1'],All terminals hydrant
+KCMA,CMA,Camarillo Airport,USA,Signature Flight Support,camarillo@signatureflight.com,+1 805 388 4200,['Jet A-1'],All terminals hydrant
+KVNY,VNY,Van Nuys Airport,USA,Signature Flight Support,vannuys@signatureflight.com,+1 818 785 8838,['Jet A-1'],All terminals hydrant
+KBUR,BUR,Burbank Bob Hope Airport,USA,Signature Flight Support,burbank@signatureflight.com,+1 818 840 8840,['Jet A-1'],All terminals hydrant
+KWHP,WHP,Whiteman Airport,USA,Signature Flight Support,whiteman@signatureflight.com,+1 818 896 5271,['Jet A-1'],All terminals hydrant
+KLGB,LGB,Long Beach Airport,USA,World Fuel Services,longbeach@wfscorp.com,+1 562 570 2619,['Jet A-1'],All terminals hydrant
+KSNA,SNA,John Wayne Airport,USA,Signature Flight Support,johnwayne@signatureflight.com,+1 949 252 5200,['Jet A-1'],All terminals hydrant
+KFUL,FUL,Fullerton Municipal,USA,Signature Flight Support,fullerton@signatureflight.com,+1 714 738 6323,['Jet A-1'],All terminals hydrant
+KAJO,AJO,Corona Municipal,USA,Signature Flight Support,corona@signatureflight.com,+1 951 736 2020,['Jet A-1'],All terminals hydrant
+KRAL,RAL,Riverside Municipal,USA,Signature Flight Support,riverside@signatureflight.com,+1 951 351 6113,['Jet A-1'],All terminals hydrant
+KREI,REI,Redlands Municipal,USA,Signature Flight Support,redlands@signatureflight.com,+1 909 798 7971,['Jet A-1'],All terminals hydrant
+KONT,ONT,Ontario International,USA,World Fuel Services,ontario@wfscorp.com,+1 909 544 5300,['Jet A-1'],All terminals hydrant
+KPOC,POC,Brackett Field,USA,Signature Flight Support,brackett@signatureflight.com,+1 909 593 1395,['Jet A-1'],All terminals hydrant
+KEMT,EMT,El Monte Airport,USA,Signature Flight Support,elmonte@signatureflight.com,+1 626 448 6129,['Jet A-1'],All terminals hydrant
+KSZP,SZP,Santa Paula Airport,USA,Signature Flight Support,santapaula@signatureflight.com,+1 805 525 4555,['Jet A-1'],All terminals hydrant
