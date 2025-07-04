@@ -88,6 +88,26 @@ export default function SimpleDigitalTwin({
 
   const currentAircraft = fleetData.find(a => a.registration === selectedAircraft) || 
     { registration: selectedAircraft, aircraftType: 'Unknown', name: 'Unknown Aircraft', deliveryDate: '2018-01-01' };
+
+  // Generate aircraft-specific data based on selected aircraft
+  const getAircraftSpecificData = (aircraft: Aircraft) => {
+    const isBoeing = aircraft.aircraftType.includes('787') || aircraft.aircraftType.includes('Boeing');
+    const age = new Date().getFullYear() - new Date(aircraft.deliveryDate).getFullYear();
+    
+    return {
+      fuel: isBoeing ? '126,372 kg' : aircraft.aircraftType.includes('A350') ? '156,000 kg' : '97,530 kg',
+      passengers: isBoeing ? '258' : aircraft.aircraftType.includes('A350') ? '335' : '292',
+      range: isBoeing ? '7,635 nm' : aircraft.aircraftType.includes('A350') ? '8,700 nm' : '6,350 nm',
+      costPerHour: isBoeing ? '$8,500' : aircraft.aircraftType.includes('A350') ? '$9,200' : '$7,800',
+      age: age,
+      engines: isBoeing ? 'GEnx-1B64' : aircraft.aircraftType.includes('A350') ? 'Trent XWB-97' : 'Trent 700',
+      nextFlight: `VS${Math.floor(Math.random() * 900) + 100}`,
+      maintenance: age < 3 ? 'Low Risk' : age < 6 ? 'Medium Risk' : 'High Risk',
+      maintenanceColor: age < 3 ? 'text-green-600' : age < 6 ? 'text-yellow-600' : 'text-red-600'
+    };
+  };
+
+  const aircraftData = getAircraftSpecificData(currentAircraft);
   return (
     <div className="h-full w-full bg-white p-6">
       <div className="max-w-7xl mx-auto">
@@ -152,6 +172,10 @@ export default function SimpleDigitalTwin({
                 <span className="font-medium">{new Date(currentAircraft.deliveryDate).toLocaleDateString()}</span>
               </div>
               <div className="flex justify-between">
+                <span className="text-gray-600">Age:</span>
+                <span className="font-medium">{aircraftData.age} years</span>
+              </div>
+              <div className="flex justify-between">
                 <span className="text-gray-600">Status:</span>
                 <span className="font-medium text-green-600">Active</span>
               </div>
@@ -171,8 +195,12 @@ export default function SimpleDigitalTwin({
                 <span className="font-medium">On Ground</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Fuel:</span>
-                <span className="font-medium">95,000 kg</span>
+                <span className="text-gray-600">Fuel Capacity:</span>
+                <span className="font-medium">{aircraftData.fuel}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Engines:</span>
+                <span className="font-medium">{aircraftData.engines}</span>
               </div>
             </div>
           </div>
@@ -201,16 +229,16 @@ export default function SimpleDigitalTwin({
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Operations</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-600">Passengers:</span>
-                <span className="font-medium">287</span>
+                <span className="text-gray-600">Max Passengers:</span>
+                <span className="font-medium">{aircraftData.passengers}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Cargo:</span>
-                <span className="font-medium">15,000 kg</span>
+                <span className="text-gray-600">Range:</span>
+                <span className="font-medium">{aircraftData.range}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Next Flight:</span>
-                <span className="font-medium">VS001</span>
+                <span className="font-medium">{aircraftData.nextFlight}</span>
               </div>
             </div>
           </div>
@@ -220,16 +248,16 @@ export default function SimpleDigitalTwin({
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Diversion</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-600">Range:</span>
-                <span className="font-medium">7,635 nm</span>
+                <span className="text-gray-600">Max Range:</span>
+                <span className="font-medium">{aircraftData.range}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Alternates:</span>
                 <span className="font-medium">EGKK, EGGW</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Endurance:</span>
-                <span className="font-medium">8.5 hrs</span>
+                <span className="text-gray-600">Fuel Capacity:</span>
+                <span className="font-medium">{aircraftData.fuel}</span>
               </div>
             </div>
           </div>
@@ -240,7 +268,7 @@ export default function SimpleDigitalTwin({
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-600">Cost/Hour:</span>
-                <span className="font-medium">$8,500</span>
+                <span className="font-medium">{aircraftData.costPerHour}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Fuel Efficiency:</span>
@@ -248,7 +276,7 @@ export default function SimpleDigitalTwin({
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Maintenance:</span>
-                <span className="font-medium text-green-600">Low Risk</span>
+                <span className={`font-medium ${aircraftData.maintenanceColor}`}>{aircraftData.maintenance}</span>
               </div>
             </div>
           </div>
