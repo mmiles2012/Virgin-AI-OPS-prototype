@@ -47,7 +47,8 @@ export default function SimpleDigitalTwin({
             if (reg && type && type !== 'Unknown') {
               // Filter by aircraft type
               const isBoeing = type.includes('787') || type.includes('Boeing');
-              const isAirbus = type.includes('A33') || type.includes('A35') || type.includes('Airbus');
+              const isAirbus = type.includes('A33') || type.includes('A35') || type.includes('Airbus') || 
+                              type.includes('A351') || type.includes('A339') || type.includes('A350') || type.includes('A330');
               
               if ((aircraftType === 'boeing' && isBoeing) || 
                   (aircraftType === 'airbus' && isAirbus)) {
