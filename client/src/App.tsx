@@ -378,11 +378,7 @@ function App() {
               </div>
             )}
             
-            {viewMode === 'diversion-support' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
-                <DiversionSupportDashboard />
-              </div>
-            )}
+
             
             {viewMode === 'delay-prediction' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">

@@ -436,8 +436,8 @@ export default function DiversionSupportDashboard() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 p-6 overflow-y-auto">
+      <div className="max-w-7xl mx-auto pb-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             🤖 ML-Enhanced Diversion Support Operations
@@ -566,9 +566,10 @@ export default function DiversionSupportDashboard() {
                     </label>
                     <input
                       type="number"
-                      value={diversionRequest.passengerCount}
-                      onChange={(e) => setDiversionRequest({...diversionRequest, passengerCount: parseInt(e.target.value)})}
+                      value={diversionRequest.passengerCount || ''}
+                      onChange={(e) => setDiversionRequest({...diversionRequest, passengerCount: parseInt(e.target.value) || 0})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="295"
                     />
                   </div>
                   <div>
@@ -577,9 +578,10 @@ export default function DiversionSupportDashboard() {
                     </label>
                     <input
                       type="number"
-                      value={diversionRequest.crewCount}
-                      onChange={(e) => setDiversionRequest({...diversionRequest, crewCount: parseInt(e.target.value)})}
+                      value={diversionRequest.crewCount || ''}
+                      onChange={(e) => setDiversionRequest({...diversionRequest, crewCount: parseInt(e.target.value) || 0})}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="12"
                     />
                   </div>
                 </div>
@@ -608,9 +610,10 @@ export default function DiversionSupportDashboard() {
                   </label>
                   <input
                     type="number"
-                    value={diversionRequest.estimatedDelayHours}
-                    onChange={(e) => setDiversionRequest({...diversionRequest, estimatedDelayHours: parseInt(e.target.value)})}
+                    value={diversionRequest.estimatedDelayHours || ''}
+                    onChange={(e) => setDiversionRequest({...diversionRequest, estimatedDelayHours: parseInt(e.target.value) || 0})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="8"
                   />
                 </div>
 
