@@ -53,32 +53,53 @@ class GroundHandlerService {
   
   private parseCSV(csvData: string): GroundHandler[] {
     const lines = csvData.split('\n');
-    const headers = lines[0].split(',');
     const handlers: GroundHandler[] = [];
     
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].trim();
       if (!line) continue;
       
-      const values = line.split(',');
+      const values = this.parseCSVLine(line);
       if (values.length >= 10) {
         const handler: GroundHandler = {
-          icao: values[0],
-          iata: values[1],
-          airportName: values[2],
-          country: values[3],
-          handlerName: values[4],
-          services: this.parseArray(values[5]),
-          email: values[6],
-          phone: values[7],
-          certifications: this.parseArray(values[8]),
-          notes: values[9]
+          icao: values[0].trim(),
+          iata: values[1].trim(),
+          airportName: values[2].trim(),
+          country: values[3].trim(),
+          handlerName: values[4].trim(),
+          services: this.parseArray(values[5].trim()),
+          email: values[6].trim(),
+          phone: values[7].trim(),
+          certifications: this.parseArray(values[8].trim()),
+          notes: values[9].trim()
         };
         handlers.push(handler);
       }
     }
     
     return handlers;
+  }
+
+  private parseCSVLine(line: string): string[] {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        result.push(current);
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    
+    result.push(current);
+    return result;
   }
   
   private parseArray(arrayString: string): string[] {

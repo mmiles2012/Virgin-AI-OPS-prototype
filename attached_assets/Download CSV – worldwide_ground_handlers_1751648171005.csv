@@ -299,3 +299,5 @@ OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering
 WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
 LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
 LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+ZSPD,PVG,Shanghai Pudong International,China,SATS,"['Ramp', 'Passenger', 'Cargo', 'Catering']",contact@sats.com.sg,+86 21 6834,"['ISAGO']","Major ground handler at Shanghai Pudong"
+ZSSS,SHA,Shanghai Hongqiao International,China,SSIA,"['Ramp', 'Passenger', 'Cargo']",info@ssia.com.cn,+86 21 6268,"['ISAGO']","Primary ground services at Hongqiao"

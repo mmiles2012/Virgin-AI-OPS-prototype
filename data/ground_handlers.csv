@@ -4,18 +4,300 @@ OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering
 WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
 LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
 LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
-EGCC,MAN,Manchester Airport,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑man@swissport.com,+44 (0)161 489,['ISAGO'],"Virgin Atlantic preferred handler"
-KJFK,JFK,John F Kennedy International,USA,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑jfk@swissport.com,+1 718 244,['ISAGO'],"T4 operations for Virgin Atlantic"
-KATL,ATL,Hartsfield Jackson Atlanta,USA,Delta Ground Services,"['Ramp', 'Passenger', 'Cargo']",ops‑atl@delta.com,+1 404 765,['ISAGO'],"Primary handler for international carriers"
-YSSY,SYD,Sydney Kingsford Smith,Australia,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑syd@swissport.com,+61 2 9667,['ISAGO'],"T1 international operations"
-VABB,BOM,Mumbai Chhatrapati Shivaji,India,MIAL,"['Ramp', 'Passenger', 'Cargo', 'Security']",ops@mumbaiairport.com,+91 22 6685,['ISAGO'],"T2 international terminal"
-MKJS,MBJ,Montego Bay Sangster,Jamaica,MBJ Airports,"['Ramp', 'Passenger', 'Cargo']",ops@mbjairport.com,+1 876 952,['ISAGO'],"Caribbean operations specialist"
-KLAX,LAX,Los Angeles International,USA,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lax@swissport.com,+1 310 646,['ISAGO'],"TBIT international operations"
-EDDF,FRA,Frankfurt Airport,Germany,Fraport Ground Services,"['Ramp', 'Passenger', 'Cargo', 'Security']",ops@fraport.de,+49 69 690,['ISAGO'],"Hub operations specialist"
-EHAM,AMS,Amsterdam Schiphol,Netherlands,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑ams@swissport.com,+31 20 601,['ISAGO'],"KLM alliance partner operations"
-CYYZ,YYZ,Toronto Pearson,Canada,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑yyz@swissport.com,+1 905 676,['ISAGO'],"T1 international operations"
-KORD,ORD,Chicago O'Hare,USA,United Ground Express,"['Ramp', 'Passenger', 'Cargo']",ops‑ord@united.com,+1 773 686,['ISAGO'],"T5 international operations"
-KBOS,BOS,Boston Logan International,USA,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑bos@swissport.com,+1 617 568,['ISAGO'],"Terminal E international"
-LEMD,MAD,Madrid Barajas,Spain,Iberia Ground Services,"['Ramp', 'Passenger', 'Cargo']",ops‑mad@iberia.com,+34 91 321,['ISAGO'],"T4 operations specialist"
-LIRF,FCO,Rome Fiumicino,Italy,ADR Handling,"['Ramp', 'Passenger', 'Cargo']",ops@adr.it,+39 06 6595,['ISAGO'],"T3 international operations"
-LTBA,IST,Istanbul Airport,Turkey,Turkish Ground Services,"['Ramp', 'Passenger', 'Cargo', 'Catering']",ops@tgs.com.tr,+90 212 463,['ISAGO'],"New airport operations"
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+EGLL,LHR,London Heathrow,UK,Swissport,"['Ramp', 'Passenger', 'Cargo']",ops‑lhr@swissport.com,+44 (0)844 248,['ISAGO'],"Preferred at T2/T5, cargo at T4"
+OMDB,DXB,Dubai International,UAE,dnata,"['Ramp', 'Passenger', 'Cargo', 'Catering']",info@dnata.ae,+971 4 216,['ISAGO'],"Lead handler, integrates catering via Alpha Flight"
+WSSS,SIN,Singapore Changi,Singapore,SATS,"['Ramp', 'Cargo', 'Passenger', 'Security', 'Catering']",contact@sats.com.sg,+65 6541 3333,['ISAGO'],Handles multiple networks including WFS
+LSZH,ZRH,Zurich Airport,Switzerland,Swissport,"['Ramp', 'Cargo', 'Passenger']",contact@swissport.ch,+41 43 816,['ISAGO'],"Swissport HQ, covers 296+ airports"
+LFPG,CDG,Paris Charles de Gaulle,France,WFS,"['Cargo', 'Ramp', 'Passenger']",ops‑cdg@wfs.com,+33 1 70,['ISAGO'],WFS now part of SATS
+ZSPD,PVG,Shanghai Pudong International,China,SATS,"['Ramp', 'Passenger', 'Cargo', 'Catering']",contact@sats.com.sg,+86 21 6834,"['ISAGO']","Major ground handler at Shanghai Pudong"
+ZSSS,SHA,Shanghai Hongqiao International,China,SSIA,"['Ramp', 'Passenger', 'Cargo']",info@ssia.com.cn,+86 21 6268,"['ISAGO']","Primary ground services at Hongqiao"
