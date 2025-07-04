@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { digitalTwinPerformanceService } from './digitalTwinPerformanceService';
+import { virginAtlanticFlightTracker, FlightPath } from './routeMatcher';
 
 interface VirginAtlanticFlight {
   flight_number: string;

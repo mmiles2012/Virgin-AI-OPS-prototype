@@ -265,6 +265,201 @@ export class DiversionOptimizer {
   }
 }
 
+// Get appropriate airports based on route and current position
+export function getRouteAppropriateAirports(
+  departureAirport: string,
+  arrivalAirport: string,
+  currentLat: number,
+  currentLon: number
+): Waypoint[] {
+  // Define route regions for the entire Virgin Atlantic network
+  const routeRegions: Record<string, string> = {
+    // North America routes
+    'LHR-JFK': 'north_atlantic',
+    'LHR-BOS': 'north_atlantic', 
+    'LHR-LAX': 'north_atlantic',
+    'LHR-LAS': 'north_atlantic',
+    'LHR-ORD': 'north_atlantic',
+    'LHR-ATL': 'north_atlantic',
+    'LHR-MIA': 'north_atlantic',
+    'LHR-IAH': 'north_atlantic',
+    'LHR-YVR': 'north_atlantic',
+    'LHR-YUL': 'north_atlantic',
+    'LHR-MCO': 'north_atlantic',
+    'MAN-JFK': 'north_atlantic',
+    'MAN-BOS': 'north_atlantic',
+    'MAN-ORD': 'north_atlantic',
+    'MAN-YVR': 'north_atlantic',
+    'LGW-JFK': 'north_atlantic',
+    'LGW-BOS': 'north_atlantic',
+    'LGW-LAX': 'north_atlantic',
+    'LGW-YVR': 'north_atlantic',
+    
+    // Asia routes
+    'LHR-BOM': 'indian_subcontinent',
+    'LHR-DEL': 'indian_subcontinent', 
+    'LHR-BLR': 'indian_subcontinent',
+    'LHR-HKG': 'asia_pacific',
+    'LHR-NRT': 'asia_pacific',
+    'LHR-ICN': 'asia_pacific',
+    'LHR-SIN': 'asia_pacific',
+    'LHR-DXB': 'middle_east',
+    'LHR-DOH': 'middle_east',
+    
+    // Oceania routes
+    'LHR-SYD': 'asia_pacific',
+    'LHR-MEL': 'asia_pacific',
+    'LHR-AKL': 'asia_pacific',
+    
+    // South America routes
+    'LHR-GRU': 'south_america',
+    'LHR-EZE': 'south_america',
+    'LHR-GIG': 'south_america',
+    
+    // Africa routes
+    'LHR-JNB': 'africa',
+    'LHR-CPT': 'africa',
+    'LHR-CAI': 'africa',
+    'LHR-NBO': 'africa'
+  };
+
+  // Create route key
+  const routeKey = `${departureAirport}-${arrivalAirport}`;
+  const reverseRouteKey = `${arrivalAirport}-${departureAirport}`;
+  
+  // Determine region based on route
+  const region = routeRegions[routeKey] || routeRegions[reverseRouteKey] || 'european';
+  
+  // Get airports based on region and current position
+  let airports: Waypoint[] = [];
+  
+  switch (region) {
+    case 'north_atlantic':
+      // For North Atlantic routes, use position to determine east/west preference
+      if (currentLon < -30) {
+        // West side - prefer North American airports
+        airports = [
+          { name: 'KBOS', lat: 42.3656, lon: -71.0096 },   // Boston
+          { name: 'KBGR', lat: 44.8074, lon: -68.8281 },   // Bangor
+          { name: 'CYHZ', lat: 44.8808, lon: -63.5086 },   // Halifax
+          { name: 'CYYR', lat: 53.3194, lon: -60.4267 },   // Goose Bay
+          { name: 'CYQX', lat: 48.9369, lon: -54.5681 },   // Gander
+          { name: 'KJFK', lat: 40.6413, lon: -73.7781 },   // JFK
+          { name: 'KORD', lat: 41.9742, lon: -87.9073 }    // Chicago
+        ];
+      } else if (currentLon > -10) {
+        // East side - prefer European airports
+        airports = getEuropeanDiversionAirports();
+      } else {
+        // Mid-Atlantic - use oceanic airports
+        airports = getAtlanticDiversionAirports();
+      }
+      break;
+      
+    case 'indian_subcontinent':
+      // For India routes, use position to determine regional preference
+      if (currentLon > 60) {
+        // East of longitude 60 - prefer Indian airports
+        airports = getIndianSubcontinentAirports();
+      } else if (currentLon > 40) {
+        // Middle East region
+        airports = getMiddleEastAirports();
+      } else {
+        // Still in European airspace
+        airports = getEuropeanDiversionAirports();
+      }
+      break;
+      
+    case 'asia_pacific':
+      // For Asia-Pacific routes
+      if (currentLon > 100) {
+        // East Asia/Pacific
+        airports = [
+          { name: 'VHHH', lat: 25.2719, lon: 113.2644 },   // Hong Kong
+          { name: 'RJAA', lat: 35.7647, lon: 140.3864 },   // Narita
+          { name: 'RKSI', lat: 37.4602, lon: 126.4407 },   // Seoul
+          { name: 'WSSS', lat: 1.3644, lon: 103.9915 },    // Singapore
+          { name: 'YSSY', lat: -33.9399, lon: 151.1753 },  // Sydney
+          { name: 'YMML', lat: -37.6690, lon: 144.8410 },  // Melbourne
+          { name: 'NZAA', lat: -36.8485, lon: 174.7633 }   // Auckland
+        ];
+      } else if (currentLon > 50) {
+        // Central Asia/Middle East
+        airports = getMiddleEastAirports();
+      } else {
+        // European airspace
+        airports = getEuropeanDiversionAirports();
+      }
+      break;
+      
+    case 'middle_east':
+      airports = getMiddleEastAirports();
+      break;
+      
+    case 'south_america':
+      // For South America routes
+      if (currentLat < -10) {
+        // Southern hemisphere - prefer South American airports
+        airports = [
+          { name: 'SBGR', lat: -23.4356, lon: -46.4731 },   // São Paulo
+          { name: 'SAEZ', lat: -34.8222, lon: -58.5358 },   // Buenos Aires
+          { name: 'SBGL', lat: -22.8100, lon: -43.2506 },   // Rio de Janeiro
+          { name: 'SCEL', lat: -33.3928, lon: -70.7858 },   // Santiago
+          { name: 'SPJC', lat: -12.0219, lon: -77.1143 },   // Lima
+          { name: 'SKBO', lat: 4.7016, lon: -74.1469 }      // Bogotá
+        ];
+      } else if (currentLat > 10) {
+        // Northern hemisphere - prefer European airports
+        airports = getEuropeanDiversionAirports();
+      } else {
+        // Equatorial region - prefer African airports
+        airports = [
+          { name: 'DIAP', lat: 36.6910, lon: 3.2154 },     // Algiers
+          { name: 'GMMN', lat: 33.3675, lon: -7.5897 },    // Casablanca
+          { name: 'LPPT', lat: 38.7813, lon: -9.1357 },    // Lisbon
+          { name: 'GCFV', lat: 27.9318, lon: -15.3866 }    // Las Palmas
+        ];
+      }
+      break;
+      
+    case 'africa':
+      // For Africa routes
+      if (currentLat < -20) {
+        // Southern Africa
+        airports = [
+          { name: 'FAOR', lat: -26.1392, lon: 28.2460 },   // Johannesburg
+          { name: 'FACT', lat: -33.9685, lon: 18.6017 },   // Cape Town
+          { name: 'FYWH', lat: -17.9318, lon: 25.9238 },   // Victoria Falls
+          { name: 'FQNP', lat: -29.9499, lon: 30.4006 }    // Pietermaritzburg
+        ];
+      } else if (currentLat > 20) {
+        // North Africa
+        airports = [
+          { name: 'HECA', lat: 30.1219, lon: 31.4056 },    // Cairo
+          { name: 'DIAP', lat: 36.6910, lon: 3.2154 },     // Algiers
+          { name: 'GMMN', lat: 33.3675, lon: -7.5897 },    // Casablanca
+          { name: 'OEJN', lat: 21.6796, lon: 39.1565 }     // Jeddah
+        ];
+      } else {
+        // Equatorial Africa
+        airports = [
+          { name: 'HKJK', lat: -1.3192, lon: 36.9278 },    // Nairobi
+          { name: 'HAAB', lat: 8.9780, lon: 38.7969 },     // Addis Ababa
+          { name: 'FALA', lat: -8.8583, lon: 13.2312 },    // Luanda
+          { name: 'FKKD', lat: -4.3917, lon: 15.4446 }     // Kinshasa
+        ];
+      }
+      break;
+      
+    default:
+      // European routes or fallback
+      airports = getEuropeanDiversionAirports();
+      break;
+  }
+  
+  return airports;
+}
+
 // Enhanced integration with AINO scenario analysis
 export function enhancedDiversionAnalysis(
   aircraftType: string,
