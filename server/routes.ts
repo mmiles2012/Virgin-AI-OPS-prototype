@@ -45,6 +45,7 @@ import { routePositionService } from "./routePositionService";
 import { virginAtlanticFlightTracker } from "./routeMatcher";
 import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
 import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
+import { get_lhr_nm_correlation } from "./lhr_correlation";
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -6648,6 +6649,20 @@ else:
       res.status(500).json({
         success: false,
         error: 'Failed to generate Network Manager analytics'
+      });
+    }
+  });
+
+  // LHR-NM Correlation Analysis
+  app.get('/api/lhr-nm-correlation', (req, res) => {
+    try {
+      const correlationResults = get_lhr_nm_correlation();
+      res.json(correlationResults);
+    } catch (error) {
+      console.error('Error generating LHR-NM correlation:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate correlation analysis'
       });
     }
   });

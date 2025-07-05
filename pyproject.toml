@@ -5,6 +5,7 @@ description = "Add your description here"
 requires-python = ">=3.11"
 dependencies = [
     "aiohttp>=3.12.13",
+    "beautifulsoup4>=4.13.4",
     "casadi>=3.7.0",
     "flask>=3.1.1",
     "joblib>=1.5.1",

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import CorrelationTile from './CorrelationTile';
 
 interface NMPunctualityData {
   DATE: string;
@@ -244,6 +245,9 @@ export default function NMPunctualityChart() {
           </ResponsiveContainer>
         </CardContent>
       </Card>
+
+      {/* LHR-NM Correlation Analysis */}
+      <CorrelationTile />
 
       {/* European Airspace Insights */}
       {analytics && (
