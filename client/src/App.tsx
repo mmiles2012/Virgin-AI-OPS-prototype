@@ -38,7 +38,7 @@ import GroundFuelMapViewer from "./components/GroundFuelMapViewer";
 import EmergencyResponseTesting from "./components/EmergencyResponseTesting";
 import HubDelayPredictionDashboard from "./components/HubDelayPredictionDashboard";
 import NMPunctualityChart from "./components/NMPunctualityChart";
-import FaaDelayDashboard from "./components/FaaDelayDashboard";
+import ConsolidatedFaaDashboard from "./components/ConsolidatedFaaDashboard";
 
 
 // Flight control mappings
@@ -444,9 +444,7 @@ function App() {
             
             {viewMode === 'us-aviation' && (
               <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-auto">
-                <div className="p-6">
-                  <FaaDelayDashboard />
-                </div>
+                <ConsolidatedFaaDashboard />
               </div>
             )}
             
