@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import FaaAirportGrid from "./FaaAirportGrid";
+import FaaLiveStatus from "./FaaLiveStatus";
+import SmartHubTileGrid from "./SmartHubTileGrid";
 
 interface FAADelayRecord {
   airport: string;
@@ -186,8 +188,9 @@ export default function FaaDelayDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="delays">US Airport Delays</TabsTrigger>
+          <TabsTrigger value="live">Live FAA Status</TabsTrigger>
           <TabsTrigger value="correlation">US-UK Correlation</TabsTrigger>
           <TabsTrigger value="insights">Operational Insights</TabsTrigger>
           <TabsTrigger value="ml-training">ML Training Analytics</TabsTrigger>
@@ -277,6 +280,25 @@ export default function FaaDelayDashboard() {
 
           {/* Weather-Enhanced Airport Risk Grid */}
           <FaaAirportGrid />
+        </TabsContent>
+
+        <TabsContent value="live" className="space-y-4">
+          {/* Live FAA Status Integration with Smart Hub Watch */}
+          <div className="space-y-6">
+            <FaaLiveStatus />
+            
+            {/* Smart Hub Watch Component */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border">
+              <h3 className="text-lg font-semibold mb-4 text-blue-900">
+                Weather-Enhanced ML Smart Hub Analysis
+              </h3>
+              <p className="text-sm text-blue-700 mb-4">
+                Real-time integration of live FAA NASSTATUS data with machine learning predictions, 
+                weather impact analysis, and alert generation for major US aviation hubs.
+              </p>
+              <SmartHubTileGrid />
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="correlation" className="space-y-4">

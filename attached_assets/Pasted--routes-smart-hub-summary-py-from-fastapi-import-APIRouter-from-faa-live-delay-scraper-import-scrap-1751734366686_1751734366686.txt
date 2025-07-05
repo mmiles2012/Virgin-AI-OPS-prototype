@@ -1,0 +1,63 @@
+# routes/smart_hub_summary.py
+from fastapi import APIRouter
+from faa_live_delay_scraper import scrape_faa_nasstatus
+from ml_training_set import generate_training_dataset_with_weather
+from train_faa_model import train_faa_models, seasonal_baseline_forecast
+
+router = APIRouter()
+
+HUBS = ["JFK", "BOS", "ATL", "LAX", "SFO", "MCO", "MIA", "TPA", "LAS"]
+
+@router.get("/api/smart-hub-summary")
+def smart_hub_summary():
+    df_live = scrape_faa_nasstatus()
+    df_ml = generate_training_dataset_with_weather()
+    df_baseline = seasonal_baseline_forecast(df_ml)
+    models = train_faa_models()
+
+    delay_model = models["model_objects"]["delay_model"]
+    otp_model = models["model_objects"]["otp_model"]
+    risk_model = models["model_objects"]["risk_model"]
+    encoder = models["model_objects"]["label_encoder"]
+
+    summary = []
+
+    for hub in HUBS:
+        latest = df_ml[df_ml["airport"] == hub].sort_values(["year", "month"], ascending=False).head(1)
+        if latest.empty:
+            continue
+
+        row = latest.iloc[0]
+        X = row.drop(["total_delay", "otp_percent", "delay_risk_category", "faa"], errors="ignore").to_frame().T
+        pred_delay = float(delay_model.predict(X)[0])
+        pred_otp = float(otp_model.predict(X)[0])
+        pred_risk = encoder.inverse_transform(risk_model.predict(X))[0]
+
+        base = df_baseline[(df_baseline["airport"] == hub) & (df_baseline["month"] == row["month"])]
+        base_row = base.iloc[0].to_dict() if not base.empty else {}
+
+        live = df_live[df_live["faa"] == hub].iloc[0].to_dict() if not df_live[df_live["faa"] == hub].empty else {}
+
+        summary.append({
+            "airport": hub,
+            "month": row["month"],
+            "year": row["year"],
+            "actual_delay": float(row["total_delay"]),
+            "predicted_delay": pred_delay,
+            "baseline_delay": base_row.get("total_delay"),
+            "actual_otp": float(row["otp_percent"]),
+            "predicted_otp": pred_otp,
+            "baseline_otp": base_row.get("otp_percent"),
+            "actual_risk": row["delay_risk_category"],
+            "predicted_risk": pred_risk,
+            "baseline_risk": base_row.get("delay_risk_category"),
+            "storm_days": row.get("thunderstorm_days"),
+            "snow_days": row.get("snow_days"),
+            "precip_mm": row.get("total_precip_mm"),
+            "nas_delay_status": live.get("status"),
+            "nas_reason": live.get("reason"),
+            "nas_avg_delay": live.get("avg_delay"),
+            "trigger_alert": abs(pred_delay - row["total_delay"]) > 15 or live.get("status") in ["Moderate", "Major"]
+        })
+
+    return summary
