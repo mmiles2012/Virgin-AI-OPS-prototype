@@ -31,7 +31,7 @@ import FinancialAnalyticsDashboard from "./components/FinancialAnalyticsDashboar
 import FleetSubstitutionCalculator from "./components/FleetSubstitutionCalculator";
 import SkyGateAirportDashboard from "./components/SkyGateAirportDashboard";
 import EmergencyCommDashboard from "./components/EmergencyCommDashboard";
-import NetworkOTPDashboard from "./components/NetworkOTPDashboard";
+import EnhancedNetworkOTPDashboard from "./components/EnhancedNetworkOTPDashboard";
 import VirginAtlanticFleetMonitor from "./components/VirginAtlanticFleetMonitor";
 import IntelligenceDashboard from "./components/IntelligenceDashboard";
 import GroundFuelMapViewer from "./components/GroundFuelMapViewer";
@@ -78,7 +78,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'service-coverage' | 'emergency-testing';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'service-coverage' | 'emergency-testing' | 'airport-contacts';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -486,8 +486,8 @@ function App() {
             )}
             
             {viewMode === 'otp-dashboard' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
-                <NetworkOTPDashboard />
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-hidden">
+                <EnhancedNetworkOTPDashboard />
               </div>
             )}
             
