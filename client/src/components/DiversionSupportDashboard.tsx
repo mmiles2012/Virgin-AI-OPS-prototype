@@ -182,10 +182,10 @@ interface DiversionSupportResponse {
 export default function DiversionSupportDashboard() {
   const [activeTab, setActiveTab] = useState<'initiate' | 'status' | 'services' | 'fuel' | 'airport' | 'compatibility' | 'ml-analysis'>('initiate');
   const [diversionRequest, setDiversionRequest] = useState<DiversionRequest>({
-    flightNumber: '',
+    flightNumber: 'VS3',
     aircraftType: 'Boeing 787',
-    diversionAirport: '',
-    originalDestination: '',
+    diversionAirport: 'KJFK',
+    originalDestination: 'EGLL',
     passengerCount: 280,
     crewCount: 15,
     diversionReason: 'technical',
