@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-07-05T19:59:59.512092",
+  "total_flights": 15,
+  "total_features": 26,
+  "temporal_features": [
+    "Month",
+    "Weekday",
+    "Hour",
+    "Season",
+    "TimeCategory",
+    "IsWeekend",
+    "IsPeakSummer",
+    "IsHolidayPeriod",
+    "DayOfYear"
+  ],
+  "weather_features": [
+    "TemperatureC",
+    "WindSpeedKt",
+    "VisibilityKm",
+    "PressureHPa",
+    "DewPointC",
+    "CloudCoverage",
+    "WeatherImpactScore",
+    "IsBadWeather",
+    "WindCategory",
+    "VisibilityCategory"
+  ],
+  "airports_covered": 10,
+  "weather_data_source": "AVWX API"
+}

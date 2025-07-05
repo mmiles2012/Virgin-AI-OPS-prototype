@@ -1,0 +1,46 @@
+
+=== AINO Enhanced ML Model Validation Report ===
+Generated: 2025-07-05T20:01:50.542951
+Weather Data Source: AVWX API (Authentic METAR Data)
+
+VALIDATION OVERVIEW:
+- Dataset Size: 208 flights
+- Weather Enhanced: ✓ AVWX Integration Active
+- High Weather Impact Flights: 0
+
+ENHANCED PERFORMANCE METRICS:
+- Mean Absolute Error: 9.01 minutes
+- Classification Accuracy: 60.1%
+- Virgin Atlantic Accuracy: 50.0%
+- Weather Impact Accuracy: 0.0%
+
+WEATHER INTEGRATION ANALYSIS:
+- Weather-Delay Correlation: -0.167
+- Average Weather Impact: 0.20
+- Enhancement Effect: Moderate
+
+WEATHER FEATURE CORRELATIONS:
+- TemperatureC: -0.339
+- WindSpeedKt: 0.275
+- VisibilityKm: 0.119
+- WeatherImpactScore: -0.167
+
+AIRPORT PERFORMANCE (Weather-Enhanced):
+- JFK: 18.8% accuracy, 15.4min MAE, Weather Impact: 0.21
+- BOS: 85.7% accuracy, 6.6min MAE, Weather Impact: 0.20
+- ATL: 59.1% accuracy, 6.7min MAE, Weather Impact: 0.20
+- LAX: 40.0% accuracy, 10.7min MAE, Weather Impact: 0.18
+- SFO: 30.4% accuracy, 12.5min MAE, Weather Impact: 0.20
+- MCO: 94.7% accuracy, 5.2min MAE, Weather Impact: 0.18
+- MIA: 69.6% accuracy, 8.5min MAE, Weather Impact: 0.22
+- TPA: 68.2% accuracy, 7.7min MAE, Weather Impact: 0.19
+- LAS: 91.3% accuracy, 7.6min MAE, Weather Impact: 0.23
+- LHR: 33.3% accuracy, 10.6min MAE, Weather Impact: 0.18
+
+ENHANCED MODEL INSIGHTS:
+- Best Performing Airport: MCO
+- Average Prediction Error: 9.0 minutes
+- Model Reliability: Medium
+- Weather Enhancement: Moderate impact detected
+
+VALIDATION STATUS: ✅ ENHANCED SYSTEM VALIDATED

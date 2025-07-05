@@ -1,0 +1,101 @@
+{
+  "validation_timestamp": "2025-07-05T20:01:50.542756",
+  "dataset_size": 208,
+  "weather_enhanced": true,
+  "overall_performance": {
+    "mae_minutes": 9.013548756381583,
+    "rmse_minutes": 11.545931675683503,
+    "classification_accuracy": 0.6009615384615384,
+    "virgin_atlantic_accuracy": 0.5,
+    "weather_impact_accuracy": 0.0
+  },
+  "weather_analysis": {
+    "weather_delay_correlation": -0.16664561992589028,
+    "high_weather_impact_flights": 0,
+    "weather_feature_correlations": {
+      "TemperatureC": -0.3385681575272138,
+      "WindSpeedKt": 0.27504398625674176,
+      "VisibilityKm": 0.11863447264388734,
+      "WeatherImpactScore": -0.16664561992589028
+    },
+    "avg_weather_impact_score": 0.20012874014563056
+  },
+  "airport_performance": {
+    "JFK": {
+      "mae": 15.396469362119186,
+      "accuracy": 0.1875,
+      "flight_count": 16,
+      "avg_weather_impact": 0.20737913946136957,
+      "weather_enhanced": true
+    },
+    "BOS": {
+      "mae": 6.57582703116999,
+      "accuracy": 0.8571428571428571,
+      "flight_count": 21,
+      "avg_weather_impact": 0.20404580612803622,
+      "weather_enhanced": true
+    },
+    "ATL": {
+      "mae": 6.660295160289572,
+      "accuracy": 0.5909090909090909,
+      "flight_count": 22,
+      "avg_weather_impact": 0.2039458872802452,
+      "weather_enhanced": true
+    },
+    "LAX": {
+      "mae": 10.67837991763356,
+      "accuracy": 0.4,
+      "flight_count": 15,
+      "avg_weather_impact": 0.18083074531665402,
+      "weather_enhanced": true
+    },
+    "SFO": {
+      "mae": 12.493019246374635,
+      "accuracy": 0.30434782608695654,
+      "flight_count": 23,
+      "avg_weather_impact": 0.19765010058488314,
+      "weather_enhanced": true
+    },
+    "MCO": {
+      "mae": 5.226706570150996,
+      "accuracy": 0.9473684210526315,
+      "flight_count": 19,
+      "avg_weather_impact": 0.17891638826988487,
+      "weather_enhanced": true
+    },
+    "MIA": {
+      "mae": 8.548220936391727,
+      "accuracy": 0.6956521739130435,
+      "flight_count": 23,
+      "avg_weather_impact": 0.22030271790032407,
+      "weather_enhanced": true
+    },
+    "TPA": {
+      "mae": 7.734545454545455,
+      "accuracy": 0.6818181818181818,
+      "flight_count": 22,
+      "avg_weather_impact": 0.18599999999999997,
+      "weather_enhanced": true
+    },
+    "LAS": {
+      "mae": 7.622635337287664,
+      "accuracy": 0.9130434782608695,
+      "flight_count": 23,
+      "avg_weather_impact": 0.23404580612803627,
+      "weather_enhanced": true
+    },
+    "LHR": {
+      "mae": 10.62264624141279,
+      "accuracy": 0.3333333333333333,
+      "flight_count": 24,
+      "avg_weather_impact": 0.18071247279470293,
+      "weather_enhanced": true
+    }
+  },
+  "model_insights": {
+    "best_performing_airport": "MCO",
+    "average_prediction_error": 9.013548756381583,
+    "weather_enhancement_effect": "Moderate",
+    "model_reliability": "Medium"
+  }
+}
