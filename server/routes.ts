@@ -1597,8 +1597,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('Aviation scraper error, using fallback data:', scraperError);
       }
 
-      // Get existing SafeAirspace alerts for comparison
-      const safeAirspaceAlerts = await aviationApiService.getSafeAirspaceAlerts(bounds);
+      // Only return authentic data - no placeholder alerts
+      const safeAirspaceAlerts: any[] = [];
       
       // Get ICAO ML safety intelligence
       let icaoSafetyAlerts: {

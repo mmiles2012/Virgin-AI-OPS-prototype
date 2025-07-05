@@ -1276,96 +1276,9 @@ export class AviationApiService {
     try {
       // SafeAirspace.net API integration for NOTAMs and airspace restrictions
       // Using real-time data from aviation authorities
-      const alerts: SafeAirspaceAlert[] = [
-        {
-          id: 'TFR-2024-001',
-          type: 'TFR',
-          title: 'Temporary Flight Restriction - Special Operations',
-          description: 'TFR in effect for security operations. All aircraft prohibited below 3000 feet.',
-          location: {
-            lat: 51.4700,
-            lon: -0.4543,
-            radius: 15 // nautical miles
-          },
-          altitude: {
-            min: 0,
-            max: 3000
-          },
-          timeframe: {
-            start: new Date().toISOString(),
-            end: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString() // 6 hours from now
-          },
-          severity: 'high',
-          source: 'UK CAA',
-          lastUpdated: new Date().toISOString()
-        },
-        {
-          id: 'NOTAM-2024-002',
-          type: 'NOTAM',
-          title: 'Airport Closure - EGLL/LHR Runway 09R/27L',
-          description: 'Runway 09R/27L closed for maintenance operations. Expect delays and alternate runway usage.',
-          location: {
-            lat: 51.4700,
-            lon: -0.4543,
-            radius: 5
-          },
-          altitude: {
-            min: 0,
-            max: 2000
-          },
-          timeframe: {
-            start: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-            end: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString() // 4 hours from now
-          },
-          severity: 'medium',
-          source: 'NATS UK',
-          lastUpdated: new Date().toISOString()
-        },
-        {
-          id: 'WARNING-2024-003',
-          type: 'WARNING',
-          title: 'Severe Weather - Thunderstorms',
-          description: 'Severe thunderstorms with turbulence and wind shear. Exercise extreme caution.',
-          location: {
-            lat: 40.6413,
-            lon: -73.7781,
-            radius: 25
-          },
-          altitude: {
-            min: 0,
-            max: 45000
-          },
-          timeframe: {
-            start: new Date().toISOString(),
-            end: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString()
-          },
-          severity: 'critical',
-          source: 'FAA Weather',
-          lastUpdated: new Date().toISOString()
-        },
-        {
-          id: 'RESTRICTED-2024-004',
-          type: 'RESTRICTED',
-          title: 'Military Exercise Area',
-          description: 'Active military training area. Civilian aircraft prohibited without coordination.',
-          location: {
-            lat: 49.2827,
-            lon: -123.1207,
-            radius: 20
-          },
-          altitude: {
-            min: 0,
-            max: 25000
-          },
-          timeframe: {
-            start: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-            end: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString()
-          },
-          severity: 'high',
-          source: 'Transport Canada',
-          lastUpdated: new Date().toISOString()
-        }
-      ];
+      // Only return authentic aviation data from verified sources
+      // No placeholder data - system will display appropriate "no data" state
+      const alerts: SafeAirspaceAlert[] = [];
 
       // Filter alerts by bounds if provided
       if (bounds) {

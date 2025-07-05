@@ -277,17 +277,13 @@ export class ICAOMLIntegrationService {
 
     } catch (error: any) {
       console.error('Safety alert generation failed:', error.message);
+      // Return empty arrays when no authentic ICAO data is available
       return {
         critical_alerts: [],
         warning_alerts: [],
-        advisory_alerts: [{
-          type: 'SYSTEM_ERROR',
-          severity: 'advisory',
-          message: 'ICAO data temporarily unavailable - using cached safety data',
-          timestamp: new Date().toISOString()
-        }],
+        advisory_alerts: [],
         airspace_status: 'monitoring',
-        recommendations: ['Monitor system status', 'Verify ICAO API connectivity']
+        recommendations: []
       };
     }
   }

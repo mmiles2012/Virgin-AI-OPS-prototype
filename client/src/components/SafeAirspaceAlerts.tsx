@@ -165,7 +165,7 @@ export default function AirspaceAlerts() {
           <Shield className="h-5 w-5 text-orange-400" />
           Airspace Alerts
           <Badge className="bg-orange-500/20 text-orange-400 border-orange-500 text-xs">
-            Live Monitoring
+            Live Aviation Scraper
           </Badge>
           {selectedFlight && (
             <span className="text-sm text-gray-400 ml-2">
@@ -191,9 +191,12 @@ export default function AirspaceAlerts() {
       {relevantAlerts.length === 0 ? (
         <div className="text-center py-8 text-gray-400">
           <Shield className="h-12 w-12 mx-auto mb-3 opacity-50" />
-          <p>No active airspace alerts</p>
-          <p className="text-sm">
-            {selectedFlight ? 'Flight path clear of restrictions' : 'All airspace normal'}
+          <p>Aviation data collection in progress</p>
+          <p className="text-sm text-yellow-400">
+            Scraper status: Monitoring live aviation sources
+          </p>
+          <p className="text-xs mt-2">
+            No authentic alerts currently available from external sources
           </p>
         </div>
       ) : (
