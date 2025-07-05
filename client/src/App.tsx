@@ -39,6 +39,7 @@ import EmergencyResponseTesting from "./components/EmergencyResponseTesting";
 import HubDelayPredictionDashboard from "./components/HubDelayPredictionDashboard";
 import NMPunctualityChart from "./components/NMPunctualityChart";
 import ConsolidatedFaaDashboard from "./components/ConsolidatedFaaDashboard";
+import AirportContactDashboard from "./components/AirportContactDashboard";
 
 
 // Flight control mappings
