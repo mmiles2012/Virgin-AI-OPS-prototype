@@ -36,6 +36,7 @@ import VirginAtlanticFleetMonitor from "./components/VirginAtlanticFleetMonitor"
 import IntelligenceDashboard from "./components/IntelligenceDashboard";
 import GroundFuelMapViewer from "./components/GroundFuelMapViewer";
 import EmergencyResponseTesting from "./components/EmergencyResponseTesting";
+import HubDelayPredictionDashboard from "./components/HubDelayPredictionDashboard";
 
 
 // Flight control mappings
@@ -405,7 +406,7 @@ function App() {
             
             {viewMode === 'delay-prediction' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
-                <DelayPredictionDashboard />
+                <HubDelayPredictionDashboard />
               </div>
             )}
             
