@@ -1,0 +1,54 @@
+# airport_scraper_package.py
+# Replit-compatible scraper for 10 airport arrival boards using Playwright
+
+import asyncio
+from playwright.async_api import async_playwright
+import pandas as pd
+from datetime import datetime
+
+# Airport scraping config
+AIRPORTS = {
+    "JFK": "https://www.jfkairport.com/flights/arrivals",
+    "BOS": "https://www.massport.com/logan-airport/flights/",
+    "ATL": "https://www.atl.com/flight-info/",
+    "LAX": "https://www.flylax.com/en/flight-status",
+    "SFO": "https://www.flysfo.com/flights",
+    "MCO": "https://orlandoairports.net/flights/",
+    "MIA": "https://www.miami-airport.com/flights_arrivals.asp",
+    "TPA": "https://www.tampaairport.com/flight-status",
+    "LAS": "https://www.harryreidairport.com/Arrivals",
+    "LHR": "https://www.heathrow.com/arrivals"
+}
+
+async def scrape_airport(page, code, url):
+    await page.goto(url)
+    await page.wait_for_timeout(10000)  # wait 10 seconds for JavaScript to render
+    content = await page.content()
+    timestamp = datetime.utcnow().isoformat()
+    return {
+        'Airport': code,
+        'Content': content,
+        'ScrapeTimeUTC': timestamp
+    }
+
+async def run_scrapers():
+    results = []
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+
+        for code, url in AIRPORTS.items():
+            print(f"Scraping {code}...")
+            try:
+                data = await scrape_airport(page, code, url)
+                results.append(data)
+            except Exception as e:
+                print(f"Error scraping {code}: {e}")
+        await browser.close()
+
+    df = pd.DataFrame(results)
+    df.to_csv("airport_raw_html_logs.csv", index=False)
+    print("Scraping complete. Data saved to airport_raw_html_logs.csv")
+
+if __name__ == "__main__":
+    asyncio.run(run_scrapers())

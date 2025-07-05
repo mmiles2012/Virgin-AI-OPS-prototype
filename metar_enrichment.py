@@ -47,7 +47,34 @@ def enrich_with_metar(delay_df, metar_df):
     """
     Enrich delay dataset with METAR weather features
     """
+    if delay_df.empty or metar_df.empty:
+        print("Warning: Empty DataFrame provided to enrich_with_metar")
+        return delay_df
+    
+    # Handle live flight data structure
+    if 'ScrapeTimeUTC' in delay_df.columns:
+        delay_df['scrape_time'] = pd.to_datetime(delay_df['ScrapeTimeUTC'])
+        delay_df['year'] = delay_df['scrape_time'].dt.year
+        delay_df['month'] = delay_df['scrape_time'].dt.month
+        
+        # Map Airport codes to ICAO for weather matching
+        icao_mapping = {
+            'JFK': 'KJFK', 'BOS': 'KBOS', 'ATL': 'KATL', 'LAX': 'KLAX',
+            'SFO': 'KSFO', 'MCO': 'KMCO', 'MIA': 'KMIA', 'TPA': 'KTPA',
+            'LAS': 'KLAS', 'LHR': 'EGLL'
+        }
+        delay_df['airport'] = delay_df['Airport'].map(icao_mapping).fillna(delay_df['Airport'])
+    elif 'year' not in delay_df.columns:
+        # Use current date for simulated data
+        from datetime import datetime
+        current_time = datetime.now()
+        delay_df['year'] = current_time.year
+        delay_df['month'] = current_time.month
+        delay_df['airport'] = delay_df.get('Airport', 'UNKNOWN')
+    
     delay_df["yearmonth"] = delay_df["year"].astype(str) + delay_df["month"].apply(lambda x: f"{x:02d}")
+    
+    # Merge with weather data
     df = pd.merge(delay_df, metar_df, on=["airport", "yearmonth"], how="left")
     df.drop(columns=["yearmonth"], inplace=True)
     df.fillna(0, inplace=True)

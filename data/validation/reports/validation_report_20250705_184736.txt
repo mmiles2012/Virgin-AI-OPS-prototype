@@ -1,0 +1,37 @@
+
+=== AINO ML Model Validation Report ===
+Generated: 2025-07-05T18:47:36.579855
+
+VALIDATION OVERVIEW:
+- Dataset Size: 193 flights
+- Validation Period: Live flight data collection
+- Weather Integration: ✓ Active
+
+PERFORMANCE METRICS:
+- Mean Absolute Error: 9.75 minutes
+- Classification Accuracy: 48.7%
+- Virgin Atlantic Accuracy: 100.0%
+- Model Reliability: Low
+
+AIRPORT PERFORMANCE:
+- JFK: 57.1% accuracy, 11.7min MAE (21 flights)
+- BOS: 45.0% accuracy, 9.1min MAE (20 flights)
+- ATL: 71.4% accuracy, 8.0min MAE (21 flights)
+- LAX: 65.0% accuracy, 10.1min MAE (20 flights)
+- SFO: 53.3% accuracy, 9.1min MAE (15 flights)
+- MCO: 26.7% accuracy, 10.3min MAE (15 flights)
+- MIA: 29.4% accuracy, 9.4min MAE (17 flights)
+- TPA: 27.8% accuracy, 10.2min MAE (18 flights)
+- LAS: 22.7% accuracy, 10.6min MAE (22 flights)
+- LHR: 75.0% accuracy, 9.1min MAE (24 flights)
+
+WEATHER INTEGRATION:
+- Weather-Delay Correlation: 0.000
+- Weather Impact: Weak
+
+MODEL INSIGHTS:
+- Best Performing Airport: LHR
+- Average Prediction Error: 9.8 minutes
+- Recommendation: Requires additional training
+
+VALIDATION COMPLETE: ⚠ ATTENTION REQUIRED
