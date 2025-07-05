@@ -1,52 +1,97 @@
-ICAO,IATA,Airport Name,Country,Latitude,Longitude,Support
-KATL,ATL,Hartsfield–Jackson Atlanta Intl,USA,33.6407,-84.4277,both
-OMDB,DXB,Dubai International,UAE,25.2532,55.3657,both
-KDFW,DFW,Dallas/Fort Worth Intl,USA,32.8998,-97.0403,both
-RJTT,HND,Tokyo Haneda,Japan,35.5494,139.7798,both
-EGLL,LHR,London Heathrow,UK,51.47,-0.4543,both
-KDEN,DEN,Denver International,USA,39.8561,-104.6737,both
-KORD,ORD,Chicago O'Hare Intl,USA,41.9742,-87.9073,both
-LTFM,IST,Istanbul Airport,Turkey,40.976,28.8146,both
-ZSPD,PVG,Shanghai Pudong Intl,China,31.1443,121.8083,both
-ZSSS,SHA,Shanghai Hongqiao,China,31.1979,121.3364,both
-VIDP,DEL,Indira Gandhi Intl,India,28.5562,77.1,both
-KJFK,JFK,John F. Kennedy Intl,USA,40.6413,-73.7781,both
-KLAX,LAX,Los Angeles Intl,USA,33.9425,-118.4081,both
-LEMD,MAD,Madrid-Barajas,Spain,40.4936,-3.5668,both
-LFPG,CDG,Charles de Gaulle,France,49.0097,2.5479,both
-LIRF,FCO,Rome Fiumicino,Italy,41.8003,12.2389,both
-LOWW,VIE,Vienna International,Austria,48.1103,16.5697,both
-EDDF,FRA,Frankfurt am Main,Germany,50.0264,8.5431,both
-EHAM,AMS,Amsterdam Schiphol,Netherlands,52.3086,4.7639,both
-EGKK,LGW,London Gatwick,UK,51.1481,-0.1903,both
-KBOS,BOS,Boston Logan Intl,USA,42.3656,-71.0096,both
-KMIA,MIA,Miami International,USA,25.7959,-80.2870,both
-KLAS,LAS,Las Vegas McCarran,USA,36.0840,-115.1537,both
-KSEA,SEA,Seattle-Tacoma Intl,USA,47.4502,-122.3088,both
-CYYZ,YYZ,Toronto Pearson Intl,Canada,43.6777,-79.6248,both
-CYVR,YVR,Vancouver International,Canada,49.1939,-123.1844,both
-YSSY,SYD,Sydney Kingsford Smith,Australia,-33.9399,151.1753,both
-YMML,MEL,Melbourne Airport,Australia,-37.6690,144.8410,both
-SBGR,GRU,São Paulo/Guarulhos,Brazil,-23.4356,-46.4731,both
-SAEZ,EZE,Buenos Aires Ezeiza,Argentina,-34.8222,-58.5358,both
-FAOR,JNB,OR Tambo International,South Africa,-26.1392,28.2460,both
-HECA,CAI,Cairo International,Egypt,30.1219,31.4056,both
-OTHH,DOH,Hamad International,Qatar,25.2731,51.6081,both
-OOMS,MCT,Muscat International,Oman,23.5933,58.2844,both
-VABB,BOM,Chhatrapati Shivaji Intl,India,19.0896,72.8656,both
-VOBL,BLR,Kempegowda International,India,13.1986,77.7066,both
-RJAA,NRT,Tokyo Narita,Japan,35.7647,140.3864,both
-RKSI,ICN,Seoul Incheon,South Korea,37.4602,126.4407,both
-VOMM,MAA,Chennai International,India,12.9941,80.1709,both
-VTBS,BKK,Bangkok Suvarnabhumi,Thailand,13.6900,100.7501,both
-WMKK,KUL,Kuala Lumpur International,Malaysia,2.7456,101.7099,both
-WSSS,SIN,Singapore Changi,Singapore,1.3644,103.9915,both
-ZGSZ,SZX,Shenzhen Bao'an International,China,22.6393,113.8069,both
-ZGGG,CAN,Guangzhou Baiyun International,China,23.3924,113.2988,both
-RPLL,MNL,Ninoy Aquino International,Philippines,14.5086,121.0194,both
-YSSY,SYD,Sydney Kingsford Smith,Australia,-33.9399,151.1753,both
-NZAA,AKL,Auckland Airport,New Zealand,-37.0082,174.7850,both
-ENGM,OSL,Oslo Gardermoen,Norway,60.1939,11.1004,both
-ESSA,ARN,Stockholm Arlanda,Sweden,59.6519,17.9186,both
-EKCH,CPH,Copenhagen Kastrup,Denmark,55.6180,12.6506,both
-EFHK,HEL,Helsinki Vantaa,Finland,60.3172,24.9633,both
+ICAO,IATA,Airport Name,Country,Latitude,Longitude,Support,Contact,Phone
+KATL,ATL,Hartsfield–Jackson Atlanta Intl,USA,33.6407,-84.4277,both,ATL Operations Center,+1-404-530-6600
+OMDB,DXB,Dubai International,UAE,25.2532,55.3657,both,Dubai Airport Operations,+971-4-216-2525
+KDFW,DFW,Dallas/Fort Worth Intl,USA,32.8998,-97.0403,both,DFW Airport Operations,+1-972-973-3112
+RJTT,HND,Tokyo Haneda,Japan,35.5494,139.7798,fuel_only,Haneda Airport Services,+81-3-5757-8111
+EGLL,LHR,London Heathrow,UK,51.47,-0.4543,both,Heathrow Operations Centre,+44-20-8759-4321
+KDEN,DEN,Denver International,USA,39.8561,-104.6737,both,DEN Airport Operations,+1-303-342-2000
+KORD,ORD,Chicago O'Hare Intl,USA,41.9742,-87.9073,both,ORD Operations Center,+1-773-686-2200
+LTFM,IST,Istanbul Airport,Turkey,40.976,28.8146,both,Istanbul Airport Operations,+90-212-463-3000
+ZSPD,PVG,Shanghai Pudong Intl,China,31.1443,121.8083,both,Pudong Airport Operations,+86-21-6834-1000
+ZSSS,SHA,Shanghai Hongqiao Intl,China,31.1979,121.3364,both,Hongqiao Airport Operations,+86-21-2236-9000
+KJFK,JFK,John F Kennedy Intl,USA,40.6413,-73.7781,both,JFK Airport Operations,+1-718-244-4444
+RJAA,NRT,Tokyo Narita Intl,Japan,35.7647,140.3864,both,Narita Airport Operations,+81-476-34-8000
+KLAX,LAX,Los Angeles Intl,USA,33.9425,-118.4081,both,LAX Airport Operations,+1-855-463-5252
+EDDF,FRA,Frankfurt Airport,Germany,50.0379,8.5622,both,Fraport Operations Center,+49-69-690-70
+EHAM,AMS,Amsterdam Airport Schiphol,Netherlands,52.3105,4.7683,both,Schiphol Operations,+31-20-601-9111
+VIDP,DEL,Indira Gandhi Intl,India,28.5562,77.1000,both,Delhi Airport Operations,+91-11-2565-2011
+LFPG,CDG,Charles de Gaulle Airport,France,49.0097,2.5479,both,CDG Operations Center,+33-1-70-36-39-50
+KBOS,BOS,Boston Logan Intl,USA,42.3656,-71.0096,both,Logan Operations Center,+1-617-561-1800
+KMCO,MCO,Orlando International,USA,28.4312,-81.3081,both,MCO Airport Operations,+1-407-825-2001
+KLAS,LAS,McCarran Intl Las Vegas,USA,36.0840,-115.1537,both,LAS Airport Operations,+1-702-261-5211
+KMIA,MIA,Miami International,USA,25.7932,-80.2906,both,MIA Airport Operations,+1-305-876-7000
+KTPA,TPA,Tampa International,USA,27.9755,-82.5332,both,TPA Airport Operations,+1-813-870-8700
+KSFO,SFO,San Francisco Intl,USA,37.6213,-122.3790,both,SFO Airport Operations,+1-650-821-8211
+KIAD,IAD,Washington Dulles Intl,USA,38.9445,-77.4558,both,IAD Airport Operations,+1-703-572-2700
+KPHX,PHX,Phoenix Sky Harbor Intl,USA,33.4343,-112.0116,both,PHX Airport Operations,+1-602-273-3300
+KIAH,IAH,George Bush Intercontinental,USA,29.9902,-95.3368,both,IAH Airport Operations,+1-281-230-3100
+CYYZ,YYZ,Toronto Pearson Intl,Canada,43.6777,-79.6248,both,YYZ Airport Operations,+1-416-247-7678
+LEMD,MAD,Adolfo Suárez Madrid–Barajas,Spain,40.4719,-3.5626,both,Madrid Airport Operations,+34-91-321-1000
+LIRF,FCO,Leonardo da Vinci–Fiumicino,Italy,41.8003,12.2389,both,Fiumicino Operations,+39-06-65951
+LOWW,VIE,Vienna International,Austria,48.1103,16.5697,both,Vienna Airport Operations,+43-1-7007-0
+ESSA,ARN,Stockholm Arlanda,Sweden,59.6519,17.9186,both,Arlanda Operations,+46-10-109-1000
+ENGM,OSL,Oslo Airport Gardermoen,Norway,60.1939,11.1004,both,Oslo Airport Operations,+47-815-50-250
+EKCH,CPH,Copenhagen Airport,Denmark,55.6181,12.6561,both,Copenhagen Operations,+45-32-31-32-31
+EFHK,HEL,Helsinki Airport,Finland,60.3172,24.9633,both,Helsinki Airport Operations,+358-20-708-2841
+UUEE,SVO,Sheremetyevo Intl,Russia,55.9726,37.4146,both,Sheremetyevo Operations,+7-495-578-9101
+EGKK,LGW,London Gatwick,UK,51.1537,-0.1821,both,Gatwick Operations Centre,+44-1293-503-203
+EGCC,MAN,Manchester Airport,UK,53.3536,-2.2750,both,Manchester Operations,+44-161-489-3000
+EIDW,DUB,Dublin Airport,Ireland,53.4264,-6.2499,both,Dublin Airport Operations,+353-1-814-1111
+LPPT,LIS,Lisbon Airport,Portugal,38.7813,-9.1357,both,Lisbon Airport Operations,+351-21-841-3500
+LEBL,BCN,Barcelona Airport,Spain,41.2971,2.0785,both,Barcelona Operations,+34-93-298-3838
+LSZH,ZUR,Zurich Airport,Switzerland,47.4647,8.5492,both,Zurich Airport Operations,+41-43-816-2211
+LOWK,KLU,Klagenfurt Airport,Austria,46.6425,14.3378,ground_only,Klagenfurt Operations,+43-463-415000
+LOWI,INN,Innsbruck Airport,Austria,47.2602,11.3440,fuel_only,Innsbruck Fuel Services,+43-512-225525
+YMML,MEL,Melbourne Airport,Australia,-37.6690,144.8410,both,Melbourne Airport Operations,+61-3-9297-1600
+YSSY,SYD,Kingsford Smith Airport,Australia,-33.9399,151.1753,both,Sydney Airport Operations,+61-2-9667-9111
+NZAA,AKL,Auckland Airport,New Zealand,-37.0082,174.7850,both,Auckland Airport Operations,+64-9-275-0789
+VHHH,HKG,Hong Kong Intl,Hong Kong,22.3080,113.9185,both,HKG Airport Operations,+852-2181-8888
+WSSS,SIN,Singapore Changi,Singapore,1.3644,103.9915,both,Changi Airport Operations,+65-6595-6868
+WIII,CGK,Soekarno–Hatta Intl,Indonesia,-6.1256,106.6559,both,Jakarta Airport Operations,+62-21-550-5307
+VTBS,BKK,Suvarnabhumi Airport,Thailand,13.6900,100.7501,both,Bangkok Airport Operations,+66-2-132-1888
+WMKK,KUL,Kuala Lumpur Intl,Malaysia,2.7456,101.7072,both,KLIA Operations Center,+60-3-8776-2000
+RJBB,KIX,Kansai Intl,Japan,34.4347,135.2440,both,Kansai Airport Operations,+81-72-455-2500
+RKSI,ICN,Incheon Intl,South Korea,37.4602,126.4407,both,Incheon Airport Operations,+82-32-741-2114
+ZBAA,PEK,Beijing Capital Intl,China,40.0801,116.5846,both,Beijing Airport Operations,+86-10-9612-3456
+ZGSZ,SZX,Shenzhen Bao'an Intl,China,22.6393,113.8108,both,Shenzhen Airport Operations,+86-755-2345-6789
+ZGGG,CAN,Guangzhou Baiyun Intl,China,23.3924,113.2988,both,Guangzhou Airport Operations,+86-20-3606-6999
+RCTP,TPE,Taiwan Taoyuan Intl,Taiwan,25.0797,121.2342,both,Taoyuan Airport Operations,+886-3-273-3728
+RKPC,PUS,Busan Airport,South Korea,35.1795,128.9382,ground_only,Busan Ground Services,+82-51-973-2000
+RJFF,KOJ,Kagoshima Airport,Japan,31.8034,130.7192,fuel_only,Kagoshima Fuel Services,+81-99-261-3111
+SAEZ,EZE,Ezeiza Intl,Argentina,-34.8222,-58.5358,both,Ezeiza Airport Operations,+54-11-5480-6111
+SBGR,GRU,São Paulo–Guarulhos Intl,Brazil,-23.4356,-46.4731,both,Guarulhos Operations,+55-11-2445-2945
+SCEL,SCL,Santiago Airport,Chile,-33.3928,-70.7856,both,Santiago Airport Operations,+56-2-2690-1900
+SKBO,BOG,El Dorado Intl,Colombia,4.7016,-74.1469,both,Bogota Airport Operations,+57-1-266-2000
+SPJC,LIM,Jorge Chávez Intl,Peru,-12.0219,-77.1143,both,Lima Airport Operations,+51-1-517-3100
+SUMU,MVD,Montevideo Airport,Uruguay,-34.8384,-56.0308,ground_only,Montevideo Ground Services,+598-2604-0329
+FACT,CPT,Cape Town Intl,South Africa,-33.9715,18.6021,both,Cape Town Operations,+27-21-937-1200
+FAOR,JNB,OR Tambo Intl,South Africa,-26.1367,28.2411,both,Johannesburg Operations,+27-11-921-6262
+HECA,CAI,Cairo Intl,Egypt,30.1219,31.4056,both,Cairo Airport Operations,+20-2-2265-5000
+HAAB,ADD,Addis Ababa Bole Intl,Ethiopia,8.9844,38.7967,both,Addis Ababa Operations,+251-11-665-1200
+DTTJ,TUN,Tunis–Carthage Intl,Tunisia,36.8510,10.2272,ground_only,Tunis Ground Services,+216-71-755-000
+GMMN,RAK,Marrakech Menara,Morocco,31.6069,-8.0363,fuel_only,Marrakech Fuel Services,+212-524-447865
+OERK,RUH,King Khalid Intl,Saudi Arabia,24.9576,46.6988,both,Riyadh Airport Operations,+966-11-221-1000
+OEJN,JED,King Abdulaziz Intl,Saudi Arabia,21.6796,39.1565,both,Jeddah Airport Operations,+966-12-684-2222
+OTBD,DOH,Hamad Intl,Qatar,25.2610,51.6130,both,Doha Airport Operations,+974-4010-6666
+OMAA,AUH,Abu Dhabi Intl,UAE,24.4330,54.6511,both,Abu Dhabi Operations,+971-2-505-7500
+OIKB,KWI,Kuwait Intl,Kuwait,29.2267,47.9689,both,Kuwait Airport Operations,+965-2433-5555
+OIMM,IKA,Imam Khomeini Intl,Iran,35.4161,51.1522,both,Tehran Airport Operations,+98-21-4601-3000
+UKBB,KBP,Boryspil Intl,Ukraine,50.3450,30.8947,both,Kiev Airport Operations,+380-44-281-7474
+LKPR,PRG,Václav Havel Airport Prague,Czech Republic,50.1019,14.2632,both,Prague Airport Operations,+420-220-113-314
+EPWA,WAW,Warsaw Chopin Airport,Poland,52.1657,20.9671,both,Warsaw Airport Operations,+48-22-650-4220
+LHBP,BUD,Budapest Ferenc Liszt Intl,Hungary,47.4394,19.2556,both,Budapest Airport Operations,+36-1-296-7000
+LROP,OTP,Henri Coandă Intl,Romania,44.5722,26.1021,both,Bucharest Operations,+40-21-204-1200
+LBSF,SOF,Sofia Airport,Bulgaria,42.6824,23.4117,both,Sofia Airport Operations,+359-2-937-2211
+LGAV,ATH,Athens Intl,Greece,37.9364,23.9445,both,Athens Airport Operations,+30-210-353-0000
+LTBA,ISL,Istanbul Sabiha Gökçen,Turkey,40.8986,29.3092,both,Sabiha Gokcen Operations,+90-216-588-8888
+LTAC,ESB,Esenboğa Intl,Turkey,40.1281,32.9951,ground_only,Ankara Ground Services,+90-312-590-4000
+BIKF,KEF,Keflavík Intl,Iceland,63.9850,-22.6056,both,Keflavik Airport Operations,+354-425-0600
+BGBW,SFJ,Kangerlussuaq Airport,Greenland,67.0122,-50.7116,fuel_only,Kangerlussuaq Fuel,+299-84-1008
+CYUL,YUL,Montréal–Trudeau Intl,Canada,45.4706,-73.7408,both,Montreal Airport Operations,+1-514-394-7377
+CYVR,YVR,Vancouver Intl,Canada,49.1947,-123.1814,both,Vancouver Airport Operations,+1-604-207-7077
+CYYC,YYC,Calgary Intl,Canada,51.1225,-114.0197,both,Calgary Airport Operations,+1-403-735-1200
+MMMX,MEX,Mexico City Intl,Mexico,19.4363,-99.0721,both,Mexico City Operations,+52-55-2482-2424
+MMUN,CUN,Cancún Intl,Mexico,21.0365,-86.8771,both,Cancun Airport Operations,+52-998-848-7200
+TJSJ,SJU,Luis Muñoz Marín Intl,Puerto Rico,18.4394,-66.0018,both,San Juan Operations,+1-787-289-7714
+MKJP,KIN,Norman Manley Intl,Jamaica,17.9357,-76.7875,ground_only,Kingston Ground Services,+1-876-924-8452
+TNCM,SXM,Princess Juliana Intl,Sint Maarten,18.0410,-63.1089,fuel_only,Sint Maarten Fuel,+1-721-546-7542
