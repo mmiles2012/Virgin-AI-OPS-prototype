@@ -6485,6 +6485,173 @@ else:
     }
   });
 
+  // Network Manager (NM) Punctuality Data API
+  app.get('/api/nm-punctuality', (req, res) => {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      
+      // Load the NM punctuality CSV data
+      const csvPath = path.join(process.cwd(), 'data', 'nm_network_punctuality.csv');
+      
+      if (!fs.existsSync(csvPath)) {
+        return res.status(404).json({
+          success: false,
+          error: 'Network Manager punctuality data not found'
+        });
+      }
+      
+      const csvData = fs.readFileSync(csvPath, 'utf8');
+      const lines = csvData.split('\n');
+      const headers = lines[0].split(',');
+      
+      // Parse CSV data into JSON format
+      const data = lines.slice(1)
+        .filter(line => line.trim().length > 0)
+        .map(line => {
+          const values = line.split(',');
+          const record: any = {};
+          headers.forEach((header, index) => {
+            record[header.trim()] = values[index] ? values[index].trim() : null;
+          });
+          return record;
+        })
+        .filter(record => record.DATE && record.ARR_PUN_DY && record.DEP_PUN_DY)
+        .map(record => ({
+          DATE: record.DATE,
+          ARR_PUN_DY: parseFloat(record.ARR_PUN_DY) || 0,
+          DEP_PUN_DY: parseFloat(record.DEP_PUN_DY) || 0,
+          OPE_SCH_DY: parseFloat(record.OPE_SCH_DY) || 0,
+          ARR_PUNCTUAL_FLIGHTS_DY: parseInt(record.ARR_PUNCTUAL_FLIGHTS_DY) || 0,
+          DEP_PUNCTUAL_FLIGHTS_DY: parseInt(record.DEP_PUNCTUAL_FLIGHTS_DY) || 0,
+          ARR_SCHED_FLIGHTS_DY: parseInt(record.ARR_SCHED_FLIGHTS_DY) || 0,
+          DEP_SCHED_FLIGHTS_DY: parseInt(record.DEP_SCHED_FLIGHTS_DY) || 0
+        }));
+      
+      // Get recent data (last 365 days) for better chart performance
+      const recentData = data.slice(-365);
+      
+      res.json({
+        success: true,
+        data: recentData,
+        total_records: data.length,
+        recent_records: recentData.length,
+        data_source: 'European Network Manager (NM) Punctuality Statistics',
+        date_range: {
+          start: data[0]?.DATE || 'N/A',
+          end: data[data.length - 1]?.DATE || 'N/A'
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error loading NM punctuality data:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to load Network Manager punctuality data'
+      });
+    }
+  });
+
+  // Enhanced NM Analytics with European airspace insights
+  app.get('/api/nm-punctuality/analytics', (req, res) => {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      
+      const csvPath = path.join(process.cwd(), 'data', 'nm_network_punctuality.csv');
+      
+      if (!fs.existsSync(csvPath)) {
+        return res.status(404).json({
+          success: false,
+          error: 'Network Manager punctuality data not found'
+        });
+      }
+      
+      const csvData = fs.readFileSync(csvPath, 'utf8');
+      const lines = csvData.split('\n');
+      const headers = lines[0].split(',');
+      
+      const data = lines.slice(1)
+        .filter(line => line.trim().length > 0)
+        .map(line => {
+          const values = line.split(',');
+          const record: any = {};
+          headers.forEach((header, index) => {
+            record[header.trim()] = values[index] ? values[index].trim() : null;
+          });
+          return record;
+        })
+        .filter(record => record.DATE && record.ARR_PUN_DY && record.DEP_PUN_DY)
+        .map(record => ({
+          date: record.DATE,
+          arrivalPunctuality: parseFloat(record.ARR_PUN_DY) || 0,
+          departurePunctuality: parseFloat(record.DEP_PUN_DY) || 0,
+          operationalSchedule: parseFloat(record.OPE_SCH_DY) || 0,
+          arrivalFlights: parseInt(record.ARR_SCHED_FLIGHTS_DY) || 0,
+          departureFlights: parseInt(record.DEP_SCHED_FLIGHTS_DY) || 0
+        }));
+      
+      // Calculate analytics
+      const avgArrivalPunctuality = data.reduce((sum, d) => sum + d.arrivalPunctuality, 0) / data.length;
+      const avgDeparturePunctuality = data.reduce((sum, d) => sum + d.departurePunctuality, 0) / data.length;
+      const avgOperationalSchedule = data.reduce((sum, d) => sum + d.operationalSchedule, 0) / data.length;
+      
+      // Monthly trends
+      const monthlyData = data.reduce((acc, record) => {
+        const month = record.date.substring(0, 7); // YYYY-MM
+        if (!acc[month]) {
+          acc[month] = {
+            month,
+            arrivalPunctuality: [],
+            departurePunctuality: [],
+            operationalSchedule: []
+          };
+        }
+        acc[month].arrivalPunctuality.push(record.arrivalPunctuality);
+        acc[month].departurePunctuality.push(record.departurePunctuality);
+        acc[month].operationalSchedule.push(record.operationalSchedule);
+        return acc;
+      }, {} as any);
+      
+      const monthlyTrends = Object.values(monthlyData).map((month: any) => ({
+        month: month.month,
+        avgArrivalPunctuality: month.arrivalPunctuality.reduce((a: number, b: number) => a + b, 0) / month.arrivalPunctuality.length,
+        avgDeparturePunctuality: month.departurePunctuality.reduce((a: number, b: number) => a + b, 0) / month.departurePunctuality.length,
+        avgOperationalSchedule: month.operationalSchedule.reduce((a: number, b: number) => a + b, 0) / month.operationalSchedule.length
+      }));
+      
+      res.json({
+        success: true,
+        analytics: {
+          overall: {
+            avgArrivalPunctuality: Math.round(avgArrivalPunctuality * 1000) / 10, // Convert to percentage
+            avgDeparturePunctuality: Math.round(avgDeparturePunctuality * 1000) / 10,
+            avgOperationalSchedule: Math.round(avgOperationalSchedule * 1000) / 10,
+            totalRecords: data.length,
+            dateRange: {
+              start: data[0]?.date || 'N/A',
+              end: data[data.length - 1]?.date || 'N/A'
+            }
+          },
+          monthly_trends: monthlyTrends,
+          european_airspace_insights: {
+            data_source: 'European Network Manager (NM)',
+            coverage: 'Pan-European airspace network',
+            punctuality_standard: '15-minute tolerance for scheduled operations',
+            regulatory_authority: 'EUROCONTROL Network Manager'
+          }
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error generating NM analytics:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate Network Manager analytics'
+      });
+    }
+  });
+
   // Hub comparison analytics
   app.get('/api/delays/hub-comparison', (req, res) => {
     try {

@@ -37,6 +37,7 @@ import IntelligenceDashboard from "./components/IntelligenceDashboard";
 import GroundFuelMapViewer from "./components/GroundFuelMapViewer";
 import EmergencyResponseTesting from "./components/EmergencyResponseTesting";
 import HubDelayPredictionDashboard from "./components/HubDelayPredictionDashboard";
+import NMPunctualityChart from "./components/NMPunctualityChart";
 
 
 // Flight control mappings
@@ -75,7 +76,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'service-coverage' | 'emergency-testing';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'nm-punctuality' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'service-coverage' | 'emergency-testing';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -215,6 +216,17 @@ function App() {
                     }`}
                   >
                     Delay Prediction
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('nm-punctuality')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'nm-punctuality' 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    European Punctuality
                   </button>
                   
                   <button
@@ -407,6 +419,14 @@ function App() {
             {viewMode === 'delay-prediction' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
                 <HubDelayPredictionDashboard />
+              </div>
+            )}
+            
+            {viewMode === 'nm-punctuality' && (
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-purple-600/50 overflow-auto">
+                <div className="p-6">
+                  <NMPunctualityChart />
+                </div>
               </div>
             )}
             
