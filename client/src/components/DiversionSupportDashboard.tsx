@@ -1,5 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Phone, Clock, DollarSign, Users, Plane, MapPin, CheckCircle, Zap, XCircle, Building, Fuel, Wrench, Wifi } from 'lucide-react';
+import Papa from 'papaparse';
+// Airport contact information interface
+interface AirportContact {
+  icao: string;
+  iata: string;
+  name: string;
+  country: string;
+  support: string;
+  contact?: string;
+  phone?: string;
+}
+
 // Temporary fix: Define basic aircraft specs locally to avoid circular imports
 const AIRBUS_FLEET_SPECS = {
   'A330-300': { wingspan: 60.3, length: 63.7, height: 16.8, mtow: 233000, passengers: { typical: 277 }, runway_requirements: { takeoff: 2500 }, engines: 'Trent 700', gate_requirements: { bridge_compatibility: 'Wide-body' } },
@@ -196,6 +208,36 @@ export default function DiversionSupportDashboard() {
     catering: { status: 'pending', progress: 0 },
     customs: { status: 'pending', progress: 0 }
   });
+  const [airportContacts, setAirportContacts] = useState<AirportContact[]>([]);
+
+  // Load airport contact data on component mount
+  useEffect(() => {
+    const loadAirportContacts = async () => {
+      try {
+        const response = await fetch('/top300_airport_support.csv');
+        const text = await response.text();
+        const parsed = Papa.parse(text, { header: true }).data as any[];
+        const contacts = parsed.map((entry: any) => ({
+          icao: entry.ICAO,
+          iata: entry.IATA,
+          name: entry['Airport Name'],
+          country: entry.Country,
+          support: entry.Support?.toLowerCase() || 'unknown',
+          contact: entry.Contact || 'Not available',
+          phone: entry.Phone || 'Not available'
+        })).filter((contact: AirportContact) => contact.icao && contact.name);
+        setAirportContacts(contacts);
+      } catch (error) {
+        console.error('Failed to load airport contact data:', error);
+      }
+    };
+    loadAirportContacts();
+  }, []);
+
+  // Function to get airport contact details
+  const getAirportContact = (icao: string): AirportContact | null => {
+    return airportContacts.find(contact => contact.icao === icao.toUpperCase()) || null;
+  };
 
   const addLog = (message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') => {
     const timestamp = new Date().toLocaleTimeString();
@@ -399,8 +441,27 @@ export default function DiversionSupportDashboard() {
       
       const data = await response.json();
       if (data.success) {
-        setDiversionResponse(data.diversion);
+        // Enhance the diversion response with authentic airport contact information
+        const airportContact = getAirportContact(diversionRequest.diversionAirport);
+        const enhancedResponse = {
+          ...data.diversion,
+          emergencyContacts: {
+            ...data.diversion.emergencyContacts,
+            ...(airportContact && {
+              airportOperations: airportContact.phone,
+              airportOperationsName: airportContact.name,
+              airportOperationsContact: airportContact.contact
+            })
+          }
+        };
+        
+        setDiversionResponse(enhancedResponse);
         addLog(`Comprehensive diversion support confirmed. Total cost: $${data.diversion.totalEstimatedCost.toLocaleString()}`, 'success');
+        
+        if (airportContact) {
+          addLog(`Airport operations contact confirmed: ${airportContact.name} - ${airportContact.phone}`, 'success');
+        }
+        
         setActiveTab('status');
       }
     } catch (error) {
@@ -1109,13 +1170,47 @@ export default function DiversionSupportDashboard() {
                 <span>Emergency Contacts</span>
               </h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(diversionResponse.emergencyContacts).map(([role, contact]) => (
-                  <div key={role} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="font-medium capitalize">{role.replace(/([A-Z])/g, ' $1')}</span>
-                    <span className="text-blue-600 font-mono">{contact}</span>
+              <div className="space-y-4">
+                {/* Authentic Airport Operations Contact - Highlighted */}
+                {diversionResponse.emergencyContacts.airportOperations && (
+                  <div className="p-4 bg-orange-50 border-l-4 border-orange-400 rounded-lg">
+                    <h4 className="font-semibold text-orange-900 mb-2 flex items-center">
+                      <Building className="w-4 h-4 mr-2" />
+                      Airport Operations Center (24/7)
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <div className="text-sm text-gray-600">Operations Center</div>
+                        <div className="font-semibold text-gray-900">{diversionResponse.emergencyContacts.airportOperationsName}</div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-gray-600">Direct Phone</div>
+                        <div className="font-mono text-lg text-blue-600">{diversionResponse.emergencyContacts.airportOperations}</div>
+                      </div>
+                      {diversionResponse.emergencyContacts.airportOperationsContact !== 'Not available' && (
+                        <div className="md:col-span-2">
+                          <div className="text-sm text-gray-600">Additional Contact</div>
+                          <div className="font-semibold text-gray-900">{diversionResponse.emergencyContacts.airportOperationsContact}</div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-3 text-sm text-orange-800 bg-orange-100 p-2 rounded">
+                      <strong>Primary Contact:</strong> Use this number for immediate diversion coordination, runway allocation, gate assignment, and emergency services activation.
+                    </div>
                   </div>
-                ))}
+                )}
+                
+                {/* Other Emergency Contacts */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {Object.entries(diversionResponse.emergencyContacts)
+                    .filter(([role]) => !role.startsWith('airport'))
+                    .map(([role, contact]) => (
+                      <div key={role} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span className="font-medium capitalize">{role.replace(/([A-Z])/g, ' $1')}</span>
+                        <span className="text-blue-600 font-mono">{contact}</span>
+                      </div>
+                    ))}
+                </div>
               </div>
             </div>
           </div>
@@ -1422,6 +1517,43 @@ export default function DiversionSupportDashboard() {
                       </div>
                     </div>
                   )}
+
+                  {/* Authentic Airport Contact Information */}
+                  {(() => {
+                    const contact = getAirportContact(airportIntelligenceData.basicInfo?.icao_code || '');
+                    return contact && (
+                      <div className="bg-orange-50 p-6 rounded-lg border-l-4 border-orange-400">
+                        <h3 className="text-lg font-bold text-orange-900 mb-4 flex items-center">
+                          <Phone className="w-5 h-5 mr-2" />
+                          Operational Contact Information
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <div className="text-sm text-gray-600">Airport Operations Center</div>
+                            <div className="font-semibold text-gray-900">{contact.name}</div>
+                            <div className="text-sm text-gray-600 mt-1">{contact.country}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-600">24/7 Operations Phone</div>
+                            <div className="font-semibold text-blue-600">{contact.phone}</div>
+                            <div className="text-sm text-gray-600 mt-1">Services: {contact.support}</div>
+                          </div>
+                          {contact.contact !== 'Not available' && (
+                            <div className="md:col-span-2">
+                              <div className="text-sm text-gray-600">Additional Contact</div>
+                              <div className="font-semibold text-gray-900">{contact.contact}</div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="mt-4 p-3 bg-orange-100 rounded-md">
+                          <div className="text-sm text-orange-800">
+                            <strong>Emergency Coordination:</strong> Contact operations center for diversion support, fuel coordination, 
+                            ground handling, and passenger services. Available 24/7 for emergency operational support.
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Operational Metrics */}
                   <div className="bg-green-50 p-6 rounded-lg">
