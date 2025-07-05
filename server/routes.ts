@@ -7282,6 +7282,130 @@ else:
     }
   });
 
+  // ML Training Data API endpoint
+  app.get('/api/faa-ml-training', async (req, res) => {
+    try {
+      console.log('Generating ML training dataset from FAA data...');
+      
+      // Convert faa_delay_data to training format
+      const records = Object.values(faa_delay_data);
+      const trainingData = records.map((record: any) => {
+        const delayRate = record.total_delay / record.total_ops;
+        const otpPercent = 100 * (1 - delayRate);
+        
+        // Risk categorization
+        let delayRiskCategory;
+        if (delayRate < 0.15) {
+          delayRiskCategory = "Green";
+        } else if (delayRate < 0.25) {
+          delayRiskCategory = "Amber";
+        } else {
+          delayRiskCategory = "Red";
+        }
+        
+        return {
+          airport: record.airport,
+          year: record.year,
+          month: record.month,
+          total_ops: record.total_ops,
+          carrier_delay: record.carrier_delay,
+          weather_delay: record.weather_delay,
+          nas_delay: record.nas_delay,
+          security_delay: record.security_delay,
+          late_aircraft_delay: record.late_aircraft_delay,
+          total_delay: record.total_delay,
+          otp_percent: Math.round(otpPercent * 10) / 10, // Round to 1 decimal
+          delay_risk_category: delayRiskCategory
+        };
+      });
+      
+      console.log(`Generated ${trainingData.length} ML training records`);
+      
+      res.json({
+        success: true,
+        data: trainingData,
+        metadata: {
+          total_records: trainingData.length,
+          airports: [...new Set(trainingData.map((r: any) => r.airport))],
+          risk_distribution: {
+            green: trainingData.filter((r: any) => r.delay_risk_category === 'Green').length,
+            amber: trainingData.filter((r: any) => r.delay_risk_category === 'Amber').length,
+            red: trainingData.filter((r: any) => r.delay_risk_category === 'Red').length
+          },
+          features: [
+            'airport', 'year', 'month', 'total_ops',
+            'carrier_delay', 'weather_delay', 'nas_delay',
+            'security_delay', 'late_aircraft_delay',
+            'total_delay', 'otp_percent', 'delay_risk_category'
+          ]
+        },
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error) {
+      console.error('Error generating ML training data:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate ML training data',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Train XGBoost Models API endpoint
+  app.get('/api/faa-train-model', async (req, res) => {
+    try {
+      console.log('Training XGBoost models for FAA delay prediction...');
+      
+      // Execute Python training script using child_process
+      const { exec } = require('child_process');
+      
+      exec('python3 -c "from train_faa_model import train_faa_models; import json; result = train_faa_models(); print(json.dumps(result, default=str))"', (error: any, stdout: any, stderr: any) => {
+        if (error) {
+          console.error('Training error:', error);
+          return res.status(500).json({
+            success: false,
+            error: 'Model training failed',
+            details: error.message
+          });
+        }
+        
+        try {
+          const result = JSON.parse(stdout);
+          
+          // Return training metrics without model objects
+          res.json({
+            success: true,
+            status: "trained",
+            metrics: {
+              "MAE: Total Delay (min)": result.delay_mae,
+              "MAE: OTP %": result.otp_mae,
+              "Accuracy: Risk Category": result.risk_accuracy
+            },
+            feature_importance: result.feature_importance || {},
+            model_performance: result.model_performance || {},
+            timestamp: new Date().toISOString()
+          });
+          
+        } catch (parseError) {
+          console.error('Parse error:', parseError);
+          res.status(500).json({
+            success: false,
+            error: 'Failed to parse training results'
+          });
+        }
+      });
+      
+    } catch (error) {
+      console.error('Error training models:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to initiate model training',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
   return httpServer;
 }
 
@@ -7432,4 +7556,6 @@ function calculateUSUKCorrelation() {
     timestamp: new Date().toISOString()
   };
 }
+
+
 
