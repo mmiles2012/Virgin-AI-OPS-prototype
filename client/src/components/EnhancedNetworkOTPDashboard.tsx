@@ -512,7 +512,7 @@ export default function EnhancedNetworkOTPDashboard() {
   const chartData = Object.entries(delayBreakdownData).map(([category, count]) => ({ category, count }));
 
   return (
-    <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
+    <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden h-full max-h-screen flex flex-col">
       {/* Enhanced Header */}
       <div className={`px-6 py-4 ${
         networkAlertStatus === 'alert' 
@@ -599,7 +599,8 @@ export default function EnhancedNetworkOTPDashboard() {
       </div>
 
       {/* Network Content */}
-      <div className="p-6">
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6">
         {networkView === 'delay-analysis' ? (
           // Delay Analysis View
           <div className="space-y-6">
@@ -949,6 +950,7 @@ export default function EnhancedNetworkOTPDashboard() {
             </Card>
           )
         )}
+        </div>
       </div>
     </div>
   );
