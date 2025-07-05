@@ -36,6 +36,9 @@ export default function AirspaceAlerts() {
   const [flightPathAlerts, setFlightPathAlerts] = useState<SafeAirspaceAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string>('');
+  const [alertBreakdown, setAlertBreakdown] = useState<any>({});
+  const [dataSources, setDataSources] = useState<string[]>([]);
+  const [scraperStatus, setScraperStatus] = useState<string>('');
   const { selectedFlight } = useSelectedFlight();
 
   useEffect(() => {
@@ -60,6 +63,9 @@ export default function AirspaceAlerts() {
       if (data.success) {
         setAlerts(data.alerts);
         setLastUpdated(data.timestamp);
+        setAlertBreakdown(data.alert_breakdown || {});
+        setDataSources(data.data_sources || []);
+        setScraperStatus(data.scraper_status || 'unknown');
       }
     } catch (error) {
       console.error('Failed to fetch airspace alerts:', error);
@@ -185,6 +191,49 @@ export default function AirspaceAlerts() {
             <div className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></div>
             Live Scraper Active
           </div>
+        </div>
+      </div>
+
+      {/* Enhanced Scraper Status Display */}
+      <div className="mb-4 p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm font-medium text-gray-300">Data Sources</div>
+          <div className="text-xs">
+            <Badge className={`${
+              scraperStatus === 'active' ? 'bg-green-500/20 text-green-300 border-green-500/20' :
+              scraperStatus === 'no_authentic_data' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/20' :
+              'bg-gray-500/20 text-gray-300 border-gray-500/20'
+            }`}>
+              {scraperStatus === 'active' ? '● Enhanced Scraper Active' :
+               scraperStatus === 'no_authentic_data' ? '● No Authentic Data' :
+               '● Status Unknown'}
+            </Badge>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4 text-xs">
+          <div>
+            <div className="text-gray-400 mb-1">Alert Breakdown</div>
+            <div className="space-y-1">
+              <div>Enhanced Scraper: {alertBreakdown.live_scraped_alerts || 0}</div>
+              <div>SafeAirspace NOTAMs: {alertBreakdown.safe_airspace_alerts || 0}</div>
+              <div>ICAO ML Intelligence: {alertBreakdown.icao_ml_alerts || 0}</div>
+            </div>
+          </div>
+          
+          <div>
+            <div className="text-gray-400 mb-1">Severity Distribution</div>
+            <div className="space-y-1">
+              <div className="text-red-400">Critical: {alertBreakdown.critical || 0}</div>
+              <div className="text-orange-400">High: {alertBreakdown.high || 0}</div>
+              <div className="text-yellow-400">Medium: {alertBreakdown.medium || 0}</div>
+              <div className="text-blue-400">Low: {alertBreakdown.low || 0}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-2 text-xs text-gray-500">
+          Sources: {dataSources.length > 0 ? dataSources.join(', ') : 'None available'}
         </div>
       </div>
 

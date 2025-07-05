@@ -1548,17 +1548,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
       }
 
-      // Get live aviation alerts from scraper
+      // Get live aviation alerts from enhanced scraper
       let liveAviationAlerts: any[] = [];
       try {
         const { spawn } = require('child_process');
         const path = require('path');
         
-        // Run aviation scraper
-        const pythonProcess = spawn('python3', [path.join(__dirname, '..', 'aviation_alerts_scraper.py')], {
+        // Run enhanced aviation scraper with reduced timeout
+        const pythonProcess = spawn('python3', [path.join(__dirname, '..', 'aviation_alerts_scraper_enhanced.py')], {
           cwd: process.cwd(),
           stdio: ['pipe', 'pipe', 'pipe'],
-          timeout: 30000
+          timeout: 20000
         });
         
         let scraperOutput = '';
@@ -1568,24 +1568,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         await new Promise((resolve, reject) => {
           pythonProcess.on('close', (code) => {
-            if (code === 0) {
-              try {
-                // Try to parse JSON output from scraper
-                const lines = scraperOutput.split('\n');
-                for (const line of lines) {
-                  if (line.trim().startsWith('{') && line.includes('alerts')) {
-                    const alertData = JSON.parse(line);
-                    liveAviationAlerts = alertData.alerts || [];
-                    break;
+            try {
+              // Try to parse JSON output from enhanced scraper
+              const lines = scraperOutput.split('\n');
+              let jsonFound = false;
+              
+              for (const line of lines) {
+                const trimmedLine = line.trim();
+                if (trimmedLine.startsWith('{') && trimmedLine.includes('"alerts"')) {
+                  try {
+                    const alertData = JSON.parse(trimmedLine);
+                    if (alertData.success && alertData.alerts) {
+                      liveAviationAlerts = alertData.alerts;
+                      console.log(`Enhanced scraper: Retrieved ${liveAviationAlerts.length} authentic alerts`);
+                      jsonFound = true;
+                      break;
+                    }
+                  } catch (parseError) {
+                    console.log('JSON parse error for line:', parseError);
+                    continue;
                   }
                 }
-              } catch (e) {
-                console.log('Aviation scraper output parsing failed, using static data');
               }
-              resolve(code);
-            } else {
-              reject(new Error(`Aviation scraper exited with code ${code}`));
+              
+              if (!jsonFound) {
+                console.log('Enhanced aviation scraper: No valid JSON output found, using no alerts');
+              }
+            } catch (e) {
+              console.log('Enhanced aviation scraper output processing failed:', e);
             }
+            resolve(code);
           });
           
           pythonProcess.on('error', (error) => {
@@ -1702,8 +1714,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         airspace_safety_status: icaoSafetyAlerts.airspace_status,
         ml_recommendations: icaoSafetyAlerts.recommendations,
-        data_sources: ['Live_Aviation_Scraper', 'SafeAirspace_NOTAMs', 'ICAO_Official_API', 'ML_Safety_Intelligence'],
-        scraper_status: liveAviationAlerts.length > 0 ? 'active' : 'fallback',
+        data_sources: ['Enhanced_Aviation_Scraper', 'SafeAirspace_NOTAMs', 'ICAO_Official_API', 'ML_Safety_Intelligence'],
+        scraper_status: liveAviationAlerts.length > 0 ? 'active' : 'no_authentic_data',
         timestamp: new Date().toISOString()
       });
     } catch (error: any) {
