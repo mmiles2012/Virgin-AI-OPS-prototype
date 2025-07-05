@@ -10,6 +10,7 @@ dependencies = [
     "flask>=3.1.1",
     "joblib>=1.5.1",
     "kafka-python>=2.2.15",
+    "lxml>=6.0.0",
     "matplotlib>=3.10.3",
     "networkx>=3.5",
     "numpy<2.0",

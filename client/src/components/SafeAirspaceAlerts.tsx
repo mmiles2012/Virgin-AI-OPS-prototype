@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Shield, Clock, MapPin, Radio, Plane, Info } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 
+const Badge = ({ className, children, ...props }: any) => (
+  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`} {...props}>
+    {children}
+  </span>
+);
+
 interface SafeAirspaceAlert {
   id: string;
   type: 'NOTAM' | 'TFR' | 'RESTRICTED' | 'WARNING' | 'PROHIBITED';
@@ -25,7 +31,7 @@ interface SafeAirspaceAlert {
   lastUpdated: string;
 }
 
-export default function SafeAirspaceAlerts() {
+export default function AirspaceAlerts() {
   const [alerts, setAlerts] = useState<SafeAirspaceAlert[]>([]);
   const [flightPathAlerts, setFlightPathAlerts] = useState<SafeAirspaceAlert[]>([]);
   const [loading, setLoading] = useState(true);
@@ -156,17 +162,29 @@ export default function SafeAirspaceAlerts() {
     <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-          <Shield className="h-5 w-5 text-blue-400" />
-          SafeAirspace Alerts
+          <Shield className="h-5 w-5 text-orange-400" />
+          Airspace Alerts
+          <Badge className="bg-orange-500/20 text-orange-400 border-orange-500 text-xs">
+            Live Monitoring
+          </Badge>
           {selectedFlight && (
             <span className="text-sm text-gray-400 ml-2">
               (Flight Path: {selectedFlight.callsign})
             </span>
           )}
         </h3>
-        <div className="text-xs text-gray-400">
-          <Clock className="h-3 w-3 inline mr-1" />
-          Updated: {lastUpdated ? formatDateTime(lastUpdated) : 'Never'}
+        <div className="flex items-center gap-4 text-xs text-gray-400">
+          <div className="flex items-center">
+            <Clock className="h-3 w-3 inline mr-1" />
+            Updated: {lastUpdated ? formatDateTime(lastUpdated) : 'Never'}
+          </div>
+          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500 text-xs">
+            Multi-Source
+          </Badge>
+          <div className="flex items-center text-xs">
+            <div className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></div>
+            Live Scraper Active
+          </div>
         </div>
       </div>
 

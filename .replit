@@ -4,7 +4,7 @@ hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["cairo", "ffmpeg-full", "freetype", "geos", "ghostscript", "gitFull", "glibcLocales", "gobject-introspection", "gtk3", "ocl-icd", "opencl-headers", "pkg-config", "playwright-driver", "qhull", "tcl", "tk"]
+packages = ["cairo", "ffmpeg-full", "freetype", "geckodriver", "geos", "ghostscript", "gitFull", "glibcLocales", "gobject-introspection", "gtk3", "ocl-icd", "opencl-headers", "pkg-config", "playwright-driver", "qhull", "tcl", "tk", "xcodebuild", "zlib"]
 
 [deployment]
 deploymentTarget = "cloudrun"

@@ -1533,7 +1533,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Integrated SafeAirspace alerts with ICAO ML intelligence
+  // Enhanced Airspace Alerts with live aviation data scraping and ICAO ML intelligence
   app.get("/api/aviation/airspace-alerts", async (req, res) => {
     try {
       const { north, south, east, west } = req.query;
@@ -1548,7 +1548,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
       }
 
-      // Get existing SafeAirspace alerts
+      // Get live aviation alerts from scraper
+      let liveAviationAlerts: any[] = [];
+      try {
+        const { spawn } = require('child_process');
+        const path = require('path');
+        
+        // Run aviation scraper
+        const pythonProcess = spawn('python3', [path.join(__dirname, '..', 'aviation_alerts_scraper.py')], {
+          cwd: process.cwd(),
+          stdio: ['pipe', 'pipe', 'pipe'],
+          timeout: 30000
+        });
+        
+        let scraperOutput = '';
+        pythonProcess.stdout.on('data', (data: Buffer) => {
+          scraperOutput += data.toString();
+        });
+        
+        await new Promise((resolve, reject) => {
+          pythonProcess.on('close', (code) => {
+            if (code === 0) {
+              try {
+                // Try to parse JSON output from scraper
+                const lines = scraperOutput.split('\n');
+                for (const line of lines) {
+                  if (line.trim().startsWith('{') && line.includes('alerts')) {
+                    const alertData = JSON.parse(line);
+                    liveAviationAlerts = alertData.alerts || [];
+                    break;
+                  }
+                }
+              } catch (e) {
+                console.log('Aviation scraper output parsing failed, using static data');
+              }
+              resolve(code);
+            } else {
+              reject(new Error(`Aviation scraper exited with code ${code}`));
+            }
+          });
+          
+          pythonProcess.on('error', (error) => {
+            reject(error);
+          });
+        });
+        
+      } catch (scraperError) {
+        console.log('Aviation scraper error, using fallback data:', scraperError);
+      }
+
+      // Get existing SafeAirspace alerts for comparison
       const safeAirspaceAlerts = await aviationApiService.getSafeAirspaceAlerts(bounds);
       
       // Get ICAO ML safety intelligence
@@ -1635,8 +1684,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }))
       ];
 
-      // Combine all alerts
-      const combinedAlerts = [...safeAirspaceAlerts, ...icaoAlerts];
+      // Combine all alerts from different sources
+      const combinedAlerts = [...safeAirspaceAlerts, ...icaoAlerts, ...liveAviationAlerts];
 
       res.json({
         success: true,
@@ -1645,6 +1694,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         alert_breakdown: {
           safe_airspace_alerts: safeAirspaceAlerts.length,
           icao_ml_alerts: icaoAlerts.length,
+          live_scraped_alerts: liveAviationAlerts.length,
           critical: combinedAlerts.filter(a => a.severity === 'critical').length,
           high: combinedAlerts.filter(a => a.severity === 'high').length,
           medium: combinedAlerts.filter(a => a.severity === 'medium').length,
@@ -1652,7 +1702,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         airspace_safety_status: icaoSafetyAlerts.airspace_status,
         ml_recommendations: icaoSafetyAlerts.recommendations,
-        data_sources: ['SafeAirspace_NOTAMs', 'ICAO_Official_API', 'ML_Safety_Intelligence'],
+        data_sources: ['Live_Aviation_Scraper', 'SafeAirspace_NOTAMs', 'ICAO_Official_API', 'ML_Safety_Intelligence'],
+        scraper_status: liveAviationAlerts.length > 0 ? 'active' : 'fallback',
         timestamp: new Date().toISOString()
       });
     } catch (error: any) {

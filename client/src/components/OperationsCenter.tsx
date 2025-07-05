@@ -9,7 +9,7 @@ import { useScenario } from '../lib/stores/useScenario';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { AlertTriangle, Plane, MapPin, Clock } from 'lucide-react';
 
-import SafeAirspaceAlerts from './SafeAirspaceAlerts';
+import AirspaceAlerts from './SafeAirspaceAlerts';
 import HeathrowT3Dashboard from './HeathrowT3Dashboard';
 
 export default function OperationsCenter() {
@@ -312,9 +312,9 @@ export default function OperationsCenter() {
           </CardContent>
         </Card>
 
-        {/* SafeAirspace Alerts */}
+        {/* Airspace Alerts */}
         <Card className="aviation-panel col-span-2">
-          <SafeAirspaceAlerts />
+          <AirspaceAlerts />
         </Card>
       </div>
     </div>
