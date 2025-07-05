@@ -45,7 +45,194 @@ import { routePositionService } from "./routePositionService";
 import { virginAtlanticFlightTracker } from "./routeMatcher";
 import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
 import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
-import { get_lhr_nm_correlation } from "./lhr_correlation";
+// LHR-NM Correlation Analysis Functions
+function calculateCorrelation(x: number[], y: number[]): number {
+  if (x.length !== y.length || x.length === 0) return 0;
+  
+  const meanX = x.reduce((a, b) => a + b, 0) / x.length;
+  const meanY = y.reduce((a, b) => a + b, 0) / y.length;
+  
+  const numerator = x.reduce((sum, xi, i) => sum + (xi - meanX) * (y[i] - meanY), 0);
+  const denomX = Math.sqrt(x.reduce((sum, xi) => sum + Math.pow(xi - meanX, 2), 0));
+  const denomY = Math.sqrt(y.reduce((sum, yi) => sum + Math.pow(yi - meanY, 2), 0));
+  
+  if (denomX === 0 || denomY === 0) return 0;
+  return numerator / (denomX * denomY);
+}
+
+function getLHRNMCorrelationData() {
+  try {
+    // Load NM data from attached assets
+    const nmDataPath = path.join('attached_assets', 'Download nm_network_punctuality_1751725331403.csv');
+    if (!fs.existsSync(nmDataPath)) {
+      return {
+        correlations: {},
+        statistics: {},
+        monthly_trends: [],
+        operational_insights: {},
+        record_count: 0,
+        date_range: { start: 'N/A', end: 'N/A' }
+      };
+    }
+    
+    const csvContent = fs.readFileSync(nmDataPath, 'utf-8');
+    const lines = csvContent.split('\n');
+    const headers = lines[0].split(',');
+    
+    // Find column indices
+    const dateIndex = headers.findIndex(h => h.trim() === 'DATE');
+    const depPunIndex = headers.findIndex(h => h.trim() === 'DEP_PUN_DY');
+    const arrPunIndex = headers.findIndex(h => h.trim() === 'ARR_PUN_DY');
+    
+    const records = lines.slice(1)
+      .filter(line => line.trim())
+      .map(line => {
+        const cols = line.split(',');
+        const date = new Date(cols[dateIndex]?.trim() || '');
+        const depPun = parseFloat(cols[depPunIndex]) || 0;
+        const arrPun = parseFloat(cols[arrPunIndex]) || 0;
+        
+        return {
+          date,
+          depPun,
+          arrPun,
+          lhrDepDelay: Math.max(0, (1 - depPun) * 15),
+          lhrArrDelay: Math.max(0, (1 - arrPun) * 15),
+          month: date.getMonth() + 1
+        };
+      })
+      .filter(record => !isNaN(record.date.getTime()) && record.depPun > 0);
+    
+    if (records.length === 0) {
+      return {
+        correlations: {},
+        statistics: {},
+        monthly_trends: [],
+        operational_insights: {},
+        record_count: 0,
+        date_range: { start: 'N/A', end: 'N/A' }
+      };
+    }
+    
+    // Calculate correlations
+    const depPunctuality = records.map(r => r.depPun);
+    const arrPunctuality = records.map(r => r.arrPun);
+    const lhrDepDelay = records.map(r => r.lhrDepDelay);
+    const lhrArrDelay = records.map(r => r.lhrArrDelay);
+    
+    const correlations = {
+      dep_punctuality_vs_lhr_dep_delay: Math.round(calculateCorrelation(depPunctuality, lhrDepDelay) * 10000) / 10000,
+      arr_punctuality_vs_lhr_arr_delay: Math.round(calculateCorrelation(arrPunctuality, lhrArrDelay) * 10000) / 10000,
+      dep_punctuality_vs_lhr_arr_delay: Math.round(calculateCorrelation(depPunctuality, lhrArrDelay) * 10000) / 10000,
+      arr_punctuality_vs_lhr_dep_delay: Math.round(calculateCorrelation(arrPunctuality, lhrDepDelay) * 10000) / 10000,
+      "DEP_PUN_DY vs LHR_DEP_DELAY_MIN": Math.round(calculateCorrelation(depPunctuality, lhrDepDelay) * 10000) / 10000,
+      "ARR_PUN_DY vs LHR_ARR_DELAY_MIN": Math.round(calculateCorrelation(arrPunctuality, lhrArrDelay) * 10000) / 10000
+    };
+    
+    // Calculate statistics
+    const average = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
+    const standardDeviation = (arr: number[]) => {
+      const mean = average(arr);
+      const variance = arr.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / arr.length;
+      return Math.sqrt(variance);
+    };
+    
+    const statistics = {
+      avg_nm_dep_punctuality: Math.round(average(depPunctuality) * 10000) / 100,
+      avg_nm_arr_punctuality: Math.round(average(arrPunctuality) * 10000) / 100,
+      avg_lhr_dep_delay: Math.round(average(lhrDepDelay) * 100) / 100,
+      avg_lhr_arr_delay: Math.round(average(lhrArrDelay) * 100) / 100,
+      lhr_dep_delay_std: Math.round(standardDeviation(lhrDepDelay) * 100) / 100,
+      lhr_arr_delay_std: Math.round(standardDeviation(lhrArrDelay) * 100) / 100
+    };
+    
+    // Monthly trends
+    const monthlyData: { [key: number]: typeof records } = {};
+    records.forEach(record => {
+      if (!monthlyData[record.month]) {
+        monthlyData[record.month] = [];
+      }
+      monthlyData[record.month].push(record);
+    });
+    
+    const monthly_trends = Object.keys(monthlyData)
+      .map(month => {
+        const monthRecords = monthlyData[parseInt(month)];
+        return {
+          month: parseInt(month),
+          nm_dep_punctuality: Math.round(average(monthRecords.map(r => r.depPun)) * 1000) / 10,
+          nm_arr_punctuality: Math.round(average(monthRecords.map(r => r.arrPun)) * 1000) / 10,
+          lhr_avg_dep_delay: Math.round(average(monthRecords.map(r => r.lhrDepDelay)) * 10) / 10,
+          lhr_avg_arr_delay: Math.round(average(monthRecords.map(r => r.lhrArrDelay)) * 10) / 10,
+          record_count: monthRecords.length
+        };
+      })
+      .sort((a, b) => a.month - b.month);
+    
+    // Generate operational insights
+    const classifyCorrelationStrength = (correlation: number): string => {
+      const abs = Math.abs(correlation);
+      if (abs > 0.7) return "Strong";
+      if (abs > 0.4) return "Moderate";
+      if (abs > 0.2) return "Weak";
+      return "Negligible";
+    };
+    
+    const operational_insights = {
+      network_impact: {
+        dep_correlation_strength: classifyCorrelationStrength(correlations.dep_punctuality_vs_lhr_dep_delay),
+        arr_correlation_strength: classifyCorrelationStrength(correlations.arr_punctuality_vs_lhr_arr_delay)
+      },
+      predictive_power: {
+        nm_dep_as_predictor: Math.abs(correlations.dep_punctuality_vs_lhr_dep_delay) > 0.5,
+        nm_arr_as_predictor: Math.abs(correlations.arr_punctuality_vs_lhr_arr_delay) > 0.5,
+        cross_correlation_significant: Math.abs(correlations.dep_punctuality_vs_lhr_arr_delay) > 0.3
+      },
+      risk_factors: {
+        high_delay_frequency: Math.round((records.filter(r => r.lhrDepDelay > average(lhrDepDelay) * 1.5).length / records.length) * 1000) / 10,
+        average_nm_punctuality_below_90: statistics.avg_nm_dep_punctuality < 90,
+        delay_variability_high: statistics.lhr_dep_delay_std > 10
+      },
+      recommendations: [
+        {
+          priority: "High",
+          category: "Predictive Planning",
+          recommendation: "Use European Network Manager departure punctuality as early warning indicator for Heathrow delays",
+          implementation: "Integrate NM data into daily operations planning 2-4 hours ahead"
+        },
+        {
+          priority: "High", 
+          category: "Resource Allocation",
+          recommendation: "Pre-position additional ground resources when NM arrival punctuality drops below 85%",
+          implementation: "Automated alert system triggered by NM punctuality thresholds"
+        }
+      ]
+    };
+    
+    return {
+      correlations,
+      statistics,
+      monthly_trends,
+      operational_insights,
+      record_count: records.length,
+      date_range: {
+        start: records[0]?.date.toISOString().split('T')[0] || 'N/A',
+        end: records[records.length - 1]?.date.toISOString().split('T')[0] || 'N/A'
+      }
+    };
+    
+  } catch (error) {
+    console.error('Error in LHR-NM correlation analysis:', error);
+    return {
+      correlations: {},
+      statistics: {},
+      monthly_trends: [],
+      operational_insights: {},
+      record_count: 0,
+      date_range: { start: 'N/A', end: 'N/A' }
+    };
+  }
+}
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -6653,16 +6840,22 @@ else:
     }
   });
 
-  // LHR-NM Correlation Analysis
+  // Legacy LHR-NM Correlation Analysis (redirects to new endpoint)
   app.get('/api/lhr-nm-correlation', (req, res) => {
     try {
-      const correlationResults = get_lhr_nm_correlation();
-      res.json(correlationResults);
+      const correlationData = getLHRNMCorrelationData();
+      res.json(correlationData);
     } catch (error) {
       console.error('Error generating LHR-NM correlation:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to generate correlation analysis'
+        error: 'Failed to generate correlation analysis',
+        correlations: {},
+        statistics: {},
+        monthly_trends: [],
+        operational_insights: {},
+        record_count: 0,
+        date_range: { start: 'N/A', end: 'N/A' }
       });
     }
   });
@@ -6978,6 +7171,26 @@ else:
       res.status(500).json({
         success: false,
         error: 'Failed to get airport summary'
+      });
+    }
+  });
+
+  // LHR-NM Correlation Analysis Endpoint
+  app.get('/api/lhr-nm-correlation', (req, res) => {
+    try {
+      const correlationData = getLHRNMCorrelationData();
+      res.json(correlationData);
+    } catch (error) {
+      console.error('Error in LHR-NM correlation endpoint:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate LHR-NM correlation analysis',
+        correlations: {},
+        statistics: {},
+        monthly_trends: [],
+        operational_insights: {},
+        record_count: 0,
+        date_range: { start: 'N/A', end: 'N/A' }
       });
     }
   });

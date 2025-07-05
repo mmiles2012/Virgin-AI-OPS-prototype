@@ -25,6 +25,7 @@ interface NMResponse {
     start: string;
     end: string;
   };
+  error?: string;
 }
 
 export default function NMPunctualityChart() {
