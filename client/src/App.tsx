@@ -38,6 +38,7 @@ import GroundFuelMapViewer from "./components/GroundFuelMapViewer";
 import EmergencyResponseTesting from "./components/EmergencyResponseTesting";
 import HubDelayPredictionDashboard from "./components/HubDelayPredictionDashboard";
 import NMPunctualityChart from "./components/NMPunctualityChart";
+import FaaDelayDashboard from "./components/FaaDelayDashboard";
 
 
 // Flight control mappings
@@ -76,7 +77,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'nm-punctuality' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'service-coverage' | 'emergency-testing';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'service-coverage' | 'emergency-testing';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -227,6 +228,17 @@ function App() {
                     }`}
                   >
                     European Punctuality
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('us-aviation')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'us-aviation' 
+                        ? 'bg-red-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    US Aviation Intelligence
                   </button>
                   
                   <button
@@ -426,6 +438,14 @@ function App() {
               <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-purple-600/50 overflow-auto">
                 <div className="p-6">
                   <NMPunctualityChart />
+                </div>
+              </div>
+            )}
+            
+            {viewMode === 'us-aviation' && (
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-auto">
+                <div className="p-6">
+                  <FaaDelayDashboard />
                 </div>
               </div>
             )}
