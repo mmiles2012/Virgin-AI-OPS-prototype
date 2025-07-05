@@ -182,14 +182,14 @@ interface DiversionSupportResponse {
 export default function DiversionSupportDashboard() {
   const [activeTab, setActiveTab] = useState<'initiate' | 'status' | 'services' | 'fuel' | 'airport' | 'compatibility' | 'ml-analysis'>('initiate');
   const [diversionRequest, setDiversionRequest] = useState<DiversionRequest>({
-    flightNumber: 'VS3',
-    aircraftType: 'Boeing 787',
-    diversionAirport: 'KJFK',
+    flightNumber: 'VS355',
+    aircraftType: 'Airbus A350',
+    diversionAirport: 'OMDB',
     originalDestination: 'EGLL',
-    passengerCount: 280,
+    passengerCount: 335,
     crewCount: 15,
-    diversionReason: 'technical',
-    estimatedDelayHours: 6,
+    diversionReason: 'medical',
+    estimatedDelayHours: 4,
     urgencyLevel: 'urgent'
   });
   const [diversionResponse, setDiversionResponse] = useState<DiversionSupportResponse | null>(null);
