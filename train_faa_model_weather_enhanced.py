@@ -14,12 +14,13 @@ import json
 import sys
 from ml_training_set import generate_training_dataset
 from weather_batch_scraper import fetch_weather_past_year
+from metar_enrichment import process_metar_directory, enrich_with_metar, create_weather_features
 
 def generate_training_dataset_with_weather():
     """
-    Your implementation: merge delay data with OGIMET weather data
+    Enhanced implementation: merge delay data with OGIMET weather data and METAR enrichment
     """
-    print("[Weather ML] Generating training dataset with OGIMET weather integration...")
+    print("[Weather ML] Generating enhanced training dataset with OGIMET + METAR integration...")
     
     # Generate base delay dataset
     df_delay = generate_training_dataset()
@@ -30,7 +31,17 @@ def generate_training_dataset_with_weather():
     df_weather = fetch_weather_past_year()
     print(f"[Weather ML] Weather dataset: {len(df_weather)} records")
     
-    # Merge datasets using your approach
+    # Process METAR data if available
+    print("[Weather ML] Processing METAR data for enhanced weather features...")
+    metar_data = process_metar_directory("data/metar")
+    if not metar_data.empty:
+        print(f"[Weather ML] METAR dataset: {len(metar_data)} records with weather conditions")
+        # Create enhanced weather features
+        metar_data = create_weather_features(metar_data)
+    else:
+        print("[Weather ML] No METAR data found, continuing with OGIMET only")
+    
+    # Merge delay data with OGIMET weather
     merged = pd.merge(
         df_delay,
         df_weather,
@@ -39,7 +50,15 @@ def generate_training_dataset_with_weather():
         right_on=["faa", "year", "month"]
     ).drop(columns=["faa", "airport_y"]).rename(columns={"airport_x": "airport"})
     
-    print(f"[Weather ML] Merged dataset: {len(merged)} records with weather features")
+    # Enrich with METAR data if available
+    if not metar_data.empty:
+        try:
+            merged = enrich_with_metar(merged, metar_data)
+            print("[Weather ML] Successfully enriched with METAR weather conditions")
+        except Exception as e:
+            print(f"[Weather ML] METAR enrichment failed: {e}, continuing with OGIMET data")
+    
+    print(f"[Weather ML] Final enhanced dataset: {len(merged)} records with comprehensive weather features")
     return merged
 
 def seasonal_baseline_forecast(df):

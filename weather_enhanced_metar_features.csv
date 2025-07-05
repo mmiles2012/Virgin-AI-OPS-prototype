@@ -1,0 +1,7 @@
+airport,yearmonth,thunderstorm_days,snow_days,fog_days,freezing_days,weather_severity,adverse_weather_count,weather_impact
+KBOS,202501,1,1,1,0,6.5,3,Medium
+KBOS,202502,0,0,0,1,2.0,1,Low
+KJFK,202501,1,1,1,0,6.5,3,Medium
+KJFK,202502,0,0,0,1,2.0,1,Low
+KLGA,202501,1,1,1,0,6.5,3,Medium
+KLGA,202502,0,0,0,1,2.0,1,Low
