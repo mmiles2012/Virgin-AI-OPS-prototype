@@ -6674,13 +6674,15 @@ else:
   });
 
   // Network Manager (NM) Punctuality Data API
-  app.get('/api/nm-punctuality', (req, res) => {
+  app.get('/api/nm-punctuality', async (req, res) => {
     try {
-      const fs = require('fs');
-      const path = require('path');
+      const fs = await import('fs');
+      const path = await import('path');
       
       // Load the NM punctuality CSV data
-      const csvPath = path.join(process.cwd(), 'data', 'nm_network_punctuality.csv');
+      const csvPath = path.join('attached_assets', 'Download nm_network_punctuality_1751725331403.csv');
+      console.log('NM CSV Path:', csvPath);
+      console.log('File exists:', fs.existsSync(csvPath));
       
       if (!fs.existsSync(csvPath)) {
         return res.status(404).json({
@@ -6695,17 +6697,17 @@ else:
       
       // Parse CSV data into JSON format
       const data = lines.slice(1)
-        .filter(line => line.trim().length > 0)
-        .map(line => {
+        .filter((line: any) => line.trim().length > 0)
+        .map((line: any) => {
           const values = line.split(',');
           const record: any = {};
-          headers.forEach((header, index) => {
+          headers.forEach((header: any, index: any) => {
             record[header.trim()] = values[index] ? values[index].trim() : null;
           });
           return record;
         })
-        .filter(record => record.DATE && record.ARR_PUN_DY && record.DEP_PUN_DY)
-        .map(record => ({
+        .filter((record: any) => record.DATE && record.ARR_PUN_DY && record.DEP_PUN_DY)
+        .map((record: any) => ({
           DATE: record.DATE,
           ARR_PUN_DY: parseFloat(record.ARR_PUN_DY) || 0,
           DEP_PUN_DY: parseFloat(record.DEP_PUN_DY) || 0,
