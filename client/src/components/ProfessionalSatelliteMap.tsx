@@ -534,25 +534,7 @@ function ProfessionalSatelliteMapCore() {
 
   return (
     <div className="w-full h-full bg-gray-900 relative">
-      {/* Floating Layer Controls */}
-      <div className="absolute top-4 left-4 z-[1000] bg-black/90 border border-gray-600 rounded-lg p-3 backdrop-blur-sm">
-        <h4 className="text-white text-sm font-medium mb-2">Display Layers</h4>
-        <div className="space-y-2">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-gray-300 text-sm">Airports</span>
-            <Switch checked={showAirports} onCheckedChange={setShowAirports} />
-          </div>
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-gray-300 text-sm">Flights</span>
-            <Switch checked={showFlights} onCheckedChange={setShowFlights} />
-          </div>
-        </div>
-        <div className="mt-2 pt-2 border-t border-gray-600 text-center">
-          <div className="text-gray-400 text-xs">
-            {airports.length} airports • {flightData.length} flights
-          </div>
-        </div>
-      </div>
+
 
       {/* Selected Airport Weather Panel */}
       {selectedAirport && (
