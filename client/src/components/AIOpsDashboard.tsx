@@ -89,24 +89,25 @@ export default function AIOpsDashboard() {
   }, []);
 
   return (
-    <div className="grid grid-cols-4 gap-4 p-4 bg-slate-900 text-white min-h-screen">
-      {/* Live Map View - Spans 3 columns for bigger size */}
-      <Card className="col-span-3 bg-slate-800 border-slate-700">
-        <CardContent className="p-0 h-full">
-          <div className="p-4 border-b border-slate-600">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <Plane className="w-5 h-5" />
-              Live Map View
-            </h2>
-          </div>
-          <div style={{ height: '600px' }} className="relative">
-            <ProfessionalSatelliteMap />
-          </div>
-        </CardContent>
-      </Card>
+    <div className="bg-slate-900 text-white min-h-screen">
+      <div className="grid grid-cols-4 gap-4 p-4 h-auto">
+        {/* Live Map View - Spans 3 columns for bigger size */}
+        <Card className="col-span-3 bg-slate-800 border-slate-700">
+          <CardContent className="p-0">
+            <div className="p-4 border-b border-slate-600">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Plane className="w-5 h-5" />
+                Live Map View
+              </h2>
+            </div>
+            <div style={{ height: '600px' }} className="relative">
+              <ProfessionalSatelliteMap />
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Right Column - All panels stacked */}
-      <div className="space-y-4">
+        {/* Right Column - All panels stacked */}
+        <div className="space-y-4 h-auto">
         {/* Network Health */}
         <Card className="bg-slate-800 border-slate-700">
           <CardContent className="p-4">
@@ -185,8 +186,9 @@ export default function AIOpsDashboard() {
           </CardContent>
         </Card>
 
-        {/* Weather & Airspace */}
-        <WeatherRadarComponent />
+          {/* Weather & Airspace */}
+          <WeatherRadarComponent />
+        </div>
       </div>
     </div>
   );
