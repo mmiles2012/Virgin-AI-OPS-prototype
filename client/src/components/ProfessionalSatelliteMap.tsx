@@ -231,9 +231,17 @@ function WeatherRadarOverlay({ weatherRadarImage, radarOpacity = 0.95 }: { weath
   useEffect(() => {
     if (!weatherRadarImage) return;
     
+    // Dynamic bounds based on current map view or default to global coverage
+    const mapCenter = map.getCenter();
+    const currentZoom = map.getZoom();
+    
+    // Calculate dynamic bounds based on center and zoom level
+    const latOffset = 20 / currentZoom;
+    const lngOffset = 30 / currentZoom;
+    
     const imageBounds: [[number, number], [number, number]] = [
-      [20, -130], // Southwest corner (lat, lng)
-      [50, -60]   // Northeast corner (lat, lng)
+      [mapCenter.lat - latOffset, mapCenter.lng - lngOffset], // Southwest corner
+      [mapCenter.lat + latOffset, mapCenter.lng + lngOffset]  // Northeast corner
     ];
     
     const imageOverlay = L.imageOverlay(weatherRadarImage, imageBounds, {
@@ -330,30 +338,39 @@ function ProfessionalSatelliteMapCore() {
   const { selectFlight, selectedFlight } = useSelectedFlight();
   
   // Enhanced weather radar functionality with smart geographic selection
-  const fetchWeatherRadar = async (lat?: number, lng?: number) => {
+  const fetchWeatherRadar = async (mapCenter?: { lat: number; lng: number }) => {
     if (radarLoading) return;
     
     setRadarLoading(true);
     try {
-      // Use coordinates if available for smart radar selection
+      // Get current map center or use provided coordinates
       const params = new URLSearchParams({
         source: 'smart'
       });
       
-      if (lat !== undefined && lng !== undefined) {
-        params.append('lat', lat.toString());
-        params.append('lng', lng.toString());
+      if (mapCenter) {
+        params.append('lat', mapCenter.lat.toString());
+        params.append('lng', mapCenter.lng.toString());
+        console.log(`Fetching weather radar for coordinates: ${mapCenter.lat}, ${mapCenter.lng}`);
+      } else {
+        console.log('Fetching weather radar with smart global detection');
       }
       
-      console.log('Fetching smart weather radar with geographic selection');
       const response = await fetch(`/api/weather/radar?${params.toString()}`);
       const data = await response.json();
       
       if (data.success && data.imageUrl) {
         setWeatherRadarImage(data.imageUrl);
-        console.log('Smart radar image loaded, source automatically selected');
+        console.log('Weather radar loaded - global coverage active');
       } else {
         console.error('Failed to load weather radar:', data.error);
+        // Try RainViewer as global fallback
+        const fallbackResponse = await fetch('/api/weather/radar?source=rainviewer');
+        const fallbackData = await fallbackResponse.json();
+        if (fallbackData.success && fallbackData.imageUrl) {
+          setWeatherRadarImage(fallbackData.imageUrl);
+          console.log('Fallback global radar loaded successfully');
+        }
       }
     } catch (error) {
       console.error('Weather radar request failed:', error);

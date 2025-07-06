@@ -30,18 +30,18 @@ class WeatherRadarService {
         }
       }
       
-      // Fall back to MapTiler for global coverage
-      console.log('Using MapTiler radar for global coverage');
+      // Use RainViewer for global coverage outside US
+      console.log('Using RainViewer radar for global coverage');
+      const rainViewerRadar = await this.getRainViewerRadar(centerLat, centerLng);
+      if (rainViewerRadar) {
+        return { success: true, imageUrl: rainViewerRadar };
+      }
+      
+      // Fall back to MapTiler if available
+      console.log('Trying MapTiler radar as backup');
       const mapTilerRadar = await this.getMapTilerRadar(centerLat, centerLng);
       if (mapTilerRadar) {
         return { success: true, imageUrl: mapTilerRadar };
-      }
-      
-      // Final fallback to RainViewer
-      console.log('Falling back to RainViewer radar');
-      const rainViewerRadar = await this.getRainViewerRadar();
-      if (rainViewerRadar) {
-        return { success: true, imageUrl: rainViewerRadar };
       }
       
       return { success: false, error: 'No weather radar data available' };
@@ -80,27 +80,40 @@ class WeatherRadarService {
 
   async getMapTilerRadar(lat: number = 40, lng: number = -100, zoom: number = 4): Promise<string | null> {
     try {
-      // MapTiler Weather API for global coverage
-      const style = 'radar'; // or 'precipitation', 'clouds', 'temperature'
-      const format = 'png';
-      const apiUrl = `https://api.maptiler.com/weather/${style}/256/${zoom}/${lng}/${lat}@2x.${format}?key=${this.mapTilerApiKey}`;
+      // MapTiler Weather Radar - using the correct endpoint format
+      // Calculate tile coordinates for the given lat/lng
+      const tileX = Math.floor((lng + 180) / 360 * Math.pow(2, zoom));
+      const tileY = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom));
       
-      const response = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-          'User-Agent': this.userAgent
-        },
-        timeout: 15000
-      });
+      // Try multiple weather layers for better coverage
+      const layers = ['radar', 'precipitation', 'satellite'];
+      
+      for (const layer of layers) {
+        try {
+          const apiUrl = `https://api.maptiler.com/tiles/weather-${layer}/${zoom}/${tileX}/${tileY}.png?key=${this.mapTilerApiKey}`;
+          
+          const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+              'User-Agent': this.userAgent,
+              'Accept': 'image/png'
+            },
+            timeout: 15000
+          });
 
-      if (response.ok) {
-        const arrayBuffer = await response.arrayBuffer();
-        const base64 = Buffer.from(arrayBuffer).toString('base64');
-        console.log('✓ MapTiler weather radar retrieved successfully');
-        return `data:image/png;base64,${base64}`;
+          if (response.ok && response.headers.get('content-type')?.includes('image')) {
+            const arrayBuffer = await response.arrayBuffer();
+            const base64 = Buffer.from(arrayBuffer).toString('base64');
+            console.log(`✓ MapTiler ${layer} weather data retrieved successfully for global coverage`);
+            return `data:image/png;base64,${base64}`;
+          }
+        } catch (layerError) {
+          console.warn(`Failed to fetch ${layer} layer:`, layerError);
+          continue;
+        }
       }
       
-      console.warn('MapTiler radar request failed:', response.status);
+      console.warn('All MapTiler weather layers failed');
       return null;
     } catch (error) {
       console.error('Error fetching MapTiler radar:', error);
@@ -108,7 +121,7 @@ class WeatherRadarService {
     }
   }
 
-  async getRainViewerRadar(zoom = 4): Promise<string | null> {
+  async getRainViewerRadar(lat: number = 40, lng: number = -100, zoom = 3): Promise<string | null> {
     try {
       // Get available radar timestamps
       const apiUrl = "https://api.rainviewer.com/public/weather-maps.json";
@@ -134,24 +147,42 @@ class WeatherRadarService {
       // Get most recent radar timestamp
       const latestTimestamp = data.radar.past[data.radar.past.length - 1].time;
       
-      // Get radar tile (simplified - covers central US area)
-      const tileUrl = `https://tilecache.rainviewer.com/v2/radar/${latestTimestamp}/256/${zoom}/4/4.png`;
+      // Calculate tile coordinates based on lat/lng for global coverage
+      const tileX = Math.floor((lng + 180) / 360 * Math.pow(2, zoom));
+      const tileY = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom));
+      
+      console.log(`Fetching RainViewer global radar for coordinates: ${lat}, ${lng} (tile: ${tileX}, ${tileY})`);
+      
+      // Get radar tile for specific coordinates
+      const tileUrl = `https://tilecache.rainviewer.com/v2/radar/${latestTimestamp}/256/${zoom}/${tileX}/${tileY}.png`;
       
       const tileResponse = await fetch(tileUrl, {
         method: 'GET',
         headers: {
           'User-Agent': this.userAgent
         },
-        timeout: 10000
+        timeout: 15000
       });
 
       if (!tileResponse.ok) {
+        // Try a simplified global tile for fallback
+        const fallbackUrl = `https://tilecache.rainviewer.com/v2/radar/${latestTimestamp}/256/2/1/1.png`;
+        const fallbackResponse = await fetch(fallbackUrl, {
+          headers: { 'User-Agent': this.userAgent },
+          timeout: 10000
+        });
+        
+        if (fallbackResponse.ok) {
+          const buffer = await fallbackResponse.buffer();
+          console.log('✓ RainViewer global fallback radar retrieved');
+          return `data:image/png;base64,${buffer.toString('base64')}`;
+        }
         throw new Error(`HTTP error! status: ${tileResponse.status}`);
       }
 
       const buffer = await tileResponse.buffer();
-      const base64Image = `data:image/png;base64,${buffer.toString('base64')}`;
-      return base64Image;
+      console.log('✓ RainViewer global radar retrieved successfully');
+      return `data:image/png;base64,${buffer.toString('base64')}`;
     } catch (error) {
       console.error('Error fetching RainViewer radar:', error);
       return null;
