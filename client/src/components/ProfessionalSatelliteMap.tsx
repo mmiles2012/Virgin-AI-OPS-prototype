@@ -242,186 +242,9 @@ function CoordinateDisplay() {
   );
 }
 
-// Weather Layer Manager Component
-function WeatherLayerManager({ weatherLayers, weatherOpacity }: { 
-  weatherLayers: any; 
-  weatherOpacity: number; 
-}) {
-  const map = useMap();
-  const overlayRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    // Create overlay container if it doesn't exist
-    if (!overlayRef.current) {
-      overlayRef.current = document.createElement('div');
-      overlayRef.current.style.position = 'absolute';
-      overlayRef.current.style.top = '0';
-      overlayRef.current.style.left = '0';
-      overlayRef.current.style.width = '100%';
-      overlayRef.current.style.height = '100%';
-      overlayRef.current.style.pointerEvents = 'none';
-      overlayRef.current.style.zIndex = '1000';
-      map.getContainer().appendChild(overlayRef.current);
-    }
-
-    // Clear existing overlays
-    overlayRef.current.innerHTML = '';
-
-    // Create weather overlays based on active layers
-    if (weatherLayers.clouds) {
-      const cloudsOverlay = document.createElement('div');
-      cloudsOverlay.style.position = 'absolute';
-      cloudsOverlay.style.top = '0';
-      cloudsOverlay.style.left = '0';
-      cloudsOverlay.style.width = '100%';
-      cloudsOverlay.style.height = '100%';
-      cloudsOverlay.style.background = `radial-gradient(circle at 20% 30%, rgba(255,255,255,${weatherOpacity * 0.7}) 0%, transparent 50%), radial-gradient(circle at 80% 60%, rgba(200,200,255,${weatherOpacity * 0.5}) 0%, transparent 40%)`;
-      cloudsOverlay.style.pointerEvents = 'none';
-      overlayRef.current.appendChild(cloudsOverlay);
-    }
-
-    if (weatherLayers.precipitation) {
-      const precipOverlay = document.createElement('div');
-      precipOverlay.style.position = 'absolute';
-      precipOverlay.style.top = '0';
-      precipOverlay.style.left = '0';
-      precipOverlay.style.width = '100%';
-      precipOverlay.style.height = '100%';
-      precipOverlay.style.background = `radial-gradient(circle at 40% 20%, rgba(0,100,255,${weatherOpacity * 0.6}) 0%, transparent 30%), radial-gradient(circle at 70% 80%, rgba(0,150,255,${weatherOpacity * 0.4}) 0%, transparent 25%)`;
-      precipOverlay.style.pointerEvents = 'none';
-      overlayRef.current.appendChild(precipOverlay);
-    }
-
-    if (weatherLayers.wind) {
-      const windOverlay = document.createElement('div');
-      windOverlay.style.position = 'absolute';
-      windOverlay.style.top = '0';
-      windOverlay.style.left = '0';
-      windOverlay.style.width = '100%';
-      windOverlay.style.height = '100%';
-      windOverlay.style.background = `linear-gradient(45deg, rgba(0,255,0,${weatherOpacity * 0.3}) 0%, transparent 50%), linear-gradient(-45deg, rgba(100,255,100,${weatherOpacity * 0.2}) 0%, transparent 50%)`;
-      windOverlay.style.pointerEvents = 'none';
-      overlayRef.current.appendChild(windOverlay);
-    }
-
-    if (weatherLayers.temperature) {
-      const tempOverlay = document.createElement('div');
-      tempOverlay.style.position = 'absolute';
-      tempOverlay.style.top = '0';
-      tempOverlay.style.left = '0';
-      tempOverlay.style.width = '100%';
-      tempOverlay.style.height = '100%';
-      tempOverlay.style.background = `radial-gradient(circle at 60% 40%, rgba(255,100,0,${weatherOpacity * 0.4}) 0%, transparent 40%), radial-gradient(circle at 30% 70%, rgba(255,200,0,${weatherOpacity * 0.3}) 0%, transparent 35%)`;
-      tempOverlay.style.pointerEvents = 'none';
-      overlayRef.current.appendChild(tempOverlay);
-    }
-
-    if (weatherLayers.pressure) {
-      const pressureOverlay = document.createElement('div');
-      pressureOverlay.style.position = 'absolute';
-      pressureOverlay.style.top = '0';
-      pressureOverlay.style.left = '0';
-      pressureOverlay.style.width = '100%';
-      pressureOverlay.style.height = '100%';
-      pressureOverlay.style.background = `radial-gradient(circle at 50% 50%, rgba(255,0,255,${weatherOpacity * 0.3}) 0%, transparent 60%)`;
-      pressureOverlay.style.pointerEvents = 'none';
-      overlayRef.current.appendChild(pressureOverlay);
-    }
-
-    return () => {
-      if (overlayRef.current && overlayRef.current.parentNode) {
-        overlayRef.current.parentNode.removeChild(overlayRef.current);
-        overlayRef.current = null;
-      }
-    };
-  }, [weatherLayers, weatherOpacity, map]);
-
-  return null;
-}
-
-// Professional Weather Controls Component
-function WeatherControlsPanel({ 
-  showWeatherPanel, 
-  setShowWeatherPanel, 
-  weatherLayers, 
-  setWeatherLayers, 
-  weatherOpacity, 
-  setWeatherOpacity 
-}: {
-  showWeatherPanel: boolean;
-  setShowWeatherPanel: (show: boolean) => void;
-  weatherLayers: any;
-  setWeatherLayers: (layers: any) => void;
-  weatherOpacity: number;
-  setWeatherOpacity: (opacity: number) => void;
-}) {
-  const weatherLayerData = {
-    clouds: { icon: '☁️', label: 'Clouds' },
-    precipitation: { icon: '🌧️', label: 'Precipitation' },
-    wind: { icon: '💨', label: 'Wind Speed' },
-    pressure: { icon: '📊', label: 'Pressure' },
-    temperature: { icon: '🌡️', label: 'Temperature' },
-    turbulence: { icon: '⚡', label: 'Turbulence (Simulated)' }
-  };
-
-  return (
-    <>
 
 
-      {showWeatherPanel && (
-        <div 
-          className="absolute top-4 right-32 z-[1000] bg-black/90 border border-gray-600 rounded-lg p-4 min-w-[200px] backdrop-blur-sm"
-          style={{ 
-            boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-            animation: 'slideIn 0.3s ease'
-          }}
-        >
-          <div className="text-green-400 font-bold mb-3 text-sm">Aviation Weather</div>
-          
-          <div className="space-y-2 mb-4">
-            {Object.entries(weatherLayerData).map(([key, data]) => (
-              <label
-                key={key}
-                className="flex items-center cursor-pointer p-1 rounded hover:bg-white/10 transition-colors"
-              >
-                <input
-                  type="checkbox"
-                  checked={weatherLayers[key as keyof typeof weatherLayers]}
-                  onChange={(e) => {
-                    setWeatherLayers((prev: any) => ({
-                      ...prev,
-                      [key]: e.target.checked
-                    }));
-                  }}
-                  className="mr-2 accent-green-500"
-                />
-                <span className="text-xs text-white select-none">
-                  {data.icon} {data.label}
-                </span>
-              </label>
-            ))}
-          </div>
-          
-          <div className="border-t border-gray-600 pt-3">
-            <label className="block text-xs text-gray-300 mb-2">Opacity</label>
-            <input
-              type="range"
-              min="0.1"
-              max="1"
-              step="0.1"
-              value={weatherOpacity}
-              onChange={(e) => setWeatherOpacity(parseFloat(e.target.value))}
-              className="w-full mb-1 accent-green-500"
-            />
-            <span className="text-xs text-gray-400">
-              {Math.round(weatherOpacity * 100)}%
-            </span>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
+// Weather controls removed - moved to Weather & Airspace section
 
 function ProfessionalSatelliteMapCore() {
   const [airports, setAirports] = useState<Airport[]>([]);
@@ -437,17 +260,7 @@ function ProfessionalSatelliteMapCore() {
   
   const { selectFlight, selectedFlight } = useSelectedFlight();
   
-  // Weather controls state - Layer selections enabled by default
-  const [showWeatherPanel, setShowWeatherPanel] = useState(true);
-  const [weatherLayers, setWeatherLayers] = useState({
-    clouds: true,
-    precipitation: true,
-    wind: true,
-    pressure: true,
-    temperature: true,
-    turbulence: true
-  });
-  const [weatherOpacity, setWeatherOpacity] = useState(0.6);
+  // Weather controls removed - moved to Weather & Airspace section
 
   // Filter airports based on search term
   const filteredAirports = airports.filter(airport =>
@@ -728,22 +541,9 @@ function ProfessionalSatelliteMapCore() {
             </Marker>
           ))}
 
-          {/* Weather Layer Manager */}
-          <WeatherLayerManager weatherLayers={weatherLayers} weatherOpacity={weatherOpacity} />
-
           {/* Coordinate Display */}
           <CoordinateDisplay />
         </MapContainer>
-
-        {/* Professional Weather Controls */}
-        <WeatherControlsPanel 
-          showWeatherPanel={showWeatherPanel}
-          setShowWeatherPanel={setShowWeatherPanel}
-          weatherLayers={weatherLayers}
-          setWeatherLayers={setWeatherLayers}
-          weatherOpacity={weatherOpacity}
-          setWeatherOpacity={setWeatherOpacity}
-        />
       </div>
     </div>
   );

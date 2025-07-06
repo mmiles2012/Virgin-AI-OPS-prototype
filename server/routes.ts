@@ -11,6 +11,7 @@ import { airports, findNearestAirports } from "../client/src/lib/airportData";
 import { majorAirports } from "../shared/airportData";
 import { aviationApiService } from "./aviationApiService";
 import { newsApiService } from "./newsApiService_simplified";
+import { weatherRadarService } from "./weatherRadarService";
 import { enhancedNewsMonitor } from "./enhancedNewsMonitor";
 import { diversionSupport } from "./diversionSupport";
 import groundHandlerService from "./groundHandlerService";
@@ -4477,27 +4478,23 @@ print(json.dumps(weather))
     }
   });
 
-  // Weather radar endpoint
+  // Weather radar endpoint with NOAA and RainViewer support
   app.get('/api/weather/radar', async (req, res) => {
     try {
-      const { north, south, east, west } = req.query;
+      const { source = 'noaa', region } = req.query;
       
-      if (!north || !south || !east || !west) {
-        return res.status(400).json({ success: false, error: 'Missing bounds parameters' });
-      }
+      const result = await weatherRadarService.getRadar(
+        source as 'noaa' | 'rainviewer', 
+        region as string
+      );
       
-      const bounds = {
-        north: parseFloat(north as string),
-        south: parseFloat(south as string),
-        east: parseFloat(east as string),
-        west: parseFloat(west as string)
-      };
-      
-      const radarData = await weatherApiService.getWeatherRadar(bounds);
-      res.json({ success: true, radar: radarData });
+      res.json(result);
     } catch (error) {
       console.error('Weather radar error:', error);
-      res.status(500).json({ success: false, error: 'Weather radar unavailable' });
+      res.status(500).json({ 
+        success: false, 
+        error: 'Weather radar service unavailable' 
+      });
     }
   });
 

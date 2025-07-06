@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle, Plane, Activity, Cloud } from "lucide-react";
 import ProfessionalSatelliteMap from "./ProfessionalSatelliteMap";
+import WeatherRadarComponent from "./WeatherRadarComponent";
 
 interface NetworkHealthData {
   onTimePerformance: number;
@@ -185,30 +186,7 @@ export default function AIOpsDashboard() {
         </Card>
 
         {/* Weather & Airspace */}
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-4">
-            <h2 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
-              <Cloud className="w-4 h-4" />
-              Weather & Airspace
-            </h2>
-            <div className="space-y-2">
-              <div className="h-16 bg-slate-700 rounded-lg flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 via-green-500/30 to-yellow-500/30"></div>
-                <span className="relative z-10 text-slate-300 text-xs">Live Weather Radar</span>
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="bg-slate-700 p-2 rounded">
-                  <div className="text-slate-400">Visibility</div>
-                  <div className="text-white font-bold">10+ km</div>
-                </div>
-                <div className="bg-slate-700 p-2 rounded">
-                  <div className="text-slate-400">Wind</div>
-                  <div className="text-white font-bold">12 kt</div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <WeatherRadarComponent />
       </div>
     </div>
   );

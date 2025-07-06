@@ -1,0 +1,187 @@
+import requests
+import matplotlib.pyplot as plt
+from PIL import Image
+import io
+from datetime import datetime
+
+class WeatherRadar:
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'WeatherRadarClient/1.0'
+        })
+    
+    def get_noaa_radar(self, bbox=None, width=800, height=600):
+        """
+        Get weather radar image from NOAA
+        bbox: [min_lon, min_lat, max_lon, max_lat] - defaults to Continental US
+        """
+        if bbox is None:
+            # Default to Continental US
+            bbox = [-130, 20, -60, 50]
+        
+        url = "https://mapservices.weather.noaa.gov/eventdriven/rest/services/radar/radar_base_reflectivity_time/ImageServer/exportImage"
+        
+        params = {
+            'bbox': f"{bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]}",
+            'bboxSR': '4326',
+            'size': f"{width},{height}",
+            'imageSR': '4326',
+            'format': 'png',
+            'f': 'image'
+        }
+        
+        try:
+            response = self.session.get(url, params=params, timeout=30)
+            response.raise_for_status()
+            
+            if response.headers.get('content-type', '').startswith('image'):
+                return Image.open(io.BytesIO(response.content))
+            else:
+                print("Error: No image data received")
+                return None
+                
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching NOAA radar: {e}")
+            return None
+    
+    def get_rainviewer_radar(self, zoom=4):
+        """
+        Get weather radar from RainViewer
+        zoom: Map zoom level (1-10)
+        """
+        try:
+            # Get available radar timestamps
+            api_url = "https://api.rainviewer.com/public/weather-maps.json"
+            response = self.session.get(api_url, timeout=10)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if not data.get('radar', {}).get('past'):
+                print("No radar data available")
+                return None
+            
+            # Get most recent radar timestamp
+            latest_timestamp = data['radar']['past'][-1]['time']
+            
+            # Get radar tile (simplified - covers central US area)
+            tile_url = f"https://tilecache.rainviewer.com/v2/radar/{latest_timestamp}/256/{zoom}/4/4.png"
+            
+            response = self.session.get(tile_url, timeout=10)
+            response.raise_for_status()
+            
+            return Image.open(io.BytesIO(response.content))
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching RainViewer radar: {e}")
+            return None
+    
+    def display_radar(self, source="noaa", bbox=None):
+        """
+        Display weather radar image
+        source: 'noaa' or 'rainviewer'
+        """
+        if source.lower() == "noaa":
+            print("Fetching NOAA weather radar...")
+            image = self.get_noaa_radar(bbox)
+            title = "NOAA Weather Radar"
+        elif source.lower() == "rainviewer":
+            print("Fetching RainViewer weather radar...")
+            image = self.get_rainviewer_radar()
+            title = "RainViewer Weather Radar"
+        else:
+            print("Invalid source. Use 'noaa' or 'rainviewer'")
+            return
+        
+        if image:
+            plt.figure(figsize=(12, 8))
+            plt.imshow(image)
+            plt.title(f"{title} - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+            plt.axis('off')
+            plt.tight_layout()
+            plt.show()
+            print(f"Weather radar displayed successfully")
+        else:
+            print("Failed to get weather radar image")
+    
+    def save_radar(self, filename="weather_radar.png", source="noaa", bbox=None):
+        """
+        Save weather radar image to file
+        """
+        if source.lower() == "noaa":
+            image = self.get_noaa_radar(bbox)
+        elif source.lower() == "rainviewer":
+            image = self.get_rainviewer_radar()
+        else:
+            print("Invalid source. Use 'noaa' or 'rainviewer'")
+            return False
+        
+        if image:
+            image.save(filename)
+            print(f"Weather radar saved as {filename}")
+            return True
+        else:
+            print("Failed to get weather radar image")
+            return False
+    
+    def get_regional_radar(self, region="texas"):
+        """
+        Get weather radar for specific regions
+        """
+        regions = {
+            "texas": [-106.65, 25.84, -93.51, 36.5],
+            "california": [-124.48, 32.53, -114.13, 42.01],
+            "florida": [-87.63, 24.52, -80.03, 31.00],
+            "northeast": [-80.52, 40.50, -66.95, 47.46],
+            "midwest": [-104.05, 36.99, -82.41, 49.38],
+            "southeast": [-91.66, 24.52, -75.24, 36.59]
+        }
+        
+        if region.lower() not in regions:
+            print(f"Available regions: {', '.join(regions.keys())}")
+            return
+        
+        bbox = regions[region.lower()]
+        print(f"Getting weather radar for {region.title()}...")
+        
+        image = self.get_noaa_radar(bbox)
+        if image:
+            plt.figure(figsize=(10, 8))
+            plt.imshow(image)
+            plt.title(f"{region.title()} Weather Radar")
+            plt.axis('off')
+            plt.tight_layout()
+            plt.show()
+        else:
+            print(f"Failed to get {region} weather radar")
+
+def main():
+    # Create radar instance
+    radar = WeatherRadar()
+    
+    print("Weather Radar Access")
+    print("=" * 30)
+    
+    # Example 1: Display national radar
+    print("\n1. Getting national weather radar...")
+    radar.display_radar(source="noaa")
+    
+    # Example 2: Save radar image
+    print("\n2. Saving weather radar image...")
+    radar.save_radar("current_radar.png", source="noaa")
+    
+    # Example 3: Get regional radar
+    print("\n3. Getting Texas weather radar...")
+    radar.get_regional_radar("texas")
+    
+    # Example 4: Compare sources
+    print("\n4. Getting RainViewer radar...")
+    radar.display_radar(source="rainviewer")
+
+if __name__ == "__main__":
+    # Required: pip install requests matplotlib pillow
+    print("Required packages: pip install requests matplotlib pillow")
+    print()
+    
+    main()
