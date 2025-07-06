@@ -40,6 +40,7 @@ import HubDelayPredictionDashboard from "./components/HubDelayPredictionDashboar
 import NMPunctualityChart from "./components/NMPunctualityChart";
 import ConsolidatedFaaDashboard from "./components/ConsolidatedFaaDashboard";
 import AirportContactDashboard from "./components/AirportContactDashboard";
+import AIOpsDashboard from "./components/AIOpsDashboard";
 
 
 
@@ -537,7 +538,7 @@ function App() {
 
             {viewMode === 'overview' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
-                <ProfessionalSatelliteMap />
+                <AIOpsDashboard />
               </div>
             )}
 
