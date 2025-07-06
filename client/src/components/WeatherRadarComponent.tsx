@@ -16,19 +16,26 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
 
   // Fetch weather radar data from backend
   const fetchWeatherRadar = async (source: 'noaa' | 'rainviewer' = 'noaa') => {
+    console.log('Fetching weather radar from:', source);
     setRadarLoading(true);
     try {
       const response = await fetch(`/api/weather/radar?source=${source}`);
       const data = await response.json();
       
+      console.log('Weather radar response:', data);
+      
       if (data.success && data.imageUrl) {
+        console.log('Setting radar image, length:', data.imageUrl.length);
         setRadarImage(data.imageUrl);
         setLastUpdated(new Date());
       } else {
-        console.error('Failed to fetch radar data:', data.error);
+        console.error('Failed to fetch radar data:', data.error || 'No imageUrl');
+        // Set a fallback state
+        setRadarImage(null);
       }
     } catch (error) {
       console.error('Error fetching weather radar:', error);
+      setRadarImage(null);
     } finally {
       setRadarLoading(false);
     }
