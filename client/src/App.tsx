@@ -41,6 +41,8 @@ import NMPunctualityChart from "./components/NMPunctualityChart";
 import ConsolidatedFaaDashboard from "./components/ConsolidatedFaaDashboard";
 import AirportContactDashboard from "./components/AirportContactDashboard";
 import AIOpsDashboard from "./components/AIOpsDashboard";
+import DisruptionResponseConsole from "./components/DisruptionResponseConsole";
+import WhatIfScenarioEngine from "./components/WhatIfScenarioEngine";
 
 
 
@@ -80,7 +82,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'ops-center-overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'service-coverage' | 'emergency-testing' | 'airport-contacts';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'ops-center-overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'disruption-response' | 'what-if-scenarios' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'service-coverage' | 'emergency-testing' | 'airport-contacts';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -231,6 +233,28 @@ function App() {
                     }`}
                   >
                     Delay Prediction
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('disruption-response')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'disruption-response' 
+                        ? 'bg-red-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Disruption Response
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('what-if-scenarios')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'what-if-scenarios' 
+                        ? 'bg-yellow-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    What-If Scenarios
                   </button>
                   
                   <button
@@ -445,6 +469,18 @@ function App() {
             {viewMode === 'delay-prediction' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
                 <HubDelayPredictionDashboard />
+              </div>
+            )}
+            
+            {viewMode === 'disruption-response' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+                <DisruptionResponseConsole />
+              </div>
+            )}
+            
+            {viewMode === 'what-if-scenarios' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+                <WhatIfScenarioEngine />
               </div>
             )}
             
