@@ -4478,15 +4478,24 @@ print(json.dumps(weather))
     }
   });
 
-  // Weather radar endpoint with NOAA and RainViewer support
+  // Enhanced weather radar endpoint with smart geographic selection
   app.get('/api/weather/radar', async (req, res) => {
     try {
-      const { source = 'noaa', region } = req.query;
+      const { source = 'smart', region, lat, lng } = req.query;
       
-      const result = await weatherRadarService.getRadar(
-        source as 'noaa' | 'rainviewer', 
-        region as string
-      );
+      let result;
+      if (source === 'smart') {
+        // Use smart geographic selection for optimal coverage
+        const latitude = lat ? parseFloat(lat as string) : undefined;
+        const longitude = lng ? parseFloat(lng as string) : undefined;
+        result = await weatherRadarService.getSmartRadar(latitude, longitude);
+      } else {
+        // Legacy support for specific source selection
+        result = await weatherRadarService.getRadar(
+          source as 'noaa' | 'rainviewer', 
+          region as string
+        );
+      }
       
       res.json(result);
     } catch (error) {

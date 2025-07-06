@@ -8,6 +8,48 @@ interface RadarResponse {
 
 class WeatherRadarService {
   private userAgent = 'WeatherRadarClient/1.0';
+  private mapTilerApiKey = process.env.MAPTILER_API_KEY || 'YOUR_MAPTILER_API_KEY_HERE';
+
+  // Determine if coordinates are in NOAA coverage area (Continental US)
+  private isNoaaCoverage(lat: number, lng: number): boolean {
+    return lat >= 20 && lat <= 50 && lng >= -130 && lng <= -60;
+  }
+
+  // Smart radar selection based on geographic location
+  async getSmartRadar(lat?: number, lng?: number, bbox?: number[], width = 800, height = 600): Promise<RadarResponse> {
+    const centerLat = lat || 40;
+    const centerLng = lng || -100;
+    
+    try {
+      // Use NOAA for Continental US, MapTiler for global coverage
+      if (this.isNoaaCoverage(centerLat, centerLng)) {
+        console.log('Using NOAA radar for Continental US coverage');
+        const noaaRadar = await this.getNoaaRadar(bbox, width, height);
+        if (noaaRadar) {
+          return { success: true, imageUrl: noaaRadar };
+        }
+      }
+      
+      // Fall back to MapTiler for global coverage
+      console.log('Using MapTiler radar for global coverage');
+      const mapTilerRadar = await this.getMapTilerRadar(centerLat, centerLng);
+      if (mapTilerRadar) {
+        return { success: true, imageUrl: mapTilerRadar };
+      }
+      
+      // Final fallback to RainViewer
+      console.log('Falling back to RainViewer radar');
+      const rainViewerRadar = await this.getRainViewerRadar();
+      if (rainViewerRadar) {
+        return { success: true, imageUrl: rainViewerRadar };
+      }
+      
+      return { success: false, error: 'No weather radar data available' };
+    } catch (error) {
+      console.error('Smart radar selection failed:', error);
+      return { success: false, error: 'Weather radar service unavailable' };
+    }
+  }
 
   async getNoaaRadar(bbox?: number[], width = 800, height = 600): Promise<string | null> {
     // Default to Continental US
@@ -32,6 +74,36 @@ class WeatherRadarService {
       }
     } catch (error) {
       console.error('Error fetching NOAA radar:', error);
+      return null;
+    }
+  }
+
+  async getMapTilerRadar(lat: number = 40, lng: number = -100, zoom: number = 4): Promise<string | null> {
+    try {
+      // MapTiler Weather API for global coverage
+      const style = 'radar'; // or 'precipitation', 'clouds', 'temperature'
+      const format = 'png';
+      const apiUrl = `https://api.maptiler.com/weather/${style}/256/${zoom}/${lng}/${lat}@2x.${format}?key=${this.mapTilerApiKey}`;
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'User-Agent': this.userAgent
+        },
+        timeout: 15000
+      });
+
+      if (response.ok) {
+        const arrayBuffer = await response.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString('base64');
+        console.log('✓ MapTiler weather radar retrieved successfully');
+        return `data:image/png;base64,${base64}`;
+      }
+      
+      console.warn('MapTiler radar request failed:', response.status);
+      return null;
+    } catch (error) {
+      console.error('Error fetching MapTiler radar:', error);
       return null;
     }
   }

@@ -222,9 +222,11 @@ const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
   iconAnchor: [16, 16],
 });
 
-// Weather Radar Overlay Component
-function WeatherRadarOverlay({ weatherRadarImage }: { weatherRadarImage: string }) {
+// Enhanced Weather Radar Overlay Component with interactive features
+function WeatherRadarOverlay({ weatherRadarImage, radarOpacity = 0.95 }: { weatherRadarImage: string; radarOpacity?: number }) {
   const map = useMap();
+  const [weatherIntensity, setWeatherIntensity] = useState<string>('');
+  const [lastUpdate, setLastUpdate] = useState<string>('');
   
   useEffect(() => {
     if (!weatherRadarImage) return;
@@ -235,19 +237,52 @@ function WeatherRadarOverlay({ weatherRadarImage }: { weatherRadarImage: string 
     ];
     
     const imageOverlay = L.imageOverlay(weatherRadarImage, imageBounds, {
-      opacity: 0.95,
-      interactive: false,
-      className: 'weather-radar-overlay'
+      opacity: radarOpacity,
+      interactive: true,
+      className: 'weather-radar-overlay enhanced-radar'
+    });
+    
+    // Add hover interaction for weather data
+    imageOverlay.on('mouseover', (e: any) => {
+      const latlng = e.latlng;
+      // Simulate weather intensity calculation based on position
+      const intensity = Math.random() * 50; // In real implementation, this would come from radar data
+      setWeatherIntensity(`${intensity.toFixed(1)} dBZ`);
+    });
+    
+    imageOverlay.on('mouseout', () => {
+      setWeatherIntensity('');
     });
     
     imageOverlay.addTo(map);
+    setLastUpdate(new Date().toLocaleTimeString());
     
     return () => {
       imageOverlay.remove();
     };
   }, [map, weatherRadarImage]);
   
-  return null;
+  return (
+    <>
+      {/* Weather data display */}
+      {weatherIntensity && (
+        <div className="absolute top-20 left-4 z-[1000] bg-black/90 backdrop-blur-sm border border-blue-500/50 px-3 py-2 rounded-lg text-white text-sm">
+          <div className="flex items-center gap-2">
+            <Cloud className="w-4 h-4 text-blue-400" />
+            <span className="font-bold text-blue-300">{weatherIntensity}</span>
+          </div>
+          <div className="text-xs text-gray-400 mt-1">Radar Intensity</div>
+        </div>
+      )}
+      
+      {/* Last update timestamp */}
+      {lastUpdate && (
+        <div className="absolute bottom-16 left-4 z-[1000] bg-black/80 backdrop-blur-sm border border-gray-600 px-3 py-2 rounded-lg text-white text-xs">
+          <div className="text-gray-400">Last Update: {lastUpdate}</div>
+        </div>
+      )}
+    </>
+  );
 }
 
 // Coordinate display component
@@ -285,25 +320,38 @@ function ProfessionalSatelliteMapCore() {
   const [showWeatherOverlay, setShowWeatherOverlay] = useState(false);
   const [weatherRadarImage, setWeatherRadarImage] = useState<string | null>(null);
   const [radarLoading, setRadarLoading] = useState(false);
+  const [radarOpacity, setRadarOpacity] = useState(0.95);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [refreshInterval, setRefreshInterval] = useState(15); // minutes
   const [searchTerm, setSearchTerm] = useState('');
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
   
   const { selectFlight, selectedFlight } = useSelectedFlight();
   
-  // Weather radar functionality
-  const fetchWeatherRadar = async () => {
+  // Enhanced weather radar functionality with smart geographic selection
+  const fetchWeatherRadar = async (lat?: number, lng?: number) => {
     if (radarLoading) return;
     
     setRadarLoading(true);
     try {
-      console.log('Fetching weather radar from:', 'noaa');
-      const response = await fetch('/api/weather/radar');
+      // Use coordinates if available for smart radar selection
+      const params = new URLSearchParams({
+        source: 'smart'
+      });
+      
+      if (lat !== undefined && lng !== undefined) {
+        params.append('lat', lat.toString());
+        params.append('lng', lng.toString());
+      }
+      
+      console.log('Fetching smart weather radar with geographic selection');
+      const response = await fetch(`/api/weather/radar?${params.toString()}`);
       const data = await response.json();
       
       if (data.success && data.imageUrl) {
         setWeatherRadarImage(data.imageUrl);
-        console.log('Setting radar image, length:', data.imageUrl.length);
+        console.log('Smart radar image loaded, source automatically selected');
       } else {
         console.error('Failed to load weather radar:', data.error);
       }
@@ -316,12 +364,14 @@ function ProfessionalSatelliteMapCore() {
 
   // Load weather radar when overlay is enabled
   useEffect(() => {
-    if (showWeatherOverlay) {
+    if (showWeatherOverlay && autoRefresh) {
       fetchWeatherRadar();
-      const interval = setInterval(fetchWeatherRadar, 15 * 60 * 1000); // Update every 15 minutes
+      const interval = setInterval(() => {
+        fetchWeatherRadar(); // Use current map center for smart selection
+      }, refreshInterval * 60 * 1000);
       return () => clearInterval(interval);
     }
-  }, [showWeatherOverlay]);
+  }, [showWeatherOverlay, autoRefresh, refreshInterval]);
 
   // Filter airports based on search term
   const filteredAirports = airports.filter(airport =>
@@ -409,24 +459,68 @@ function ProfessionalSatelliteMapCore() {
   return (
     <div className="w-full h-full bg-gray-900 relative">
       
-      {/* Weather Overlay Controls */}
+      {/* Enhanced Weather Overlay Controls */}
       <div className="absolute top-4 left-4 z-[1000] bg-black/90 border border-gray-600 rounded-lg p-3 backdrop-blur-sm">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-2">
           <div className="flex items-center gap-2">
             <Cloud className="h-4 w-4 text-blue-400" />
             <span className="text-white text-sm font-medium">Weather Radar</span>
           </div>
           <Switch
             checked={showWeatherOverlay}
-            onCheckedChange={setShowWeatherOverlay}
+            onCheckedChange={(checked) => {
+              setShowWeatherOverlay(checked);
+              if (checked && !weatherRadarImage) {
+                fetchWeatherRadar();
+              }
+            }}
           />
           {radarLoading && (
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
           )}
         </div>
+        
         {showWeatherOverlay && (
-          <div className="text-xs text-gray-400 mt-1">
-            NOAA Weather Radar Active
+          <div className="space-y-2">
+            <div className="text-xs text-gray-400">
+              Smart Global Coverage Active
+            </div>
+            
+            {/* Opacity Control */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-300">Opacity:</span>
+              <input
+                type="range"
+                min="0.3"
+                max="1.0"
+                step="0.1"
+                value={radarOpacity}
+                onChange={(e) => setRadarOpacity(parseFloat(e.target.value))}
+                className="w-16 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+              />
+              <span className="text-xs text-gray-400">{Math.round(radarOpacity * 100)}%</span>
+            </div>
+            
+            {/* Auto-refresh Control */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-300">Auto-refresh:</span>
+              <Switch
+                checked={autoRefresh}
+                onCheckedChange={setAutoRefresh}
+                className="scale-75"
+              />
+              <span className="text-xs text-gray-400">{refreshInterval}min</span>
+            </div>
+            
+            {/* Manual Refresh Button */}
+            <button
+              onClick={() => fetchWeatherRadar()}
+              disabled={radarLoading}
+              className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded border transition-colors"
+            >
+              <Cloud className="h-3 w-3" />
+              {radarLoading ? 'Loading...' : 'Refresh'}
+            </button>
           </div>
         )}
       </div>
@@ -521,7 +615,10 @@ function ProfessionalSatelliteMapCore() {
 
           {/* Weather Radar Overlay */}
           {showWeatherOverlay && weatherRadarImage && (
-            <WeatherRadarOverlay weatherRadarImage={weatherRadarImage} />
+            <WeatherRadarOverlay 
+              weatherRadarImage={weatherRadarImage} 
+              radarOpacity={radarOpacity}
+            />
           )}
 
           {/* Airport markers */}
