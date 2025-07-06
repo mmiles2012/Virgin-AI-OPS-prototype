@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { X, AlertTriangle, Cloud } from 'lucide-react';
+import { X, AlertTriangle, Cloud, Fuel, Wrench, Phone, Building } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
+import Papa from 'papaparse';
 
 // Fix Leaflet default markers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -104,6 +105,18 @@ interface AviationWeatherData {
   };
 }
 
+interface ServiceCoverageData {
+  icao: string;
+  iata: string;
+  name: string;
+  country: string;
+  lat: number;
+  lon: number;
+  support: string;
+  contact?: string;
+  phone?: string;
+}
+
 // Leaflet styles for dark theme
 const leafletStyles = `
   .leaflet-popup-content-wrapper {
@@ -170,28 +183,58 @@ if (typeof document !== 'undefined') {
   document.head.appendChild(styleElement);
 }
 
-// Custom airport icon
-const createAirportIcon = (selected: boolean) => L.divIcon({
-  className: 'custom-airport-marker',
-  html: `
-    <div style="
-      width: 16px; 
-      height: 16px; 
-      background: ${selected ? '#10b981' : '#3b82f6'}; 
-      border: 2px solid ${selected ? '#059669' : '#1d4ed8'};
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-      transition: all 0.3s ease;
-    ">
-      <div style="color: white; font-size: 10px; font-weight: bold;">✈</div>
-    </div>
-  `,
-  iconSize: [20, 20],
-  iconAnchor: [10, 10],
-});
+// Custom airport icon with service indicator
+const createAirportIcon = (selected: boolean, serviceSupport?: string) => {
+  const serviceColor = serviceSupport ? getServiceIndicatorColor(serviceSupport) : '#3b82f6';
+  const baseColor = selected ? '#10b981' : serviceColor;
+  const borderColor = selected ? '#059669' : serviceColor;
+  
+  return L.divIcon({
+    className: 'custom-airport-marker',
+    html: `
+      <div style="
+        position: relative;
+        width: 16px; 
+        height: 16px; 
+        background: ${baseColor}; 
+        border: 2px solid ${borderColor};
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        transition: all 0.3s ease;
+      ">
+        <div style="color: white; font-size: 10px; font-weight: bold;">✈</div>
+        ${serviceSupport ? `
+          <div style="
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 6px;
+            height: 6px;
+            background: ${serviceColor};
+            border: 1px solid white;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+          "></div>
+        ` : ''}
+      </div>
+    `,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+  });
+};
+
+// Function to get service indicator color (moved to component scope)
+const getServiceIndicatorColor = (support: string): string => {
+  switch (support.toLowerCase()) {
+    case 'both': return '#22c55e'; // Green - full services
+    case 'fuel_only': return '#3b82f6'; // Blue - fuel only
+    case 'ground_only': return '#f59e0b'; // Orange - ground handling only
+    default: return '#ef4444'; // Red - no services
+  }
+};
 
 // Custom flight icon - Optimally sized for visibility and selection
 const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
@@ -332,6 +375,7 @@ function ProfessionalSatelliteMapCore() {
   const [searchTerm, setSearchTerm] = useState('');
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
+  const [serviceData, setServiceData] = useState<ServiceCoverageData[]>([]);
   
   const { selectFlight, selectedFlight } = useSelectedFlight();
   
@@ -388,6 +432,15 @@ function ProfessionalSatelliteMapCore() {
     }
   }, [showWeatherOverlay, autoRefresh, refreshInterval]);
 
+  // Helper function to get service coverage for an airport
+  const getServiceCoverage = (airport: Airport): ServiceCoverageData | null => {
+    return serviceData.find(service => 
+      service.icao === airport.icao || service.iata === airport.iata
+    ) || null;
+  };
+
+
+
   // Filter airports based on search term
   const filteredAirports = airports.filter(airport =>
     airport.icao.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -422,6 +475,36 @@ function ProfessionalSatelliteMapCore() {
     };
 
     fetchAirports();
+  }, []);
+
+  // Load service coverage data
+  useEffect(() => {
+    const fetchServiceData = async () => {
+      try {
+        const response = await fetch('/top300_airport_support.csv');
+        const text = await response.text();
+        const parsed = Papa.parse(text, { header: true }).data as any[];
+        const serviceData = parsed.map((entry: any) => ({
+          icao: entry.ICAO,
+          iata: entry.IATA,
+          name: entry['Airport Name'],
+          country: entry.Country,
+          lat: parseFloat(entry.Latitude),
+          lon: parseFloat(entry.Longitude),
+          support: entry.Support?.toLowerCase() || 'unknown',
+          contact: entry.Contact || 'Not available',
+          phone: entry.Phone || 'Not available'
+        })).filter((service: ServiceCoverageData) => 
+          !isNaN(service.lat) && !isNaN(service.lon) && service.icao
+        );
+        setServiceData(serviceData);
+        console.log(`Loaded ${serviceData.length} service coverage entries`);
+      } catch (error) {
+        console.error('Failed to fetch service data:', error);
+      }
+    };
+
+    fetchServiceData();
   }, []);
 
   // Load flight data
@@ -538,6 +621,35 @@ function ProfessionalSatelliteMapCore() {
             </button>
           </div>
         )}
+        
+        {/* Service Coverage Legend */}
+        <div className="absolute bottom-4 right-4 z-[500] bg-black/90 border border-gray-600 rounded-lg p-3 backdrop-blur-sm max-w-xs">
+          <div className="text-white font-medium text-sm mb-2 flex items-center gap-1">
+            <Building className="w-3 h-3" />
+            Service Coverage
+          </div>
+          <div className="space-y-1 text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22c55e' }}></div>
+              <span className="text-gray-300">Full Services</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#3b82f6' }}></div>
+              <span className="text-gray-300">Fuel Only</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#f59e0b' }}></div>
+              <span className="text-gray-300">Ground Handling Only</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ef4444' }}></div>
+              <span className="text-gray-300">No Services</span>
+            </div>
+          </div>
+          <div className="mt-2 pt-2 border-t border-gray-600 text-xs text-gray-400">
+            Click airports for detailed service information
+          </div>
+        </div>
       </div>
 
 
@@ -653,13 +765,16 @@ function ProfessionalSatelliteMapCore() {
             <Marker
               key={`airport-${airport.icao}-${index}`}
               position={[airport.latitude, airport.longitude]}
-              icon={createAirportIcon(selectedAirport?.icao === airport.icao)}
+              icon={createAirportIcon(
+                selectedAirport?.icao === airport.icao,
+                getServiceCoverage(airport)?.support
+              )}
               eventHandlers={{
                 click: () => handleAirportClick(airport),
               }}
             >
               <Popup>
-                <div className="p-3 min-w-[250px]">
+                <div className="p-3 min-w-[280px]">
                   <div className="text-center mb-3">
                     <h3 className="text-green-500 font-bold text-lg">{airport.icao}</h3>
                     <div className="text-white text-sm font-medium">{airport.name}</div>
@@ -685,6 +800,72 @@ function ProfessionalSatelliteMapCore() {
                         <span className="text-white ml-1">{airport.runways?.length || 0}</span>
                       </div>
                     </div>
+                    
+                    {/* Service Coverage Section */}
+                    {(() => {
+                      const serviceInfo = getServiceCoverage(airport);
+                      return serviceInfo ? (
+                        <div className="border-t border-gray-600 pt-2">
+                          <div className="text-gray-400 text-xs mb-2 flex items-center gap-1">
+                            <Building className="w-3 h-3" />
+                            Service Coverage
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="flex items-center gap-1">
+                              <Fuel className={`w-3 h-3 ${
+                                serviceInfo.support === 'both' || serviceInfo.support === 'fuel_only' 
+                                  ? 'text-green-400' : 'text-gray-500'
+                              }`} />
+                              <span className="text-white">
+                                {serviceInfo.support === 'both' || serviceInfo.support === 'fuel_only' 
+                                  ? 'Available' : 'Not Available'}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Wrench className={`w-3 h-3 ${
+                                serviceInfo.support === 'both' || serviceInfo.support === 'ground_only' 
+                                  ? 'text-green-400' : 'text-gray-500'
+                              }`} />
+                              <span className="text-white">
+                                {serviceInfo.support === 'both' || serviceInfo.support === 'ground_only' 
+                                  ? 'Available' : 'Not Available'}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {serviceInfo.phone && serviceInfo.phone !== 'Not available' && (
+                            <div className="mt-2 p-2 bg-blue-900/30 rounded border border-blue-500/30">
+                              <div className="flex items-center gap-1 mb-1">
+                                <Phone className="w-3 h-3 text-blue-400" />
+                                <span className="text-blue-400 text-xs font-medium">Operations Center</span>
+                              </div>
+                              <div className="text-white text-xs font-mono">{serviceInfo.phone}</div>
+                              {serviceInfo.contact && serviceInfo.contact !== 'Not available' && (
+                                <div className="text-gray-300 text-xs mt-1">{serviceInfo.contact}</div>
+                              )}
+                            </div>
+                          )}
+                          
+                          <div className="flex items-center gap-1 mt-2">
+                            <div 
+                              className="w-2 h-2 rounded-full" 
+                              style={{ backgroundColor: getServiceIndicatorColor(serviceInfo.support) }}
+                            ></div>
+                            <span className="text-xs text-gray-300 capitalize">
+                              {serviceInfo.support.replace('_', ' ')} service{serviceInfo.support === 'both' ? 's' : ''}
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="border-t border-gray-600 pt-2">
+                          <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
+                            <Building className="w-3 h-3" />
+                            Service Coverage
+                          </div>
+                          <div className="text-gray-500 text-xs italic">No service information available</div>
+                        </div>
+                      );
+                    })()}
                     
                     <div className="border-t border-gray-600 pt-2">
                       <div className="text-gray-400 text-xs mb-1">Coordinates:</div>
