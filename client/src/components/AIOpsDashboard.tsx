@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle, Plane, Activity, Cloud } from "lucide-react";
 import ProfessionalSatelliteMap from "./ProfessionalSatelliteMap";
+import PassengerImpactModelingComponent from "./PassengerImpactModelingComponent";
 
 
 interface NetworkHealthData {
@@ -190,6 +191,11 @@ export default function AIOpsDashboard() {
 
           {/* Weather data now integrated directly into satellite map */}
         </div>
+      </div>
+      
+      {/* Passenger Impact Modeling - Full Width Bottom Section */}
+      <div className="p-4 pt-0">
+        <PassengerImpactModelingComponent />
       </div>
     </div>
   );

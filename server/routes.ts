@@ -29,7 +29,6 @@ import { dualModelAIService } from "./dualModelIntegration";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 import { weatherDataCollector } from "./weatherDataCollector";
-import { awcSigmetService } from "./awcSigmetService";
 import { adsbFlightTracker } from "./adsbFlightTracker";
 import { icaoApiService } from "./icaoApiService";
 import { icaoMLIntegration } from "./icaoMLIntegration";

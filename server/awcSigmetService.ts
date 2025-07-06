@@ -55,7 +55,7 @@ interface ProcessedSigmet {
 }
 
 class AWCSigmetService {
-  private baseURL = 'https://aviationweather.gov/api/data';
+  private baseURL = 'https://aviationweather.gov/cgi-bin/data/dataserver.php';
   private headers = {
     'User-Agent': 'AINO-Aviation-Platform/1.0 (Professional Aviation Operations)',
     'Accept': 'application/json, text/plain',
@@ -194,9 +194,12 @@ class AWCSigmetService {
     try {
       console.log('Fetching current SIGMETs from AWC API...');
       
-      const response = await axios.get(`${this.baseURL}/sigmets`, {
+      const response = await axios.get(this.baseURL, {
         params: {
-          format: 'json'
+          dataSource: 'sigmets',
+          requestType: 'retrieve',
+          format: 'xml',
+          hoursBeforeNow: 6
         },
         headers: this.headers,
         timeout: 15000
@@ -228,9 +231,12 @@ class AWCSigmetService {
     try {
       console.log(`Fetching regional SIGMETs for bbox: ${bbox}`);
       
-      const response = await axios.get(`${this.baseURL}/sigmets`, {
+      const response = await axios.get(this.baseURL, {
         params: {
-          format: 'json',
+          dataSource: 'sigmets',
+          requestType: 'retrieve',
+          format: 'xml',
+          hoursBeforeNow: 6,
           bbox: bbox // lat1,lon1,lat2,lon2
         },
         headers: this.headers,
