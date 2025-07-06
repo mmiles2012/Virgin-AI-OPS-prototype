@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { X, AlertTriangle } from 'lucide-react';
+import { X, AlertTriangle, Cloud } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 
@@ -222,6 +222,34 @@ const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
   iconAnchor: [16, 16],
 });
 
+// Weather Radar Overlay Component
+function WeatherRadarOverlay({ weatherRadarImage }: { weatherRadarImage: string }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (!weatherRadarImage) return;
+    
+    const imageBounds: [[number, number], [number, number]] = [
+      [20, -130], // Southwest corner (lat, lng)
+      [50, -60]   // Northeast corner (lat, lng)
+    ];
+    
+    const imageOverlay = L.imageOverlay(weatherRadarImage, imageBounds, {
+      opacity: 0.6,
+      interactive: false,
+      className: 'weather-radar-overlay'
+    });
+    
+    imageOverlay.addTo(map);
+    
+    return () => {
+      imageOverlay.remove();
+    };
+  }, [map, weatherRadarImage]);
+  
+  return null;
+}
+
 // Coordinate display component
 function CoordinateDisplay() {
   const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0 });
@@ -254,13 +282,46 @@ function ProfessionalSatelliteMapCore() {
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [showAirports, setShowAirports] = useState(true);
   const [showFlights, setShowFlights] = useState(true);
+  const [showWeatherOverlay, setShowWeatherOverlay] = useState(false);
+  const [weatherRadarImage, setWeatherRadarImage] = useState<string | null>(null);
+  const [radarLoading, setRadarLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
   
   const { selectFlight, selectedFlight } = useSelectedFlight();
   
-  // Weather controls removed - moved to Weather & Airspace section
+  // Weather radar functionality
+  const fetchWeatherRadar = async () => {
+    if (radarLoading) return;
+    
+    setRadarLoading(true);
+    try {
+      console.log('Fetching weather radar from:', 'noaa');
+      const response = await fetch('/api/weather/radar');
+      const data = await response.json();
+      
+      if (data.success && data.imageUrl) {
+        setWeatherRadarImage(data.imageUrl);
+        console.log('Setting radar image, length:', data.imageUrl.length);
+      } else {
+        console.error('Failed to load weather radar:', data.error);
+      }
+    } catch (error) {
+      console.error('Weather radar request failed:', error);
+    } finally {
+      setRadarLoading(false);
+    }
+  };
+
+  // Load weather radar when overlay is enabled
+  useEffect(() => {
+    if (showWeatherOverlay) {
+      fetchWeatherRadar();
+      const interval = setInterval(fetchWeatherRadar, 15 * 60 * 1000); // Update every 15 minutes
+      return () => clearInterval(interval);
+    }
+  }, [showWeatherOverlay]);
 
   // Filter airports based on search term
   const filteredAirports = airports.filter(airport =>
@@ -347,6 +408,28 @@ function ProfessionalSatelliteMapCore() {
 
   return (
     <div className="w-full h-full bg-gray-900 relative">
+      
+      {/* Weather Overlay Controls */}
+      <div className="absolute top-4 left-4 z-[1000] bg-black/90 border border-gray-600 rounded-lg p-3 backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Cloud className="h-4 w-4 text-blue-400" />
+            <span className="text-white text-sm font-medium">Weather Radar</span>
+          </div>
+          <Switch
+            checked={showWeatherOverlay}
+            onCheckedChange={setShowWeatherOverlay}
+          />
+          {radarLoading && (
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
+          )}
+        </div>
+        {showWeatherOverlay && (
+          <div className="text-xs text-gray-400 mt-1">
+            NOAA Weather Radar Active
+          </div>
+        )}
+      </div>
 
 
       {/* Selected Airport Weather Panel */}
@@ -435,6 +518,11 @@ function ProfessionalSatelliteMapCore() {
             maxZoom={18}
             opacity={0.7}
           />
+
+          {/* Weather Radar Overlay */}
+          {showWeatherOverlay && weatherRadarImage && (
+            <WeatherRadarOverlay weatherRadarImage={weatherRadarImage} />
+          )}
 
           {/* Airport markers */}
           {showAirports && airports.reduce((uniqueAirports: Airport[], airport, index) => {
