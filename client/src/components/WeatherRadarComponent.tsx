@@ -2,31 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Cloud, Wind, Thermometer, Gauge, RefreshCw, Expand } from 'lucide-react';
-
-interface WeatherData {
-  visibility: string;
-  wind: string;
-  temperature: string;
-  pressure: string;
-  humidity: string;
-  conditions: string;
-}
+import { Cloud, RefreshCw, Expand } from 'lucide-react';
 
 interface WeatherRadarComponentProps {
   className?: string;
 }
 
 export default function WeatherRadarComponent({ className }: WeatherRadarComponentProps) {
-  const [weatherData, setWeatherData] = useState<WeatherData>({
-    visibility: '10+ km',
-    wind: '12 kt',
-    temperature: '18°C',
-    pressure: '1013 hPa',
-    humidity: '65%',
-    conditions: 'Clear'
-  });
-  
   const [radarImage, setRadarImage] = useState<string | null>(null);
   const [radarLoading, setRadarLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
@@ -52,41 +34,14 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
     }
   };
 
-  // Fetch real-time weather data from AVWX API
-  const fetchWeatherData = async () => {
-    try {
-      const response = await fetch('/api/weather/aviation/EGLL'); // Heathrow as default
-      const data = await response.json();
-      
-      if (data.success && data.data?.metar) {
-        const metar = data.data.metar;
-        setWeatherData({
-          visibility: metar.visibility ? `${metar.visibility.repr} km` : '10+ km',
-          wind: metar.wind ? `${metar.wind.speed || 0} kt` : '12 kt',
-          temperature: metar.temperature ? `${metar.temperature.repr}°C` : '18°C',
-          pressure: metar.altimeter ? `${metar.altimeter.repr} hPa` : '1013 hPa',
-          humidity: metar.humidity ? `${metar.humidity}%` : '65%',
-          conditions: metar.flight_rules || 'Clear'
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-    }
-  };
-
-  // Initialize weather data and radar on component mount
+  // Initialize radar on component mount
   useEffect(() => {
-    fetchWeatherData();
     fetchWeatherRadar(selectedSource);
-    
-    // Set up auto-refresh every 5 minutes for weather data
-    const weatherInterval = setInterval(fetchWeatherData, 5 * 60 * 1000);
     
     // Set up auto-refresh every 15 minutes for radar
     const radarInterval = setInterval(() => fetchWeatherRadar(selectedSource), 15 * 60 * 1000);
     
     return () => {
-      clearInterval(weatherInterval);
       clearInterval(radarInterval);
     };
   }, [selectedSource]);
@@ -212,65 +167,7 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
         </CardContent>
       </Card>
 
-      {/* Weather Conditions Grid */}
-      <div className="grid grid-cols-2 gap-2">
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2 mb-1">
-              <Wind className="w-3 h-3 text-blue-400" />
-              <span className="text-slate-400 text-xs">Visibility</span>
-            </div>
-            <div className="text-white font-bold text-sm">{weatherData.visibility}</div>
-          </CardContent>
-        </Card>
 
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2 mb-1">
-              <Wind className="w-3 h-3 text-green-400" />
-              <span className="text-slate-400 text-xs">Wind</span>
-            </div>
-            <div className="text-white font-bold text-sm">{weatherData.wind}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2 mb-1">
-              <Thermometer className="w-3 h-3 text-orange-400" />
-              <span className="text-slate-400 text-xs">Temperature</span>
-            </div>
-            <div className="text-white font-bold text-sm">{weatherData.temperature}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-slate-800 border-slate-700">
-          <CardContent className="p-3">
-            <div className="flex items-center gap-2 mb-1">
-              <Gauge className="w-3 h-3 text-purple-400" />
-              <span className="text-slate-400 text-xs">Pressure</span>
-            </div>
-            <div className="text-white font-bold text-sm">{weatherData.pressure}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Weather Conditions Summary */}
-      <Card className="bg-slate-800 border-slate-700">
-        <CardContent className="p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${
-                weatherData.conditions === 'Clear' ? 'bg-green-500' : 
-                weatherData.conditions === 'Marginal' ? 'bg-yellow-500' : 
-                'bg-red-500'
-              }`} />
-              <span className="text-slate-400 text-xs">Conditions</span>
-            </div>
-            <div className="text-white font-bold text-sm">{weatherData.conditions}</div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
