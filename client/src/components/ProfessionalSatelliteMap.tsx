@@ -533,107 +533,73 @@ function ProfessionalSatelliteMapCore() {
   };
 
   return (
-    <div className="flex w-full h-full bg-gray-900">
-      {/* Professional Airport Sidebar */}
-      <div className="w-80 bg-gradient-to-b from-gray-800 to-gray-900 border-r border-gray-600 p-5 overflow-y-auto shadow-2xl">
-        <h1 className="text-green-400 text-2xl font-light mb-5">Airport Navigator</h1>
-        
-        {/* Search Container */}
-        <div className="mb-5">
-          <input
-            type="text"
-            placeholder="Search airports..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-3 bg-white/10 border border-gray-600 rounded-lg text-white text-sm placeholder-gray-400 focus:outline-none focus:border-green-400 focus:shadow-lg transition-all duration-300"
-          />
-        </div>
-        
-        {/* Airport List */}
-        <div className="space-y-2 max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
-          {filteredAirports.map((airport) => (
-            <div
-              key={airport.icao}
-              onClick={() => handleAirportClick(airport)}
-              className={`p-3 rounded-lg border cursor-pointer transition-all duration-300 hover:transform hover:translate-x-1 ${
-                selectedAirport?.icao === airport.icao
-                  ? 'bg-white/20 border-green-400'
-                  : 'bg-white/5 border-gray-600 hover:bg-white/10 hover:border-green-400'
-              }`}
-            >
-              <div className="font-bold text-green-400 text-base">{airport.icao}</div>
-              <div className="text-gray-300 text-sm mt-1">{airport.name}</div>
-              <div className="text-gray-500 text-xs mt-1">{airport.city}, {airport.country}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Selected Airport Details */}
-        {selectedAirport && (
-          <div className="mt-5 p-4 bg-black/40 rounded-lg border border-gray-600">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-white font-semibold">{selectedAirport.icao}</h3>
-              <button
-                onClick={() => {
-                  setSelectedAirport(null);
-                  setAviationWeather(null);
-                }}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-2 text-xs text-gray-300 mb-3">
-              <div>Elevation: {selectedAirport.elevation} ft</div>
-              <div>Runways: {selectedAirport.runways.length}</div>
-            </div>
-
-            {weatherLoading && (
-              <div className="flex items-center gap-2 text-blue-400 text-sm">
-                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-400"></div>
-                Loading weather...
-              </div>
-            )}
-
-            {aviationWeather && (
-              <div className="space-y-2">
-                <div>
-                  <h4 className="text-white font-medium text-sm mb-1">METAR</h4>
-                  <div className="bg-gray-900/50 p-2 rounded text-xs font-mono text-gray-300 max-h-16 overflow-y-auto">
-                    {aviationWeather.metar.raw || 'No METAR data'}
-                  </div>
-                </div>
-              </div>
-            )}
+    <div className="w-full h-full bg-gray-900 relative">
+      {/* Floating Layer Controls */}
+      <div className="absolute top-4 left-4 z-[1000] bg-black/90 border border-gray-600 rounded-lg p-3 backdrop-blur-sm">
+        <h4 className="text-white text-sm font-medium mb-2">Display Layers</h4>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-gray-300 text-sm">Airports</span>
+            <Switch checked={showAirports} onCheckedChange={setShowAirports} />
           </div>
-        )}
-
-        {/* Layer Controls */}
-        <div className="mt-5 p-4 bg-black/20 rounded-lg border border-gray-700">
-          <h4 className="text-white text-sm font-medium mb-3">Display Layers</h4>
-          
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-300 text-sm">Airports</span>
-              <Switch checked={showAirports} onCheckedChange={setShowAirports} />
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-300 text-sm">Flights</span>
-              <Switch checked={showFlights} onCheckedChange={setShowFlights} />
-            </div>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-gray-300 text-sm">Flights</span>
+            <Switch checked={showFlights} onCheckedChange={setShowFlights} />
           </div>
-          
-          <div className="mt-3 pt-3 border-t border-gray-600 text-center">
-            <div className="text-gray-400 text-xs">
-              {airports.length} airports • {flightData.length} flights
-            </div>
+        </div>
+        <div className="mt-2 pt-2 border-t border-gray-600 text-center">
+          <div className="text-gray-400 text-xs">
+            {airports.length} airports • {flightData.length} flights
           </div>
         </div>
       </div>
 
-      {/* Map Container */}
-      <div className="flex-1 relative">
+      {/* Selected Airport Weather Panel */}
+      {selectedAirport && (
+        <div className="absolute top-4 right-4 z-[1000] bg-black/90 border border-gray-600 rounded-lg p-4 backdrop-blur-sm max-w-xs">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-white font-semibold">{selectedAirport.icao}</h3>
+            <button
+              onClick={() => {
+                setSelectedAirport(null);
+                setAviationWeather(null);
+              }}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          
+          <div className="text-gray-300 text-sm mb-2">{selectedAirport.name}</div>
+          <div className="text-gray-400 text-xs mb-3">{selectedAirport.city}, {selectedAirport.country}</div>
+          
+          <div className="grid grid-cols-2 gap-2 text-xs text-gray-300 mb-3">
+            <div>Elevation: {selectedAirport.elevation} ft</div>
+            <div>Runways: {selectedAirport.runways?.length || 0}</div>
+          </div>
+
+          {weatherLoading && (
+            <div className="flex items-center gap-2 text-blue-400 text-sm mb-3">
+              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-400"></div>
+              Loading weather...
+            </div>
+          )}
+
+          {aviationWeather && (
+            <div className="space-y-2">
+              <div>
+                <h4 className="text-white font-medium text-sm mb-1">METAR</h4>
+                <div className="bg-gray-900/50 p-2 rounded text-xs font-mono text-gray-300 max-h-16 overflow-y-auto">
+                  {aviationWeather.metar.raw || 'No METAR data'}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Map Container - Full Width */}
+      <div className="w-full h-full relative">
         {!mapLoaded && (
           <div className="absolute inset-0 bg-gray-900 flex items-center justify-center z-50">
             <div className="text-center text-white">
@@ -696,12 +662,53 @@ function ProfessionalSatelliteMapCore() {
               }}
             >
               <Popup>
-                <div className="text-center p-2">
-                  <h3 className="text-green-500 font-bold text-lg mb-2">{airport.icao}</h3>
-                  <div className="text-white text-sm mb-1">{airport.name}</div>
-                  <div className="text-gray-400 text-xs">{airport.city}, {airport.country}</div>
-                  <div className="text-gray-500 text-xs mt-2">
-                    {airport.latitude.toFixed(4)}, {airport.longitude.toFixed(4)}
+                <div className="p-3 min-w-[250px]">
+                  <div className="text-center mb-3">
+                    <h3 className="text-green-500 font-bold text-lg">{airport.icao}</h3>
+                    <div className="text-white text-sm font-medium">{airport.name}</div>
+                    <div className="text-gray-400 text-xs">{airport.city}, {airport.country}</div>
+                  </div>
+                  
+                  <div className="space-y-2 border-t border-gray-600 pt-2">
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <span className="text-gray-400">IATA:</span>
+                        <span className="text-white ml-1">{airport.iata || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400">Category:</span>
+                        <span className="text-white ml-1 capitalize">{airport.category || 'Unknown'}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400">Elevation:</span>
+                        <span className="text-white ml-1">{airport.elevation || 'N/A'} ft</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400">Runways:</span>
+                        <span className="text-white ml-1">{airport.runways?.length || 0}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="border-t border-gray-600 pt-2">
+                      <div className="text-gray-400 text-xs mb-1">Coordinates:</div>
+                      <div className="text-white text-xs font-mono">
+                        {airport.latitude.toFixed(6)}, {airport.longitude.toFixed(6)}
+                      </div>
+                    </div>
+                    
+                    {airport.timezone && (
+                      <div className="border-t border-gray-600 pt-2">
+                        <div className="text-gray-400 text-xs">Timezone:</div>
+                        <div className="text-white text-xs">{airport.timezone}</div>
+                      </div>
+                    )}
+                    
+                    <button 
+                      onClick={() => handleAirportClick(airport)}
+                      className="w-full mt-2 px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors"
+                    >
+                      View Weather & Details
+                    </button>
                   </div>
                 </div>
               </Popup>
