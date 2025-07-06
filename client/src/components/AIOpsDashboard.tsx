@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle, Plane, Activity, Cloud } from "lucide-react";
 import ProfessionalSatelliteMap from "./ProfessionalSatelliteMap";
-import WeatherRadarComponent from "./WeatherRadarComponent";
+
 
 interface NetworkHealthData {
   onTimePerformance: number;
@@ -188,8 +188,7 @@ export default function AIOpsDashboard() {
           </CardContent>
         </Card>
 
-          {/* Weather & Airspace */}
-          <WeatherRadarComponent />
+          {/* Weather data now integrated directly into satellite map */}
         </div>
       </div>
     </div>
