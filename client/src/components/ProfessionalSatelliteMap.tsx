@@ -428,6 +428,14 @@ function ProfessionalSatelliteMapCore() {
             maxZoom={18}
           />
 
+          {/* Country Borders and Geographic Labels */}
+          <TileLayer
+            url="https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+            attribution="© Esri"
+            maxZoom={18}
+            opacity={0.7}
+          />
+
           {/* Airport markers */}
           {showAirports && airports.reduce((uniqueAirports: Airport[], airport, index) => {
             // Ensure unique airports by ICAO code and valid coordinates

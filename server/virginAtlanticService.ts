@@ -246,12 +246,12 @@ class VirginAtlanticService {
       
       // Calculate great circle distance for realistic flight time
       const R = 6371; // Earth's radius in km
-      const dLat = (arrCoords.lat - depCoords.lat) * Math.PI / 180;
-      const dLng = (arrCoords.lng - depCoords.lng) * Math.PI / 180;
-      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(depCoords.lat * Math.PI / 180) * Math.cos(arrCoords.lat * Math.PI / 180) *
-                Math.sin(dLng/2) * Math.sin(dLng/2);
-      const distance = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distanceDLat = (arrCoords.lat - depCoords.lat) * Math.PI / 180;
+      const distanceDLng = (arrCoords.lng - depCoords.lng) * Math.PI / 180;
+      const distanceA = Math.sin(distanceDLat/2) * Math.sin(distanceDLat/2) +
+                        Math.cos(depCoords.lat * Math.PI / 180) * Math.cos(arrCoords.lat * Math.PI / 180) *
+                        Math.sin(distanceDLng/2) * Math.sin(distanceDLng/2);
+      const distance = R * 2 * Math.atan2(Math.sqrt(distanceA), Math.sqrt(1-distanceA));
       
       // Estimate flight duration based on distance (avg 850 km/h)
       const estimatedFlightHours = distance / 850;
@@ -267,27 +267,37 @@ class VirginAtlanticService {
       flightProgress += (Math.random() - 0.5) * 0.1;
       flightProgress = Math.max(0, Math.min(1, flightProgress));
       
-      // Generate realistic great circle route position
+      // Generate realistic great circle route position using proper spherical interpolation
       const f = flightProgress;
       const lat1 = depCoords.lat * Math.PI / 180;
       const lng1 = depCoords.lng * Math.PI / 180;
       const lat2 = arrCoords.lat * Math.PI / 180;
       const lng2 = arrCoords.lng * Math.PI / 180;
       
-      const currentLat = Math.asin(Math.sin(lat1) * Math.cos(f * distance / R) + 
-                                   Math.cos(lat1) * Math.sin(f * distance / R) * Math.cos(Math.atan2(Math.sin(lng2 - lng1) * Math.cos(lat2), 
-                                   Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1)))) * 180 / Math.PI;
+      // Calculate angular distance
+      const deltaLat = lat2 - lat1;
+      const deltaLng = lng2 - lng1;
+      const angularA = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) + 
+                       Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
+      const angularDistance = 2 * Math.atan2(Math.sqrt(angularA), Math.sqrt(1-angularA));
       
-      const currentLng = (lng1 + Math.atan2(Math.sin(Math.atan2(Math.sin(lng2 - lng1) * Math.cos(lat2), 
-                                            Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1))) * 
-                                            Math.sin(f * distance / R), Math.cos(f * distance / R) - Math.sin(lat1) * Math.sin(currentLat * Math.PI / 180))) * 180 / Math.PI;
+      // Spherical linear interpolation (SLERP) for great circle
+      const A = Math.sin((1-f) * angularDistance) / Math.sin(angularDistance);
+      const B = Math.sin(f * angularDistance) / Math.sin(angularDistance);
       
-      // Calculate realistic heading (bearing to destination)
+      const x = A * Math.cos(lat1) * Math.cos(lng1) + B * Math.cos(lat2) * Math.cos(lng2);
+      const y = A * Math.cos(lat1) * Math.sin(lng1) + B * Math.cos(lat2) * Math.sin(lng2);
+      const z = A * Math.sin(lat1) + B * Math.sin(lat2);
+      
+      const currentLat = Math.atan2(z, Math.sqrt(x*x + y*y)) * 180 / Math.PI;
+      const currentLng = Math.atan2(y, x) * 180 / Math.PI;
+      
+      // Calculate realistic heading (bearing along great circle)
       const dLon = (arrCoords.lng - currentLng) * Math.PI / 180;
-      const y = Math.sin(dLon) * Math.cos(arrCoords.lat * Math.PI / 180);
-      const x = Math.cos(currentLat * Math.PI / 180) * Math.sin(arrCoords.lat * Math.PI / 180) - 
-                Math.sin(currentLat * Math.PI / 180) * Math.cos(arrCoords.lat * Math.PI / 180) * Math.cos(dLon);
-      const heading = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+      const y_bearing = Math.sin(dLon) * Math.cos(arrCoords.lat * Math.PI / 180);
+      const x_bearing = Math.cos(currentLat * Math.PI / 180) * Math.sin(arrCoords.lat * Math.PI / 180) - 
+                       Math.sin(currentLat * Math.PI / 180) * Math.cos(arrCoords.lat * Math.PI / 180) * Math.cos(dLon);
+      const heading = (Math.atan2(y_bearing, x_bearing) * 180 / Math.PI + 360) % 360;
 
       // Calculate realistic altitude based on flight phase
       let altitude = 35000; // Cruise altitude
