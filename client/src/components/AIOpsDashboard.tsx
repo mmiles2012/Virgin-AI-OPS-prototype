@@ -17,6 +17,7 @@ interface DigitalTwinAlert {
 }
 
 export default function AIOpsDashboard() {
+  // Force refresh - Enhanced Live Map with Interactive Airport Selection
   const [networkHealth, setNetworkHealth] = useState<NetworkHealthData>({
     onTimePerformance: 79,
     cancellations: 12,
