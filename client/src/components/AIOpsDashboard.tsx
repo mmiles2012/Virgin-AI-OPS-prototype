@@ -89,25 +89,27 @@ export default function AIOpsDashboard() {
   }, []);
 
   return (
-    <div className="bg-slate-900 text-white min-h-screen">
-      <div className="grid grid-cols-4 gap-4 p-4 h-auto">
-        {/* Live Map View - Spans 3 columns for bigger size */}
-        <Card className="col-span-3 bg-slate-800 border-slate-700">
-          <CardContent className="p-0">
-            <div className="p-4 border-b border-slate-600">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Plane className="w-5 h-5" />
-                Live Map View
-              </h2>
-            </div>
-            <div style={{ height: '600px' }} className="relative">
-              <ProfessionalSatelliteMap />
-            </div>
-          </CardContent>
-        </Card>
+    <div className="bg-slate-900 text-white min-h-screen overflow-y-auto">
+      <div className="flex gap-4 p-4 min-h-screen">
+        {/* Live Map View - Takes up 3/4 width */}
+        <div className="w-3/4">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardContent className="p-0">
+              <div className="p-4 border-b border-slate-600">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Plane className="w-5 h-5" />
+                  Live Map View
+                </h2>
+              </div>
+              <div style={{ height: '600px' }} className="relative">
+                <ProfessionalSatelliteMap />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-        {/* Right Column - All panels stacked */}
-        <div className="space-y-4 h-auto">
+        {/* Right Column - Takes up 1/4 width, allows scrolling */}
+        <div className="w-1/4 space-y-4 overflow-y-auto max-h-screen">
         {/* Network Health */}
         <Card className="bg-slate-800 border-slate-700">
           <CardContent className="p-4">
