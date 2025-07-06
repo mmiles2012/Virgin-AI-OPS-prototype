@@ -290,9 +290,9 @@ class VirginAtlanticService {
         currentLat = depCoords.lat + f * (arrCoords.lat - depCoords.lat);
         currentLng = depCoords.lng + f * (arrCoords.lng - depCoords.lng);
         
-        // Calculate simple bearing
-        const dLat = arrCoords.lat - depCoords.lat;
-        const dLng = arrCoords.lng - depCoords.lng;
+        // Calculate simple bearing (proper bearing calculation)
+        const dLat = arrCoords.lat - currentLat;
+        const dLng = arrCoords.lng - currentLng;
         heading = (Math.atan2(dLng, dLat) * 180 / Math.PI + 90 + 360) % 360;
       } else {
         // Use proper great circle interpolation for longer routes
@@ -318,19 +318,26 @@ class VirginAtlanticService {
         }
         
         // Calculate realistic heading (bearing to destination)
+        const currentLatRad = currentLat * Math.PI / 180;
+        const arrLatRad = arrCoords.lat * Math.PI / 180;
         const dLon = (arrCoords.lng - currentLng) * Math.PI / 180;
-        const y_bearing = Math.sin(dLon) * Math.cos(arrCoords.lat * Math.PI / 180);
-        const x_bearing = Math.cos(currentLat * Math.PI / 180) * Math.sin(arrCoords.lat * Math.PI / 180) - 
-                         Math.sin(currentLat * Math.PI / 180) * Math.cos(arrCoords.lat * Math.PI / 180) * Math.cos(dLon);
+        
+        const y_bearing = Math.sin(dLon) * Math.cos(arrLatRad);
+        const x_bearing = Math.cos(currentLatRad) * Math.sin(arrLatRad) - 
+                         Math.sin(currentLatRad) * Math.cos(arrLatRad) * Math.cos(dLon);
         heading = (Math.atan2(y_bearing, x_bearing) * 180 / Math.PI + 360) % 360;
       }
       
       // Validate coordinates and use fallback if invalid
       if (isNaN(currentLat) || isNaN(currentLng) || isNaN(heading)) {
-        console.warn('Invalid flight coordinates:', flight.callsign || `${flight.flight_number}-${depAirport}${arrAirport}-${index}`, currentLat, currentLng);
+        console.warn('Invalid flight coordinates:', `${flight.flight_number}-${depAirport}${arrAirport}-${index}`, currentLat, currentLng);
         currentLat = depCoords.lat + f * (arrCoords.lat - depCoords.lat);
         currentLng = depCoords.lng + f * (arrCoords.lng - depCoords.lng);
-        heading = (Math.atan2(arrCoords.lng - depCoords.lng, arrCoords.lat - depCoords.lat) * 180 / Math.PI + 90 + 360) % 360;
+        
+        // Calculate proper bearing to destination
+        const dLat = arrCoords.lat - currentLat;
+        const dLng = arrCoords.lng - currentLng;
+        heading = (Math.atan2(dLng, dLat) * 180 / Math.PI + 90 + 360) % 360;
       }
 
       // Calculate realistic altitude based on flight phase
