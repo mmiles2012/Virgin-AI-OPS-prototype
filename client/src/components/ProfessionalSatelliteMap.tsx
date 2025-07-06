@@ -194,35 +194,35 @@ const createAirportIcon = (selected: boolean, serviceSupport?: string) => {
     html: `
       <div style="
         position: relative;
-        width: 16px; 
-        height: 16px; 
+        width: 12px; 
+        height: 12px; 
         background: ${baseColor}; 
-        border: 2px solid ${borderColor};
+        border: 1.5px solid ${borderColor};
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.3);
         transition: all 0.3s ease;
       ">
-        <div style="color: white; font-size: 10px; font-weight: bold;">✈</div>
+        <div style="color: white; font-size: 8px; font-weight: bold;">✈</div>
         ${serviceSupport ? `
           <div style="
             position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 6px;
-            height: 6px;
+            top: -1px;
+            right: -1px;
+            width: 4px;
+            height: 4px;
             background: ${serviceColor};
-            border: 1px solid white;
+            border: 0.5px solid white;
             border-radius: 50%;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
           "></div>
         ` : ''}
       </div>
     `,
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
   });
 };
 
@@ -236,24 +236,24 @@ const getServiceIndicatorColor = (support: string): string => {
   }
 };
 
-// Custom flight icon - Optimally sized for visibility and selection
+// Custom flight icon - Compact size for less crowding
 const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
   className: 'custom-flight-marker',
   html: `
     <div style="
       transform: rotate(${heading}deg);
       color: ${selected ? '#fbbf24' : '#ef4444'};
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
-      font-size: 24px;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+      font-size: 16px;
       font-weight: bold;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: ${selected ? 'rgba(251, 191, 36, 0.3)' : 'rgba(239, 68, 68, 0.3)'};
+      background: ${selected ? 'rgba(251, 191, 36, 0.2)' : 'rgba(239, 68, 68, 0.2)'};
       border-radius: 50%;
-      border: 2px solid ${selected ? '#fbbf24' : '#ef4444'};
-      width: 28px;
-      height: 28px;
+      border: 1.5px solid ${selected ? '#fbbf24' : '#ef4444'};
+      width: 20px;
+      height: 20px;
       transition: all 0.3s ease;
       cursor: pointer;
       z-index: 1000;
@@ -261,8 +261,8 @@ const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
       ✈
     </div>
   `,
-  iconSize: [32, 32],
-  iconAnchor: [16, 16],
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
 });
 
 // Enhanced Weather Radar Overlay Component with interactive features
@@ -557,13 +557,11 @@ function ProfessionalSatelliteMapCore() {
   return (
     <div className="w-full h-full bg-gray-900 relative">
       
-      {/* Enhanced Weather Overlay Controls */}
-      <div className="absolute top-4 left-4 z-[1000] bg-black/90 border border-gray-600 rounded-lg p-3 backdrop-blur-sm">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="flex items-center gap-2">
-            <Cloud className="h-4 w-4 text-blue-400" />
-            <span className="text-white text-sm font-medium">Weather Radar</span>
-          </div>
+      {/* Compact Weather Controls */}
+      <div className="absolute top-4 left-4 z-[1000] bg-black/90 border border-gray-600 rounded-lg p-2 backdrop-blur-sm max-w-[160px]">
+        <div className="flex items-center gap-2 mb-1">
+          <Cloud className="h-3 w-3 text-blue-400" />
+          <span className="text-white text-xs font-medium">Weather</span>
           <Switch
             checked={showWeatherOverlay}
             onCheckedChange={(checked) => {
@@ -572,21 +570,17 @@ function ProfessionalSatelliteMapCore() {
                 fetchWeatherRadar();
               }
             }}
+            className="scale-75"
           />
           {radarLoading && (
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
+            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-400"></div>
           )}
         </div>
         
         {showWeatherOverlay && (
-          <div className="space-y-2">
-            <div className="text-xs text-gray-400">
-              Smart Global Coverage Active
-            </div>
-            
-            {/* Opacity Control */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-300">Opacity:</span>
+          <div className="space-y-1">
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-gray-400">Opacity:</span>
               <input
                 type="range"
                 min="0.3"
@@ -594,14 +588,20 @@ function ProfessionalSatelliteMapCore() {
                 step="0.1"
                 value={radarOpacity}
                 onChange={(e) => setRadarOpacity(parseFloat(e.target.value))}
-                className="w-16 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                className="w-12 h-1 bg-gray-600 rounded"
               />
-              <span className="text-xs text-gray-400">{Math.round(radarOpacity * 100)}%</span>
+              <span className="text-xs text-gray-400 w-8">{Math.round(radarOpacity * 100)}%</span>
             </div>
             
-            {/* Auto-refresh Control */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-300">Auto-refresh:</span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => fetchWeatherRadar()}
+                disabled={radarLoading}
+                className="flex items-center gap-1 px-1 py-0.5 text-xs bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded transition-colors"
+              >
+                <Cloud className="h-2 w-2" />
+                Refresh
+              </button>
               <Switch
                 checked={autoRefresh}
                 onCheckedChange={setAutoRefresh}
@@ -609,45 +609,32 @@ function ProfessionalSatelliteMapCore() {
               />
               <span className="text-xs text-gray-400">{refreshInterval}min</span>
             </div>
-            
-            {/* Manual Refresh Button */}
-            <button
-              onClick={() => fetchWeatherRadar()}
-              disabled={radarLoading}
-              className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded border transition-colors"
-            >
-              <Cloud className="h-3 w-3" />
-              {radarLoading ? 'Loading...' : 'Refresh'}
-            </button>
           </div>
         )}
         
-        {/* Service Coverage Legend */}
-        <div className="absolute bottom-4 right-4 z-[500] bg-black/90 border border-gray-600 rounded-lg p-3 backdrop-blur-sm max-w-xs">
-          <div className="text-white font-medium text-sm mb-2 flex items-center gap-1">
+        {/* Compact Service Coverage Legend */}
+        <div className="absolute bottom-4 left-4 z-[500] bg-black/90 border border-gray-600 rounded-lg p-2 backdrop-blur-sm">
+          <div className="text-white font-medium text-xs mb-1 flex items-center gap-1">
             <Building className="w-3 h-3" />
-            Service Coverage
+            Service Status
           </div>
-          <div className="space-y-1 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22c55e' }}></div>
-              <span className="text-gray-300">Full Services</span>
+          <div className="flex gap-3 text-xs">
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#22c55e' }}></div>
+              <span className="text-gray-300">Full</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#3b82f6' }}></div>
-              <span className="text-gray-300">Fuel Only</span>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#3b82f6' }}></div>
+              <span className="text-gray-300">Fuel</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#f59e0b' }}></div>
-              <span className="text-gray-300">Ground Handling Only</span>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#f59e0b' }}></div>
+              <span className="text-gray-300">Ground</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ef4444' }}></div>
-              <span className="text-gray-300">No Services</span>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#ef4444' }}></div>
+              <span className="text-gray-300">None</span>
             </div>
-          </div>
-          <div className="mt-2 pt-2 border-t border-gray-600 text-xs text-gray-400">
-            Click airports for detailed service information
           </div>
         </div>
       </div>
@@ -773,27 +760,26 @@ function ProfessionalSatelliteMapCore() {
                 click: () => handleAirportClick(airport),
               }}
             >
-              <Popup>
-                <div className="p-3 min-w-[280px]">
-                  <div className="text-center mb-3">
-                    <h3 className="text-green-500 font-bold text-lg">{airport.icao}</h3>
-                    <div className="text-white text-sm font-medium">{airport.name}</div>
+              <Popup 
+                maxWidth={280} 
+                className="compact-popup"
+                autoPan={true}
+                autoPanPadding={[20, 20]}
+                closeOnEscapeKey={true}
+                closeOnClick={false}
+              >
+                <div className="p-2 max-w-[260px]">
+                  <div className="text-center mb-2">
+                    <h3 className="text-green-500 font-bold text-base">{airport.icao}</h3>
+                    <div className="text-white text-xs font-medium truncate">{airport.name}</div>
                     <div className="text-gray-400 text-xs">{airport.city}, {airport.country}</div>
                   </div>
                   
-                  <div className="space-y-2 border-t border-gray-600 pt-2">
-                    <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="space-y-1.5 border-t border-gray-600 pt-1.5">
+                    <div className="grid grid-cols-2 gap-1 text-xs">
                       <div>
                         <span className="text-gray-400">IATA:</span>
                         <span className="text-white ml-1">{airport.iata || 'N/A'}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-400">Category:</span>
-                        <span className="text-white ml-1 capitalize">{airport.category || 'Unknown'}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-400">Elevation:</span>
-                        <span className="text-white ml-1">{airport.elevation || 'N/A'} ft</span>
                       </div>
                       <div>
                         <span className="text-gray-400">Runways:</span>
@@ -801,91 +787,66 @@ function ProfessionalSatelliteMapCore() {
                       </div>
                     </div>
                     
-                    {/* Service Coverage Section */}
+                    {/* Compact Service Coverage Section */}
                     {(() => {
                       const serviceInfo = getServiceCoverage(airport);
                       return serviceInfo ? (
-                        <div className="border-t border-gray-600 pt-2">
-                          <div className="text-gray-400 text-xs mb-2 flex items-center gap-1">
-                            <Building className="w-3 h-3" />
-                            Service Coverage
+                        <div className="border-t border-gray-600 pt-1.5">
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <div className="flex items-center gap-1">
+                              <Building className="w-3 h-3 text-gray-400" />
+                              <span className="text-gray-400">Services</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div 
+                                className="w-2 h-2 rounded-full" 
+                                style={{ backgroundColor: getServiceIndicatorColor(serviceInfo.support) }}
+                              ></div>
+                              <span className="text-xs text-gray-300 capitalize">
+                                {serviceInfo.support.replace('_', ' ')}
+                              </span>
+                            </div>
                           </div>
-                          <div className="grid grid-cols-2 gap-2 text-xs">
+                          
+                          <div className="flex gap-2 text-xs">
                             <div className="flex items-center gap-1">
                               <Fuel className={`w-3 h-3 ${
                                 serviceInfo.support === 'both' || serviceInfo.support === 'fuel_only' 
                                   ? 'text-green-400' : 'text-gray-500'
                               }`} />
-                              <span className="text-white">
-                                {serviceInfo.support === 'both' || serviceInfo.support === 'fuel_only' 
-                                  ? 'Available' : 'Not Available'}
-                              </span>
+                              <span className="text-gray-300">Fuel</span>
                             </div>
                             <div className="flex items-center gap-1">
                               <Wrench className={`w-3 h-3 ${
                                 serviceInfo.support === 'both' || serviceInfo.support === 'ground_only' 
                                   ? 'text-green-400' : 'text-gray-500'
                               }`} />
-                              <span className="text-white">
-                                {serviceInfo.support === 'both' || serviceInfo.support === 'ground_only' 
-                                  ? 'Available' : 'Not Available'}
-                              </span>
+                              <span className="text-gray-300">Ground</span>
                             </div>
                           </div>
                           
                           {serviceInfo.phone && serviceInfo.phone !== 'Not available' && (
-                            <div className="mt-2 p-2 bg-blue-900/30 rounded border border-blue-500/30">
-                              <div className="flex items-center gap-1 mb-1">
+                            <div className="mt-1.5 p-1.5 bg-blue-900/30 rounded text-xs">
+                              <div className="flex items-center gap-1">
                                 <Phone className="w-3 h-3 text-blue-400" />
-                                <span className="text-blue-400 text-xs font-medium">Operations Center</span>
+                                <span className="text-blue-400 font-medium">Ops Center</span>
                               </div>
-                              <div className="text-white text-xs font-mono">{serviceInfo.phone}</div>
-                              {serviceInfo.contact && serviceInfo.contact !== 'Not available' && (
-                                <div className="text-gray-300 text-xs mt-1">{serviceInfo.contact}</div>
-                              )}
+                              <div className="text-white font-mono text-xs">{serviceInfo.phone}</div>
                             </div>
                           )}
-                          
-                          <div className="flex items-center gap-1 mt-2">
-                            <div 
-                              className="w-2 h-2 rounded-full" 
-                              style={{ backgroundColor: getServiceIndicatorColor(serviceInfo.support) }}
-                            ></div>
-                            <span className="text-xs text-gray-300 capitalize">
-                              {serviceInfo.support.replace('_', ' ')} service{serviceInfo.support === 'both' ? 's' : ''}
-                            </span>
-                          </div>
                         </div>
                       ) : (
-                        <div className="border-t border-gray-600 pt-2">
-                          <div className="text-gray-400 text-xs mb-1 flex items-center gap-1">
-                            <Building className="w-3 h-3" />
-                            Service Coverage
-                          </div>
-                          <div className="text-gray-500 text-xs italic">No service information available</div>
+                        <div className="border-t border-gray-600 pt-1.5 text-xs">
+                          <span className="text-gray-500">No service data available</span>
                         </div>
                       );
                     })()}
                     
-                    <div className="border-t border-gray-600 pt-2">
-                      <div className="text-gray-400 text-xs mb-1">Coordinates:</div>
-                      <div className="text-white text-xs font-mono">
-                        {airport.latitude.toFixed(6)}, {airport.longitude.toFixed(6)}
-                      </div>
-                    </div>
-                    
-                    {airport.timezone && (
-                      <div className="border-t border-gray-600 pt-2">
-                        <div className="text-gray-400 text-xs">Timezone:</div>
-                        <div className="text-white text-xs">{airport.timezone}</div>
-                      </div>
-                    )}
-                    
                     <button 
                       onClick={() => handleAirportClick(airport)}
-                      className="w-full mt-2 px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors"
+                      className="w-full mt-2 px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors"
                     >
-                      View Weather & Details
+                      Weather & Details
                     </button>
                   </div>
                 </div>
