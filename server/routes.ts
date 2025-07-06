@@ -12,6 +12,7 @@ import { majorAirports } from "../shared/airportData";
 import { aviationApiService } from "./aviationApiService";
 import { newsApiService } from "./newsApiService_simplified";
 import { weatherRadarService } from "./weatherRadarService";
+import { awcSigmetService } from "./awcSigmetService";
 import { enhancedNewsMonitor } from "./enhancedNewsMonitor";
 import { diversionSupport } from "./diversionSupport";
 import groundHandlerService from "./groundHandlerService";
@@ -28,6 +29,7 @@ import { dualModelAIService } from "./dualModelIntegration";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 import { weatherDataCollector } from "./weatherDataCollector";
+import { awcSigmetService } from "./awcSigmetService";
 import { adsbFlightTracker } from "./adsbFlightTracker";
 import { icaoApiService } from "./icaoApiService";
 import { icaoMLIntegration } from "./icaoMLIntegration";
@@ -1712,8 +1714,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }))
       ];
 
+      // Get AWC SIGMET/G-AIRMET alerts
+      let sigmetAlerts: any[] = [];
+      try {
+        const awcWeatherAlerts = await awcSigmetService.getAllWeatherAlerts();
+        
+        // Convert SIGMET/G-AIRMET data to SafeAirspace format
+        sigmetAlerts = awcWeatherAlerts.map(alert => ({
+          id: alert.id,
+          type: alert.alert_type === 'SIGMET' ? 'WARNING' : 'RESTRICTED',
+          title: `${alert.alert_type}: ${alert.phenomenon}`,
+          description: alert.description,
+          location: alert.coordinates ? {
+            lat: alert.coordinates.lat,
+            lon: alert.coordinates.lon,
+            radius: 25
+          } : { lat: 40.0, lon: -100.0, radius: 50 }, // Default center US if no coords
+          altitude: alert.altitude_range || { min: 0, max: 45000 },
+          timeframe: {
+            start: alert.effective_start,
+            end: alert.effective_end
+          },
+          severity: alert.severity.toLowerCase(),
+          source: alert.source,
+          lastUpdated: alert.scraped_at,
+          weather_features: {
+            phenomenon: alert.phenomenon,
+            movement: alert.movement
+          }
+        }));
+        
+        console.log(`AWC Weather Alerts: Retrieved ${sigmetAlerts.length} SIGMET/G-AIRMET alerts`);
+      } catch (error: any) {
+        console.error('AWC SIGMET integration error:', error.message);
+        sigmetAlerts = [];
+      }
+
       // Combine all alerts from different sources
-      const combinedAlerts = [...safeAirspaceAlerts, ...icaoAlerts, ...liveAviationAlerts];
+      const combinedAlerts = [...safeAirspaceAlerts, ...icaoAlerts, ...liveAviationAlerts, ...sigmetAlerts];
 
       res.json({
         success: true,
@@ -1723,14 +1761,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           safe_airspace_alerts: safeAirspaceAlerts.length,
           icao_ml_alerts: icaoAlerts.length,
           live_scraped_alerts: liveAviationAlerts.length,
+          awc_sigmet_alerts: sigmetAlerts.length,
           critical: combinedAlerts.filter(a => a.severity === 'critical').length,
           high: combinedAlerts.filter(a => a.severity === 'high').length,
           medium: combinedAlerts.filter(a => a.severity === 'medium').length,
           low: combinedAlerts.filter(a => a.severity === 'low').length
         },
+        weather_alert_breakdown: {
+          sigmets: sigmetAlerts.filter(a => a.title.includes('SIGMET')).length,
+          gairmets: sigmetAlerts.filter(a => a.title.includes('G-AIRMET')).length,
+          weather_phenomena: [...new Set(sigmetAlerts.map(a => a.weather_features?.phenomenon).filter(Boolean))]
+        },
         airspace_safety_status: icaoSafetyAlerts.airspace_status,
         ml_recommendations: icaoSafetyAlerts.recommendations,
-        data_sources: ['Enhanced_Aviation_Scraper', 'SafeAirspace_NOTAMs', 'ICAO_Official_API', 'ML_Safety_Intelligence'],
+        data_sources: ['Enhanced_Aviation_Scraper', 'SafeAirspace_NOTAMs', 'ICAO_Official_API', 'ML_Safety_Intelligence', 'AWC_Official_SIGMET_API'],
         scraper_status: liveAviationAlerts.length > 0 ? 'active' : 'no_authentic_data',
         timestamp: new Date().toISOString()
       });

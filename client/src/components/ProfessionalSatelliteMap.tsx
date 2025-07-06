@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { X, AlertTriangle, Cloud, Fuel, Wrench, Phone, Building } from 'lucide-react';
+import { X, AlertTriangle, Cloud, Fuel, Wrench, Phone, Building, Zap } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
+import SigmetOverlay from './SigmetOverlay';
 import Papa from 'papaparse';
 
 // Fix Leaflet default markers
@@ -367,6 +368,7 @@ function ProfessionalSatelliteMapCore() {
   const [showAirports, setShowAirports] = useState(true);
   const [showFlights, setShowFlights] = useState(true);
   const [showWeatherOverlay, setShowWeatherOverlay] = useState(false);
+  const [showSigmets, setShowSigmets] = useState(false);
   const [weatherRadarImage, setWeatherRadarImage] = useState<string | null>(null);
   const [radarLoading, setRadarLoading] = useState(false);
   const [radarOpacity, setRadarOpacity] = useState(0.95);
@@ -577,6 +579,16 @@ function ProfessionalSatelliteMapCore() {
           )}
         </div>
         
+        <div className="flex items-center gap-2 mb-1">
+          <Zap className="h-3 w-3 text-orange-400" />
+          <span className="text-white text-xs font-medium">SIGMET</span>
+          <Switch
+            checked={showSigmets}
+            onCheckedChange={setShowSigmets}
+            className="scale-75"
+          />
+        </div>
+        
         {showWeatherOverlay && (
           <div className="space-y-1">
             <div className="flex items-center gap-1">
@@ -734,6 +746,14 @@ function ProfessionalSatelliteMapCore() {
               radarOpacity={radarOpacity}
             />
           )}
+
+          {/* SIGMET Weather Alerts Overlay */}
+          <SigmetOverlay 
+            showSigmets={showSigmets}
+            onSigmetSelect={(sigmet) => {
+              console.log('SIGMET selected:', sigmet?.title);
+            }}
+          />
 
           {/* Airport markers */}
           {showAirports && airports.reduce((uniqueAirports: Airport[], airport, index) => {
@@ -898,6 +918,14 @@ function ProfessionalSatelliteMapCore() {
               radarOpacity={radarOpacity}
             />
           )}
+
+          {/* SIGMET Weather Alerts Overlay */}
+          <SigmetOverlay 
+            showSigmets={showSigmets}
+            onSigmetSelect={(sigmet) => {
+              console.log('SIGMET selected:', sigmet?.title);
+            }}
+          />
 
           {/* Coordinate Display */}
           <CoordinateDisplay />
