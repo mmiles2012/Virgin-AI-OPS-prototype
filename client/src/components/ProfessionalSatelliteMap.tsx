@@ -437,15 +437,15 @@ function ProfessionalSatelliteMapCore() {
   
   const { selectFlight, selectedFlight } = useSelectedFlight();
   
-  // Weather controls state
-  const [showWeatherPanel, setShowWeatherPanel] = useState(false);
+  // Weather controls state - Layer selections enabled by default
+  const [showWeatherPanel, setShowWeatherPanel] = useState(true);
   const [weatherLayers, setWeatherLayers] = useState({
-    clouds: false,
-    precipitation: false,
-    wind: false,
-    pressure: false,
-    temperature: false,
-    turbulence: false
+    clouds: true,
+    precipitation: true,
+    wind: true,
+    pressure: true,
+    temperature: true,
+    turbulence: true
   });
   const [weatherOpacity, setWeatherOpacity] = useState(0.6);
 
