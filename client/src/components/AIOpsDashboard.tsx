@@ -87,9 +87,9 @@ export default function AIOpsDashboard() {
   }, []);
 
   return (
-    <div className="grid grid-cols-3 gap-4 p-4 bg-slate-900 text-white min-h-screen">
-      {/* Live Map View - Spans 2 columns */}
-      <Card className="col-span-2 bg-slate-800 border-slate-700">
+    <div className="grid grid-cols-4 gap-4 p-4 bg-slate-900 text-white min-h-screen">
+      {/* Live Map View - Spans 3 columns for bigger size */}
+      <Card className="col-span-3 bg-slate-800 border-slate-700">
         <CardContent className="p-0">
           <div className="p-4">
             <h2 className="text-xl font-bold mb-2 text-white flex items-center gap-2">
@@ -97,118 +97,118 @@ export default function AIOpsDashboard() {
               Live Map View
             </h2>
           </div>
-          <div className="h-64 relative">
+          <div className="h-80 relative">
             <ProfessionalSatelliteMap />
           </div>
         </CardContent>
       </Card>
 
-      {/* Network Health */}
-      <Card className="bg-slate-800 border-slate-700">
-        <CardContent className="p-4">
-          <h2 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
-            <Activity className="w-5 h-5" />
-            Network Health
-          </h2>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-slate-300">On-Time Performance</span>
-              <span className="text-green-400 font-bold">{networkHealth.onTimePerformance}%</span>
+      {/* Right Column - All panels stacked */}
+      <div className="space-y-4">
+        {/* Network Health */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <h2 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              Network Health
+            </h2>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300 text-sm">On-Time Performance</span>
+                <span className="text-green-400 font-bold">{networkHealth.onTimePerformance}%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300 text-sm">Cancellations</span>
+                <span className="text-red-400 font-bold">{networkHealth.cancellations}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300 text-sm">Diversions</span>
+                <span className="text-yellow-400 font-bold">{networkHealth.diversions}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300 text-sm">Curfews</span>
+                <span className="text-blue-400 font-bold">{networkHealth.curfews}</span>
+              </div>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-slate-300">Cancellations</span>
-              <span className="text-red-400 font-bold">{networkHealth.cancellations}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-slate-300">Diversions</span>
-              <span className="text-yellow-400 font-bold">{networkHealth.diversions}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-slate-300">Curfews</span>
-              <span className="text-blue-400 font-bold">{networkHealth.curfews}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Digital Twin Alerts */}
-      <Card className="bg-slate-800 border-slate-700">
-        <CardContent className="p-4">
-          <h2 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5" />
-            Digital Twin Alerts
-          </h2>
-          <div className="space-y-2">
-            {digitalTwinAlerts.map(alert => (
-              <div 
-                key={alert.id} 
-                className={`p-3 rounded-lg flex items-start gap-2 ${
-                  alert.severity === 'high' 
-                    ? 'bg-red-900/50 border border-red-500/50' 
-                    : alert.severity === 'medium'
-                    ? 'bg-yellow-900/50 border border-yellow-500/50'
-                    : 'bg-blue-900/50 border border-blue-500/50'
-                }`}
-              >
-                <AlertTriangle className={`w-4 h-4 mt-0.5 ${
-                  alert.severity === 'high' ? 'text-red-400' : 
-                  alert.severity === 'medium' ? 'text-yellow-400' : 'text-blue-400'
-                }`} />
-                <span className="text-sm text-white">{alert.message}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+        {/* Digital Twin Alerts */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <h2 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" />
+              Digital Twin Alerts
+            </h2>
+            <div className="space-y-2">
+              {digitalTwinAlerts.map(alert => (
+                <div 
+                  key={alert.id} 
+                  className={`p-2 rounded-lg flex items-start gap-2 ${
+                    alert.severity === 'high' 
+                      ? 'bg-red-900/50 border border-red-500/50' 
+                      : alert.severity === 'medium'
+                      ? 'bg-yellow-900/50 border border-yellow-500/50'
+                      : 'bg-blue-900/50 border border-blue-500/50'
+                  }`}
+                >
+                  <AlertTriangle className={`w-3 h-3 mt-0.5 ${
+                    alert.severity === 'high' ? 'text-red-400' : 
+                    alert.severity === 'medium' ? 'text-yellow-400' : 'text-blue-400'
+                  }`} />
+                  <span className="text-xs text-white">{alert.message}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Predictive Disruption Timeline */}
-      <Card className="bg-slate-800 border-slate-700">
-        <CardContent className="p-4">
-          <h2 className="text-xl font-bold mb-4 text-white">Predictive Disruption Timeline</h2>
-          <div className="space-y-3">
-            <div className="h-8 bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 rounded-lg relative">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-slate-900 font-bold text-sm">0h → 6h Forecast</span>
+        {/* Predictive Disruption Timeline */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <h2 className="text-lg font-bold mb-3 text-white">Disruption Timeline</h2>
+            <div className="space-y-2">
+              <div className="h-6 bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 rounded-lg relative">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-slate-900 font-bold text-xs">0h → 6h Forecast</span>
+                </div>
+              </div>
+              <div className="flex justify-between text-xs text-slate-400">
+                <span>0h</span>
+                <span>2h</span>
+                <span>4h</span>
+                <span>6h</span>
               </div>
             </div>
-            <div className="flex justify-between text-xs text-slate-400">
-              <span>0h</span>
-              <span>2h</span>
-              <span>4h</span>
-              <span>6h</span>
-            </div>
-            <div className="text-sm text-slate-300">
-              Low risk early hours, increasing disruption potential around 4-6h mark
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Weather & Airspace */}
-      <Card className="bg-slate-800 border-slate-700">
-        <CardContent className="p-4">
-          <h2 className="text-xl font-bold mb-4 text-white flex items-center gap-2">
-            <Cloud className="w-5 h-5" />
-            Weather & Airspace
-          </h2>
-          <div className="space-y-3">
-            <div className="h-24 bg-slate-700 rounded-lg flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 via-green-500/30 to-yellow-500/30"></div>
-              <span className="relative z-10 text-slate-300 text-sm">Live Weather Radar</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-slate-700 p-2 rounded">
-                <div className="text-slate-400">Visibility</div>
-                <div className="text-white font-bold">10+ km</div>
+        {/* Weather & Airspace */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <h2 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
+              <Cloud className="w-4 h-4" />
+              Weather & Airspace
+            </h2>
+            <div className="space-y-2">
+              <div className="h-16 bg-slate-700 rounded-lg flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 via-green-500/30 to-yellow-500/30"></div>
+                <span className="relative z-10 text-slate-300 text-xs">Live Weather Radar</span>
               </div>
-              <div className="bg-slate-700 p-2 rounded">
-                <div className="text-slate-400">Wind</div>
-                <div className="text-white font-bold">12 kt</div>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="bg-slate-700 p-2 rounded">
+                  <div className="text-slate-400">Visibility</div>
+                  <div className="text-white font-bold">10+ km</div>
+                </div>
+                <div className="bg-slate-700 p-2 rounded">
+                  <div className="text-slate-400">Wind</div>
+                  <div className="text-white font-bold">12 kt</div>
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
