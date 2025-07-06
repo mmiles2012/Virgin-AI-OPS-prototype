@@ -599,7 +599,7 @@ function ProfessionalSatelliteMapCore() {
       )}
 
       {/* Map Container - Full Width */}
-      <div className="w-full h-full relative">
+      <div className="w-full h-full relative" style={{ minHeight: '500px' }}>
         {!mapLoaded && (
           <div className="absolute inset-0 bg-gray-900 flex items-center justify-center z-50">
             <div className="text-center text-white">
@@ -613,30 +613,24 @@ function ProfessionalSatelliteMapCore() {
         <MapContainer
           center={[40, 0]}
           zoom={3}
-          style={{ height: '100%', width: '100%' }}
+          style={{ height: '100%', width: '100%', minHeight: '400px' }}
           zoomControl={true}
           scrollWheelZoom={true}
           attributionControl={false}
+          key="main-map"
           whenReady={() => {
+            console.log('Map ready');
             setTimeout(() => {
               setMapLoaded(true);
               setMapError(null);
-            }, 500);
+            }, 1000);
           }}
         >
-          {/* OpenStreetMap as fallback with satellite overlay */}
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="© OpenStreetMap contributors"
-            maxZoom={19}
-          />
-          
-          {/* Esri Satellite Imagery Overlay */}
+          {/* Primary Satellite Tile Layer */}
           <TileLayer
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
             attribution="© Esri"
             maxZoom={18}
-            opacity={0.8}
           />
 
           {/* Airport markers */}
