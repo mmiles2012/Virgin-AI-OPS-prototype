@@ -235,7 +235,7 @@ function WeatherRadarOverlay({ weatherRadarImage }: { weatherRadarImage: string 
     ];
     
     const imageOverlay = L.imageOverlay(weatherRadarImage, imageBounds, {
-      opacity: 0.85,
+      opacity: 0.95,
       interactive: false,
       className: 'weather-radar-overlay'
     });
