@@ -142,45 +142,116 @@ class WeatherRadarService {
     }
   }
 
-  // Get background map tiles
+  // Get background map with Zoom Earth integration
   async getBackgroundMap(bbox: number[], width: number, height: number): Promise<string | null> {
     try {
-      // Try ESRI World Topo Map as primary source
-      const esriUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/export";
+      const zoomLevel = this.calculateZoomLevel(bbox, width, height);
+      const centerLat = (bbox[1] + bbox[3]) / 2;
+      const centerLon = (bbox[0] + bbox[2]) / 2;
       
-      const params = new URLSearchParams({
-        bbox: `${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}`,
-        bboxSR: '4326',
-        size: `${width},${height}`,
-        imageSR: '4326',
-        format: 'png',
-        f: 'image',
-        transparent: 'false'
-      });
-
-      const response = await fetch(`${esriUrl}?${params}`, {
+      // Try Zoom Earth satellite tiles (following their API pattern)
+      const tileX = this.lonToTileX(centerLon, zoomLevel);
+      const tileY = this.latToTileY(centerLat, zoomLevel);
+      
+      // Zoom Earth satellite tile URL pattern
+      const zoomEarthSatelliteUrl = `https://zoom.earth/layers/satellite/${zoomLevel}/${tileX}/${tileY}.jpg`;
+      
+      console.log(`Attempting Zoom Earth satellite tile: z=${zoomLevel}, x=${tileX}, y=${tileY}`);
+      
+      const response = await fetch(zoomEarthSatelliteUrl, {
         method: 'GET',
         headers: {
-          'User-Agent': this.userAgent,
-          'Referer': 'https://www.arcgis.com'
+          'User-Agent': 'Mozilla/5.0 (compatible; WeatherRadar/1.0)',
+          'Referer': 'https://zoom.earth/',
+          'Accept': 'image/jpeg,image/png,image/*,*/*'
         },
-        timeout: 20000
+        timeout: 15000
       });
 
-      if (response.ok) {
+      if (response.ok && response.status === 200) {
         const contentType = response.headers.get('content-type');
-        if (contentType && contentType.startsWith('image')) {
+        if (contentType && (contentType.includes('image/jpeg') || contentType.includes('image/png'))) {
           const buffer = await response.buffer();
+          console.log('Zoom Earth satellite tile successfully retrieved');
           return `data:${contentType};base64,${buffer.toString('base64')}`;
         }
       }
 
-      // Fallback to enhanced geographic background
+      console.log('Zoom Earth satellite failed, trying world map...');
+      
+      // Try Zoom Earth world map as fallback
+      const worldMapUrl = `https://zoom.earth/layers/world/${zoomLevel}/${tileX}/${tileY}.png`;
+      
+      const worldResponse = await fetch(worldMapUrl, {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; WeatherRadar/1.0)',
+          'Referer': 'https://zoom.earth/'
+        },
+        timeout: 10000
+      });
+
+      if (worldResponse.ok) {
+        const contentType = worldResponse.headers.get('content-type');
+        if (contentType && contentType.startsWith('image')) {
+          const buffer = await worldResponse.buffer();
+          console.log('Zoom Earth world map successfully retrieved');
+          return `data:${contentType};base64,${buffer.toString('base64')}`;
+        }
+      }
+
+      console.log('Zoom Earth world map failed, trying OpenStreetMap...');
+      
+      // Fallback to OpenStreetMap
+      const osmUrl = `https://tile.openstreetmap.org/${zoomLevel}/${tileX}/${tileY}.png`;
+      
+      const osmResponse = await fetch(osmUrl, {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; WeatherRadar/1.0)'
+        },
+        timeout: 8000
+      });
+
+      if (osmResponse.ok) {
+        const contentType = osmResponse.headers.get('content-type');
+        if (contentType && contentType.startsWith('image')) {
+          const buffer = await osmResponse.buffer();
+          console.log('OpenStreetMap tile successfully retrieved');
+          return `data:${contentType};base64,${buffer.toString('base64')}`;
+        }
+      }
+
+      // Final fallback to enhanced geographic background
+      console.log('All tile services failed, using enhanced background');
       return this.createEnhancedBackground(width, height, bbox);
     } catch (error) {
       console.error('Background map error:', error);
       return this.createEnhancedBackground(width, height, bbox);
     }
+  }
+
+  // Calculate appropriate zoom level based on bounding box
+  calculateZoomLevel(bbox: number[], width: number, height: number): number {
+    const latRange = bbox[3] - bbox[1];
+    const lonRange = bbox[2] - bbox[0];
+    
+    // Simple zoom calculation based on range
+    if (latRange > 50 || lonRange > 50) return 3; // Continental view
+    if (latRange > 20 || lonRange > 20) return 5; // Country/region view
+    if (latRange > 5 || lonRange > 5) return 7;   // State/province view
+    return 9; // Local area view
+  }
+
+  // Convert longitude to tile X coordinate
+  lonToTileX(lon: number, zoom: number): number {
+    return Math.floor((lon + 180) / 360 * Math.pow(2, zoom));
+  }
+
+  // Convert latitude to tile Y coordinate
+  latToTileY(lat: number, zoom: number): number {
+    const latRad = lat * Math.PI / 180;
+    return Math.floor((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2 * Math.pow(2, zoom));
   }
 
   // Get NOAA radar overlay (transparent)
