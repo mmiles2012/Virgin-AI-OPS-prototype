@@ -21,20 +21,13 @@ class WeatherRadarService {
       // Get weather radar overlay
       const radarOverlay = await this.getNoaaRadarOverlay(useBbox, width, height);
       
-      if (backgroundMap && radarOverlay) {
-        // Since we can't properly composite in this environment, 
-        // let's return the background map for now so you can see it
-        console.log('Background map available, showing background with radar overlay note');
-        return backgroundMap;
-      } else if (backgroundMap) {
-        // Return just the background map if radar fails
-        console.log('Showing background map only');
-        return backgroundMap;
-      } else if (radarOverlay) {
-        console.log('Showing radar overlay only');
-        return radarOverlay; // Fallback to just radar if available
+      if (radarOverlay) {
+        // Prioritize showing the actual weather radar
+        console.log('✓ NOAA weather radar retrieved successfully');
+        return radarOverlay;
       } else {
-        console.log('No background or radar available, creating enhanced background');
+        // If no radar available, create enhanced geographic background for context
+        console.log('No NOAA radar available, creating enhanced geographic background');
         return this.createEnhancedBackground(width, height, useBbox);
       }
     } catch (error) {
@@ -168,11 +161,13 @@ class WeatherRadarService {
       const response = await fetch(zoomEarthSatelliteUrl, {
         method: 'GET',
         headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; WeatherRadar/1.0)',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
           'Referer': 'https://zoom.earth/',
-          'Accept': 'image/jpeg,image/png,image/*,*/*'
+          'Accept': 'image/jpeg,image/png,image/*,*/*',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Cache-Control': 'no-cache'
         },
-        timeout: 8000  // Reduced timeout for faster fallback
+        timeout: 10000
       });
 
       if (response.ok && response.status === 200) {
@@ -272,32 +267,43 @@ class WeatherRadarService {
       imageSR: '4326',
       format: 'png',
       f: 'image',
-      transparent: 'true', // Make radar overlay transparent
+      transparent: 'true',
       interpolation: 'RSP_BilinearInterpolation'
     });
 
     try {
+      console.log('Fetching NOAA radar overlay...');
+      console.log('URL:', `${url}?${params}`);
+      
       const response = await fetch(`${url}?${params}`, {
         method: 'GET',
         headers: {
-          'User-Agent': this.userAgent
+          'User-Agent': this.userAgent,
+          'Accept': 'image/png,image/*,*/*'
         },
-        timeout: 30000
+        timeout: 15000
       });
 
+      console.log('NOAA radar response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.log('NOAA radar failed with status:', response.status);
+        return null;
       }
 
       const contentType = response.headers.get('content-type');
+      console.log('NOAA radar content type:', contentType);
+      
       if (contentType && contentType.startsWith('image')) {
         const buffer = await response.buffer();
+        console.log('NOAA radar data received, size:', buffer.length);
         return `data:${contentType};base64,${buffer.toString('base64')}`;
       }
       
+      console.log('NOAA radar response was not an image');
       return null;
     } catch (error) {
-      console.error('Radar overlay error:', error);
+      console.error('NOAA radar overlay error:', error.message);
       return null;
     }
   }
