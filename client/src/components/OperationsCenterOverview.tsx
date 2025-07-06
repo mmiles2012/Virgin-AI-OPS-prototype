@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Plane, Activity, Cloud, Zap, Wind } from 'lucide-react';
+import { AlertTriangle, Plane, Activity, Cloud, Zap, Wind, X } from 'lucide-react';
 
 interface NetworkHealthData {
   onTimePerformance: number;
@@ -65,10 +65,38 @@ const OperationsCenterOverview: React.FC = () => {
     // Fetch real-time data from AINO APIs
     const fetchData = async () => {
       try {
-        // This would connect to your existing AINO APIs
-        // const healthResponse = await fetch('/api/aviation/network-health');
-        // const alertsResponse = await fetch('/api/aviation/digital-twin-alerts');
-        // const timelineResponse = await fetch('/api/aviation/disruption-timeline');
+        // Fetch network health from existing APIs
+        const response = await fetch('/api/aviation/virgin-atlantic-flights');
+        const flightData = await response.json();
+        
+        if (flightData.success && flightData.flights) {
+          const flights = flightData.flights;
+          const totalFlights = flights.length;
+          const onTimeFlights = flights.filter((f: any) => f.delay_minutes <= 5).length;
+          const onTimePerformance = Math.round((onTimeFlights / totalFlights) * 100);
+          
+          const alerts = flights
+            .filter((f: any) => f.warnings && f.warnings.length > 0)
+            .slice(0, 3)
+            .map((f: any, index: number) => ({
+              id: `alert-${index}`,
+              type: 'delay' as const,
+              flight: f.flight_number,
+              message: `${f.flight_number}: ${f.warnings.join(', ')}`,
+              severity: f.delay_minutes > 30 ? 'high' as const : 'medium' as const
+            }));
+
+          setNetworkHealth({
+            onTimePerformance,
+            cancellations: flights.filter((f: any) => f.current_status === 'CANCELLED').length,
+            diversions: flights.filter((f: any) => f.warnings?.includes('DIVERSION')).length,
+            curfews: flights.filter((f: any) => f.warnings?.includes('CURFEW')).length
+          });
+
+          if (alerts.length > 0) {
+            setDigitalTwinAlerts(alerts);
+          }
+        }
       } catch (error) {
         console.error('Error fetching operations data:', error);
       }
@@ -82,8 +110,8 @@ const OperationsCenterOverview: React.FC = () => {
   const maxDisruptions = Math.max(...disruptionTimeline.map(d => d.disruptions));
 
   return (
-    <div className="min-h-screen bg-slate-900 p-6">
-      <div className="grid grid-cols-2 gap-6 h-[calc(100vh-3rem)]">
+    <div className="w-full h-full bg-slate-900 p-4">
+      <div className="grid grid-cols-2 gap-4 h-full">
         
         {/* Live Map View */}
         <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
@@ -223,8 +251,8 @@ const OperationsCenterOverview: React.FC = () => {
                   <p className="text-white text-sm">{alert.message}</p>
                 </div>
                 <button className="text-slate-400 hover:text-white">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
               </div>
