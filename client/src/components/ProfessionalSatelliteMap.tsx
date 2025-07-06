@@ -231,18 +231,16 @@ function WeatherRadarOverlay({ weatherRadarImage, radarOpacity = 0.95 }: { weath
   useEffect(() => {
     if (!weatherRadarImage) return;
     
-    // Dynamic bounds based on current map view or default to global coverage
+    // Use proper weather radar bounds - NOAA covers Continental US
+    // For global coverage, use appropriate regional bounds
     const mapCenter = map.getCenter();
-    const currentZoom = map.getZoom();
     
-    // Calculate dynamic bounds based on center and zoom level
-    const latOffset = 20 / currentZoom;
-    const lngOffset = 30 / currentZoom;
+    // Determine if we're viewing US or global area and set appropriate bounds
+    const isUSView = mapCenter.lat >= 20 && mapCenter.lat <= 50 && mapCenter.lng >= -130 && mapCenter.lng <= -60;
     
-    const imageBounds: [[number, number], [number, number]] = [
-      [mapCenter.lat - latOffset, mapCenter.lng - lngOffset], // Southwest corner
-      [mapCenter.lat + latOffset, mapCenter.lng + lngOffset]  // Northeast corner
-    ];
+    const imageBounds: [[number, number], [number, number]] = isUSView 
+      ? [[20, -130], [50, -60]]  // Continental US bounds for NOAA radar
+      : [[mapCenter.lat - 15, mapCenter.lng - 20], [mapCenter.lat + 15, mapCenter.lng + 20]]; // Regional bounds for global radar
     
     const imageOverlay = L.imageOverlay(weatherRadarImage, imageBounds, {
       opacity: radarOpacity,
@@ -750,6 +748,14 @@ function ProfessionalSatelliteMapCore() {
               </Popup>
             </Marker>
           ))}
+
+          {/* Weather Radar Overlay */}
+          {showWeatherOverlay && weatherRadarImage && (
+            <WeatherRadarOverlay
+              weatherRadarImage={weatherRadarImage}
+              radarOpacity={radarOpacity}
+            />
+          )}
 
           {/* Coordinate Display */}
           <CoordinateDisplay />
