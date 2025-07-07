@@ -48,6 +48,7 @@ export default function DisruptionResponseConsole() {
   const [scenarioAllocations, setScenarioAllocations] = useState<{[scenarioId: string]: string[]}>({});
   const [automatedServices, setAutomatedServices] = useState<AutomatedService[]>([]);
   const [isProcessingRecovery, setIsProcessingRecovery] = useState(false);
+  const [executingScenarioId, setExecutingScenarioId] = useState<string | null>(null);
   const [activeWorkflow, setActiveWorkflow] = useState<string>('');
   const [communicationStatus, setCommunicationStatus] = useState<{[key: string]: 'idle' | 'sending' | 'sent'}>({
     passengers: 'idle',
@@ -80,6 +81,7 @@ export default function DisruptionResponseConsole() {
 
   const executeRecoveryScenario = async (scenarioId: string) => {
     setIsProcessingRecovery(true);
+    setExecutingScenarioId(scenarioId);
     setActiveWorkflow(`Executing ${recoveryScenarios.find(s => s.id === scenarioId)?.name}`);
     
     try {
@@ -144,12 +146,14 @@ export default function DisruptionResponseConsole() {
 
       setTimeout(() => {
         setIsProcessingRecovery(false);
+        setExecutingScenarioId(null);
         setActiveWorkflow('Recovery plan executed successfully');
       }, 20000);
 
     } catch (error) {
       console.error('Recovery execution failed:', error);
       setIsProcessingRecovery(false);
+      setExecutingScenarioId(null);
     }
   };
 
@@ -665,10 +669,10 @@ export default function DisruptionResponseConsole() {
 
                     <Button
                       onClick={() => executeRecoveryScenario(scenario.id)}
-                      disabled={isProcessingRecovery}
+                      disabled={executingScenarioId === scenario.id}
                       className="w-full bg-green-600 hover:bg-green-700"
                     >
-                      {isProcessingRecovery ? 'Executing...' : 'Execute Recovery Plan'}
+                      {executingScenarioId === scenario.id ? 'Executing...' : 'Execute Recovery Plan'}
                     </Button>
                   </div>
                 </CardContent>
