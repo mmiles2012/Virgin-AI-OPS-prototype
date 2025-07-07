@@ -55,6 +55,8 @@ export default function DisruptionResponseConsole() {
     stakeholders: 'idle'
   });
   const [communicationResults, setCommunicationResults] = useState<string[]>([]);
+  const [scenarioGenerationStatus, setScenarioGenerationStatus] = useState<'idle' | 'generating' | 'generated'>('idle');
+  const [scenarioGenerationLog, setScenarioGenerationLog] = useState<string[]>([]);
 
   useEffect(() => {
     fetchActiveDisruptions();
@@ -339,6 +341,43 @@ export default function DisruptionResponseConsole() {
     }
   };
 
+  const generateRecoveryScenarios = async () => {
+    setScenarioGenerationStatus('generating');
+    setScenarioGenerationLog([]);
+    
+    try {
+      // Simulate AI-powered scenario generation process
+      const steps = [
+        'Analyzing disruption impact across network...',
+        'Evaluating available aircraft and crew resources...',
+        'Calculating passenger reaccommodation options...',
+        'Assessing EU261 compensation risks...',
+        'Optimizing cost vs service level trade-offs...',
+        'Generating recovery scenarios with ML predictions...'
+      ];
+      
+      for (let i = 0; i < steps.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
+        setScenarioGenerationLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${steps[i]}`]);
+      }
+      
+      // Simulate successful generation
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setScenarioGenerationLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ✅ Generated 3 recovery scenarios successfully`]);
+      setScenarioGenerationStatus('generated');
+      
+      // Reset status after showing success
+      setTimeout(() => {
+        setScenarioGenerationStatus('idle');
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Scenario generation error:', error);
+      setScenarioGenerationLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ❌ Scenario generation failed`]);
+      setScenarioGenerationStatus('idle');
+    }
+  };
+
   return (
     <div className="w-full h-screen bg-gray-900 text-white overflow-hidden flex flex-col">
       <div className="p-6 flex-shrink-0">
@@ -446,12 +485,37 @@ export default function DisruptionResponseConsole() {
 
                     <div className="pt-4 border-t border-gray-600">
                       <Button
-                        onClick={() => generateRecoveryScenarios(selectedDisruption.id)}
-                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        onClick={generateRecoveryScenarios}
+                        disabled={scenarioGenerationStatus === 'generating'}
+                        className={`w-full ${
+                          scenarioGenerationStatus === 'generated' 
+                            ? 'bg-green-600 hover:bg-green-700' 
+                            : 'bg-blue-600 hover:bg-blue-700'
+                        }`}
                       >
-                        Generate Recovery Scenarios
+                        {scenarioGenerationStatus === 'generating' ? 'Generating AI Scenarios...' : 
+                         scenarioGenerationStatus === 'generated' ? 'Scenarios Generated ✓' : 
+                         'Generate Recovery Scenarios'}
                       </Button>
                     </div>
+                    
+                    {/* Scenario Generation Log */}
+                    {scenarioGenerationLog.length > 0 && (
+                      <Card className="bg-gray-700 border-gray-600 mt-4">
+                        <CardHeader>
+                          <CardTitle className="text-white text-sm">AI Generation Process</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2 max-h-40 overflow-y-auto">
+                            {scenarioGenerationLog.map((log, index) => (
+                              <div key={index} className="text-sm text-gray-300 p-2 bg-gray-800 rounded">
+                                {log}
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center text-gray-400 py-8">
