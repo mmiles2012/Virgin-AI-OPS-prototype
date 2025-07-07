@@ -624,8 +624,8 @@ function ProfessionalSatelliteMapCore() {
           </div>
         )}
         
-        {/* Service Coverage Legend - Bottom Left */}
-        <div className="absolute bottom-4 left-4 z-[500] bg-black/90 border border-gray-600 rounded-lg p-2 backdrop-blur-sm">
+        {/* Service Coverage Legend - Bottom Right */}
+        <div className="absolute bottom-4 right-4 z-[500] bg-black/90 border border-gray-600 rounded-lg p-2 backdrop-blur-sm">
           <div className="text-white font-medium text-xs mb-1 flex items-center gap-1">
             <Building className="w-3 h-3" />
             Service Status
