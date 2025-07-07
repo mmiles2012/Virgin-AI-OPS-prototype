@@ -4,7 +4,7 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Switch } from './ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { AlertTriangle, Plane, Clock, DollarSign, Users, MessageSquare, Hotel, Fuel, Wrench, Globe, CheckCircle, XCircle } from 'lucide-react';
+import { AlertTriangle, Plane, Clock, DollarSign, Users, MessageSquare, Hotel, Fuel, Wrench, Globe, CheckCircle, XCircle, MapPin } from 'lucide-react';
 
 interface DisruptionEvent {
   id: string;
