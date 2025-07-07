@@ -257,33 +257,36 @@ export default function DisruptionResponseConsole() {
   }, []);
 
   return (
-    <div className="w-full h-full bg-gray-900 text-white p-6">
-      <div className="mb-6">
+    <div className="w-full h-screen bg-gray-900 text-white overflow-hidden flex flex-col">
+      <div className="p-6 flex-shrink-0">
         <h1 className="text-2xl font-bold text-white mb-2">Disruption Response Console</h1>
         <p className="text-gray-400">AI-powered disruption management and recovery orchestration</p>
       </div>
 
-      <Tabs defaultValue="active" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-gray-800">
-          <TabsTrigger value="active">Active Disruptions</TabsTrigger>
-          <TabsTrigger value="scenarios">Recovery Scenarios</TabsTrigger>
-          <TabsTrigger value="execution">Automated Services</TabsTrigger>
-          <TabsTrigger value="communication">Communications</TabsTrigger>
-        </TabsList>
+      <div className="flex-1 overflow-hidden">
+        <Tabs defaultValue="active" className="w-full h-full flex flex-col">
+          <div className="px-6 flex-shrink-0">
+            <TabsList className="grid w-full grid-cols-4 bg-gray-800">
+              <TabsTrigger value="active">Active Disruptions</TabsTrigger>
+              <TabsTrigger value="scenarios">Recovery Scenarios</TabsTrigger>
+              <TabsTrigger value="execution">Automated Services</TabsTrigger>
+              <TabsTrigger value="communication">Communications</TabsTrigger>
+            </TabsList>
+          </div>
 
-        <TabsContent value="active" className="mt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Disruption List */}
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-red-500" />
-                  Active Disruptions ({disruptions.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {disruptions.map((disruption) => (
+          <TabsContent value="active" className="flex-1 overflow-hidden p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+              {/* Disruption List */}
+              <Card className="bg-gray-800 border-gray-700 flex flex-col">
+                <CardHeader className="flex-shrink-0">
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-red-500" />
+                    Active Disruptions ({disruptions.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex-1 overflow-y-auto">
+                  <div className="space-y-4">
+                    {disruptions.map((disruption) => (
                     <div
                       key={disruption.id}
                       className={`p-4 rounded-lg border cursor-pointer transition-colors ${
@@ -313,19 +316,19 @@ export default function DisruptionResponseConsole() {
                         <span>{disruption.location}</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-            {/* Disruption Details */}
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">
-                  {selectedDisruption ? 'Disruption Analysis' : 'Select a Disruption'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+              {/* Disruption Details */}
+              <Card className="bg-gray-800 border-gray-700 flex flex-col">
+                <CardHeader className="flex-shrink-0">
+                  <CardTitle className="text-white">
+                    {selectedDisruption ? 'Disruption Analysis' : 'Select a Disruption'}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex-1 overflow-y-auto">
                 {selectedDisruption ? (
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
@@ -371,15 +374,16 @@ export default function DisruptionResponseConsole() {
                   <div className="text-center text-gray-400 py-8">
                     Select a disruption to view details and generate recovery scenarios
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
-        <TabsContent value="scenarios" className="mt-6">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            {recoveryScenarios.map((scenario) => (
+          <TabsContent value="scenarios" className="flex-1 overflow-hidden p-6">
+            <div className="h-full overflow-y-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {recoveryScenarios.map((scenario) => (
               <Card key={scenario.id} className="bg-gray-800 border-gray-700">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -468,19 +472,20 @@ export default function DisruptionResponseConsole() {
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        </TabsContent>
+                ))}
+              </div>
+            </div>
+          </TabsContent>
 
-        <TabsContent value="execution" className="mt-6">
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
+          <TabsContent value="execution" className="flex-1 overflow-hidden p-6">
+            <Card className="bg-gray-800 border-gray-700 h-full flex flex-col">
+            <CardHeader className="flex-shrink-0">
               <CardTitle className="text-white">Automated Service Coordination</CardTitle>
               {activeWorkflow && (
                 <p className="text-blue-400 text-sm">{activeWorkflow}</p>
               )}
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 overflow-y-auto">
               {automatedServices.length > 0 ? (
                 <div className="space-y-4">
                   {automatedServices.map((service) => (
@@ -505,18 +510,18 @@ export default function DisruptionResponseConsole() {
                 </div>
               )}
             </CardContent>
-          </Card>
-        </TabsContent>
+            </Card>
+          </TabsContent>
 
-        <TabsContent value="communication" className="mt-6">
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
+          <TabsContent value="communication" className="flex-1 overflow-hidden p-6">
+            <Card className="bg-gray-800 border-gray-700 h-full flex flex-col">
+            <CardHeader className="flex-shrink-0">
               <CardTitle className="text-white flex items-center gap-2">
                 <MessageSquare className="w-5 h-5" />
                 Communication Workflows
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 overflow-y-auto">
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Button className="bg-blue-600 hover:bg-blue-700 h-20 flex flex-col items-center justify-center">
@@ -537,9 +542,10 @@ export default function DisruptionResponseConsole() {
                 </div>
               </div>
             </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

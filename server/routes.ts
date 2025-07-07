@@ -1879,6 +1879,162 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Disruption Response Console API Endpoints
+  app.get("/api/disruption/active", async (req, res) => {
+    try {
+      // Generate realistic disruption events for demonstration
+      const sampleDisruptions = [
+        {
+          id: "D001",
+          type: "weather",
+          severity: "high",
+          title: "Thunderstorm Activity at LHR",
+          description: "Severe thunderstorms causing approach delays and diversions",
+          affectedFlights: ["VS001", "VS103", "VS11", "VS355"],
+          estimatedDuration: 180,
+          firstDetected: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+          location: "London Heathrow (EGLL)",
+          status: "active"
+        },
+        {
+          id: "D002", 
+          type: "technical",
+          severity: "medium",
+          title: "ATC System Maintenance",
+          description: "Scheduled maintenance causing approach rate reduction",
+          affectedFlights: ["VS21", "VS158", "VS166"],
+          estimatedDuration: 120,
+          firstDetected: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+          location: "Terminal Control Center",
+          status: "resolving"
+        },
+        {
+          id: "D003",
+          type: "airport",
+          severity: "critical", 
+          title: "Runway Closure - Debris",
+          description: "Foreign object debris on runway 09L/27R requiring inspection",
+          affectedFlights: ["VS24", "VS004", "VS104"],
+          estimatedDuration: 90,
+          firstDetected: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+          location: "Heathrow Runway 09L/27R",
+          status: "active"
+        }
+      ];
+      
+      res.json({
+        success: true,
+        disruptions: sampleDisruptions,
+        count: sampleDisruptions.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Disruption active error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get active disruptions'
+      });
+    }
+  });
+
+  app.get("/api/disruption/:id/recovery-scenarios", async (req, res) => {
+    try {
+      const disruptionId = req.params.id;
+      
+      // Generate recovery scenarios based on disruption ID
+      const sampleScenarios = [
+        {
+          id: "RS001",
+          name: "Hold and Resume Operations",
+          confidence: 85,
+          estimatedCost: 125000,
+          passengerImpact: 320,
+          timeToImplement: 15,
+          eu261Risk: 45000,
+          actions: [
+            "Hold departing flights for 30 minutes",
+            "Coordinate with ATC for priority approach slots",
+            "Prepare passenger compensation protocols",
+            "Activate customer service teams"
+          ],
+          pros: [
+            "Maintains schedule integrity",
+            "Lower operational cost",
+            "Keeps aircraft in position"
+          ],
+          cons: [
+            "Risk of further delays",
+            "Passenger dissatisfaction",
+            "EU261 compensation exposure"
+          ]
+        },
+        {
+          id: "RS002",
+          name: "Divert to Alternative Airport",
+          confidence: 92,
+          estimatedCost: 275000,
+          passengerImpact: 180,
+          timeToImplement: 45,
+          eu261Risk: 85000,
+          actions: [
+            "Coordinate diversions to LGW and STN",
+            "Arrange ground transportation",
+            "Hotel accommodation for affected passengers",
+            "Crew duty time management"
+          ],
+          pros: [
+            "Ensures flight completion",
+            "Reduces weather exposure",
+            "Better passenger experience"
+          ],
+          cons: [
+            "Higher operational cost",
+            "Complex logistics",
+            "Extended passenger journey"
+          ]
+        },
+        {
+          id: "RS003",
+          name: "Cancel and Reschedule",
+          confidence: 95,
+          estimatedCost: 450000,
+          passengerImpact: 280,
+          timeToImplement: 30,
+          eu261Risk: 125000,
+          actions: [
+            "Cancel affected flights",
+            "Rebook passengers on next available flights", 
+            "Full EU261 compensation",
+            "Crew reallocation and rest periods"
+          ],
+          pros: [
+            "Certainty of execution",
+            "Crew availability optimization",
+            "Clear passenger communication"
+          ],
+          cons: [
+            "Highest compensation cost",
+            "Network schedule impact",
+            "Brand reputation risk"
+          ]
+        }
+      ];
+      
+      res.json({
+        success: true,
+        scenarios: sampleScenarios,
+        disruptionId,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Recovery scenarios error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate recovery scenarios'
+      });
+    }
+  });
+
   // Operations monitoring endpoints
   app.get("/api/operations/disruptions", async (req, res) => {
     try {
