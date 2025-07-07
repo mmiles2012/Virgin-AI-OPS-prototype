@@ -45,6 +45,7 @@ export default function DisruptionResponseConsole() {
   const [disruptions, setDisruptions] = useState<DisruptionEvent[]>([]);
   const [selectedDisruption, setSelectedDisruption] = useState<DisruptionEvent | null>(null);
   const [recoveryScenarios, setRecoveryScenarios] = useState<RecoveryScenario[]>([]);
+  const [scenarioAllocations, setScenarioAllocations] = useState<{[scenarioId: string]: string[]}>({});
   const [automatedServices, setAutomatedServices] = useState<AutomatedService[]>([]);
   const [isProcessingRecovery, setIsProcessingRecovery] = useState(false);
   const [activeWorkflow, setActiveWorkflow] = useState<string>('');
@@ -258,8 +259,41 @@ export default function DisruptionResponseConsole() {
           'High EU261 compensation',
           'Passenger satisfaction impact'
         ]
+      },
+      {
+        id: 'R003',
+        name: 'Weather Hold + Crew Rotation',
+        confidence: 78,
+        estimatedCost: 45000,
+        passengerImpact: 180,
+        timeToImplement: 180,
+        eu261Risk: 89000,
+        actions: [
+          'Hold VS011 for weather clearance',
+          'Rotate crew to maintain duty limits',
+          'Coordinate ground handling delays',
+          'Manage passenger communications',
+          'Monitor meteorological updates'
+        ],
+        pros: [
+          'Maintains aircraft availability',
+          'Reduces substitution costs',
+          'Preserves crew schedules'
+        ],
+        cons: [
+          'Weather uncertainty',
+          'Crew duty time pressure',
+          'Passenger delay impact'
+        ]
       }
     ]);
+
+    // Set scenario allocations to specific disruptions
+    setScenarioAllocations({
+      'R001': ['TECH-VS103-001'], // Aircraft substitution for technical issue
+      'R002': ['TECH-VS103-001'], // Cancellation option for technical issue
+      'R003': ['WEATHER-LHR-001', 'CREW-VS011-001'] // Weather hold for weather & crew issues
+    });
   }, []);
 
   const sendCommunication = async (type: 'passengers' | 'crew' | 'stakeholders') => {
@@ -431,8 +465,53 @@ export default function DisruptionResponseConsole() {
 
           <TabsContent value="scenarios" className="flex-1 overflow-hidden p-6">
             <div className="h-full overflow-y-auto">
+              {/* Scenario Allocation Summary */}
+              <Card className="bg-gray-800 border-gray-700 mb-6">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <MapPin className="w-5 h-5" />
+                    Recovery Scenario Allocations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {disruptions.map((disruption) => {
+                      const allocatedScenarios = Object.entries(scenarioAllocations)
+                        .filter(([_, disruptionIds]) => disruptionIds.includes(disruption.id))
+                        .map(([scenarioId, _]) => recoveryScenarios.find(s => s.id === scenarioId)?.name || scenarioId);
+                      
+                      return (
+                        <div key={disruption.id} className="bg-gray-700 p-3 rounded">
+                          <div className="text-white font-medium text-sm mb-2">
+                            {disruption.title.replace('Aircraft G-VLIB Engine Issue', 'VS103 Engine')
+                                           .replace('LHR Weather Disruption', 'LHR Weather')
+                                           .replace('VS011 Crew Availability', 'VS011 Crew')}
+                          </div>
+                          <div className="space-y-1">
+                            {allocatedScenarios.length > 0 ? allocatedScenarios.map((scenarioName, idx) => (
+                              <span key={idx} className="inline-block px-2 py-1 text-xs bg-green-600 text-white rounded mr-1">
+                                {scenarioName?.split(' + ')[0] || 'Unknown'}
+                              </span>
+                            )) : (
+                              <span className="text-xs text-gray-400">No scenarios assigned</span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+              
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {recoveryScenarios.map((scenario) => (
+                {recoveryScenarios.map((scenario) => {
+                  const assignedDisruptions = scenarioAllocations[scenario.id] || [];
+                  const assignedDisruptionNames = assignedDisruptions.map(disruptionId => {
+                    const disruption = disruptions.find(d => d.id === disruptionId);
+                    return disruption ? disruption.title : disruptionId;
+                  });
+                  
+                  return (
               <Card key={scenario.id} className="bg-gray-800 border-gray-700">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -440,6 +519,25 @@ export default function DisruptionResponseConsole() {
                     <Badge className="bg-green-600 text-white">
                       {scenario.confidence}% Confidence
                     </Badge>
+                  </div>
+                  {/* Show which disruptions this scenario addresses */}
+                  <div className="flex flex-wrap gap-1 mt-3">
+                    <span className="text-xs text-gray-400 mr-2">Addresses:</span>
+                    {assignedDisruptionNames.map((name, idx) => (
+                      <span 
+                        key={idx}
+                        className="px-2 py-1 text-xs bg-blue-600 text-white rounded-full"
+                      >
+                        {name.replace('Aircraft G-VLIB Engine Issue', 'VS103 Engine')
+                             .replace('LHR Weather Disruption', 'LHR Weather')
+                             .replace('VS011 Crew Availability', 'VS011 Crew')}
+                      </span>
+                    ))}
+                    {assignedDisruptionNames.length === 0 && (
+                      <span className="px-2 py-1 text-xs bg-gray-600 text-gray-300 rounded-full">
+                        No specific assignment
+                      </span>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -521,7 +619,8 @@ export default function DisruptionResponseConsole() {
                   </div>
                 </CardContent>
               </Card>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </TabsContent>
