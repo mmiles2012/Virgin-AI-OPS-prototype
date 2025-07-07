@@ -267,13 +267,16 @@ const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
 });
 
 // Enhanced Weather Radar Overlay Component with interactive features
-function WeatherRadarOverlay({ weatherRadarImage, radarOpacity = 0.95 }: { weatherRadarImage: string; radarOpacity?: number }) {
+function WeatherRadarOverlay({ weatherRadarImage, radarOpacity = 1.0 }: { weatherRadarImage: string; radarOpacity?: number }) {
   const map = useMap();
   const [weatherIntensity, setWeatherIntensity] = useState<string>('');
   const [lastUpdate, setLastUpdate] = useState<string>('');
+  const [overlayVisible, setOverlayVisible] = useState(false);
   
   useEffect(() => {
     if (!weatherRadarImage) return;
+    
+    console.log('Adding weather radar overlay...', weatherRadarImage.substring(0, 50));
     
     // Use proper weather radar bounds - NOAA covers Continental US
     // For global coverage, use appropriate regional bounds
@@ -286,10 +289,13 @@ function WeatherRadarOverlay({ weatherRadarImage, radarOpacity = 0.95 }: { weath
       ? [[20, -130], [50, -60]]  // Continental US bounds for NOAA radar
       : [[mapCenter.lat - 15, mapCenter.lng - 20], [mapCenter.lat + 15, mapCenter.lng + 20]]; // Regional bounds for global radar
     
+    console.log('Weather radar bounds:', imageBounds, 'isUSView:', isUSView);
+    
     const imageOverlay = L.imageOverlay(weatherRadarImage, imageBounds, {
       opacity: radarOpacity,
       interactive: true,
-      className: 'weather-radar-overlay enhanced-radar'
+      className: 'weather-radar-overlay enhanced-radar',
+      crossOrigin: 'anonymous'
     });
     
     // Add hover interaction for weather data
@@ -304,19 +310,40 @@ function WeatherRadarOverlay({ weatherRadarImage, radarOpacity = 0.95 }: { weath
       setWeatherIntensity('');
     });
     
+    imageOverlay.on('add', () => {
+      console.log('Weather radar overlay added to map');
+      setOverlayVisible(true);
+    });
+    
+    imageOverlay.on('remove', () => {
+      console.log('Weather radar overlay removed from map');
+      setOverlayVisible(false);
+    });
+    
     imageOverlay.addTo(map);
     setLastUpdate(new Date().toLocaleTimeString());
     
     return () => {
       imageOverlay.remove();
     };
-  }, [map, weatherRadarImage]);
+  }, [map, weatherRadarImage, radarOpacity]);
   
   return (
     <>
+      {/* Weather Overlay Status Indicator */}
+      {overlayVisible && (
+        <div className="absolute top-16 left-4 z-[1000] bg-green-900/90 backdrop-blur-sm border border-green-500/50 px-3 py-2 rounded-lg text-white text-sm">
+          <div className="flex items-center gap-2">
+            <Cloud className="w-4 h-4 text-green-400" />
+            <span className="font-bold text-green-300">Weather Radar Active</span>
+          </div>
+          <div className="text-xs text-gray-300 mt-1">NOAA Live Data</div>
+        </div>
+      )}
+      
       {/* Weather data display */}
       {weatherIntensity && (
-        <div className="absolute top-20 left-4 z-[1000] bg-black/90 backdrop-blur-sm border border-blue-500/50 px-3 py-2 rounded-lg text-white text-sm">
+        <div className="absolute top-32 left-4 z-[1000] bg-black/90 backdrop-blur-sm border border-blue-500/50 px-3 py-2 rounded-lg text-white text-sm">
           <div className="flex items-center gap-2">
             <Cloud className="w-4 h-4 text-blue-400" />
             <span className="font-bold text-blue-300">{weatherIntensity}</span>
@@ -371,7 +398,7 @@ function ProfessionalSatelliteMapCore() {
   const [showSigmets, setShowSigmets] = useState(false);
   const [weatherRadarImage, setWeatherRadarImage] = useState<string | null>(null);
   const [radarLoading, setRadarLoading] = useState(false);
-  const [radarOpacity, setRadarOpacity] = useState(0.95);
+  const [radarOpacity, setRadarOpacity] = useState(1.0);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [refreshInterval, setRefreshInterval] = useState(15); // minutes
   const [searchTerm, setSearchTerm] = useState('');
