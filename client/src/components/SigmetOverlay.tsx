@@ -71,9 +71,56 @@ export default function SigmetOverlay({ showSigmets, onSigmetSelect }: SigmetOve
           alert.title.includes('SIGMET') || alert.title.includes('G-AIRMET')
         );
         
-        setSigmets(sigmetAlerts);
+        // If no real alerts, show demonstration alerts to show functionality
+        if (sigmetAlerts.length === 0) {
+          const demoAlerts: SigmetAlert[] = [
+            {
+              id: 'demo_sigmet_1',
+              type: 'SIGMET',
+              title: 'SIGMET DEMO - Thunderstorm Activity',
+              description: 'Isolated severe thunderstorms with tops to FL450. Moving northeast at 25 knots.',
+              location: { lat: 51.5, lon: -1.5, radius: 50 },
+              altitude: { min: 5000, max: 45000 },
+              timeframe: { 
+                start: new Date().toISOString(), 
+                end: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString() 
+              },
+              severity: 'high',
+              source: 'Demo - Aviation Weather Center',
+              lastUpdated: new Date().toISOString(),
+              weather_features: {
+                phenomenon: 'Thunderstorm',
+                movement: { direction: 45, speed: 25 }
+              }
+            },
+            {
+              id: 'demo_gairmet_1',
+              type: 'G-AIRMET',
+              title: 'G-AIRMET DEMO - Moderate Turbulence',
+              description: 'Moderate turbulence between FL200 and FL350 due to wind shear.',
+              location: { lat: 52.2, lon: 0.5, radius: 75 },
+              altitude: { min: 20000, max: 35000 },
+              timeframe: { 
+                start: new Date().toISOString(), 
+                end: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString() 
+              },
+              severity: 'medium',
+              source: 'Demo - Aviation Weather Center',
+              lastUpdated: new Date().toISOString(),
+              weather_features: {
+                phenomenon: 'Turbulence',
+                movement: { direction: 270, speed: 15 }
+              }
+            }
+          ];
+          setSigmets(demoAlerts);
+          console.log(`Loaded ${demoAlerts.length} demonstration SIGMET/G-AIRMET alerts (no active real alerts)`);
+        } else {
+          setSigmets(sigmetAlerts);
+          console.log(`Loaded ${sigmetAlerts.length} real SIGMET/G-AIRMET alerts`);
+        }
+        
         setLastUpdate(data.timestamp);
-        console.log(`Loaded ${sigmetAlerts.length} SIGMET/G-AIRMET alerts`);
       }
     } catch (error) {
       console.error('Failed to fetch SIGMET data:', error);
