@@ -1,0 +1,61 @@
+{
+  "timestamp": "2025-07-07T11:14:06.685817",
+  "report_type": "AINO Weather Intelligence",
+  "sigmets": {
+    "success": false,
+    "error": "HTTP 404"
+  },
+  "turbulence": {
+    "success": true,
+    "total_tiles": 8,
+    "successful_downloads": 0,
+    "results": [
+      {
+        "success": false,
+        "error": "HTTPSConnectionPool(host='tiles.turbli.com', port=443): Max retries exceeded with url: /turbulence/4/7/5.png (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x7f65b0545010>: Failed to resolve 'tiles.turbli.com' ([Errno -2] Name or service not known)\"))",
+        "region": "North Atlantic"
+      },
+      {
+        "success": false,
+        "error": "HTTPSConnectionPool(host='tiles.turbli.com', port=443): Max retries exceeded with url: /turbulence/4/8/5.png (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x7f65b0545b90>: Failed to resolve 'tiles.turbli.com' ([Errno -2] Name or service not known)\"))",
+        "region": "North Atlantic East"
+      },
+      {
+        "success": false,
+        "error": "HTTPSConnectionPool(host='tiles.turbli.com', port=443): Max retries exceeded with url: /turbulence/4/8/4.png (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x7f65b0546950>: Failed to resolve 'tiles.turbli.com' ([Errno -2] Name or service not known)\"))",
+        "region": "Europe"
+      },
+      {
+        "success": false,
+        "error": "HTTPSConnectionPool(host='tiles.turbli.com', port=443): Max retries exceeded with url: /turbulence/4/9/4.png (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x7f65b05477d0>: Failed to resolve 'tiles.turbli.com' ([Errno -2] Name or service not known)\"))",
+        "region": "Europe East"
+      },
+      {
+        "success": false,
+        "error": "HTTPSConnectionPool(host='tiles.turbli.com', port=443): Max retries exceeded with url: /turbulence/4/3/5.png (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x7f65b0489ad0>: Failed to resolve 'tiles.turbli.com' ([Errno -2] Name or service not known)\"))",
+        "region": "North America West"
+      },
+      {
+        "success": false,
+        "error": "HTTPSConnectionPool(host='tiles.turbli.com', port=443): Max retries exceeded with url: /turbulence/4/4/5.png (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x7f65b0488d10>: Failed to resolve 'tiles.turbli.com' ([Errno -2] Name or service not known)\"))",
+        "region": "North America East"
+      },
+      {
+        "success": false,
+        "error": "HTTPSConnectionPool(host='tiles.turbli.com', port=443): Max retries exceeded with url: /turbulence/4/12/6.png (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x7f65b048a110>: Failed to resolve 'tiles.turbli.com' ([Errno -2] Name or service not known)\"))",
+        "region": "Asia Pacific"
+      },
+      {
+        "success": false,
+        "error": "HTTPSConnectionPool(host='tiles.turbli.com', port=443): Max retries exceeded with url: /turbulence/4/13/6.png (Caused by NameResolutionError(\"<urllib3.connection.HTTPSConnection object at 0x7f65b048b4d0>: Failed to resolve 'tiles.turbli.com' ([Errno -2] Name or service not known)\"))",
+        "region": "Asia Pacific East"
+      }
+    ]
+  },
+  "summary": {
+    "sigmet_count": 0,
+    "turbulence_tiles": 0,
+    "data_quality": "MEDIUM",
+    "operational_impact": "UNKNOWN - SIGMET data unavailable"
+  }
+}

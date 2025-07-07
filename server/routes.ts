@@ -47,6 +47,11 @@ import { routePositionService } from "./routePositionService";
 import { virginAtlanticFlightTracker } from "./routeMatcher";
 import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
 import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
+// Enhanced Weather Intelligence Service
+import { spawn } from "child_process";
+import { promisify } from "util";
+import { readFile, access } from "fs/promises";
+import { constants } from "fs";
 // LHR-NM Correlation Analysis Functions
 function calculateCorrelation(x: number[], y: number[]): number {
   if (x.length !== y.length || x.length === 0) return 0;
@@ -4702,6 +4707,104 @@ print(json.dumps(weather))
       res.status(500).json({ 
         success: false, 
         error: 'Weather radar service unavailable' 
+      });
+    }
+  });
+
+  // Enhanced Weather Intelligence API
+  app.get('/api/weather/enhanced-intelligence', async (req, res) => {
+    try {
+      console.log('🌩️ Starting enhanced weather intelligence collection...');
+      
+      const pythonProcess = spawn('python3', ['enhanced_weather_scraper.py'], {
+        cwd: process.cwd(),
+        stdio: ['pipe', 'pipe', 'pipe']
+      });
+
+      let stdout = '';
+      let stderr = '';
+
+      pythonProcess.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+
+      pythonProcess.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+
+      pythonProcess.on('close', async (code) => {
+        if (code === 0) {
+          try {
+            // Look for the most recent weather report
+            const fs = await import('fs');
+            const path = await import('path');
+            
+            const weatherAnalysisDir = path.join(process.cwd(), 'weather_analysis');
+            
+            // Check if directory exists
+            if (fs.existsSync(weatherAnalysisDir)) {
+              const files = fs.readdirSync(weatherAnalysisDir)
+                .filter(file => file.startsWith('aino_weather_report_'))
+                .sort()
+                .reverse();
+              
+              if (files.length > 0) {
+                const latestReportPath = path.join(weatherAnalysisDir, files[0]);
+                const reportData = JSON.parse(fs.readFileSync(latestReportPath, 'utf8'));
+                
+                res.json({
+                  success: true,
+                  source: 'Enhanced Weather Scraper',
+                  report: reportData,
+                  execution_output: stdout,
+                  timestamp: new Date().toISOString()
+                });
+              } else {
+                res.json({
+                  success: false,
+                  error: 'No weather reports found',
+                  execution_output: stdout
+                });
+              }
+            } else {
+              res.json({
+                success: false,
+                error: 'Weather analysis directory not found',
+                execution_output: stdout
+              });
+            }
+          } catch (error) {
+            res.json({
+              success: false,
+              error: `Failed to read weather report: ${error}`,
+              execution_output: stdout
+            });
+          }
+        } else {
+          res.status(500).json({
+            success: false,
+            error: `Python script failed with code ${code}`,
+            stdout: stdout,
+            stderr: stderr
+          });
+        }
+      });
+
+      // Set timeout to prevent hanging
+      setTimeout(() => {
+        pythonProcess.kill();
+        res.status(408).json({
+          success: false,
+          error: 'Weather intelligence collection timeout',
+          timeout: '30 seconds'
+        });
+      }, 30000);
+
+    } catch (error) {
+      console.error('Enhanced weather intelligence error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to start enhanced weather intelligence collection'
       });
     }
   });
