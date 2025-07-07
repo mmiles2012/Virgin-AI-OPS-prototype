@@ -624,31 +624,7 @@ function ProfessionalSatelliteMapCore() {
           </div>
         )}
         
-        {/* Service Coverage Legend - Bottom Center */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-[500] bg-black/90 border border-gray-600 rounded-lg p-2 backdrop-blur-sm">
-          <div className="text-white font-medium text-xs mb-1 flex items-center gap-1">
-            <Building className="w-3 h-3" />
-            Service Status
-          </div>
-          <div className="flex gap-3 text-xs">
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#22c55e' }}></div>
-              <span className="text-gray-300">Full</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#3b82f6' }}></div>
-              <span className="text-gray-300">Fuel</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#f59e0b' }}></div>
-              <span className="text-gray-300">Ground</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#ef4444' }}></div>
-              <span className="text-gray-300">None</span>
-            </div>
-          </div>
-        </div>
+
       </div>
 
 
