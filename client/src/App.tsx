@@ -2,7 +2,7 @@ import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@fontsource/inter";
 
-import OperationsCenter from "./components/OperationsCenter";
+
 import EnhancedOperationalDecisionEngine from "./components/EnhancedOperationalDecisionEngine";
 import FlightMap from "./components/FlightMap";
 import ScenarioManager from "./components/ScenarioManager";
@@ -82,7 +82,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'ops-center-overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'disruption-response' | 'what-if-scenarios' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'emergency-testing' | 'airport-contacts';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'disruption-response' | 'what-if-scenarios' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'emergency-testing' | 'airport-contacts';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -114,16 +114,7 @@ function App() {
                     Overview
                   </button>
                   
-                  <button
-                    onClick={() => setViewMode('ops-center-overview')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'ops-center-overview' 
-                        ? 'bg-slate-800 text-cyan-400 border border-cyan-400' 
-                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                    }`}
-                  >
-                    Operations Center
-                  </button>
+
                   
                   <button
                     onClick={() => setViewMode('operations')}
@@ -401,11 +392,7 @@ function App() {
 
             {/* Mode-specific Interfaces - Adjusted for left sidebar */}
             
-            {viewMode === 'operations' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 overflow-auto">
-                <OperationsCenter />
-              </div>
-            )}
+
             
             {viewMode === 'decisions' && (
               <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
