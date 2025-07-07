@@ -76,17 +76,7 @@ export default function DisruptionResponseConsole() {
     }
   };
 
-  const generateRecoveryScenarios = async (disruptionId: string) => {
-    try {
-      const response = await fetch(`/api/disruption/${disruptionId}/recovery-scenarios`);
-      const data = await response.json();
-      if (data.success) {
-        setRecoveryScenarios(data.scenarios);
-      }
-    } catch (error) {
-      console.error('Failed to generate recovery scenarios:', error);
-    }
-  };
+
 
   const executeRecoveryScenario = async (scenarioId: string) => {
     setIsProcessingRecovery(true);
