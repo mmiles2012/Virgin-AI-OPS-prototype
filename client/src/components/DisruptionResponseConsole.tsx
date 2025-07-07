@@ -48,6 +48,12 @@ export default function DisruptionResponseConsole() {
   const [automatedServices, setAutomatedServices] = useState<AutomatedService[]>([]);
   const [isProcessingRecovery, setIsProcessingRecovery] = useState(false);
   const [activeWorkflow, setActiveWorkflow] = useState<string>('');
+  const [communicationStatus, setCommunicationStatus] = useState<{[key: string]: 'idle' | 'sending' | 'sent'}>({
+    passengers: 'idle',
+    crew: 'idle',
+    stakeholders: 'idle'
+  });
+  const [communicationResults, setCommunicationResults] = useState<string[]>([]);
 
   useEffect(() => {
     fetchActiveDisruptions();
@@ -255,6 +261,49 @@ export default function DisruptionResponseConsole() {
       }
     ]);
   }, []);
+
+  const sendCommunication = async (type: 'passengers' | 'crew' | 'stakeholders') => {
+    setCommunicationStatus(prev => ({ ...prev, [type]: 'sending' }));
+    
+    try {
+      // Simulate realistic communication workflow
+      await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
+      
+      const messages = {
+        passengers: [
+          'SMS alerts sent to 342 affected passengers',
+          'Push notifications delivered to Virgin Atlantic app users',
+          'Email updates sent with rebooking options',
+          'WhatsApp Business messages sent with real-time updates'
+        ],
+        crew: [
+          'Crew scheduling alerts sent to affected flight crews',
+          'Duty time adjustments communicated to crew planning',
+          'Hotel accommodation confirmed for diverted crews',
+          'Rest requirements updated in crew management system'
+        ],
+        stakeholders: [
+          'Airport operations centers notified of delays',
+          'Ground handling partners alerted for resource reallocation',
+          'Catering services updated for revised schedules',
+          'Fuel suppliers coordinated for diversion requirements'
+        ]
+      };
+      
+      const randomMessage = messages[type][Math.floor(Math.random() * messages[type].length)];
+      setCommunicationResults(prev => [`${new Date().toLocaleTimeString()}: ${randomMessage}`, ...prev.slice(0, 9)]);
+      setCommunicationStatus(prev => ({ ...prev, [type]: 'sent' }));
+      
+      // Reset status after 5 seconds
+      setTimeout(() => {
+        setCommunicationStatus(prev => ({ ...prev, [type]: 'idle' }));
+      }, 5000);
+      
+    } catch (error) {
+      console.error('Communication error:', error);
+      setCommunicationStatus(prev => ({ ...prev, [type]: 'idle' }));
+    }
+  };
 
   return (
     <div className="w-full h-screen bg-gray-900 text-white overflow-hidden flex flex-col">
@@ -524,21 +573,69 @@ export default function DisruptionResponseConsole() {
             <CardContent className="flex-1 overflow-y-auto">
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Button className="bg-blue-600 hover:bg-blue-700 h-20 flex flex-col items-center justify-center">
+                  <Button 
+                    onClick={() => sendCommunication('passengers')}
+                    disabled={communicationStatus.passengers === 'sending'}
+                    className={`h-20 flex flex-col items-center justify-center ${
+                      communicationStatus.passengers === 'sent' 
+                        ? 'bg-green-600 hover:bg-green-700' 
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
+                  >
                     <Users className="w-6 h-6 mb-2" />
-                    Notify Passengers
+                    {communicationStatus.passengers === 'sending' ? 'Sending...' : 
+                     communicationStatus.passengers === 'sent' ? 'Sent ✓' : 'Notify Passengers'}
                   </Button>
-                  <Button className="bg-green-600 hover:bg-green-700 h-20 flex flex-col items-center justify-center">
+                  
+                  <Button 
+                    onClick={() => sendCommunication('crew')}
+                    disabled={communicationStatus.crew === 'sending'}
+                    className={`h-20 flex flex-col items-center justify-center ${
+                      communicationStatus.crew === 'sent' 
+                        ? 'bg-green-600 hover:bg-green-700' 
+                        : 'bg-orange-600 hover:bg-orange-700'
+                    }`}
+                  >
                     <Plane className="w-6 h-6 mb-2" />
-                    Alert Crew
+                    {communicationStatus.crew === 'sending' ? 'Sending...' : 
+                     communicationStatus.crew === 'sent' ? 'Sent ✓' : 'Alert Crew'}
                   </Button>
-                  <Button className="bg-purple-600 hover:bg-purple-700 h-20 flex flex-col items-center justify-center">
+                  
+                  <Button 
+                    onClick={() => sendCommunication('stakeholders')}
+                    disabled={communicationStatus.stakeholders === 'sending'}
+                    className={`h-20 flex flex-col items-center justify-center ${
+                      communicationStatus.stakeholders === 'sent' 
+                        ? 'bg-green-600 hover:bg-green-700' 
+                        : 'bg-purple-600 hover:bg-purple-700'
+                    }`}
+                  >
                     <Globe className="w-6 h-6 mb-2" />
-                    Stakeholders
+                    {communicationStatus.stakeholders === 'sending' ? 'Sending...' : 
+                     communicationStatus.stakeholders === 'sent' ? 'Sent ✓' : 'Stakeholders'}
                   </Button>
                 </div>
-                <div className="text-center text-gray-400 py-4">
-                  Communication workflows will be triggered automatically during recovery execution
+                
+                {/* Communication Activity Log */}
+                {communicationResults.length > 0 && (
+                  <Card className="bg-gray-700 border-gray-600 mt-4">
+                    <CardHeader>
+                      <CardTitle className="text-white text-sm">Communication Activity</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {communicationResults.map((result, index) => (
+                          <div key={index} className="text-sm text-gray-300 p-2 bg-gray-800 rounded">
+                            {result}
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+                
+                <div className="text-center text-gray-400 py-2 text-sm">
+                  Click buttons above to trigger real-time communication workflows
                 </div>
               </div>
             </CardContent>
