@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Boeing 787 Digital Twin - Flight Training Simulator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>AINO Aviation Intelligence Platform</title>
     <meta name="description" content="Advanced flight training simulator for Boeing 787 operations and emergency scenarios" />
     <style>
       :root {
@@ -87,13 +87,86 @@
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
         background: hsl(var(--background));
         color: hsl(var(--foreground));
-        overflow: hidden;
+        overflow-x: hidden;
+        overflow-y: auto;
+        min-height: 100vh;
+        -webkit-overflow-scrolling: touch;
       }
 
       #root {
         width: 100vw;
-        height: 100vh;
+        min-height: 100vh;
         position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Mobile and iPad specific fixes */
+      @media screen and (max-width: 768px) {
+        body {
+          font-size: 14px;
+        }
+        
+        #root {
+          width: 100%;
+          overflow-x: hidden;
+        }
+      }
+
+      @media screen and (min-width: 768px) and (max-width: 1024px) {
+        /* iPad specific styling */
+        body {
+          font-size: 15px;
+        }
+      }
+
+      /* Ensure proper rendering on all devices */
+      * {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+      }
+
+      /* Fix for iOS Safari viewport issues */
+      @supports (-webkit-touch-callout: none) {
+        #root {
+          min-height: -webkit-fill-available;
+        }
+      }
+
+      /* Touch-friendly button styling */
+      .touch-manipulation {
+        touch-action: manipulation;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Aviation specific mobile fixes */
+      .aviation-panel {
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+      }
+
+      /* Ensure proper scrolling on mobile */
+      .aviation-scrollable {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+      }
+
+      .aviation-scrollable::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      .aviation-scrollable::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .aviation-scrollable::-webkit-scrollbar-thumb {
+        background: rgba(59, 130, 246, 0.5);
+        border-radius: 2px;
       }
 
       /* Aviation-specific styling */

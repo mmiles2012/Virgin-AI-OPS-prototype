@@ -88,27 +88,36 @@ function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
   const [isEmergencyActive, setIsEmergencyActive] = useState(false);
   const [showApiWizard, setShowApiWizard] = useState(false);
+  const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="w-full h-full relative bg-gradient-to-b from-blue-900 to-blue-950">
+      <div className="w-full min-h-screen relative bg-gradient-to-b from-blue-900 to-blue-950">
         {/* UI Overlay */}
         <div className="absolute inset-0 pointer-events-none">
           {/* Left Sidebar Navigation */}
-          <div className="absolute top-4 left-4 z-50 pointer-events-auto max-h-[calc(100vh-2rem)] overflow-y-auto">
-              <div className="aviation-panel p-4 rounded-lg space-y-3 w-52">
+          <div className="absolute top-2 left-2 md:top-4 md:left-4 z-50 pointer-events-auto max-h-[calc(100vh-1rem)] md:max-h-[calc(100vh-2rem)] overflow-y-auto aviation-scrollable">
+              <div className={`aviation-panel p-3 md:p-4 rounded-lg space-y-2 md:space-y-3 transition-all duration-300 ${isNavigationCollapsed ? 'w-12 md:w-14' : 'w-48 md:w-52'}`}>
                 <div className="text-center mb-4">
-                  <h1 className="text-white font-bold text-lg">AINO</h1>
-                  <p className="text-blue-300 text-xs">Augmented Intelligent Network Operations</p>
+                  <button
+                    onClick={() => setIsNavigationCollapsed(!isNavigationCollapsed)}
+                    className="w-full text-white font-bold text-lg touch-manipulation hover:text-blue-300 transition-colors"
+                  >
+                    {isNavigationCollapsed ? '☰' : 'AINO'}
+                  </button>
+                  {!isNavigationCollapsed && (
+                    <p className="text-blue-300 text-xs">Augmented Intelligent Network Operations</p>
+                  )}
                 </div>
                 
+                {!isNavigationCollapsed && (
                 <div className="space-y-2">
                   <button
                     onClick={() => setViewMode('overview')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                    className={`w-full px-3 md:px-4 py-2 rounded transition-colors text-xs md:text-sm touch-manipulation ${
                       viewMode === 'overview' 
                         ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600 active:bg-gray-600'
                     }`}
                   >
                     Overview
@@ -378,6 +387,7 @@ function App() {
                     </button>
                   </div>
                 </div>
+                )}
               </div>
             </div>
 
@@ -547,7 +557,7 @@ function App() {
             )}
 
             {viewMode === 'overview' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+              <div className={`absolute top-0 ${isNavigationCollapsed ? 'left-16 md:left-20' : 'left-52 md:left-56'} right-0 bottom-0 pointer-events-auto transition-all duration-300`}>
                 <AIOpsDashboard />
               </div>
             )}
