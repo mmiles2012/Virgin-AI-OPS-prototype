@@ -500,6 +500,12 @@ function App() {
               </div>
             )}
             
+            {viewMode === 'operations' && (
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-hidden">
+                <VirginAtlanticFleetMonitor />
+              </div>
+            )}
+
             {viewMode === 'what-if-scenarios' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
                 <WhatIfScenarioEngine />
