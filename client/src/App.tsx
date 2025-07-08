@@ -100,6 +100,10 @@ function App() {
       setIsMobile(mobile);
       if (mobile) {
         setIsNavigationCollapsed(true);
+        // Signal that React loaded successfully on mobile
+        if (window.innerWidth < 768) {
+          document.body.setAttribute('data-react-loaded', 'true');
+        }
       }
     };
     

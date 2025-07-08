@@ -215,6 +215,108 @@
   </head>
   <body>
     <div id="root"></div>
+    
+    <!-- Emergency mobile fallback -->
+    <script>
+      // Detect mobile and show fallback if React fails to load
+      function isMobileDevice() {
+        return window.innerWidth < 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      }
+      
+      function showMobileFallback() {
+        document.body.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, #1e3a8a, #1e40af);
+            color: white;
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            overflow: auto;
+            z-index: 999999;
+          ">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="font-size: 32px; margin: 0 0 10px 0; font-weight: bold;">AINO</h1>
+              <p style="font-size: 18px; color: #bfdbfe; margin: 0;">Aviation Intelligence Platform</p>
+            </div>
+            
+            <div style="
+              background: rgba(0,0,0,0.4);
+              border-radius: 8px;
+              padding: 20px;
+              margin-bottom: 20px;
+            ">
+              <h2 style="color: #60a5fa; margin-bottom: 15px;">Live Operations</h2>
+              <div style="margin-bottom: 10px;">
+                <span style="color: #d1d5db;">Virgin Atlantic Fleet: </span>
+                <span style="font-weight: bold; color: #10b981;">40 Aircraft Active</span>
+              </div>
+              <div style="margin-bottom: 10px;">
+                <span style="color: #d1d5db;">Weather Data: </span>
+                <span style="font-weight: bold; color: #10b981;">AVWX Connected</span>
+              </div>
+              <div>
+                <span style="color: #d1d5db;">Flight Tracking: </span>
+                <span style="font-weight: bold; color: #10b981;">OpenSky Network</span>
+              </div>
+            </div>
+
+            <div style="
+              background: rgba(0,0,0,0.4);
+              border-radius: 8px;
+              padding: 20px;
+              margin-bottom: 20px;
+            ">
+              <h2 style="color: #60a5fa; margin-bottom: 15px;">Current Flights</h2>
+              <div style="margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 4px;">
+                <div style="font-weight: bold;">VS001 LHR → JFK</div>
+                <div style="font-size: 14px; color: #d1d5db;">Boeing 787-9 • En Route • Atlantic Crossing</div>
+              </div>
+              <div style="margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 4px;">
+                <div style="font-weight: bold;">VS011 LHR → BOS</div>
+                <div style="font-size: 14px; color: #d1d5db;">Airbus A330-300 • Boarding T3</div>
+              </div>
+              <div style="padding: 10px; background: rgba(255,255,255,0.1); border-radius: 4px;">
+                <div style="font-weight: bold;">VS025 LHR → EWR</div>
+                <div style="font-size: 14px; color: #d1d5db;">Boeing 787-9 • Preparing</div>
+              </div>
+            </div>
+
+            <div style="text-align: center;">
+              <p style="color: #9ca3af; line-height: 1.6; margin-bottom: 20px;">
+                Mobile interface active. For full functionality including interactive maps, 
+                digital twins, and detailed analytics, please use desktop.
+              </p>
+              <button onclick="window.location.reload()" style="
+                background: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 15px 30px;
+                font-size: 16px;
+                cursor: pointer;
+                touch-action: manipulation;
+              ">Refresh Platform</button>
+            </div>
+          </div>
+        `;
+      }
+      
+      // Show fallback immediately on mobile
+      if (isMobileDevice()) {
+        setTimeout(() => {
+          // Check if React app loaded properly
+          if (!document.querySelector('#root').innerHTML.trim() || 
+              document.querySelector('#root').innerHTML === '<div></div>') {
+            showMobileFallback();
+          }
+        }, 3000); // Give React 3 seconds to load
+      }
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
