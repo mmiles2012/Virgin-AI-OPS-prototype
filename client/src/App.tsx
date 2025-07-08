@@ -545,7 +545,7 @@ function App() {
             )}
             
             {viewMode === 'operations' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto">
+              <div className="absolute top-4 left-56 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto">
                 <VirginAtlanticFleetMonitor />
               </div>
             )}
@@ -601,19 +601,19 @@ function App() {
             )}
             
             {viewMode === 'skygate-airports' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto">
+              <div className="absolute top-4 left-56 right-4 bottom-16 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto">
                 <SkyGateAirportDashboard />
               </div>
             )}
             
             {viewMode === 'otp-dashboard' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-y-auto">
+              <div className="absolute top-4 left-56 right-4 bottom-16 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-y-auto">
                 <EnhancedNetworkOTPDashboard />
               </div>
             )}
             
             {viewMode === 'fleet-monitor' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto">
+              <div className="absolute top-4 left-56 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto">
                 <VirginAtlanticFleetMonitor />
               </div>
             )}
@@ -647,7 +647,7 @@ function App() {
             )}
             
             {viewMode === 'enhanced-facilities' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto">
+              <div className="absolute top-4 left-56 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto">
                 <EnhancedAirportFacilities />
               </div>
             )}
