@@ -717,14 +717,14 @@ export default function EnhancedNetworkOTPDashboard() {
 
   return (
     <div className="fixed inset-0 bg-gray-900 text-white overflow-y-auto" style={{ top: '60px' }}>
-      <div className="p-6">
+      <div className="min-h-screen w-full bg-gray-900 p-6">
         {/* Hub Overview */}
         {!selectedAirport ? (
-          <div>
-            <h2 className="text-3xl font-bold mb-6">Network Performance Overview</h2>
+          <div className="bg-gray-900">
+            <h2 className="text-3xl font-bold mb-6 text-white">Network Performance Overview</h2>
             
             {/* Primary Hubs */}
-            <div className="mb-8">
+            <div className="mb-8 bg-gray-900">
               <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                 <span>🏛️</span>
                 Primary Network Hubs
@@ -775,7 +775,7 @@ export default function EnhancedNetworkOTPDashboard() {
 
             {/* Secondary Hubs */}
             {secondaryHubsData.length > 0 && (
-              <div>
+              <div className="bg-gray-900">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <span>🛫</span>
                   Secondary Network Hubs
