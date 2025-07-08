@@ -45,7 +45,7 @@ import AirportContactDashboard from "./components/AirportContactDashboard";
 import AIOpsDashboard from "./components/AIOpsDashboard";
 import DisruptionResponseConsole from "./components/DisruptionResponseConsole";
 import WhatIfScenarioEngine from "./components/WhatIfScenarioEngine";
-import GlobalAirportDatabase from "./components/GlobalAirportDatabase";
+// import GlobalAirportDatabase from "./components/GlobalAirportDatabase";
 
 
 
@@ -398,8 +398,8 @@ function App() {
 
                   </div>
                   
-                  {/* Database Section */}
-                  <div className="border-t border-gray-600 pt-3 mt-3">
+                  {/* Database Section - Temporarily Disabled */}
+                  {/* <div className="border-t border-gray-600 pt-3 mt-3">
                     <div className="text-xs text-gray-400 mb-2 px-2">DATABASE</div>
                     
                     <button
@@ -412,7 +412,7 @@ function App() {
                     >
                       Global Airport Database
                     </button>
-                  </div>
+                  </div> */}
                   
                   {/* API Centre Section */}
                   <div className="border-t border-gray-600 pt-3 mt-3">
@@ -622,11 +622,11 @@ function App() {
               </div>
             )}
 
-            {viewMode === 'global-airports' && (
+            {/* {viewMode === 'global-airports' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
                 <GlobalAirportDatabase />
               </div>
-            )}
+            )} */}
 
             {/* API Integration Wizard */}
             {showApiWizard && (
