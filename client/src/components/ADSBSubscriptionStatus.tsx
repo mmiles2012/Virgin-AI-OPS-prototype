@@ -81,14 +81,14 @@ export default function ADSBSubscriptionStatus() {
           {!status.subscription_active && (
             <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-3">
               <p className="text-orange-200 text-sm mb-3">
-                To enable real-time flight tracking with authentic ADS-B Exchange data:
+                Subscription Status Update:
               </p>
-              <ol className="text-orange-200 text-xs space-y-1 mb-3">
-                <li>1. Visit RapidAPI.com and sign up/login</li>
-                <li>2. Search for "ADS-B Exchange API"</li>
-                <li>3. Subscribe to the API (free tier available)</li>
-                <li>4. Update your RAPIDAPI_KEY in Replit Secrets</li>
-              </ol>
+              <ul className="text-orange-200 text-xs space-y-1 mb-3">
+                <li>• RapidAPI subscription confirmed via email</li>
+                <li>• API activation can take 5-15 minutes</li>
+                <li>• Using simulated data until activation complete</li>
+                <li>• System will automatically switch to authentic data</li>
+              </ul>
               <a
                 href="https://rapidapi.com/adsbx/api/adsbexchange-com1"
                 target="_blank"

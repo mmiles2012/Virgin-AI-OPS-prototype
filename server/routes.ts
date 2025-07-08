@@ -1747,7 +1747,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         console.log('⚠️ No authentic flights from RapidAPI, using simulated fallback');
         // Use simulated Virgin Atlantic data as fallback
-        const simulatedFlights = await virginAtlanticService.getSimulatedFlights();
+        const simulatedFlights = await virginAtlanticService.getFlights();
         
         res.json({
           success: true,
@@ -1765,7 +1765,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Fallback to simulated data on error
       try {
-        const simulatedFlights = await virginAtlanticService.getSimulatedFlights();
+        const simulatedFlights = await virginAtlanticService.getFlights();
         res.json({
           success: true,
           flights: simulatedFlights,
