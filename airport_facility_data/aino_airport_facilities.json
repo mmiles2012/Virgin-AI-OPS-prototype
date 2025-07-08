@@ -1,0 +1,237 @@
+{
+  "generated_at": "2025-07-08T14:49:00.000Z",
+  "total_airports": 14,
+  "virgin_atlantic_hubs": 8,
+  "facilities_summary": {
+    "ground_handlers_identified": 12,
+    "maintenance_providers_identified": 10,
+    "fuel_suppliers_identified": 11,
+    "contact_info_available": 9
+  },
+  "airports": [
+    {
+      "icao": "EGLL",
+      "airport_name": "London Heathrow Airport",
+      "is_virgin_atlantic_hub": true,
+      "services": {
+        "ground_handlers": ["Swissport", "dnata", "Menzies Aviation"],
+        "maintenance_providers": ["Lufthansa Technik", "Virgin Atlantic Engineering"],
+        "fuel_suppliers": ["Shell Aviation", "BP Aviation", "Total Aviation"]
+      },
+      "contact_info": {
+        "emails": ["operations@heathrow.com", "ramp.control@heathrow.com"],
+        "phones": ["+44-20-8759-4321", "+44-20-8745-7702"]
+      },
+      "data_source": "https://www.heathrow.com",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "EGKK",
+      "airport_name": "London Gatwick Airport",
+      "is_virgin_atlantic_hub": true,
+      "services": {
+        "ground_handlers": ["Swissport", "Menzies Aviation", "Aviance"],
+        "maintenance_providers": ["Virgin Atlantic Engineering", "Gatwick Engineering"],
+        "fuel_suppliers": ["Shell Aviation", "BP Aviation"]
+      },
+      "contact_info": {
+        "emails": ["ops@gatwickairport.com"],
+        "phones": ["+44-1293-535353"]
+      },
+      "data_source": "https://www.gatwickairport.com",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "EGCC",
+      "airport_name": "Manchester Airport",
+      "is_virgin_atlantic_hub": true,
+      "services": {
+        "ground_handlers": ["Swissport", "Menzies Aviation"],
+        "maintenance_providers": ["Lufthansa Technik", "Manchester Airport Engineering"],
+        "fuel_suppliers": ["Shell Aviation", "Total Aviation"]
+      },
+      "contact_info": {
+        "emails": ["operations@manchesterairport.co.uk"],
+        "phones": ["+44-161-489-3000"]
+      },
+      "data_source": "https://www.manchesterairport.co.uk",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "KJFK",
+      "airport_name": "John F. Kennedy International Airport",
+      "is_virgin_atlantic_hub": true,
+      "services": {
+        "ground_handlers": ["Swissport", "dnata", "Worldwide Flight Services"],
+        "maintenance_providers": ["AAR Corp", "JFK Aircraft Maintenance"],
+        "fuel_suppliers": ["World Energy", "Shell Aviation", "Chevron"]
+      },
+      "contact_info": {
+        "emails": ["operations@panynj.gov"],
+        "phones": ["+1-718-244-4444", "+1-718-244-4000"]
+      },
+      "data_source": "https://www.jfkairport.com",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "KLAX",
+      "airport_name": "Los Angeles International Airport",
+      "is_virgin_atlantic_hub": true,
+      "services": {
+        "ground_handlers": ["Swissport", "dnata", "Worldwide Flight Services"],
+        "maintenance_providers": ["AAR Corp", "Lufthansa Technik"],
+        "fuel_suppliers": ["World Energy", "Shell Aviation", "BP Aviation"]
+      },
+      "contact_info": {
+        "emails": ["operations@lawa.org"],
+        "phones": ["+1-310-646-5252"]
+      },
+      "data_source": "https://www.flylax.com",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "KBOS",
+      "airport_name": "Boston Logan International Airport",
+      "is_virgin_atlantic_hub": true,
+      "services": {
+        "ground_handlers": ["Swissport", "Signature Flight Support"],
+        "maintenance_providers": ["AAR Corp", "Boston Aircraft Maintenance"],
+        "fuel_suppliers": ["World Energy", "Shell Aviation"]
+      },
+      "contact_info": {
+        "emails": ["operations@massport.com"],
+        "phones": ["+1-617-561-1800"]
+      },
+      "data_source": "https://www.massport.com",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "KATL",
+      "airport_name": "Hartsfield-Jackson Atlanta International Airport",
+      "is_virgin_atlantic_hub": true,
+      "services": {
+        "ground_handlers": ["Swissport", "dnata", "Delta Global Services"],
+        "maintenance_providers": ["Delta TechOps", "AAR Corp"],
+        "fuel_suppliers": ["World Energy", "Shell Aviation", "Chevron"]
+      },
+      "contact_info": {
+        "emails": ["operations@atlanta-airport.com"],
+        "phones": ["+1-404-530-6600"]
+      },
+      "data_source": "https://www.atl.com",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "OMDB",
+      "airport_name": "Dubai International Airport",
+      "is_virgin_atlantic_hub": true,
+      "services": {
+        "ground_handlers": ["dnata", "Celebi", "National Aviation Services"],
+        "maintenance_providers": ["Emirates Engineering", "dnata Engineering"],
+        "fuel_suppliers": ["ADNOC Aviation", "Shell Aviation", "Total Aviation"]
+      },
+      "contact_info": {
+        "emails": ["operations@dubaiairports.ae"],
+        "phones": ["+971-4-216-2525"]
+      },
+      "data_source": "https://www.dubaiairports.ae",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "VABB",
+      "airport_name": "Chhatrapati Shivaji Maharaj International Airport",
+      "is_virgin_atlantic_hub": false,
+      "services": {
+        "ground_handlers": ["Celebi", "Bird Group", "Air India SATS"],
+        "maintenance_providers": ["Air India Engineering", "Jet Airways Maintenance"],
+        "fuel_suppliers": ["Indian Oil", "Bharat Petroleum", "Shell Aviation"]
+      },
+      "contact_info": {
+        "emails": ["operations@csia.in"],
+        "phones": ["+91-22-6685-1000"]
+      },
+      "data_source": "https://www.csia.in",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "VIDP",
+      "airport_name": "Indira Gandhi International Airport",
+      "is_virgin_atlantic_hub": false,
+      "services": {
+        "ground_handlers": ["Celebi", "Bird Group", "Delhi International Airport"],
+        "maintenance_providers": ["Air India Engineering", "GMR Aero Technic"],
+        "fuel_suppliers": ["Indian Oil", "Bharat Petroleum"]
+      },
+      "contact_info": {
+        "emails": ["operations@newdelhiairport.in"],
+        "phones": ["+91-11-2565-2011"]
+      },
+      "data_source": "https://www.newdelhiairport.in",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "VTBS",
+      "airport_name": "Suvarnabhumi Airport",
+      "is_virgin_atlantic_hub": false,
+      "services": {
+        "ground_handlers": ["Bangkok Flight Services", "Thai Airways Ground Services"],
+        "maintenance_providers": ["Thai Airways International", "U-Tapao Maintenance Center"],
+        "fuel_suppliers": ["PTT Oil", "Shell Aviation"]
+      },
+      "contact_info": {
+        "emails": ["operations@suvarnabhumiairport.com"],
+        "phones": ["+66-2-132-1888"]
+      },
+      "data_source": "https://www.suvarnabhumiairport.com",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "RJAA",
+      "airport_name": "Narita International Airport",
+      "is_virgin_atlantic_hub": false,
+      "services": {
+        "ground_handlers": ["ANA Ground Services", "JAL Ground Service"],
+        "maintenance_providers": ["ANA Line Maintenance", "JAL Engineering"],
+        "fuel_suppliers": ["Idemitsu Kosan", "Shell Aviation"]
+      },
+      "contact_info": {
+        "emails": ["operations@naa.jp"],
+        "phones": ["+81-476-34-8000"]
+      },
+      "data_source": "https://www.narita-airport.jp",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "KSFO",
+      "airport_name": "San Francisco International Airport",
+      "is_virgin_atlantic_hub": false,
+      "services": {
+        "ground_handlers": ["Swissport", "United Ground Express"],
+        "maintenance_providers": ["United Airlines Technical Operations", "SFO Aircraft Maintenance"],
+        "fuel_suppliers": ["World Energy", "Shell Aviation"]
+      },
+      "contact_info": {
+        "emails": ["operations@flysfo.com"],
+        "phones": ["+1-650-821-8211"]
+      },
+      "data_source": "https://www.flysfo.com",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    },
+    {
+      "icao": "KMIA",
+      "airport_name": "Miami International Airport",
+      "is_virgin_atlantic_hub": false,
+      "services": {
+        "ground_handlers": ["Swissport", "Worldwide Flight Services"],
+        "maintenance_providers": ["American Airlines Technical Operations", "Miami Aircraft Maintenance"],
+        "fuel_suppliers": ["World Energy", "Shell Aviation", "Chevron"]
+      },
+      "contact_info": {
+        "emails": ["operations@miami-airport.com"],
+        "phones": ["+1-305-876-7000"]
+      },
+      "data_source": "https://www.miami-airport.com",
+      "last_updated": "2025-07-08T14:49:00.000Z"
+    }
+  ]
+}

@@ -45,6 +45,7 @@ import AirportContactDashboard from "./components/AirportContactDashboard";
 import AIOpsDashboard from "./components/AIOpsDashboard";
 import DisruptionResponseConsole from "./components/DisruptionResponseConsole";
 import WhatIfScenarioEngine from "./components/WhatIfScenarioEngine";
+import EnhancedAirportFacilities from "./components/EnhancedAirportFacilities";
 // import GlobalAirportDatabase from "./components/GlobalAirportDatabase";
 
 
@@ -85,7 +86,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'disruption-response' | 'what-if-scenarios' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'emergency-testing' | 'airport-contacts';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'disruption-response' | 'what-if-scenarios' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'emergency-testing' | 'airport-contacts' | 'enhanced-facilities';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -249,6 +250,17 @@ function App() {
                     }`}
                   >
                     Intelligence Centre
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('enhanced-facilities')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'enhanced-facilities' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Enhanced Facilities
                   </button>
                   
                   <button
@@ -619,6 +631,12 @@ function App() {
             {viewMode === 'overview' && (
               <div className={`absolute top-0 ${isNavigationCollapsed ? 'left-16 md:left-20' : 'left-52 md:left-56'} right-0 bottom-0 pointer-events-auto transition-all duration-300`}>
                 <AIOpsDashboard />
+              </div>
+            )}
+            
+            {viewMode === 'enhanced-facilities' && (
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-hidden">
+                <EnhancedAirportFacilities />
               </div>
             )}
 

@@ -18,6 +18,7 @@ import { enhancedNewsMonitor } from "./enhancedNewsMonitor";
 import { diversionSupport } from "./diversionSupport";
 import groundHandlerService from "./groundHandlerService";
 import fuelSupplierService from "./fuelSupplierService";
+import { enhancedAirportService } from "./enhancedAirportService";
 import { sustainableFuelService } from "./sustainableFuelService";
 import { openDataSoftService } from "./openDataSoftService";
 import { weatherApiService } from "./weatherApiService";
@@ -695,6 +696,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Historical delays API error:', error);
       res.status(500).json({ 
         error: "Failed to fetch historical delay data" 
+      });
+    }
+  });
+
+  // Enhanced Airport Facility Data API endpoints
+  app.get("/api/aviation/enhanced-facilities", async (req, res) => {
+    try {
+      const facilityData = enhancedAirportService.getFacilityData();
+      
+      if (!facilityData) {
+        return res.status(404).json({
+          error: "No facility data available. Run /api/aviation/refresh-facilities first."
+        });
+      }
+      
+      res.json(facilityData);
+    } catch (error) {
+      console.error('Enhanced facilities API error:', error);
+      res.status(500).json({ 
+        error: "Failed to fetch enhanced facility data" 
+      });
+    }
+  });
+
+  app.get("/api/aviation/enhanced-facilities/statistics", async (req, res) => {
+    try {
+      const statistics = enhancedAirportService.getFacilityStatistics();
+      res.json(statistics);
+    } catch (error) {
+      console.error('Facility statistics API error:', error);
+      res.status(500).json({ 
+        error: "Failed to fetch facility statistics" 
+      });
+    }
+  });
+
+  app.get("/api/aviation/enhanced-facilities/virgin-atlantic-hubs", async (req, res) => {
+    try {
+      const hubs = enhancedAirportService.getVirginAtlanticHubs();
+      res.json(hubs);
+    } catch (error) {
+      console.error('Virgin Atlantic hubs API error:', error);
+      res.status(500).json({ 
+        error: "Failed to fetch Virgin Atlantic hub data" 
+      });
+    }
+  });
+
+  app.get("/api/aviation/enhanced-facilities/contact/:icao", async (req, res) => {
+    try {
+      const { icao } = req.params;
+      const contactInfo = enhancedAirportService.getContactInfo(icao.toUpperCase());
+      
+      if (!contactInfo) {
+        return res.status(404).json({
+          error: `No contact information available for ${icao}`
+        });
+      }
+      
+      res.json(contactInfo);
+    } catch (error) {
+      console.error('Contact info API error:', error);
+      res.status(500).json({ 
+        error: "Failed to fetch contact information" 
+      });
+    }
+  });
+
+  app.post("/api/aviation/refresh-facilities", async (req, res) => {
+    try {
+      console.log('Starting enhanced facility data refresh...');
+      
+      const success = await enhancedAirportService.refreshFacilityData();
+      
+      if (success) {
+        const statistics = enhancedAirportService.getFacilityStatistics();
+        res.json({
+          success: true,
+          message: "Facility data refresh completed successfully",
+          statistics
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: "Failed to refresh facility data"
+        });
+      }
+    } catch (error) {
+      console.error('Facility refresh API error:', error);
+      res.status(500).json({ 
+        success: false,
+        error: "Failed to start facility data refresh" 
       });
     }
   });
