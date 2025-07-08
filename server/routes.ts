@@ -598,6 +598,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Service Coverage API endpoint for Network OTP Dashboard
+  app.get("/api/service-coverage", async (req, res) => {
+    try {
+      // Get service coverage data with proper error handling
+      const groundHandlers = await groundHandlerService.getAllHandlers();
+      const fuelSuppliers = await fuelSupplierService.getAllSuppliers();
+      
+      // Combine and format service coverage data
+      const serviceCoverage = [];
+      
+      // Add ground handlers
+      groundHandlers.forEach(handler => {
+        if (handler.icao && handler.phone) {
+          serviceCoverage.push({
+            icao: handler.icao,
+            iata: handler.iata || '',
+            airport_name: handler.airportName,
+            country: handler.country,
+            latitude: handler.lat,
+            longitude: handler.lon,
+            services: 'ground_handling',
+            operations_center: handler.operationsCenter || `${handler.airportName} Operations`,
+            phone: handler.phone
+          });
+        }
+      });
+      
+      // Add essential Virgin Atlantic hub data if service data is limited
+      const essentialHubs = [
+        {
+          icao: 'EGLL', iata: 'LHR', airport_name: 'London Heathrow',
+          country: 'United Kingdom', latitude: 51.4706, longitude: -0.4619,
+          services: 'both', operations_center: 'Heathrow Operations Centre',
+          phone: '+44-20-8759-4321'
+        },
+        {
+          icao: 'KJFK', iata: 'JFK', airport_name: 'John F. Kennedy International',
+          country: 'United States', latitude: 40.6413, longitude: -73.7781,
+          services: 'both', operations_center: 'JFK Airport Operations',
+          phone: '+1-718-244-4444'
+        },
+        {
+          icao: 'KLAX', iata: 'LAX', airport_name: 'Los Angeles International',
+          country: 'United States', latitude: 33.9425, longitude: -118.4081,
+          services: 'both', operations_center: 'LAX Operations Center',
+          phone: '+1-310-646-5252'
+        }
+      ];
+      
+      // Add essential hubs if not already present
+      essentialHubs.forEach(hub => {
+        if (!serviceCoverage.find(sc => sc.icao === hub.icao)) {
+          serviceCoverage.push(hub);
+        }
+      });
+      
+      res.json(serviceCoverage);
+    } catch (error) {
+      console.error('Service coverage API error:', error);
+      res.status(500).json({ 
+        error: "Failed to fetch service coverage data" 
+      });
+    }
+  });
+
+  // Historical delays endpoint for Network OTP Dashboard
+  app.get("/api/aviation/historical-delays", async (req, res) => {
+    try {
+      // Generate realistic historical delay data for demonstration
+      const historicalDelays = [
+        {
+          Airport: 'LHR', Flight: 'VS001', Scheduled: '11:00', Estimated: '11:15', 
+          Status: 'Delayed', DelayMinutes: 15, Weather: 'Clear'
+        },
+        {
+          Airport: 'JFK', Flight: 'VS002', Scheduled: '15:30', Estimated: '15:30',
+          Status: 'On Time', DelayMinutes: 0, Weather: 'Partly Cloudy'
+        },
+        {
+          Airport: 'LAX', Flight: 'VS008', Scheduled: '14:20', Estimated: '14:45',
+          Status: 'Delayed', DelayMinutes: 25, Weather: 'Fog'
+        },
+        {
+          Airport: 'MAN', Flight: 'VS105', Scheduled: '09:45', Estimated: '09:52',
+          Status: 'Delayed', DelayMinutes: 7, Weather: 'Rain'
+        },
+        {
+          Airport: 'BOS', Flight: 'VS157', Scheduled: '13:10', Estimated: '13:10',
+          Status: 'On Time', DelayMinutes: 0, Weather: 'Clear'
+        }
+      ];
+      
+      res.json(historicalDelays);
+    } catch (error) {
+      console.error('Historical delays API error:', error);
+      res.status(500).json({ 
+        error: "Failed to fetch historical delay data" 
+      });
+    }
+  });
+
   // News and geopolitical intelligence endpoints
   app.get("/api/news/geopolitical-risk/:region", async (req, res) => {
     try {
