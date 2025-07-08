@@ -289,14 +289,18 @@ const VisaRequirementsDashboard: React.FC = () => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Nationality</label>
+                    <label className="block text-sm font-medium mb-2 text-white">Nationality</label>
                     <Select value={selectedNationality} onValueChange={setSelectedNationality}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
                         <SelectValue placeholder="Select nationality" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-gray-700 border-gray-600">
                         {nationalities.map((nationality) => (
-                          <SelectItem key={nationality} value={nationality}>
+                          <SelectItem 
+                            key={nationality} 
+                            value={nationality}
+                            className="text-white hover:bg-gray-600 focus:bg-gray-600 cursor-pointer"
+                          >
                             {nationality}
                           </SelectItem>
                         ))}
@@ -304,14 +308,18 @@ const VisaRequirementsDashboard: React.FC = () => {
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Destination</label>
+                    <label className="block text-sm font-medium mb-2 text-white">Destination</label>
                     <Select value={selectedDestination} onValueChange={setSelectedDestination}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
                         <SelectValue placeholder="Select destination" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-gray-700 border-gray-600 max-h-60 overflow-y-auto">
                         {popularDestinations.map((destination) => (
-                          <SelectItem key={destination} value={destination}>
+                          <SelectItem 
+                            key={destination} 
+                            value={destination}
+                            className="text-white hover:bg-gray-600 focus:bg-gray-600 cursor-pointer py-2"
+                          >
                             {destination}
                           </SelectItem>
                         ))}
@@ -319,19 +327,19 @@ const VisaRequirementsDashboard: React.FC = () => {
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Flight Number (Optional)</label>
+                    <label className="block text-sm font-medium mb-2 text-white">Flight Number (Optional)</label>
                     <Input
                       value={selectedFlightNumber}
                       onChange={(e) => setSelectedFlightNumber(e.target.value)}
                       placeholder="e.g., VS355"
-                      className="bg-gray-700 border-gray-600"
+                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                     />
                   </div>
                 </div>
                 <Button
                   onClick={lookupVisaRequirement}
                   disabled={loading || !selectedNationality || !selectedDestination}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600"
                 >
                   {loading ? 'Looking up...' : 'Check Visa Requirements'}
                 </Button>
@@ -341,10 +349,10 @@ const VisaRequirementsDashboard: React.FC = () => {
                     <CardContent className="pt-6">
                       <div className="flex items-center gap-2 mb-4">
                         {getVisaStatusIcon(lookupResult.visa_requirements?.visa_requirement || '')}
-                        <span className="font-medium">{lookupResult.destination}</span>
+                        <span className="font-medium text-white">{lookupResult.destination}</span>
                         {getVisaStatusBadge(lookupResult.visa_requirements?.visa_requirement || '')}
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-2 text-white">
                         <div>
                           <span className="font-medium">Requirement:</span> {lookupResult.visa_requirements?.visa_requirement}
                         </div>
@@ -355,8 +363,8 @@ const VisaRequirementsDashboard: React.FC = () => {
                         )}
                         {lookupResult.pre_departure_checklist && (
                           <div className="mt-4 p-4 bg-gray-600 rounded-lg">
-                            <h4 className="font-medium mb-2">Pre-Departure Checklist</h4>
-                            <ul className="space-y-1 text-sm">
+                            <h4 className="font-medium mb-2 text-white">Pre-Departure Checklist</h4>
+                            <ul className="space-y-1 text-sm text-white">
                               {lookupResult.pre_departure_checklist.documents_required?.map((doc: string, index: number) => (
                                 <li key={index} className="flex items-center gap-2">
                                   <FileText className="h-3 w-3" />
@@ -385,14 +393,18 @@ const VisaRequirementsDashboard: React.FC = () => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Nationality</label>
+                    <label className="block text-sm font-medium mb-2 text-white">Nationality</label>
                     <Select value={selectedNationality} onValueChange={setSelectedNationality}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
                         <SelectValue placeholder="Select nationality" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-gray-700 border-gray-600">
                         {nationalities.map((nationality) => (
-                          <SelectItem key={nationality} value={nationality}>
+                          <SelectItem 
+                            key={nationality} 
+                            value={nationality}
+                            className="text-white hover:bg-gray-600 focus:bg-gray-600 cursor-pointer"
+                          >
                             {nationality}
                           </SelectItem>
                         ))}
@@ -400,14 +412,18 @@ const VisaRequirementsDashboard: React.FC = () => {
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Virgin Atlantic Flight</label>
+                    <label className="block text-sm font-medium mb-2 text-white">Virgin Atlantic Flight</label>
                     <Select value={selectedFlightNumber} onValueChange={setSelectedFlightNumber}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
                         <SelectValue placeholder="Select flight" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-gray-700 border-gray-600">
                         {virginAtlanticFlights.map((flight) => (
-                          <SelectItem key={flight.code} value={flight.code}>
+                          <SelectItem 
+                            key={flight.code} 
+                            value={flight.code}
+                            className="text-white hover:bg-gray-600 focus:bg-gray-600 cursor-pointer"
+                          >
                             {flight.code} - {flight.route}
                           </SelectItem>
                         ))}
@@ -418,7 +434,7 @@ const VisaRequirementsDashboard: React.FC = () => {
                 <Button
                   onClick={() => lookupFlightVisa(selectedFlightNumber)}
                   disabled={loading || !selectedNationality || !selectedFlightNumber}
-                  className="w-full bg-green-600 hover:bg-green-700"
+                  className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600"
                 >
                   {loading ? 'Checking...' : 'Check Flight Visa Requirements'}
                 </Button>
@@ -436,14 +452,18 @@ const VisaRequirementsDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2">Select Nationality</label>
+                  <label className="block text-sm font-medium mb-2 text-white">Select Nationality</label>
                   <Select value={selectedNationality} onValueChange={setSelectedNationality}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600">
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
                       <SelectValue placeholder="Select nationality" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-gray-700 border-gray-600">
                       {nationalities.map((nationality) => (
-                        <SelectItem key={nationality} value={nationality}>
+                        <SelectItem 
+                          key={nationality} 
+                          value={nationality}
+                          className="text-white hover:bg-gray-600 focus:bg-gray-600 cursor-pointer"
+                        >
                           {nationality}
                         </SelectItem>
                       ))}
@@ -453,25 +473,25 @@ const VisaRequirementsDashboard: React.FC = () => {
                 <Button
                   onClick={() => fetchNationalityData(selectedNationality)}
                   disabled={loading}
-                  className="w-full bg-purple-600 hover:bg-purple-700 mb-4"
+                  className="w-full bg-purple-600 hover:bg-purple-700 mb-4 disabled:bg-gray-600"
                 >
                   {loading ? 'Analyzing...' : 'Analyze Nationality'}
                 </Button>
 
                 {visaData.length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Visa Requirements for {selectedNationality} Nationals</h3>
+                    <h3 className="text-lg font-medium text-white">Visa Requirements for {selectedNationality} Nationals</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {visaData.map((requirement, index) => (
                         <Card key={index} className="bg-gray-700 border-gray-600">
                           <CardContent className="pt-4">
                             <div className="flex items-center gap-2 mb-2">
                               {getVisaStatusIcon(requirement.visa_requirement)}
-                              <span className="font-medium">{requirement.destination}</span>
+                              <span className="font-medium text-white">{requirement.destination}</span>
                             </div>
                             {getVisaStatusBadge(requirement.visa_requirement)}
                             {requirement.notes && (
-                              <p className="text-sm text-gray-400 mt-2">{requirement.notes}</p>
+                              <p className="text-sm text-gray-300 mt-2">{requirement.notes}</p>
                             )}
                           </CardContent>
                         </Card>
@@ -501,7 +521,7 @@ const VisaRequirementsDashboard: React.FC = () => {
                             <CardTitle className="text-white text-lg">{nationality}</CardTitle>
                           </CardHeader>
                           <CardContent>
-                            <div className="space-y-2">
+                            <div className="space-y-2 text-white">
                               <div className="flex justify-between">
                                 <span className="text-green-400">Visa Free:</span>
                                 <span>{data.visa_free}</span>
