@@ -38,7 +38,7 @@ class AuthenticVirginAtlanticTracker {
     // Cache for performance and rate limiting
     this.lastFetch = 0;
     this.cachedFlights = [];
-    this.cacheTimeout = 120000; // 2 minutes to reduce rate limiting
+    this.cacheTimeout = 5000; // 5 seconds - force fresh API calls to test working subscription
   }
 
   // Make HTTP request to ADS-B Exchange API
