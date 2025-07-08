@@ -611,7 +611,7 @@ function App() {
                 <div className="h-full w-full p-4">
                   <div className="h-full bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 flex flex-col">
                     <div className="flex-1 overflow-y-auto">
-                      <NetworkOTPDashboardSimple />
+                      <EnhancedNetworkOTPDashboard />
                     </div>
                   </div>
                 </div>
