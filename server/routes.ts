@@ -48,6 +48,7 @@ import { routePositionService } from "./routePositionService";
 import { virginAtlanticFlightTracker } from "./routeMatcher";
 import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
 import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
+import { globalAirportService } from "./globalAirportService";
 // Enhanced Weather Intelligence Service
 
 import { spawn } from "child_process";
@@ -8344,6 +8345,237 @@ else:
 
     return Math.min(100, Math.max(0, (currentDist / totalDist) * 100));
   }
+
+  // ========================================
+  // Global Airport Database API
+  // ========================================
+
+  // Get airport by ICAO code
+  app.get('/api/airports/global/icao/:icao', (req, res) => {
+    try {
+      const { icao } = req.params;
+      const airport = globalAirportService.getAirportByICAO(icao);
+      
+      if (airport) {
+        res.json({
+          success: true,
+          airport,
+          source: 'Global Airport Database'
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          error: `Airport with ICAO code ${icao} not found`,
+          searched: icao
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to search airport by ICAO'
+      });
+    }
+  });
+
+  // Get airport by IATA code
+  app.get('/api/airports/global/iata/:iata', (req, res) => {
+    try {
+      const { iata } = req.params;
+      const airport = globalAirportService.getAirportByIATA(iata);
+      
+      if (airport) {
+        res.json({
+          success: true,
+          airport,
+          source: 'Global Airport Database'
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          error: `Airport with IATA code ${iata} not found`,
+          searched: iata
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to search airport by IATA'
+      });
+    }
+  });
+
+  // Search airports with filters
+  app.get('/api/airports/global/search', (req, res) => {
+    try {
+      const {
+        country,
+        continent,
+        type,
+        scheduledService,
+        hasICAO,
+        hasIATA,
+        region,
+        minLat,
+        maxLat,
+        minLon,
+        maxLon,
+        lat,
+        lon,
+        radius,
+        limit
+      } = req.query;
+
+      const filter: any = {};
+
+      if (country) filter.country = String(country);
+      if (continent) filter.continent = String(continent);
+      if (type) {
+        filter.type = String(type).split(',');
+      }
+      if (scheduledService !== undefined) {
+        filter.scheduledService = String(scheduledService) === 'true';
+      }
+      if (hasICAO !== undefined) {
+        filter.hasICAO = String(hasICAO) === 'true';
+      }
+      if (hasIATA !== undefined) {
+        filter.hasIATA = String(hasIATA) === 'true';
+      }
+      if (region) filter.region = String(region);
+      if (minLat) filter.minLat = parseFloat(String(minLat));
+      if (maxLat) filter.maxLat = parseFloat(String(maxLat));
+      if (minLon) filter.minLon = parseFloat(String(minLon));
+      if (maxLon) filter.maxLon = parseFloat(String(maxLon));
+
+      // Near point search
+      if (lat && lon) {
+        filter.nearPoint = {
+          lat: parseFloat(String(lat)),
+          lon: parseFloat(String(lon)),
+          radiusKm: radius ? parseFloat(String(radius)) : 100
+        };
+      }
+
+      const searchLimit = limit ? parseInt(String(limit)) : 100;
+      const airports = globalAirportService.searchAirports(filter, searchLimit);
+
+      res.json({
+        success: true,
+        airports,
+        count: airports.length,
+        filter,
+        source: 'Global Airport Database'
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to search airports'
+      });
+    }
+  });
+
+  // Get major airports globally or by country
+  app.get('/api/airports/global/major', (req, res) => {
+    try {
+      const { country } = req.query;
+      const airports = globalAirportService.getMajorAirports(
+        country ? String(country) : undefined
+      );
+
+      res.json({
+        success: true,
+        airports,
+        count: airports.length,
+        filter: { type: ['large_airport', 'medium_airport'], scheduledService: true },
+        source: 'Global Airport Database'
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get major airports'
+      });
+    }
+  });
+
+  // Get airports near location
+  app.get('/api/airports/global/near/:lat/:lon', (req, res) => {
+    try {
+      const { lat, lon } = req.params;
+      const { radius, includeHeliports } = req.query;
+
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lon);
+      const radiusKm = radius ? parseFloat(String(radius)) : 100;
+      const includeHeli = includeHeliports === 'true';
+
+      const airports = globalAirportService.getAirportsNearLocation(
+        latitude, longitude, radiusKm, includeHeli
+      );
+
+      res.json({
+        success: true,
+        airports,
+        count: airports.length,
+        searchCenter: { latitude, longitude },
+        radiusKm,
+        includeHeliports: includeHeli,
+        source: 'Global Airport Database'
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to find airports near location'
+      });
+    }
+  });
+
+  // Get airports by country
+  app.get('/api/airports/global/country/:country', (req, res) => {
+    try {
+      const { country } = req.params;
+      const airports = globalAirportService.getAirportsByCountry(country);
+
+      res.json({
+        success: true,
+        airports,
+        count: airports.length,
+        country: country.toUpperCase(),
+        source: 'Global Airport Database'
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get airports by country'
+      });
+    }
+  });
+
+  // Get airport database statistics
+  app.get('/api/airports/global/statistics', (req, res) => {
+    try {
+      const stats = globalAirportService.getAirportStatistics();
+      
+      if (stats) {
+        res.json({
+          success: true,
+          statistics: stats,
+          loaded: globalAirportService.isLoaded(),
+          source: 'Global Airport Database'
+        });
+      } else {
+        res.status(503).json({
+          success: false,
+          error: 'Airport database not loaded',
+          loaded: false
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get airport statistics'
+      });
+    }
+  });
 
   return httpServer;
 }

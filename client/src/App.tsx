@@ -45,6 +45,7 @@ import AirportContactDashboard from "./components/AirportContactDashboard";
 import AIOpsDashboard from "./components/AIOpsDashboard";
 import DisruptionResponseConsole from "./components/DisruptionResponseConsole";
 import WhatIfScenarioEngine from "./components/WhatIfScenarioEngine";
+import GlobalAirportDatabase from "./components/GlobalAirportDatabase";
 
 
 
@@ -397,6 +398,22 @@ function App() {
 
                   </div>
                   
+                  {/* Database Section */}
+                  <div className="border-t border-gray-600 pt-3 mt-3">
+                    <div className="text-xs text-gray-400 mb-2 px-2">DATABASE</div>
+                    
+                    <button
+                      onClick={() => setViewMode('global-airports')}
+                      className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                        viewMode === 'global-airports' 
+                          ? 'bg-green-600 text-white' 
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Global Airport Database
+                    </button>
+                  </div>
+                  
                   {/* API Centre Section */}
                   <div className="border-t border-gray-600 pt-3 mt-3">
                     <div className="text-xs text-gray-400 mb-2 px-2">API CENTRE</div>
@@ -602,6 +619,12 @@ function App() {
             {viewMode === 'overview' && (
               <div className={`absolute top-0 ${isNavigationCollapsed ? 'left-16 md:left-20' : 'left-52 md:left-56'} right-0 bottom-0 pointer-events-auto transition-all duration-300`}>
                 <AIOpsDashboard />
+              </div>
+            )}
+
+            {viewMode === 'global-airports' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
+                <GlobalAirportDatabase />
               </div>
             )}
 
