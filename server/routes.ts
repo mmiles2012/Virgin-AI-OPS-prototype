@@ -28,6 +28,7 @@ import { tensorflowDelayService } from "./tensorflowIntegration";
 import { maintrolService } from "./maintrolIntegration";
 import { ukCaaDelayService as ukCaaAIService } from "./ukCaaIntegration";
 import { dualModelAIService } from "./dualModelIntegration";
+import adsbRoutes from "./adsbRoutes";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 import { weatherDataCollector } from "./weatherDataCollector";
@@ -8928,5 +8929,58 @@ function calculateUSUKCorrelation() {
     },
     timestamp: new Date().toISOString()
   };
+  // ADS-B Exchange Flight Tracking Routes
+  app.use('/api/adsb-exchange', adsbRoutes);
+
+  // Direct ADS-B Exchange Test Endpoint
+  app.get('/api/flights/adsb-exchange-test', async (req, res) => {
+    try {
+      const { adsbExchangeService } = await import('./adsbExchangeService.js');
+      
+      // Test API key configuration
+      const health = await adsbExchangeService.healthCheck();
+      
+      if (health.status === 'error') {
+        return res.json({
+          success: false,
+          error: health.error_message || 'ADS-B Exchange service error',
+          api_key_configured: health.api_key_configured,
+          timestamp: new Date().toISOString()
+        });
+      }
+      
+      // Test flight data retrieval
+      const flights = await adsbExchangeService.getUKFlights();
+      const virginFlights = await adsbExchangeService.getVirginAtlanticFlights();
+      const stats = await adsbExchangeService.getFlightStatistics();
+      
+      res.json({
+        success: true,
+        service_status: health.status,
+        api_key_configured: health.api_key_configured,
+        uk_flights: {
+          count: flights.length,
+          sample: flights.slice(0, 3) // First 3 flights for testing
+        },
+        virgin_atlantic_flights: {
+          count: virginFlights.length,
+          flights: virginFlights
+        },
+        statistics: stats,
+        data_source: 'ADS-B Exchange',
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error: any) {
+      console.error('ADS-B Exchange test error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  return server;
 }
 
