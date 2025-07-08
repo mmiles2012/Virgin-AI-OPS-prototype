@@ -33,7 +33,7 @@ import FinancialAnalyticsDashboard from "./components/FinancialAnalyticsDashboar
 import FleetSubstitutionCalculator from "./components/FleetSubstitutionCalculator";
 import SkyGateAirportDashboard from "./components/SkyGateAirportDashboard";
 import EmergencyCommDashboard from "./components/EmergencyCommDashboard";
-import EnhancedNetworkOTPDashboard from "./components/EnhancedNetworkOTPDashboard";
+import NetworkOTPDashboardSimple from "./components/NetworkOTPDashboardSimple";
 import VirginAtlanticFleetMonitor from "./components/VirginAtlanticFleetMonitor";
 import IntelligenceDashboard from "./components/IntelligenceDashboard";
 import GroundFuelMapViewer from "./components/GroundFuelMapViewer";
@@ -611,7 +611,7 @@ function App() {
                 <div className="h-full w-full p-4">
                   <div className="h-full bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 flex flex-col">
                     <div className="flex-1 overflow-y-auto">
-                      <EnhancedNetworkOTPDashboard />
+                      <NetworkOTPDashboardSimple />
                     </div>
                   </div>
                 </div>
