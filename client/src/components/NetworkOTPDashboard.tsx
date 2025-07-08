@@ -360,8 +360,8 @@ export default function NetworkOTPDashboard() {
       </div>
 
       {/* Network Content */}
-      <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="p-6">
+      <div className="flex-1 overflow-y-auto min-h-0 max-h-[calc(100vh-12rem)]">
+        <div className="p-6 pb-16">
         {networkView === 'overview' ? (
           // Network Overview
           <div className="space-y-6">
