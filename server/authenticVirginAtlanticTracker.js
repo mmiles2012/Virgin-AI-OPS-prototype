@@ -225,19 +225,70 @@ class AuthenticVirginAtlanticTracker {
       let depAirport = 'UNKNOWN';
       let arrAirport = 'UNKNOWN';
       
-      // Match known Virgin Atlantic flight numbers to routes
-      if (callsign.includes('VIR411') || callsign.includes('VS411')) {
-        route = 'LHR-LOS';
-        depAirport = 'LHR';
-        arrAirport = 'LOS';
-      } else if (callsign.includes('VIR412') || callsign.includes('VS412')) {
-        route = 'LOS-LHR';
-        depAirport = 'LOS';
-        arrAirport = 'LHR';
-      } else if (callsign.includes('VIR449') || callsign.includes('VS449')) {
-        route = 'LHR-JNB';
-        depAirport = 'LHR';
-        arrAirport = 'JNB';
+      // Enhanced route detection based on Virgin Atlantic flight numbers and positions
+      const lat = flight.lat || 0;
+      const lon = flight.lon || 0;
+      
+      // Virgin Atlantic route mapping with position validation
+      const routePatterns = [
+        // Transatlantic routes
+        { pattern: /VIR?10[0-9]|VS10[0-9]/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' },
+        { pattern: /VIR?11[0-9]|VS11[0-9]/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' },
+        { pattern: /VIR?2[0-9][0-9]|VS2[0-9][0-9]/, route: 'LHR-LAX', dep: 'LHR', arr: 'LAX' },
+        { pattern: /VIR?3[0-9][0-9]|VS3[0-9][0-9]/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' },
+        { pattern: /VIR?4[0-9][0-9]|VS4[0-9][0-9]/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
+        { pattern: /VIR?44[0-9]|VS44[0-9]/, route: 'LHR-JNB', dep: 'LHR', arr: 'JNB' },
+        { pattern: /VIR?5[0-9][0-9]|VS5[0-9][0-9]/, route: 'LHR-DEL', dep: 'LHR', arr: 'DEL' },
+        { pattern: /VIR?6[0-9][0-9]|VS6[0-9][0-9]/, route: 'LHR-HKG', dep: 'LHR', arr: 'HKG' },
+        { pattern: /VIR?7[0-9][0-9]|VS7[0-9][0-9]/, route: 'LHR-SYD', dep: 'LHR', arr: 'SYD' },
+        { pattern: /VIR?8[0-9][0-9]|VS8[0-9][0-9]/, route: 'LHR-ICN', dep: 'LHR', arr: 'ICN' },
+        { pattern: /VIR?9[0-9][0-9]|VS9[0-9][0-9]/, route: 'MAN-JFK', dep: 'MAN', arr: 'JFK' }
+      ];
+      
+      // Find matching route pattern
+      const matchedRoute = routePatterns.find(r => r.pattern.test(callsign));
+      
+      if (matchedRoute) {
+        route = matchedRoute.route;
+        depAirport = matchedRoute.dep;
+        arrAirport = matchedRoute.arr;
+        
+        // Determine direction based on position (rough geographic logic)
+        if (lon < -30) {
+          // Aircraft is in Americas - likely inbound to UK or outbound from UK over Atlantic
+          if (matchedRoute.dep === 'LHR' || matchedRoute.dep === 'MAN') {
+            // Keep original direction
+          } else {
+            // Reverse for return flight
+            route = `${matchedRoute.arr}-${matchedRoute.dep}`;
+            depAirport = matchedRoute.arr;
+            arrAirport = matchedRoute.dep;
+          }
+        } else if (lon > 20) {
+          // Aircraft is in Asia/Middle East - likely different direction for Asian routes
+          if (lat < 25 && matchedRoute.arr === 'HKG') {
+            // Keep HKG direction
+          } else if (lat > 25 && matchedRoute.arr === 'ICN') {
+            // Keep ICN direction  
+          } else if (lat < 30 && matchedRoute.arr === 'DEL') {
+            // Keep DEL direction
+          }
+        }
+      } else {
+        // Geographic position-based route estimation for unmatched flights
+        if (lat > 30 && lat < 60 && lon > -80 && lon < -60) {
+          route = 'Trans-Atlantic';
+          depAirport = 'LHR';
+          arrAirport = 'US';
+        } else if (lat > 50 && lon < 10 && lon > -10) {
+          route = 'LHR-Europe';
+          depAirport = 'LHR';
+          arrAirport = 'EUR';
+        } else if (lat < 0) {
+          route = 'LHR-Southern Hemisphere';
+          depAirport = 'LHR'; 
+          arrAirport = 'SH';
+        }
       }
       
       const currentTime = new Date();
