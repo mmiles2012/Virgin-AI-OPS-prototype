@@ -48,6 +48,7 @@ import { scenarioGeneratorService } from "./scenarioGeneratorService";
 import { routePositionService } from "./routePositionService";
 import { virginAtlanticFlightTracker } from "./routeMatcher";
 import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
+import mlOtpRoutes from "./mlOtpRoutes";
 import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
 import { globalAirportService } from "./globalAirportService";
 // Enhanced Weather Intelligence Service
@@ -5154,6 +5155,9 @@ print(json.dumps(weather))
 
   // SkyGate Airport Service Integration for Enhanced Diversion Support
   app.use('/api/skygate', skyGateRouter);
+
+  // ML OTP Training and Analytics Endpoints
+  app.use('/api/ml-otp', mlOtpRoutes);
 
   // Emergency Communication System Endpoints
   app.post('/api/emergency/declare', async (req, res) => {

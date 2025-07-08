@@ -1,0 +1,481 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from datetime import datetime, timedelta
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.cluster import KMeans
+import warnings
+warnings.filterwarnings('ignore')
+
+# Set random seed for reproducibility
+np.random.seed(42)
+
+class VirginAtlanticDelayAnalyzer:
+    def __init__(self):
+        self.models = {}
+        self.scalers = {}
+        self.encoders = {}
+        self.data = None
+        
+    def generate_sample_data(self, n_samples=10000):
+        """
+        Generate realistic Virgin Atlantic flight data for analysis
+        Based on their major routes: LHR-JFK, LHR-LAX, LHR-MCO, etc.
+        """
+        print("Generating sample Virgin Atlantic flight data...")
+        
+        # Virgin Atlantic major routes
+        routes = [
+            ('LHR', 'JFK'), ('LHR', 'LAX'), ('LHR', 'MCO'), ('LHR', 'MIA'),
+            ('LHR', 'BOS'), ('LHR', 'ATL'), ('LHR', 'SFO'), ('LHR', 'LAS'),
+            ('MAN', 'JFK'), ('MAN', 'LAX'), ('LHR', 'DEL'), ('LHR', 'BOM'),
+            ('LHR', 'JNB'), ('LHR', 'CPT'), ('LHR', 'SYD'), ('LHR', 'MEL')
+        ]
+        
+        # Aircraft types Virgin Atlantic uses
+        aircraft_types = ['A350-1000', 'A330-300', 'A330-200', 'B787-9', 'A340-600']
+        
+        # Generate data
+        data = []
+        start_date = datetime(2023, 1, 1)
+        
+        for i in range(n_samples):
+            # Random route
+            origin, destination = routes[np.random.randint(0, len(routes))]
+            
+            # Random date within the last 18 months
+            flight_date = start_date + timedelta(days=np.random.randint(0, 550))
+            
+            # Flight characteristics
+            aircraft = np.random.choice(aircraft_types)
+            scheduled_dep_hour = np.random.choice([6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 20, 21])
+            
+            # Weather impact (simplified)
+            weather_score = np.random.normal(5, 2)  # 1-10 scale, 10 = perfect weather
+            weather_score = max(1, min(10, weather_score))
+            
+            # Seasonal effects
+            month = flight_date.month
+            seasonal_delay = 0
+            if month in [12, 1, 2]:  # Winter - more delays
+                seasonal_delay = np.random.exponential(15)
+            elif month in [6, 7, 8]:  # Summer - peak travel, moderate delays
+                seasonal_delay = np.random.exponential(8)
+            else:
+                seasonal_delay = np.random.exponential(5)
+            
+            # Day of week effect
+            day_of_week = flight_date.weekday()  # 0 = Monday
+            if day_of_week in [4, 5, 6]:  # Friday, Saturday, Sunday
+                weekend_delay = np.random.exponential(5)
+            else:
+                weekend_delay = np.random.exponential(2)
+            
+            # Time of day effect
+            if scheduled_dep_hour < 8:  # Early flights
+                time_delay = np.random.exponential(3)
+            elif scheduled_dep_hour > 18:  # Evening flights
+                time_delay = np.random.exponential(8)
+            else:
+                time_delay = np.random.exponential(5)
+            
+            # Aircraft age effect (simplified)
+            if aircraft in ['A350-1000', 'B787-9']:  # Newer aircraft
+                aircraft_delay = np.random.exponential(2)
+            else:
+                aircraft_delay = np.random.exponential(5)
+            
+            # Route distance effect (simplified)
+            long_haul_routes = [('LHR', 'LAX'), ('LHR', 'SFO'), ('LHR', 'SYD'), ('LHR', 'MEL')]
+            if (origin, destination) in long_haul_routes:
+                distance_delay = np.random.exponential(7)
+            else:
+                distance_delay = np.random.exponential(4)
+            
+            # Calculate total delay
+            weather_impact = max(0, (10 - weather_score) * 2)
+            total_delay = seasonal_delay + weekend_delay + time_delay + aircraft_delay + distance_delay + weather_impact
+            
+            # Add some randomness and ensure non-negative
+            total_delay += np.random.normal(0, 5)
+            total_delay = max(0, total_delay)
+            
+            # Passenger load factor (affects boarding delays)
+            load_factor = np.random.normal(85, 10)
+            load_factor = max(60, min(100, load_factor))
+            
+            data.append({
+                'flight_date': flight_date,
+                'origin': origin,
+                'destination': destination,
+                'aircraft_type': aircraft,
+                'scheduled_dep_hour': scheduled_dep_hour,
+                'day_of_week': day_of_week,
+                'month': month,
+                'weather_score': weather_score,
+                'load_factor': load_factor,
+                'delay_minutes': total_delay
+            })
+        
+        self.data = pd.DataFrame(data)
+        print(f"Generated {len(self.data)} flight records")
+        return self.data
+    
+    def preprocess_data(self):
+        """Preprocess the data for ML modeling"""
+        print("Preprocessing data...")
+        
+        df = self.data.copy()
+        
+        # Create additional features
+        df['is_weekend'] = df['day_of_week'].isin([5, 6]).astype(int)
+        df['is_peak_hour'] = df['scheduled_dep_hour'].isin([7, 8, 17, 18, 19]).astype(int)
+        df['is_early_morning'] = (df['scheduled_dep_hour'] < 8).astype(int)
+        df['is_evening'] = (df['scheduled_dep_hour'] > 18).astype(int)
+        df['is_winter'] = df['month'].isin([12, 1, 2]).astype(int)
+        df['is_summer'] = df['month'].isin([6, 7, 8]).astype(int)
+        df['is_long_haul'] = df.apply(lambda x: 1 if (x['origin'], x['destination']) in 
+                                     [('LHR', 'LAX'), ('LHR', 'SFO'), ('LHR', 'SYD'), ('LHR', 'MEL')] 
+                                     else 0, axis=1)
+        df['weather_impact'] = 10 - df['weather_score']
+        
+        # Encode categorical variables
+        categorical_cols = ['origin', 'destination', 'aircraft_type']
+        for col in categorical_cols:
+            le = LabelEncoder()
+            df[f'{col}_encoded'] = le.fit_transform(df[col])
+            self.encoders[col] = le
+        
+        # Select features for modeling
+        feature_cols = [
+            'scheduled_dep_hour', 'day_of_week', 'month', 'weather_score', 'load_factor',
+            'is_weekend', 'is_peak_hour', 'is_early_morning', 'is_evening',
+            'is_winter', 'is_summer', 'is_long_haul', 'weather_impact',
+            'origin_encoded', 'destination_encoded', 'aircraft_type_encoded'
+        ]
+        
+        self.X = df[feature_cols]
+        self.y = df['delay_minutes']
+        self.feature_names = feature_cols
+        
+        return self.X, self.y
+    
+    def train_models(self):
+        """Train multiple ML models to predict flight delays"""
+        print("Training ML models...")
+        
+        # Split data
+        X_train, X_test, y_train, y_test = train_test_split(
+            self.X, self.y, test_size=0.2, random_state=42
+        )
+        
+        # Scale features
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+        self.scalers['standard'] = scaler
+        
+        # Define models
+        models = {
+            'Linear Regression': LinearRegression(),
+            'Random Forest': RandomForestRegressor(n_estimators=100, random_state=42),
+            'Gradient Boosting': GradientBoostingRegressor(n_estimators=100, random_state=42)
+        }
+        
+        # Train and evaluate models
+        results = {}
+        for name, model in models.items():
+            if name == 'Linear Regression':
+                model.fit(X_train_scaled, y_train)
+                y_pred = model.predict(X_test_scaled)
+            else:
+                model.fit(X_train, y_train)
+                y_pred = model.predict(X_test)
+            
+            # Calculate metrics
+            mae = mean_absolute_error(y_test, y_pred)
+            mse = mean_squared_error(y_test, y_pred)
+            rmse = np.sqrt(mse)
+            r2 = r2_score(y_test, y_pred)
+            
+            results[name] = {
+                'model': model,
+                'MAE': mae,
+                'RMSE': rmse,
+                'R2': r2,
+                'predictions': y_pred
+            }
+            
+            print(f"{name}:")
+            print(f"  MAE: {mae:.2f} minutes")
+            print(f"  RMSE: {rmse:.2f} minutes")
+            print(f"  R²: {r2:.3f}")
+            print()
+        
+        self.models = results
+        self.X_test = X_test
+        self.y_test = y_test
+        
+        return results
+    
+    def analyze_feature_importance(self):
+        """Analyze feature importance using Random Forest"""
+        print("Analyzing feature importance...")
+        
+        rf_model = self.models['Random Forest']['model']
+        importance = rf_model.feature_importances_
+        
+        feature_importance = pd.DataFrame({
+            'feature': self.feature_names,
+            'importance': importance
+        }).sort_values('importance', ascending=False)
+        
+        # Plot feature importance
+        plt.figure(figsize=(10, 8))
+        sns.barplot(data=feature_importance.head(10), y='feature', x='importance')
+        plt.title('Top 10 Most Important Features for Delay Prediction')
+        plt.xlabel('Feature Importance')
+        plt.tight_layout()
+        plt.show()
+        
+        return feature_importance
+    
+    def cluster_analysis(self):
+        """Perform clustering analysis to identify delay patterns"""
+        print("Performing clustering analysis...")
+        
+        # Prepare data for clustering
+        cluster_features = ['delay_minutes', 'weather_score', 'load_factor', 
+                          'scheduled_dep_hour', 'month']
+        cluster_data = self.data[cluster_features].copy()
+        
+        # Standardize features
+        scaler = StandardScaler()
+        cluster_data_scaled = scaler.fit_transform(cluster_data)
+        
+        # Perform K-means clustering
+        kmeans = KMeans(n_clusters=4, random_state=42)
+        clusters = kmeans.fit_predict(cluster_data_scaled)
+        
+        # Add cluster labels to original data
+        self.data['cluster'] = clusters
+        
+        # Analyze clusters
+        cluster_summary = self.data.groupby('cluster').agg({
+            'delay_minutes': ['mean', 'std', 'count'],
+            'weather_score': 'mean',
+            'load_factor': 'mean',
+            'scheduled_dep_hour': 'mean',
+            'month': 'mean'
+        }).round(2)
+        
+        print("Cluster Analysis Summary:")
+        print(cluster_summary)
+        print()
+        
+        # Visualize clusters
+        fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+        
+        # Delay by cluster
+        sns.boxplot(data=self.data, x='cluster', y='delay_minutes', ax=axes[0,0])
+        axes[0,0].set_title('Delay Minutes by Cluster')
+        
+        # Weather score by cluster
+        sns.boxplot(data=self.data, x='cluster', y='weather_score', ax=axes[0,1])
+        axes[0,1].set_title('Weather Score by Cluster')
+        
+        # Hour by cluster
+        sns.boxplot(data=self.data, x='cluster', y='scheduled_dep_hour', ax=axes[1,0])
+        axes[1,0].set_title('Scheduled Departure Hour by Cluster')
+        
+        # Load factor by cluster
+        sns.boxplot(data=self.data, x='cluster', y='load_factor', ax=axes[1,1])
+        axes[1,1].set_title('Load Factor by Cluster')
+        
+        plt.tight_layout()
+        plt.show()
+        
+        return cluster_summary
+    
+    def seasonal_analysis(self):
+        """Analyze seasonal delay patterns"""
+        print("Analyzing seasonal patterns...")
+        
+        # Monthly delay patterns
+        monthly_delays = self.data.groupby('month')['delay_minutes'].agg(['mean', 'std', 'count'])
+        
+        # Day of week patterns
+        dow_delays = self.data.groupby('day_of_week')['delay_minutes'].agg(['mean', 'std', 'count'])
+        dow_delays.index = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        
+        # Hour of day patterns
+        hour_delays = self.data.groupby('scheduled_dep_hour')['delay_minutes'].agg(['mean', 'std', 'count'])
+        
+        # Visualizations
+        fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+        
+        # Monthly patterns
+        monthly_delays['mean'].plot(kind='bar', ax=axes[0,0])
+        axes[0,0].set_title('Average Delay by Month')
+        axes[0,0].set_ylabel('Average Delay (minutes)')
+        axes[0,0].tick_params(axis='x', rotation=45)
+        
+        # Day of week patterns
+        dow_delays['mean'].plot(kind='bar', ax=axes[0,1])
+        axes[0,1].set_title('Average Delay by Day of Week')
+        axes[0,1].set_ylabel('Average Delay (minutes)')
+        axes[0,1].tick_params(axis='x', rotation=45)
+        
+        # Hour patterns
+        hour_delays['mean'].plot(ax=axes[1,0])
+        axes[1,0].set_title('Average Delay by Departure Hour')
+        axes[1,0].set_xlabel('Scheduled Departure Hour')
+        axes[1,0].set_ylabel('Average Delay (minutes)')
+        
+        # Weather impact
+        weather_delay = self.data.groupby(pd.cut(self.data['weather_score'], bins=5))['delay_minutes'].mean()
+        weather_delay.plot(kind='bar', ax=axes[1,1])
+        axes[1,1].set_title('Average Delay by Weather Score')
+        axes[1,1].set_ylabel('Average Delay (minutes)')
+        axes[1,1].tick_params(axis='x', rotation=45)
+        
+        plt.tight_layout()
+        plt.show()
+        
+        return {
+            'monthly': monthly_delays,
+            'day_of_week': dow_delays,
+            'hourly': hour_delays,
+            'weather': weather_delay
+        }
+    
+    def route_analysis(self):
+        """Analyze delay patterns by route"""
+        print("Analyzing route-specific patterns...")
+        
+        # Route delay analysis
+        route_delays = self.data.groupby(['origin', 'destination'])['delay_minutes'].agg([
+            'mean', 'std', 'count'
+        ]).round(2)
+        route_delays = route_delays.sort_values('mean', ascending=False)
+        
+        print("Top 10 Routes with Highest Average Delays:")
+        print(route_delays.head(10))
+        print()
+        
+        # Aircraft type analysis
+        aircraft_delays = self.data.groupby('aircraft_type')['delay_minutes'].agg([
+            'mean', 'std', 'count'
+        ]).round(2)
+        aircraft_delays = aircraft_delays.sort_values('mean', ascending=False)
+        
+        print("Aircraft Type Delay Analysis:")
+        print(aircraft_delays)
+        
+        # Visualizations
+        fig, axes = plt.subplots(1, 2, figsize=(15, 6))
+        
+        # Top routes by delay
+        top_routes = route_delays.head(8)
+        route_labels = [f"{idx[0]}-{idx[1]}" for idx in top_routes.index]
+        axes[0].bar(range(len(route_labels)), top_routes['mean'])
+        axes[0].set_xticks(range(len(route_labels)))
+        axes[0].set_xticklabels(route_labels, rotation=45)
+        axes[0].set_title('Top 8 Routes by Average Delay')
+        axes[0].set_ylabel('Average Delay (minutes)')
+        
+        # Aircraft delays
+        aircraft_delays['mean'].plot(kind='bar', ax=axes[1])
+        axes[1].set_title('Average Delay by Aircraft Type')
+        axes[1].set_ylabel('Average Delay (minutes)')
+        axes[1].tick_params(axis='x', rotation=45)
+        
+        plt.tight_layout()
+        plt.show()
+        
+        return route_delays, aircraft_delays
+    
+    def predict_delay(self, flight_params):
+        """Predict delay for a specific flight"""
+        # This function would take flight parameters and return predicted delay
+        # For demonstration, using the Random Forest model
+        
+        rf_model = self.models['Random Forest']['model']
+        
+        # Convert parameters to model format (simplified example)
+        # In practice, you'd need to properly encode categorical variables
+        prediction = rf_model.predict([flight_params])
+        
+        return prediction[0]
+    
+    def generate_insights(self):
+        """Generate key insights from the analysis"""
+        print("=== KEY INSIGHTS FROM VIRGIN ATLANTIC DELAY ANALYSIS ===")
+        print()
+        
+        # Overall statistics
+        avg_delay = self.data['delay_minutes'].mean()
+        median_delay = self.data['delay_minutes'].median()
+        print(f"Overall Average Delay: {avg_delay:.1f} minutes")
+        print(f"Median Delay: {median_delay:.1f} minutes")
+        print(f"Percentage of flights delayed >15 mins: {(self.data['delay_minutes'] > 15).mean()*100:.1f}%")
+        print(f"Percentage of flights delayed >60 mins: {(self.data['delay_minutes'] > 60).mean()*100:.1f}%")
+        print()
+        
+        # Seasonal insights
+        winter_delay = self.data[self.data['is_winter'] == 1]['delay_minutes'].mean()
+        summer_delay = self.data[self.data['is_summer'] == 1]['delay_minutes'].mean()
+        print(f"Winter months have {winter_delay - summer_delay:.1f} minutes more delay on average")
+        
+        # Time insights
+        weekend_delay = self.data[self.data['is_weekend'] == 1]['delay_minutes'].mean()
+        weekday_delay = self.data[self.data['is_weekend'] == 0]['delay_minutes'].mean()
+        print(f"Weekend flights have {weekend_delay - weekday_delay:.1f} minutes more delay on average")
+        
+        # Weather insights
+        bad_weather_delay = self.data[self.data['weather_score'] < 5]['delay_minutes'].mean()
+        good_weather_delay = self.data[self.data['weather_score'] >= 7]['delay_minutes'].mean()
+        print(f"Bad weather increases delays by {bad_weather_delay - good_weather_delay:.1f} minutes on average")
+        print()
+
+def main():
+    """Main execution function"""
+    print("Virgin Atlantic Flight Delay Analysis")
+    print("=" * 50)
+    
+    # Initialize analyzer
+    analyzer = VirginAtlanticDelayAnalyzer()
+    
+    # Generate and load data
+    data = analyzer.generate_sample_data(n_samples=8000)
+    
+    # Preprocess data
+    X, y = analyzer.preprocess_data()
+    
+    # Train models
+    model_results = analyzer.train_models()
+    
+    # Feature importance analysis
+    feature_importance = analyzer.analyze_feature_importance()
+    
+    # Clustering analysis
+    cluster_summary = analyzer.cluster_analysis()
+    
+    # Seasonal analysis
+    seasonal_patterns = analyzer.seasonal_analysis()
+    
+    # Route analysis
+    route_delays, aircraft_delays = analyzer.route_analysis()
+    
+    # Generate insights
+    analyzer.generate_insights()
+    
+    print("Analysis complete! Check the visualizations above for detailed patterns.")
+
+if __name__ == "__main__":
+    main()
