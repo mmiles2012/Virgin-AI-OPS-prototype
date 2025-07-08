@@ -288,8 +288,8 @@
 
             <div style="text-align: center;">
               <p style="color: #9ca3af; line-height: 1.6; margin-bottom: 20px;">
-                Mobile interface active. For full functionality including interactive maps, 
-                digital twins, and detailed analytics, please use desktop.
+                Emergency interface active due to React loading issue. 
+                This provides core AINO aviation monitoring functionality.
               </p>
               <button onclick="window.location.reload()" style="
                 background: #3b82f6;
@@ -306,16 +306,24 @@
         `;
       }
       
-      // Show fallback only for small mobile devices (not iPads/tablets)
-      if (isSmallMobileDevice()) {
-        setTimeout(() => {
-          // Check if React app loaded properly
-          if (!document.querySelector('#root').innerHTML.trim() || 
-              document.querySelector('#root').innerHTML === '<div></div>') {
-            showMobileFallback();
-          }
-        }, 5000); // Give React 5 seconds to load on mobile
-      }
+      // Make function globally available
+      window.showMobileFallback = showMobileFallback;
+      
+      // Universal fallback - activate on any device if React fails to load
+      setTimeout(() => {
+        // Check if React app loaded properly
+        const rootElement = document.querySelector('#root');
+        const hasContent = rootElement && rootElement.innerHTML.trim() && 
+                          rootElement.innerHTML !== '<div></div>' && 
+                          rootElement.children.length > 0;
+        
+        if (!hasContent) {
+          console.log('React failed to load, activating emergency interface');
+          showMobileFallback();
+        } else {
+          console.log('React loaded successfully');
+        }
+      }, 3000); // Give React 3 seconds to load
     </script>
     
     <script type="module" src="/src/main.tsx"></script>
