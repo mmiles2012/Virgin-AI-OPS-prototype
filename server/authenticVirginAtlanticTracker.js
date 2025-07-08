@@ -229,12 +229,23 @@ class AuthenticVirginAtlanticTracker {
       const lat = flight.lat || 0;
       const lon = flight.lon || 0;
       
-      // Virgin Atlantic route mapping with position validation
+      // Virgin Atlantic route mapping based on authentic S25 schedule
       const routePatterns = [
-        // Transatlantic routes
+        // Authentic S25 transatlantic routes from schedule
+        { pattern: /VIR?0?103|VS0?103/, route: 'LHR-ATL', dep: 'LHR', arr: 'ATL' },
+        { pattern: /VIR?0?104|VS0?104/, route: 'ATL-LHR', dep: 'ATL', arr: 'LHR' },
+        { pattern: /VIR?0?011|VS0?011/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' },
+        { pattern: /VIR?0?012|VS0?012/, route: 'BOS-LHR', dep: 'BOS', arr: 'LHR' },
+        { pattern: /VIR?0?157|VS0?157/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' },
+        { pattern: /VIR?0?158|VS0?158/, route: 'BOS-LHR', dep: 'BOS', arr: 'LHR' },
+        { pattern: /VIR?0?021|VS0?021/, route: 'LHR-IAD', dep: 'LHR', arr: 'IAD' },
+        { pattern: /VIR?0?022|VS0?022/, route: 'IAD-LHR', dep: 'IAD', arr: 'LHR' },
+        
+        // Common Virgin Atlantic routes (from existing knowledge)
         { pattern: /VIR?10[0-9]|VS10[0-9]/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' },
         { pattern: /VIR?11[0-9]|VS11[0-9]/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' },
         { pattern: /VIR?2[0-9][0-9]|VS2[0-9][0-9]/, route: 'LHR-LAX', dep: 'LHR', arr: 'LAX' },
+        { pattern: /VIR?25[0-9]|VS25[0-9]/, route: 'LHR-LAX', dep: 'LHR', arr: 'LAX' },
         { pattern: /VIR?3[0-9][0-9]|VS3[0-9][0-9]/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' },
         { pattern: /VIR?4[0-9][0-9]|VS4[0-9][0-9]/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
         { pattern: /VIR?44[0-9]|VS44[0-9]/, route: 'LHR-JNB', dep: 'LHR', arr: 'JNB' },
@@ -249,33 +260,12 @@ class AuthenticVirginAtlanticTracker {
       const matchedRoute = routePatterns.find(r => r.pattern.test(callsign));
       
       if (matchedRoute) {
+        // Use the matched route directly (flight numbers already indicate direction)
         route = matchedRoute.route;
         depAirport = matchedRoute.dep;
         arrAirport = matchedRoute.arr;
-        
-        // Determine direction based on position (rough geographic logic)
-        if (lon < -30) {
-          // Aircraft is in Americas - likely inbound to UK or outbound from UK over Atlantic
-          if (matchedRoute.dep === 'LHR' || matchedRoute.dep === 'MAN') {
-            // Keep original direction
-          } else {
-            // Reverse for return flight
-            route = `${matchedRoute.arr}-${matchedRoute.dep}`;
-            depAirport = matchedRoute.arr;
-            arrAirport = matchedRoute.dep;
-          }
-        } else if (lon > 20) {
-          // Aircraft is in Asia/Middle East - likely different direction for Asian routes
-          if (lat < 25 && matchedRoute.arr === 'HKG') {
-            // Keep HKG direction
-          } else if (lat > 25 && matchedRoute.arr === 'ICN') {
-            // Keep ICN direction  
-          } else if (lat < 30 && matchedRoute.arr === 'DEL') {
-            // Keep DEL direction
-          }
-        }
       } else {
-        // Geographic position-based route estimation for unmatched flights
+        // Enhanced geographic position-based route estimation for unmatched flights
         if (lat > 30 && lat < 60 && lon > -80 && lon < -60) {
           route = 'Trans-Atlantic';
           depAirport = 'LHR';
@@ -284,10 +274,26 @@ class AuthenticVirginAtlanticTracker {
           route = 'LHR-Europe';
           depAirport = 'LHR';
           arrAirport = 'EUR';
-        } else if (lat < 0) {
-          route = 'LHR-Southern Hemisphere';
+        } else if (lat < 0 && lon > 15 && lon < 35) {
+          route = 'LHR-JNB';
           depAirport = 'LHR'; 
-          arrAirport = 'SH';
+          arrAirport = 'JNB';
+        } else if (lat > 6 && lat < 7 && lon > 3 && lon < 4) {
+          route = 'LHR-LOS';
+          depAirport = 'LHR';
+          arrAirport = 'LOS';
+        } else if (lat > 25 && lat < 30 && lon > 76 && lon < 78) {
+          route = 'LHR-DEL';
+          depAirport = 'LHR';
+          arrAirport = 'DEL';
+        } else {
+          // For flights with registration but no clear callsign pattern
+          const registration = flight.r || flight.reg || '';
+          if (registration.startsWith('G-V')) {
+            route = 'Virgin Atlantic Service';
+            depAirport = 'LHR';
+            arrAirport = 'INTL';
+          }
         }
       }
       
