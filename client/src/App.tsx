@@ -607,8 +607,14 @@ function App() {
             )}
             
             {viewMode === 'otp-dashboard' && (
-              <div className="absolute top-4 left-56 right-4 bottom-16 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-y-auto">
-                <EnhancedNetworkOTPDashboard />
+              <div className="fixed inset-0 left-56 pointer-events-auto z-40">
+                <div className="h-full w-full p-4">
+                  <div className="h-full bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 flex flex-col">
+                    <div className="flex-1 overflow-y-auto">
+                      <EnhancedNetworkOTPDashboard />
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
             

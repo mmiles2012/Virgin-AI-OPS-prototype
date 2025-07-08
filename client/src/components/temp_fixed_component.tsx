@@ -715,4 +715,4 @@ export default function EnhancedNetworkOTPDashboard() {
 
   const chartData = Object.entries(delayBreakdownData).map(([category, count]) => ({ category, count }));
 
-}
+  return (
