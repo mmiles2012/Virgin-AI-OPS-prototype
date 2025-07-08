@@ -38,7 +38,7 @@ class AuthenticVirginAtlanticTracker {
     // Cache for performance and rate limiting
     this.lastFetch = 0;
     this.cachedFlights = [];
-    this.cacheTimeout = 1000; // 1 second - force immediate fresh API calls
+    this.cacheTimeout = 5000; // 5 seconds to allow multi-region searches
   }
 
   // Make HTTP request to ADS-B Exchange API
@@ -134,31 +134,54 @@ class AuthenticVirginAtlanticTracker {
     
     try {
       console.log('🔍 Fetching authentic Virgin Atlantic flights from ADS-B Exchange...');
-      // Use the correct RapidAPI endpoint format for regional data
-      const apiUrl = `${this.baseURL}/lat/51.5/lon/-0.1/dist/1500/`;
-      const data = await this.makeRequest(apiUrl);
       
-      if (!data || !data.ac) {
-        console.log('🔒 No aircraft data received - subscription may be required');
-        this.cachedFlights = [];
-        this.lastFetch = now;
-        return [];
+      // Search multiple regions to catch transatlantic flights
+      const searchRegions = [
+        { lat: 51.5, lon: -0.1, dist: 1500, name: 'London/Europe' },
+        { lat: 40.6892, lon: -74.1745, dist: 1500, name: 'New York' },
+        { lat: 42.3601, lon: -71.0589, dist: 1500, name: 'Boston' },
+        { lat: 34.0522, lon: -118.2437, dist: 1500, name: 'Los Angeles' },
+        { lat: 55.0, lon: -25.0, dist: 2000, name: 'Mid-Atlantic' }, // Over Atlantic Ocean
+        { lat: 50.0, lon: -40.0, dist: 2000, name: 'North Atlantic' } // Typical trans-Atlantic route
+      ];
+      
+      let allVirginFlights = [];
+      
+      for (const region of searchRegions) {
+        try {
+          const apiUrl = `${this.baseURL}/lat/${region.lat}/lon/${region.lon}/dist/${region.dist}/`;
+          console.log(`🌍 Searching ${region.name} region for Virgin Atlantic flights...`);
+          
+          const data = await this.makeRequest(apiUrl);
+          
+          if (data && data.ac) {
+            const regionVirginFlights = data.ac.filter(aircraft => this.isVirginAtlantic(aircraft));
+            if (regionVirginFlights.length > 0) {
+              console.log(`✈️  Found ${regionVirginFlights.length} Virgin Atlantic flights in ${region.name}`);
+              allVirginFlights = allVirginFlights.concat(regionVirginFlights);
+            }
+          }
+          
+          // Small delay to avoid overwhelming the API
+          await new Promise(resolve => setTimeout(resolve, 100));
+        } catch (regionError) {
+          console.log(`⚠️  Error searching ${region.name}:`, regionError.message);
+        }
       }
-
-      console.log(`📡 Total aircraft found: ${data.ac.length}`);
       
-      // Filter for Virgin Atlantic flights
-      const virginFlights = data.ac.filter(aircraft => 
-        this.isVirginAtlantic(aircraft)
+      // Remove duplicates based on ICAO24 identifier
+      const uniqueFlights = allVirginFlights.filter((flight, index, self) => 
+        index === self.findIndex(f => f.hex === flight.hex)
       );
       
-      console.log(`✈️  Virgin Atlantic flights found: ${virginFlights.length}`);
+      console.log(`📡 Total unique Virgin Atlantic flights found: ${uniqueFlights.length}`);
       
-      // Update cache
-      this.cachedFlights = virginFlights;
+      // Update cache with unique flights
+      this.cachedFlights = uniqueFlights;
       this.lastFetch = now;
       
-      return virginFlights;
+      return uniqueFlights;
+
     } catch (error) {
       console.error('❌ Error fetching Virgin Atlantic flights:', error.message);
       
