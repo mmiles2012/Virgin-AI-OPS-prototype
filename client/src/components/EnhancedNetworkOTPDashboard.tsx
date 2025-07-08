@@ -715,4 +715,205 @@ export default function EnhancedNetworkOTPDashboard() {
 
   const chartData = Object.entries(delayBreakdownData).map(([category, count]) => ({ category, count }));
 
+  return (
+    <div className="fixed inset-0 bg-gray-900 text-white overflow-y-auto" style={{ top: '60px' }}>
+      <div className="p-6">
+        {/* Hub Overview */}
+        {!selectedAirport ? (
+          <div>
+            <h2 className="text-3xl font-bold mb-6">Network Performance Overview</h2>
+            
+            {/* Primary Hubs */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <span>🏛️</span>
+                Primary Network Hubs
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {primaryHubsData.map((hub) => (
+                  <div
+                    key={hub.icao}
+                    onClick={() => setSelectedAirport(hub)}
+                    className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${ 
+                      selectedAirport?.icao === hub.icao 
+                        ? 'border-blue-500 bg-blue-500/20' 
+                        : `border-gray-700 hover:border-gray-600 ${getDelayImpactColor(hub.avgDelayMinutes)}`
+                    }`}
+                  >
+                    <div className="text-center mb-3">
+                      <h4 className="text-xl font-bold text-white">{hub.iata}</h4>
+                      <p className="text-sm text-gray-400">{hub.city}</p>
+                      <Badge className={`mt-2 ${getDelayImpactColor(hub.avgDelayMinutes)}`}>
+                        {hub.avgDelayMinutes === 0 ? 'ON TIME' : `${hub.avgDelayMinutes}min avg`}
+                      </Badge>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                      <div className="text-center">
+                        <div className="text-green-400 font-bold">{hub.onTimeRate.toFixed(1)}%</div>
+                        <div className="text-gray-400">On Time</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-blue-400 font-bold">{hub.totalFlights}</div>
+                        <div className="text-gray-400">Flights</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-1">
+                        {getTrendIcon(hub.trend)}
+                        <span className="text-xs text-gray-400 capitalize">{hub.trend}</span>
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {hub.historicalDelays.length} records
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Secondary Hubs */}
+            {secondaryHubsData.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <span>🛫</span>
+                  Secondary Network Hubs
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {secondaryHubsData.map((hub) => (
+                    <div
+                      key={hub.icao}
+                      onClick={() => setSelectedAirport(hub)}
+                      className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${ 
+                        selectedAirport?.icao === hub.icao 
+                          ? 'border-blue-500 bg-blue-500/20' 
+                          : `border-gray-700 hover:border-gray-600 ${getDelayImpactColor(hub.avgDelayMinutes)}`
+                      }`}
+                    >
+                      <div className="text-center mb-3">
+                        <h4 className="text-xl font-bold text-white">{hub.iata}</h4>
+                        <p className="text-sm text-gray-400">{hub.city}</p>
+                        <Badge className={`mt-2 ${getDelayImpactColor(hub.avgDelayMinutes)}`}>
+                          {hub.avgDelayMinutes === 0 ? 'ON TIME' : `${hub.avgDelayMinutes}min avg`}
+                        </Badge>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                        <div className="text-center">
+                          <div className="text-green-400 font-bold">{hub.onTimeRate.toFixed(1)}%</div>
+                          <div className="text-gray-400">On Time</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-blue-400 font-bold">{hub.totalFlights}</div>
+                          <div className="text-gray-400">Flights</div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-1">
+                          {getTrendIcon(hub.trend)}
+                          <span className="text-xs text-gray-400 capitalize">{hub.trend}</span>
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          {hub.historicalDelays.length} records
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          // Detailed View
+          selectedAirport && (
+            <Card className="bg-gray-800/50 border-gray-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-2xl font-bold text-white">{selectedAirport.name}</h3>
+                    <p className="text-gray-400">{selectedAirport.city} • {selectedAirport.iata}</p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedAirport(null)}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Performance Metrics */}
+                  <div className="lg:col-span-2">
+                    <h4 className="text-lg font-semibold text-white mb-4">Performance Metrics</h4>
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <div className="text-3xl font-bold text-green-400">{selectedAirport.onTimeRate.toFixed(1)}%</div>
+                        <div className="text-sm text-gray-400">On-Time Performance</div>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <div className="text-3xl font-bold text-yellow-400">{selectedAirport.avgDelayMinutes}min</div>
+                        <div className="text-sm text-gray-400">Average Delay</div>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <div className="text-3xl font-bold text-blue-400">{selectedAirport.totalFlights}</div>
+                        <div className="text-sm text-gray-400">Total Flights</div>
+                      </div>
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <div className="text-3xl font-bold text-red-400">{selectedAirport.cancelledFlights}</div>
+                        <div className="text-sm text-gray-400">Cancelled</div>
+                      </div>
+                    </div>
+
+                    {/* Recent Flights */}
+                    <h4 className="text-lg font-semibold text-white mb-4">Recent Flights</h4>
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                      {selectedAirport.recentFlights.map((flight, index) => (
+                        <div key={index} className="bg-gray-700/30 rounded-lg p-3">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <span className="font-medium text-white">{flight.flightNumber}</span>
+                              <span className="text-gray-400 ml-2">{flight.route}</span>
+                            </div>
+                            <div className="text-right">
+                              <div className={`text-sm font-medium ${
+                                flight.status === 'on-time' ? 'text-green-400' :
+                                flight.status === 'delayed' ? 'text-yellow-400' : 'text-red-400'
+                              }`}>
+                                {flight.status.toUpperCase()}
+                              </div>
+                              {flight.delayMinutes > 0 && (
+                                <div className="text-xs text-gray-400">+{flight.delayMinutes}min</div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Delay Analysis */}
+                  <div>
+                    <h4 className="text-lg font-semibold text-white mb-4">Delay Breakdown</h4>
+                    <div className="space-y-2">
+                      {Object.entries(selectedAirport.delayBreakdown).map(([category, count]) => (
+                        <div key={category} className="flex justify-between bg-gray-700/30 rounded p-2">
+                          <span className="text-sm text-gray-400">{category}:</span>
+                          <span className="text-white font-medium">{count}</span>
+                        </div>
+                      ))}
+                      {Object.keys(selectedAirport.delayBreakdown).length === 0 && (
+                        <div className="text-sm text-gray-400 text-center py-2">No delays reported</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )
+        )}
+      </div>
+    </div>
+  );
 }
