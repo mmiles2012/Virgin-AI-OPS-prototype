@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@fontsource/inter";
 
@@ -89,10 +89,97 @@ function App() {
   const [isEmergencyActive, setIsEmergencyActive] = useState(false);
   const [showApiWizard, setShowApiWizard] = useState(false);
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Mobile detection and auto-collapse
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setIsNavigationCollapsed(true);
+      }
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Mobile fallback component
+  if (isMobile) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <div 
+          className="bg-blue-900 text-white overflow-auto"
+          style={{ 
+            position: 'fixed', 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            bottom: 0,
+            touchAction: 'manipulation',
+            zIndex: 9999
+          }}
+        >
+          <div className="p-4">
+            <div className="text-center mb-4">
+              <h1 className="text-white font-bold text-xl">AINO</h1>
+              <p className="text-blue-300 text-sm">Aviation Intelligence Platform</p>
+            </div>
+            
+            <div className="space-y-3">
+              {['overview', 'map', 'boeing787-twin', 'airbus-ops', 'delay-prediction'].map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode as ViewMode)}
+                  className={`w-full p-3 rounded text-left transition-colors touch-manipulation ${
+                    viewMode === mode 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-700 text-gray-300 active:bg-gray-600'
+                  }`}
+                >
+                  {mode.charAt(0).toUpperCase() + mode.slice(1).replace('-', ' ')}
+                </button>
+              ))}
+            </div>
+            
+            <div className="mt-6">
+              {viewMode === 'overview' && (
+                <div className="bg-black/40 rounded-lg p-4 min-h-96">
+                  <AIOpsDashboard />
+                </div>
+              )}
+              {viewMode === 'map' && (
+                <div className="bg-black/40 rounded-lg p-4 min-h-96">
+                  <p className="text-white">Map view - please use desktop for full functionality</p>
+                </div>
+              )}
+              {viewMode === 'boeing787-twin' && (
+                <div className="bg-white rounded-lg overflow-hidden">
+                  <Boeing787DigitalTwin />
+                </div>
+              )}
+              {viewMode === 'airbus-ops' && (
+                <div className="bg-white rounded-lg overflow-hidden">
+                  <AirbusDigitalTwins />
+                </div>
+              )}
+              {viewMode === 'delay-prediction' && (
+                <div className="bg-white rounded-lg overflow-hidden">
+                  <HubDelayPredictionDashboard />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </QueryClientProvider>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="w-full min-h-screen relative bg-gradient-to-b from-blue-900 to-blue-950">
+      <div className="w-full min-h-screen relative bg-gradient-to-b from-blue-900 to-blue-950" style={{ touchAction: 'manipulation' }}>
         {/* UI Overlay */}
         <div className="absolute inset-0 pointer-events-none">
           {/* Left Sidebar Navigation */}

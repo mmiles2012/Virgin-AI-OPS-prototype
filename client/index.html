@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>AINO Aviation Intelligence Platform</title>
     <meta name="description" content="Advanced flight training simulator for Boeing 787 operations and emergency scenarios" />
     <style>
@@ -167,6 +167,26 @@
       .aviation-scrollable::-webkit-scrollbar-thumb {
         background: rgba(59, 130, 246, 0.5);
         border-radius: 2px;
+      }
+
+      /* Emergency mobile fixes for white screen */
+      @media screen and (max-width: 768px) {
+        body, html, #root {
+          position: fixed !important;
+          width: 100% !important;
+          height: 100% !important;
+          overflow: hidden !important;
+          background: #1e3a8a !important; /* blue-900 fallback */
+        }
+        
+        .w-full {
+          width: 100% !important;
+        }
+        
+        .min-h-screen {
+          min-height: 100vh !important;
+          height: 100vh !important;
+        }
       }
 
       /* Aviation-specific styling */
