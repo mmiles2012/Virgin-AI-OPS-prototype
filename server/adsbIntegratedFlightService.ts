@@ -59,8 +59,9 @@ class ADSBIntegratedFlightService {
   async getEnhancedFlightData(): Promise<EnhancedFlightData[]> {
     const now = Date.now();
     
-    // Check cache first
-    if (now - this.lastFetch < this.cacheTimeout && this.cache.has('enhanced_flights')) {
+    // Check cache first (extend cache to reduce rate limiting)
+    if (now - this.lastFetch < (this.cacheTimeout * 4) && this.cache.has('enhanced_flights')) {
+      console.log('🔍 Using cached enhanced Virgin Atlantic flights to avoid rate limiting');
       return this.cache.get('enhanced_flights') || [];
     }
 

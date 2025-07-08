@@ -6,8 +6,9 @@ const fs = require('fs');
 
 class AuthenticVirginAtlanticTracker {
   constructor() {
-    // ADS-B Exchange API endpoint
-    this.baseURL = 'https://adsbexchange.com/api/aircraft/json';
+    // ADS-B Exchange API endpoint via RapidAPI
+    this.baseURL = 'https://adsbexchange-com1.p.rapidapi.com/v2';
+    this.rapidApiKey = process.env.RAPIDAPI_KEY || '';
     
     // Virgin Atlantic flight patterns
     this.virginCallsigns = [
@@ -34,10 +35,10 @@ class AuthenticVirginAtlanticTracker {
       'G-VMAP'  // Known Boeing 787-9
     ];
     
-    // Cache for performance
+    // Cache for performance and rate limiting
     this.lastFetch = 0;
     this.cachedFlights = [];
-    this.cacheTimeout = 30000; // 30 seconds
+    this.cacheTimeout = 120000; // 2 minutes to reduce rate limiting
   }
 
   // Make HTTP request to ADS-B Exchange API
@@ -46,7 +47,9 @@ class AuthenticVirginAtlanticTracker {
       https.get(url, {
         headers: {
           'User-Agent': 'AINO-Aviation-Platform/1.0',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'X-RapidAPI-Key': this.rapidApiKey,
+          'X-RapidAPI-Host': 'adsbexchange-com1.p.rapidapi.com'
         }
       }, (response) => {
         let data = '';
@@ -58,6 +61,21 @@ class AuthenticVirginAtlanticTracker {
         response.on('end', () => {
           try {
             const jsonData = JSON.parse(data);
+            
+            // Handle subscription error
+            if (jsonData.message === 'You are not subscribed to this API.') {
+              console.log('🔒 ADS-B Exchange subscription required for authentic flight data');
+              resolve({ ac: [] }); // Return empty aircraft array instead of throwing error
+              return;
+            }
+            
+            // Handle rate limiting
+            if (jsonData.message === 'Too many requests') {
+              console.log('⏱️ ADS-B Exchange rate limit reached - will retry later');
+              resolve({ ac: [] }); // Return empty array to avoid errors
+              return;
+            }
+            
             resolve(jsonData);
           } catch (error) {
             reject(new Error(`JSON parsing error: ${error.message}`));
@@ -96,24 +114,33 @@ class AuthenticVirginAtlanticTracker {
   async getVirginAtlanticFlights() {
     const now = Date.now();
     
-    // Use cache if recent
-    if (now - this.lastFetch < this.cacheTimeout && this.cachedFlights.length > 0) {
-      console.log(`ADS-B Exchange: Using cached Virgin Atlantic flights (${this.cachedFlights.length} flights)`);
+    // Use cache if recent (extended cache time to avoid rate limiting)
+    if (now - this.lastFetch < this.cacheTimeout) {
+      if (this.cachedFlights.length > 0) {
+        console.log(`ADS-B Exchange: Using cached Virgin Atlantic flights (${this.cachedFlights.length} flights)`);
+      } else {
+        console.log(`ADS-B Exchange: Using cached empty result (rate limit cooldown)`);
+      }
       return this.cachedFlights;
     }
     
     try {
       console.log('🔍 Fetching authentic Virgin Atlantic flights from ADS-B Exchange...');
-      const data = await this.makeRequest(this.baseURL);
+      // Use the correct RapidAPI endpoint format for regional data
+      const apiUrl = `${this.baseURL}/lat/51.5/lon/-0.1/dist/500/`;
+      const data = await this.makeRequest(apiUrl);
       
-      if (!data || !data.aircraft) {
-        throw new Error('No aircraft data received from ADS-B Exchange');
+      if (!data || !data.ac) {
+        console.log('🔒 No aircraft data received - subscription may be required');
+        this.cachedFlights = [];
+        this.lastFetch = now;
+        return [];
       }
 
-      console.log(`📡 Total aircraft found: ${data.aircraft.length}`);
+      console.log(`📡 Total aircraft found: ${data.ac.length}`);
       
       // Filter for Virgin Atlantic flights
-      const virginFlights = data.aircraft.filter(aircraft => 
+      const virginFlights = data.ac.filter(aircraft => 
         this.isVirginAtlantic(aircraft)
       );
       

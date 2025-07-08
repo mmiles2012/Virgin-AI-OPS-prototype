@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertTriangle, Plane, Activity, Cloud } from "lucide-react";
+import { AlertTriangle, Plane, Activity, Cloud, Radio, Radar, MapPin } from "lucide-react";
 import ProfessionalSatelliteMap from "./ProfessionalSatelliteMap";
 import PassengerImpactModelingComponent from "./PassengerImpactModelingComponent";
+import ADSBSubscriptionStatus from "./ADSBSubscriptionStatus";
 
 
 interface NetworkHealthData {
@@ -16,6 +17,29 @@ interface DigitalTwinAlert {
   id: string;
   message: string;
   severity: 'high' | 'medium' | 'low';
+}
+
+interface ADSBFlightData {
+  flight_number: string;
+  airline: string;
+  aircraft_type: string;
+  registration?: string;
+  icao24?: string;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  velocity: number;
+  heading: number;
+  data_source: string;
+  authentic_tracking: boolean;
+  last_seen?: number;
+}
+
+interface FlightStats {
+  authentic_flights: number;
+  simulated_flights: number;
+  authentic_percentage: number;
+  data_sources: string[];
 }
 
 export default function AIOpsDashboard() {
@@ -44,6 +68,52 @@ export default function AIOpsDashboard() {
       severity: 'medium'
     }
   ]);
+
+  const [adsbFlightData, setAdsbFlightData] = useState<ADSBFlightData[]>([]);
+  const [flightStats, setFlightStats] = useState<FlightStats>({
+    authentic_flights: 0,
+    simulated_flights: 0,
+    authentic_percentage: 0,
+    data_sources: []
+  });
+  const [isLoadingFlights, setIsLoadingFlights] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<string>('');
+
+  // Fetch ADS-B Exchange flight data
+  const fetchADSBData = async () => {
+    setIsLoadingFlights(true);
+    try {
+      const response = await fetch('/api/aviation/enhanced-flight-data');
+      if (response.ok) {
+        const data = await response.json();
+        setAdsbFlightData(data.flights || []);
+        setFlightStats({
+          authentic_flights: data.authentic_flight_count || 0,
+          simulated_flights: data.simulated_flight_count || 0,
+          authentic_percentage: data.authentic_data_percentage || 0,
+          data_sources: data.data_sources || []
+        });
+        setLastUpdate(new Date().toLocaleTimeString());
+      }
+    } catch (error) {
+      console.error('Error fetching ADS-B data:', error);
+    } finally {
+      setIsLoadingFlights(false);
+    }
+  };
+
+  useEffect(() => {
+    // Initial data fetch
+    fetchADSBData();
+    
+    // Set up automatic refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchADSBData();
+    }, 30000);
+    
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     // Fetch real-time data from AINO APIs
@@ -111,8 +181,11 @@ export default function AIOpsDashboard() {
 
         {/* Right Column - Takes up 1/4 width, allows scrolling */}
         <div className="w-1/4 space-y-4 overflow-y-auto max-h-screen">
-        {/* Network Health */}
-        <Card className="bg-slate-800 border-slate-700">
+          {/* ADS-B Subscription Status */}
+          <ADSBSubscriptionStatus />
+          
+          {/* Network Health */}
+          <Card className="bg-slate-800 border-slate-700">
           <CardContent className="p-4">
             <h2 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
               <Activity className="w-4 h-4" />
@@ -185,6 +258,90 @@ export default function AIOpsDashboard() {
                 <span>4h</span>
                 <span>6h</span>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* ADS-B Exchange Flight Statistics */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <h2 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
+              <Radio className="w-4 h-4" />
+              ADS-B Exchange Data
+            </h2>
+            {isLoadingFlights ? (
+              <div className="text-center py-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>
+                <p className="text-xs text-slate-400 mt-1">Loading flight data...</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-300 text-sm">Authentic Flights</span>
+                  <span className="text-green-400 font-bold">{flightStats.authentic_flights}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-300 text-sm">Simulated Flights</span>
+                  <span className="text-blue-400 font-bold">{flightStats.simulated_flights}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-300 text-sm">Authentic Data</span>
+                  <span className="text-yellow-400 font-bold">{flightStats.authentic_percentage}%</span>
+                </div>
+                <div className="mt-2 pt-2 border-t border-slate-600">
+                  <span className="text-xs text-slate-400">Data Sources:</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {flightStats.data_sources.map(source => (
+                      <span key={source} className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">
+                        {source}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Live Flight Data */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-4">
+            <h2 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
+              <Plane className="w-4 h-4" />
+              Live Virgin Atlantic Fleet
+            </h2>
+            {adsbFlightData.length === 0 && !isLoadingFlights && (
+              <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-3 mb-3">
+                <div className="flex items-center gap-2 text-orange-300 text-sm">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span>ADS-B Exchange API subscription required for real-time flight data</span>
+                </div>
+              </div>
+            )}
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {adsbFlightData.slice(0, 3).map(flight => (
+                <div key={flight.icao24 || flight.flight_number} className="bg-slate-700 rounded-lg p-2">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-white font-medium text-sm">{flight.flight_number}</p>
+                      <p className="text-slate-300 text-xs">{flight.aircraft_type}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-slate-300 text-xs">{flight.altitude}ft</p>
+                      <p className="text-slate-300 text-xs">{flight.velocity}kt</p>
+                    </div>
+                  </div>
+                  <div className="mt-1">
+                    <span className={`text-xs px-2 py-1 rounded ${
+                      flight.authentic_tracking 
+                        ? 'bg-green-900 text-green-300' 
+                        : 'bg-blue-900 text-blue-300'
+                    }`}>
+                      {flight.authentic_tracking ? 'Authentic' : 'Simulated'}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>

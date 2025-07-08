@@ -29,6 +29,7 @@ import { maintrolService } from "./maintrolIntegration";
 import { ukCaaDelayService as ukCaaAIService } from "./ukCaaIntegration";
 import { dualModelAIService } from "./dualModelIntegration";
 import adsbRoutes from "./adsbRoutes";
+import { adsbRapidApiRoutes } from "./adsbRapidApiRoutes";
 import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 import { weatherDataCollector } from "./weatherDataCollector";
@@ -1723,29 +1724,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // New ADS-B Integrated Flight Service Endpoint
+  // Enhanced ADS-B Flight Service Endpoint with RapidAPI Integration
   app.get('/api/aviation/enhanced-flight-data', async (req, res) => {
     try {
-      const enhancedFlights = await adsbIntegratedFlightService.getEnhancedFlightData();
-      const stats = await adsbIntegratedFlightService.getFlightStats();
+      console.log('🔍 Virgin Atlantic flights - using ADS-B Exchange RapidAPI service');
       
-      res.json({
-        success: true,
-        flights: enhancedFlights,
-        count: enhancedFlights.length,
-        timestamp: new Date().toISOString(),
-        source: 'ADS-B Exchange Enhanced Service',
-        statistics: stats,
-        note: `Enhanced flight data with ${stats.authentic_percentage}% authentic ADS-B tracking`
-      });
+      // Try RapidAPI first
+      const { adsbRapidApiService } = await import('./adsbRapidApiService');
+      const rapidApiFlights = await adsbRapidApiService.getVirginAtlanticFlights();
+      
+      if (rapidApiFlights.length > 0) {
+        console.log(`✅ Found ${rapidApiFlights.length} authentic Virgin Atlantic flights from RapidAPI`);
+        res.json({
+          success: true,
+          flights: rapidApiFlights,
+          authentic_flight_count: rapidApiFlights.length,
+          simulated_flight_count: 0,
+          authentic_data_percentage: 100,
+          data_sources: ['ADS-B Exchange (RapidAPI)'],
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        console.log('⚠️ No authentic flights from RapidAPI, using simulated fallback');
+        // Use simulated Virgin Atlantic data as fallback
+        const simulatedFlights = await virginAtlanticService.getSimulatedFlights();
+        
+        res.json({
+          success: true,
+          flights: simulatedFlights,
+          authentic_flight_count: 0,
+          simulated_flight_count: simulatedFlights.length,
+          authentic_data_percentage: 0,
+          data_sources: ['Simulated'],
+          timestamp: new Date().toISOString()
+        });
+      }
       
     } catch (error) {
       console.error('Enhanced flight data error:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to fetch enhanced flight data',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      });
+      
+      // Fallback to simulated data on error
+      try {
+        const simulatedFlights = await virginAtlanticService.getSimulatedFlights();
+        res.json({
+          success: true,
+          flights: simulatedFlights,
+          authentic_flight_count: 0,
+          simulated_flight_count: simulatedFlights.length,
+          authentic_data_percentage: 0,
+          data_sources: ['Simulated'],
+          error_note: 'Using simulated data due to API error',
+          timestamp: new Date().toISOString()
+        });
+      } catch (fallbackError) {
+        res.status(500).json({
+          success: false,
+          error: 'Failed to fetch enhanced flight data',
+          message: error instanceof Error ? error.message : 'Unknown error',
+          flights: [],
+          authentic_flight_count: 0,
+          simulated_flight_count: 0,
+          authentic_data_percentage: 0,
+          data_sources: []
+        });
+      }
     }
   });
 
@@ -8876,8 +8918,24 @@ function calculateUSUKCorrelation() {
     },
     timestamp: new Date().toISOString()
   };
+  // ADS-B Exchange Health Check Endpoint
+  app.get('/api/adsb/health', async (req, res) => {
+    try {
+      const health = await adsbRapidApiService.healthCheck();
+      res.json(health);
+    } catch (error: any) {
+      res.status(500).json({
+        healthy: false,
+        message: 'Health check failed',
+        subscription_active: false,
+        error: error.message
+      });
+    }
+  });
+
   // ADS-B Exchange Flight Tracking Routes
   app.use('/api/adsb-exchange', adsbRoutes);
+  app.use('/api/adsb-rapid', adsbRapidApiRoutes);
 
   // Direct ADS-B Exchange Test Endpoint
   app.get('/api/flights/adsb-exchange-test', async (req, res) => {
