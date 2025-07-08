@@ -48,6 +48,7 @@ import WhatIfScenarioEngine from "./components/WhatIfScenarioEngine";
 import EnhancedAirportFacilities from "./components/EnhancedAirportFacilities";
 import DataAuthenticityDashboard from "./components/DataAuthenticityDashboard";
 import EnhancedNetworkOTPDashboard from "./components/EnhancedNetworkOTPDashboard";
+import AdsxExchangeDataDashboard from "./components/AdsxExchangeDataDashboard";
 import VisaRequirementsDashboard from "./components/VisaRequirementsDashboard";
 // import GlobalAirportDatabase from "./components/GlobalAirportDatabase";
 
@@ -275,6 +276,17 @@ function App() {
                     }`}
                   >
                     Data Authenticity
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('adsb-exchange')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'adsb-exchange' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    ADS-B Exchange
                   </button>
                   
                   <button
@@ -674,6 +686,12 @@ function App() {
             {viewMode === 'data-authenticity' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
                 <DataAuthenticityDashboard />
+              </div>
+            )}
+            
+            {viewMode === 'adsb-exchange' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+                <AdsxExchangeDataDashboard />
               </div>
             )}
 
