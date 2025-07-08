@@ -539,19 +539,19 @@ function App() {
             )}
             
             {viewMode === 'disruption-response' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
                 <DisruptionResponseConsole />
               </div>
             )}
             
             {viewMode === 'operations' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-hidden">
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto">
                 <VirginAtlanticFleetMonitor />
               </div>
             )}
 
             {viewMode === 'what-if-scenarios' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
                 <WhatIfScenarioEngine />
               </div>
             )}
@@ -571,7 +571,7 @@ function App() {
             )}
             
             {viewMode === 'boeing787-twin' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white overflow-y-auto">
                 <Boeing787DigitalTwin />
               </div>
             )}
@@ -583,37 +583,37 @@ function App() {
             )}
             
             {viewMode === 'airbus-ops' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white overflow-y-auto">
                 <AirbusDigitalTwins />
               </div>
             )}
             
             {viewMode === 'financial-analytics' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white overflow-y-auto">
                 <FinancialAnalyticsDashboard />
               </div>
             )}
             
             {viewMode === 'fleet-substitution' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
                 <FleetSubstitutionCalculator />
               </div>
             )}
             
             {viewMode === 'skygate-airports' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
+              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto">
                 <SkyGateAirportDashboard />
               </div>
             )}
             
             {viewMode === 'otp-dashboard' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-hidden">
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-y-auto">
                 <EnhancedNetworkOTPDashboard />
               </div>
             )}
             
             {viewMode === 'fleet-monitor' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto">
                 <VirginAtlanticFleetMonitor />
               </div>
             )}
@@ -641,19 +641,19 @@ function App() {
             )}
 
             {viewMode === 'overview' && (
-              <div className={`absolute top-0 ${isNavigationCollapsed ? 'left-16 md:left-20' : 'left-52 md:left-56'} right-0 bottom-0 pointer-events-auto transition-all duration-300`}>
+              <div className={`absolute top-0 ${isNavigationCollapsed ? 'left-16 md:left-20' : 'left-52 md:left-56'} right-0 bottom-0 pointer-events-auto transition-all duration-300 overflow-y-auto`}>
                 <AIOpsDashboard />
               </div>
             )}
             
             {viewMode === 'enhanced-facilities' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-hidden">
+              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto">
                 <EnhancedAirportFacilities />
               </div>
             )}
             
             {viewMode === 'data-authenticity' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
                 <DataAuthenticityDashboard />
               </div>
             )}
