@@ -1126,7 +1126,7 @@ export default function EnhancedNetworkOTPDashboard() {
                           <span className="text-xs text-gray-400 capitalize">{hub.trend}</span>
                         </div>
                         <div className="text-xs text-gray-400">
-                          {hub.historicalDelays.length} records
+                          {hub.recentFlights?.length || 0} flights
                         </div>
                       </div>
                     </div>

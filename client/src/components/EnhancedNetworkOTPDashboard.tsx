@@ -61,7 +61,6 @@ interface HubPerformance {
   recentFlights: FlightPerformance[];
   lastUpdated: string;
   contact?: AirportContact;
-  historicalDelays: FlightDelay[];
   delayBreakdown: Record<string, number>;
 }
 
@@ -543,7 +542,6 @@ export default function EnhancedNetworkOTPDashboard() {
         recentFlights,
         lastUpdated: new Date().toISOString(),
         contact,
-        historicalDelays: airportDelays,
         delayBreakdown
       });
     });
@@ -859,7 +857,7 @@ export default function EnhancedNetworkOTPDashboard() {
                           <span className="text-xs text-gray-400 capitalize">{hub.trend}</span>
                         </div>
                         <div className="text-xs text-gray-400">
-                          {hub.historicalDelays.length} records
+                          {hub.recentFlights?.length || 0} flights
                         </div>
                       </div>
                     </div>
