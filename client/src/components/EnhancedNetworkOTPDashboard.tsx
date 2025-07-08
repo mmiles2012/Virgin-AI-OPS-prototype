@@ -774,9 +774,9 @@ export default function EnhancedNetworkOTPDashboard() {
                 {primaryHubsData.map((hub) => (
                   <div
                     key={hub.icao}
-                    onClick={() => setSelectedAirport(hub)}
+                    onClick={() => setSelectedAirport(hub.iata)}
                     className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${ 
-                      selectedAirport?.icao === hub.icao 
+                      selectedAirport === hub.iata 
                         ? 'border-blue-500 bg-blue-500/20' 
                         : `border-gray-700 hover:border-gray-600 ${getDelayImpactColor(hub.avgDelayMinutes)}`
                     }`}
@@ -825,9 +825,9 @@ export default function EnhancedNetworkOTPDashboard() {
                   {secondaryHubsData.map((hub) => (
                     <div
                       key={hub.icao}
-                      onClick={() => setSelectedAirport(hub)}
+                      onClick={() => setSelectedAirport(hub.iata)}
                       className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${ 
-                        selectedAirport?.icao === hub.icao 
+                        selectedAirport === hub.iata 
                           ? 'border-blue-500 bg-blue-500/20' 
                           : `border-gray-700 hover:border-gray-600 ${getDelayImpactColor(hub.avgDelayMinutes)}`
                       }`}
