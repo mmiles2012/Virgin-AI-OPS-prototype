@@ -127,7 +127,7 @@ class AuthenticVirginAtlanticTracker {
     try {
       console.log('🔍 Fetching authentic Virgin Atlantic flights from ADS-B Exchange...');
       // Use the correct RapidAPI endpoint format for regional data
-      const apiUrl = `${this.baseURL}/lat/51.5/lon/-0.1/dist/500/`;
+      const apiUrl = `${this.baseURL}/lat/51.5/lon/-0.1/dist/1500/`;
       const data = await this.makeRequest(apiUrl);
       
       if (!data || !data.ac) {
@@ -191,6 +191,14 @@ class AuthenticVirginAtlanticTracker {
       } else if (callsign.includes('VIR412') || callsign.includes('VS412')) {
         route = 'LOS-LHR';
         depAirport = 'LOS';
+        arrAirport = 'LHR';
+      } else if (callsign.includes('VIR449') || callsign.includes('VS449')) {
+        route = 'LHR-BKK';
+        depAirport = 'LHR';
+        arrAirport = 'BKK';
+      } else if (callsign.includes('VIR450') || callsign.includes('VS450')) {
+        route = 'BKK-LHR';
+        depAirport = 'BKK';
         arrAirport = 'LHR';
       }
       
