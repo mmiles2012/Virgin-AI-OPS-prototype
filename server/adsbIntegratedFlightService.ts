@@ -81,14 +81,9 @@ class ADSBIntegratedFlightService {
           authentic_tracking: true
         }));
       } else {
-        console.log('No authentic flights found, using simulated Virgin Atlantic data as fallback');
-        // Step 2: Only if no authentic flights, use simulated data
-        const simulatedFlights = await this.getSimulatedFlights();
-        enhancedFlights = simulatedFlights.map((flight: any) => ({
-          ...flight,
-          data_source: 'Simulated (Virgin Atlantic Schedule)',
-          authentic_tracking: false
-        }));
+        console.log('❌ No authentic Virgin Atlantic flights detected by ADS-B Exchange');
+        console.log('📡 Returning empty results - showing only real flights that are actually airborne');
+        enhancedFlights = [];
       }
       
       // Update cache
@@ -102,12 +97,12 @@ class ADSBIntegratedFlightService {
     } catch (error) {
       console.error('Error in enhanced flight service:', error);
       
-      // Fallback to simulated data
-      const simulatedFlights = await this.getSimulatedFlights();
-      this.cache.set('enhanced_flights', simulatedFlights);
+      // Return empty array instead of simulated data for authentic operations
+      console.log('🔍 API error - returning empty results (authentic data only mode)');
+      this.cache.set('enhanced_flights', []);
       this.lastFetch = now;
       
-      return simulatedFlights;
+      return [];
     }
   }
 

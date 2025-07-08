@@ -169,8 +169,8 @@ class AuthenticVirginAtlanticTracker {
     return flights.map((flight, index) => {
       const callsign = flight.flight?.trim() || `VIR${index + 1}`;
       const registration = flight.r || 'Unknown';
-      const altitude = flight.altitude || 35000;
-      const speed = flight.speed || 485;
+      const altitude = flight.alt_baro || null;
+      const speed = flight.gs || null;
       const latitude = flight.lat || 51.4706;
       const longitude = flight.lon || -0.4619;
       const heading = flight.track || 270;
@@ -183,25 +183,12 @@ class AuthenticVirginAtlanticTracker {
         aircraftType = 'Airbus A330-300';
       }
       
-      // Guess route based on position (simplified)
-      let route = 'LHR-JFK';
-      let depAirport = 'LHR';
-      let arrAirport = 'JFK';
+      // Show only authentic data - no route guessing
+      let route = 'UNKNOWN';
+      let depAirport = 'UNKNOWN';
+      let arrAirport = 'UNKNOWN';
       
-      if (longitude < -30) {
-        // Likely trans-Atlantic
-        if (latitude > 45) {
-          route = 'LHR-BOS';
-          arrAirport = 'BOS';
-        } else if (latitude < 35) {
-          route = 'LHR-MIA';
-          arrAirport = 'MIA';
-        }
-      } else if (longitude > 70) {
-        // Likely Asia route
-        route = 'LHR-DEL';
-        arrAirport = 'DEL';
-      }
+      // Only show what we actually know from ADS-B - no route guessing
       
       const currentTime = new Date();
       
@@ -212,12 +199,12 @@ class AuthenticVirginAtlanticTracker {
         route: route,
         departure_airport: depAirport,
         arrival_airport: arrAirport,
-        departure_time: new Date(currentTime.getTime() - 2 * 60 * 60 * 1000).toTimeString().slice(0, 5),
-        arrival_time: new Date(currentTime.getTime() + 6 * 60 * 60 * 1000).toTimeString().slice(0, 5),
-        frequency: 'Real-time',
-        status: flight.altitude > 1000 ? 'En Route (Real)' : 'On Ground (Real)',
-        gate: `T3-${Math.floor(Math.random() * 59) + 1}`,
-        terminal: '3',
+        departure_time: 'UNKNOWN',
+        arrival_time: 'UNKNOWN', 
+        frequency: 'Real-time ADS-B',
+        status: flight.alt_baro > 1000 ? 'En Route (ADS-B Tracking)' : 'On Ground (ADS-B Tracking)',
+        gate: 'UNKNOWN',
+        terminal: 'UNKNOWN',
         callsign: callsign,
         latitude: latitude,
         longitude: longitude,
@@ -227,13 +214,13 @@ class AuthenticVirginAtlanticTracker {
         aircraft: aircraftType,
         origin: depAirport,
         destination: arrAirport,
-        scheduled_departure: new Date(currentTime.getTime() - 2 * 60 * 60 * 1000).toISOString(),
-        scheduled_arrival: new Date(currentTime.getTime() + 6 * 60 * 60 * 1000).toISOString(),
-        current_status: flight.altitude > 1000 ? 'EN_ROUTE_REAL' : 'ON_GROUND_REAL',
-        flight_progress: Math.floor(Math.random() * 100),
-        distance_remaining: Math.floor(Math.random() * 2000) + 100,
-        delay_minutes: 0,
-        fuel_remaining: Math.floor(Math.random() * 40) + 60,
+        scheduled_departure: 'UNKNOWN',
+        scheduled_arrival: 'UNKNOWN',
+        current_status: flight.alt_baro > 1000 ? 'EN_ROUTE_ADS_B' : 'ON_GROUND_ADS_B',
+        flight_progress: null,
+        distance_remaining: null,
+        delay_minutes: null,
+        fuel_remaining: null,
         warnings: [],
         is_real_tracking: true,
         real_data_source: 'ADS-B Exchange API',
