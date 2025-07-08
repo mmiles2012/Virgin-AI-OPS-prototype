@@ -49,6 +49,7 @@ import { routePositionService } from "./routePositionService";
 import { virginAtlanticFlightTracker } from "./routeMatcher";
 import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
 import mlOtpRoutes from "./mlOtpRoutes";
+import visaRoutes from "./visaRoutes";
 import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
 import { globalAirportService } from "./globalAirportService";
 // Enhanced Weather Intelligence Service
@@ -5158,6 +5159,9 @@ print(json.dumps(weather))
 
   // ML OTP Training and Analytics Endpoints
   app.use('/api/ml-otp', mlOtpRoutes);
+  
+  // Visa Requirements Routes
+  app.use('/api/visa', visaRoutes);
 
   // Emergency Communication System Endpoints
   app.post('/api/emergency/declare', async (req, res) => {

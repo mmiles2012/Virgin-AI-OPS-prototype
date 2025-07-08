@@ -1,0 +1,1243 @@
+{
+  "timestamp": "2025-07-08T20:37:48.660090",
+  "data": {
+    "British": [
+      {
+        "passport": "British",
+        "destination": "Algeria",
+        "visa_requirement": "Visa required[38][39]",
+        "notes": "",
+        "target_match": "Algeria",
+        "scraped_at": "2025-07-08T20:37:40.412387"
+      },
+      {
+        "passport": "British",
+        "destination": "Antigua and Barbuda",
+        "visa_requirement": "Visa not required[44][45]",
+        "notes": "6 months",
+        "target_match": "Antigua and Barbuda",
+        "scraped_at": "2025-07-08T20:37:40.412735"
+      },
+      {
+        "passport": "British",
+        "destination": "Australia",
+        "visa_requirement": "eVisitor[51]",
+        "notes": "90 days",
+        "target_match": "Australia",
+        "scraped_at": "2025-07-08T20:37:40.413104"
+      },
+      {
+        "passport": "British",
+        "destination": "Azerbaijan",
+        "visa_requirement": "eVisa[57][58]",
+        "notes": "30 days",
+        "target_match": "Azerbaijan",
+        "scraped_at": "2025-07-08T20:37:40.413336"
+      },
+      {
+        "passport": "British",
+        "destination": "Barbados",
+        "visa_requirement": "Visa not required[67][68]",
+        "notes": "6 months",
+        "target_match": "Barbados",
+        "scraped_at": "2025-07-08T20:37:40.413767"
+      },
+      {
+        "passport": "British",
+        "destination": "Canada",
+        "visa_requirement": "Electronic Travel Authorization[104]",
+        "notes": "6 months",
+        "target_match": "Canada",
+        "scraped_at": "2025-07-08T20:37:40.415561"
+      },
+      {
+        "passport": "British",
+        "destination": "China",
+        "visa_requirement": "Visa required[116][117]",
+        "notes": "",
+        "target_match": "China",
+        "scraped_at": "2025-07-08T20:37:40.416447"
+      },
+      {
+        "passport": "British",
+        "destination": "Egypt",
+        "visa_requirement": "eVisa / Visa on arrival[148][149][150]",
+        "notes": "30 days",
+        "target_match": "Egypt",
+        "scraped_at": "2025-07-08T20:37:40.418248"
+      },
+      {
+        "passport": "British",
+        "destination": "Ghana",
+        "visa_requirement": "Visa required[169][170]",
+        "notes": "",
+        "target_match": "Ghana",
+        "scraped_at": "2025-07-08T20:37:40.420069"
+      },
+      {
+        "passport": "British",
+        "destination": "Grenada",
+        "visa_requirement": "Visa not required[172]",
+        "notes": "6 months",
+        "target_match": "Grenada",
+        "scraped_at": "2025-07-08T20:37:40.420321"
+      },
+      {
+        "passport": "British",
+        "destination": "India",
+        "visa_requirement": "eVisa[184][185]",
+        "notes": "30 days",
+        "target_match": "India",
+        "scraped_at": "2025-07-08T20:37:40.421335"
+      },
+      {
+        "passport": "British",
+        "destination": "Jamaica",
+        "visa_requirement": "Visa not required[201]",
+        "notes": "180 days",
+        "target_match": "Jamaica",
+        "scraped_at": "2025-07-08T20:37:40.422005"
+      },
+      {
+        "passport": "British",
+        "destination": "Japan",
+        "visa_requirement": "Visa not required[202][203]",
+        "notes": "90 days",
+        "target_match": "Japan",
+        "scraped_at": "2025-07-08T20:37:40.422096"
+      },
+      {
+        "passport": "British",
+        "destination": "Kenya",
+        "visa_requirement": "Electronic Travel Authorisation[208][209]",
+        "notes": "90 days",
+        "target_match": "Kenya",
+        "scraped_at": "2025-07-08T20:37:40.422301"
+      },
+      {
+        "passport": "British",
+        "destination": "New Zealand",
+        "visa_requirement": "Electronic Travel Authority[265]",
+        "notes": "6 months",
+        "target_match": "New Zealand",
+        "scraped_at": "2025-07-08T20:37:40.425276"
+      },
+      {
+        "passport": "British",
+        "destination": "Niger",
+        "visa_requirement": "Visa required[269][270]",
+        "notes": "",
+        "target_match": "Nigeria",
+        "scraped_at": "2025-07-08T20:37:40.425444"
+      },
+      {
+        "passport": "British",
+        "destination": "Nigeria",
+        "visa_requirement": "eVisa[272][273]",
+        "notes": "30 days",
+        "target_match": "Nigeria",
+        "scraped_at": "2025-07-08T20:37:40.425533"
+      },
+      {
+        "passport": "British",
+        "destination": "Pakistan",
+        "visa_requirement": "Free eVisa[278][279]",
+        "notes": "90 days",
+        "target_match": "Pakistan",
+        "scraped_at": "2025-07-08T20:37:40.425963"
+      },
+      {
+        "passport": "British",
+        "destination": "Saint Lucia",
+        "visa_requirement": "Visa not required[308]",
+        "notes": "6 weeks",
+        "target_match": "Saint Lucia",
+        "scraped_at": "2025-07-08T20:37:40.427454"
+      },
+      {
+        "passport": "British",
+        "destination": "Saudi Arabia",
+        "visa_requirement": "Electronic Visa Waiver / Visa on arrival[314][315]",
+        "notes": "6 months / 90 days",
+        "target_match": "Saudi Arabia",
+        "scraped_at": "2025-07-08T20:37:40.427875"
+      },
+      {
+        "passport": "British",
+        "destination": "Singapore",
+        "visa_requirement": "Visa not required[323]",
+        "notes": "90 days",
+        "target_match": "Singapore",
+        "scraped_at": "2025-07-08T20:37:40.428317"
+      },
+      {
+        "passport": "British",
+        "destination": "South Africa",
+        "visa_requirement": "Visa not required[330]",
+        "notes": "90 days",
+        "target_match": "South Africa",
+        "scraped_at": "2025-07-08T20:37:40.428868"
+      },
+      {
+        "passport": "British",
+        "destination": "Turkey",
+        "visa_requirement": "Visa not required[363]",
+        "notes": "3 months",
+        "target_match": "Turkey",
+        "scraped_at": "2025-07-08T20:37:40.430463"
+      },
+      {
+        "passport": "British",
+        "destination": "Turkmenistan",
+        "visa_requirement": "Visa required[364]",
+        "notes": "",
+        "target_match": "Turkmenistan",
+        "scraped_at": "2025-07-08T20:37:40.430544"
+      },
+      {
+        "passport": "British",
+        "destination": "United States",
+        "visa_requirement": "Visa Waiver Program[374][375]",
+        "notes": "90 days",
+        "target_match": "United States",
+        "scraped_at": "2025-07-08T20:37:40.431096"
+      },
+      {
+        "passport": "British",
+        "destination": "Uzbekistan",
+        "visa_requirement": "Visa not required[379]",
+        "notes": "30 days",
+        "target_match": "Uzbekistan",
+        "scraped_at": "2025-07-08T20:37:40.431248"
+      },
+      {
+        "passport": "British",
+        "destination": "British Indian Ocean Territory",
+        "visa_requirement": "Special permit required[401][402]",
+        "notes": "",
+        "target_match": "India",
+        "scraped_at": "2025-07-08T20:37:40.432389"
+      },
+      {
+        "passport": "British",
+        "destination": "Hong Kong",
+        "visa_requirement": "Visa not required[453]",
+        "notes": "180 days[454]",
+        "target_match": "Hong Kong",
+        "scraped_at": "2025-07-08T20:37:40.435731"
+      },
+      {
+        "passport": "British",
+        "destination": "Protected and restricted areas of India",
+        "visa_requirement": "PAP/RAP required",
+        "notes": "Protected Area Permit (PAP) required for whole states ofNagalandandSikkimand parts of statesManipur,Arunachal Pradesh,Uttaranchal,Jammu and Kashmir,Rajasthan,Himachal Pradesh. Restricted Area Permit (RAP) required for all ofAndaman and Nicobar Islandsand parts ofSikkim. Some of these requirements are occasionally lifted for a year.[455][456][457][458][459][460]",
+        "target_match": "India",
+        "scraped_at": "2025-07-08T20:37:40.435847"
+      },
+      {
+        "passport": "British",
+        "destination": "Closed citiesofTurkmenistan",
+        "visa_requirement": "Special permit required",
+        "notes": "A special permit, issued prior to arrival by the Ministry of Foreign Affairs, is required if visiting the following places:Atamurat,Cheleken,Dashoguz,SerakhsandSerhetabat.[476]",
+        "target_match": "Turkmenistan",
+        "scraped_at": "2025-07-08T20:37:40.436675"
+      },
+      {
+        "passport": "British",
+        "destination": "United States Minor Outlying Islands",
+        "visa_requirement": "Special permits required",
+        "notes": "Special permits required forBaker Island,Howland Island,Jarvis Island,Johnston Atoll,Kingman Reef,Midway Atoll,Palmyra AtollandWake Island.[501][502][503][504][505][506][507]",
+        "target_match": "United States",
+        "scraped_at": "2025-07-08T20:37:40.438355"
+      },
+      {
+        "passport": "British",
+        "destination": "Antigua and Barbuda[note 2][591]",
+        "visa_requirement": "70,701",
+        "notes": "",
+        "target_match": "Antigua and Barbuda",
+        "scraped_at": "2025-07-08T20:37:40.440247"
+      },
+      {
+        "passport": "British",
+        "destination": "Australia[note 2][593]",
+        "visa_requirement": "731,900",
+        "notes": "640",
+        "target_match": "Australia",
+        "scraped_at": "2025-07-08T20:37:40.440458"
+      },
+      {
+        "passport": "British",
+        "destination": "Azerbaijan[note 4][595]",
+        "visa_requirement": "29,514",
+        "notes": "",
+        "target_match": "Azerbaijan",
+        "scraped_at": "2025-07-08T20:37:40.440595"
+      },
+      {
+        "passport": "British",
+        "destination": "Barbados[note 5][note 4][597]",
+        "visa_requirement": "218,638",
+        "notes": "",
+        "target_match": "Barbados",
+        "scraped_at": "2025-07-08T20:37:40.440783"
+      },
+      {
+        "passport": "British",
+        "destination": "Canada[note 2][611]",
+        "visa_requirement": "819,530",
+        "notes": "",
+        "target_match": "Canada",
+        "scraped_at": "2025-07-08T20:37:40.441777"
+      },
+      {
+        "passport": "British",
+        "destination": "China[note 4][615][616]",
+        "visa_requirement": "594,300",
+        "notes": "",
+        "target_match": "China",
+        "scraped_at": "2025-07-08T20:37:40.442042"
+      },
+      {
+        "passport": "British",
+        "destination": "Egypt",
+        "visa_requirement": "865,000",
+        "notes": "",
+        "target_match": "Egypt",
+        "scraped_at": "2025-07-08T20:37:40.442780"
+      },
+      {
+        "passport": "British",
+        "destination": "Ghana[note 1]",
+        "visa_requirement": "90,000",
+        "notes": "",
+        "target_match": "Ghana",
+        "scraped_at": "2025-07-08T20:37:40.443302"
+      },
+      {
+        "passport": "British",
+        "destination": "Grenada[note 2][640]",
+        "visa_requirement": "25,351",
+        "notes": "",
+        "target_match": "Grenada",
+        "scraped_at": "2025-07-08T20:37:40.443552"
+      },
+      {
+        "passport": "British",
+        "destination": "Hong Kong[note 2][641]",
+        "visa_requirement": "555,353",
+        "notes": "",
+        "target_match": "Hong Kong",
+        "scraped_at": "2025-07-08T20:37:40.443684"
+      },
+      {
+        "passport": "British",
+        "destination": "India[note 2][645]",
+        "visa_requirement": "986,296",
+        "notes": "",
+        "target_match": "India",
+        "scraped_at": "2025-07-08T20:37:40.444016"
+      },
+      {
+        "passport": "British",
+        "destination": "Jamaica[note 2][649]",
+        "visa_requirement": "217,647",
+        "notes": "",
+        "target_match": "Jamaica",
+        "scraped_at": "2025-07-08T20:37:40.444289"
+      },
+      {
+        "passport": "British",
+        "destination": "Japan[note 2][650]",
+        "visa_requirement": "310,500",
+        "notes": "",
+        "target_match": "Japan",
+        "scraped_at": "2025-07-08T20:37:40.444346"
+      },
+      {
+        "passport": "British",
+        "destination": "Kenya[note 3]",
+        "visa_requirement": "100,000",
+        "notes": "",
+        "target_match": "Kenya",
+        "scraped_at": "2025-07-08T20:37:40.444599"
+      },
+      {
+        "passport": "British",
+        "destination": "Nigeria[note 1]",
+        "visa_requirement": "117,000",
+        "notes": "",
+        "target_match": "Nigeria",
+        "scraped_at": "2025-07-08T20:37:40.446232"
+      },
+      {
+        "passport": "British",
+        "destination": "New Zealand[note 2][680]",
+        "visa_requirement": "249,264",
+        "notes": "",
+        "target_match": "New Zealand",
+        "scraped_at": "2025-07-08T20:37:40.446505"
+      },
+      {
+        "passport": "British",
+        "destination": "Pakistan[note 11][683]",
+        "visa_requirement": "275,400",
+        "notes": "",
+        "target_match": "Pakistan",
+        "scraped_at": "2025-07-08T20:37:40.446869"
+      },
+      {
+        "passport": "British",
+        "destination": "Saint Lucia[694]",
+        "visa_requirement": "68,175",
+        "notes": "",
+        "target_match": "Saint Lucia",
+        "scraped_at": "2025-07-08T20:37:40.447695"
+      },
+      {
+        "passport": "British",
+        "destination": "Singapore[note 2][700]",
+        "visa_requirement": "518,903",
+        "notes": "",
+        "target_match": "Singapore",
+        "scraped_at": "2025-07-08T20:37:40.448205"
+      },
+      {
+        "passport": "British",
+        "destination": "South Africa[704]",
+        "visa_requirement": "407,486",
+        "notes": "",
+        "target_match": "South Africa",
+        "scraped_at": "2025-07-08T20:37:40.448585"
+      },
+      {
+        "passport": "British",
+        "destination": "Turkey[note 7][716]",
+        "visa_requirement": "2,254,871",
+        "notes": "",
+        "target_match": "Turkey",
+        "scraped_at": "2025-07-08T20:37:40.449536"
+      },
+      {
+        "passport": "British",
+        "destination": "United States[note 2][note 15][722]",
+        "visa_requirement": "5,076,167",
+        "notes": "1,539",
+        "target_match": "United States",
+        "scraped_at": "2025-07-08T20:37:40.450029"
+      },
+      {
+        "passport": "British",
+        "destination": "Uzbekistan[note 3][723]",
+        "visa_requirement": "1,800",
+        "notes": "",
+        "target_match": "Uzbekistan",
+        "scraped_at": "2025-07-08T20:37:40.450131"
+      }
+    ],
+    "Indian": [
+      {
+        "passport": "Indian",
+        "destination": "Algeria",
+        "visa_requirement": "Visa required[58]",
+        "notes": "",
+        "target_match": "Algeria",
+        "scraped_at": "2025-07-08T20:37:43.542580"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Antigua and Barbuda",
+        "visa_requirement": "eVisa[65][66]",
+        "notes": "",
+        "target_match": "Antigua and Barbuda",
+        "scraped_at": "2025-07-08T20:37:43.543064"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Australiaandterritories",
+        "visa_requirement": "Online Visa required[75][76]",
+        "notes": "",
+        "target_match": "Australia",
+        "scraped_at": "2025-07-08T20:37:43.543489"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Azerbaijan",
+        "visa_requirement": "eVisa[78][79]",
+        "notes": "30 days",
+        "target_match": "Azerbaijan",
+        "scraped_at": "2025-07-08T20:37:43.543748"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Barbados",
+        "visa_requirement": "Visa not required[84]",
+        "notes": "90 days",
+        "target_match": "Barbados",
+        "scraped_at": "2025-07-08T20:37:43.544199"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Canada",
+        "visa_requirement": "Visa required[111]",
+        "notes": "",
+        "target_match": "Canada",
+        "scraped_at": "2025-07-08T20:37:43.547245"
+      },
+      {
+        "passport": "Indian",
+        "destination": "China",
+        "visa_requirement": "Visa required[119]",
+        "notes": "",
+        "target_match": "China",
+        "scraped_at": "2025-07-08T20:37:43.547778"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Egypt",
+        "visa_requirement": "eVisa[146][147]",
+        "notes": "30 days",
+        "target_match": "Egypt",
+        "scraped_at": "2025-07-08T20:37:43.549225"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Ghana",
+        "visa_requirement": "Visa required[170]",
+        "notes": "",
+        "target_match": "Ghana",
+        "scraped_at": "2025-07-08T20:37:43.550196"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Grenada",
+        "visa_requirement": "Visa not required[172]",
+        "notes": "3 months",
+        "target_match": "Grenada",
+        "scraped_at": "2025-07-08T20:37:43.550385"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Jamaica",
+        "visa_requirement": "Visa not required",
+        "notes": "",
+        "target_match": "Jamaica",
+        "scraped_at": "2025-07-08T20:37:43.551569"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Japan",
+        "visa_requirement": "eVisa[193][194]",
+        "notes": "",
+        "target_match": "Japan",
+        "scraped_at": "2025-07-08T20:37:43.551719"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Kenya",
+        "visa_requirement": "Electronic Travel Authorisation[201][202]",
+        "notes": "90 days",
+        "target_match": "Kenya",
+        "scraped_at": "2025-07-08T20:37:43.552156"
+      },
+      {
+        "passport": "Indian",
+        "destination": "New Zealand",
+        "visa_requirement": "Visa required[275]",
+        "notes": "",
+        "target_match": "New Zealand",
+        "scraped_at": "2025-07-08T20:37:43.555754"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Niger",
+        "visa_requirement": "Visa required[278]",
+        "notes": "",
+        "target_match": "Nigeria",
+        "scraped_at": "2025-07-08T20:37:43.555910"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Nigeria",
+        "visa_requirement": "eVisa[279][280]",
+        "notes": "30 days",
+        "target_match": "Nigeria",
+        "scraped_at": "2025-07-08T20:37:43.555981"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Pakistan",
+        "visa_requirement": "Admission restricted[284]",
+        "notes": "",
+        "target_match": "Pakistan",
+        "scraped_at": "2025-07-08T20:37:43.556261"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Saint Lucia",
+        "visa_requirement": "Visa on arrival[313]",
+        "notes": "6 weeks",
+        "target_match": "Saint Lucia",
+        "scraped_at": "2025-07-08T20:37:43.557371"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Saudi Arabia",
+        "visa_requirement": "Visa required[319]",
+        "notes": "",
+        "target_match": "Saudi Arabia",
+        "scraped_at": "2025-07-08T20:37:43.557722"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Singapore",
+        "visa_requirement": "Visa required[330]",
+        "notes": "",
+        "target_match": "Singapore",
+        "scraped_at": "2025-07-08T20:37:43.558216"
+      },
+      {
+        "passport": "Indian",
+        "destination": "South Africa",
+        "visa_requirement": "eVisa[341][342]",
+        "notes": "",
+        "target_match": "South Africa",
+        "scraped_at": "2025-07-08T20:37:43.558579"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Turkey",
+        "visa_requirement": "Visa required[367]",
+        "notes": "",
+        "target_match": "Turkey",
+        "scraped_at": "2025-07-08T20:37:43.559791"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Turkmenistan",
+        "visa_requirement": "Visa required[369]",
+        "notes": "",
+        "target_match": "Turkmenistan",
+        "scraped_at": "2025-07-08T20:37:43.559866"
+      },
+      {
+        "passport": "Indian",
+        "destination": "United States",
+        "visa_requirement": "Visa required[379]",
+        "notes": "",
+        "target_match": "United States",
+        "scraped_at": "2025-07-08T20:37:43.560330"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Uzbekistan",
+        "visa_requirement": "eVisa[383][384]",
+        "notes": "30 days",
+        "target_match": "Uzbekistan",
+        "scraped_at": "2025-07-08T20:37:43.560500"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Hong Kong",
+        "visa_requirement": "Electronic Travel Authorization",
+        "notes": "14 days",
+        "target_match": "Hong Kong",
+        "scraped_at": "2025-07-08T20:37:43.562211"
+      },
+      {
+        "passport": "Indian",
+        "destination": "British Indian Ocean Territory",
+        "visa_requirement": "Special permit required[435]",
+        "notes": "",
+        "target_match": "India",
+        "scraped_at": "2025-07-08T20:37:43.564310"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Barbados",
+        "visa_requirement": "Visa not required for 90 days",
+        "notes": "e-Visa",
+        "target_match": "Barbados",
+        "scraped_at": "2025-07-08T20:37:43.565934"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Grenada",
+        "visa_requirement": "Visa not required",
+        "notes": "e-Visa for 60 days",
+        "target_match": "Grenada",
+        "scraped_at": "2025-07-08T20:37:43.566341"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Jamaica",
+        "visa_requirement": "Visa not required",
+        "notes": "e-Visa for 60 days",
+        "target_match": "Jamaica",
+        "scraped_at": "2025-07-08T20:37:43.566510"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Saint Lucia",
+        "visa_requirement": "Visa on arrival",
+        "notes": "e-Visa for 60 days",
+        "target_match": "Saint Lucia",
+        "scraped_at": "2025-07-08T20:37:43.567412"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Antigua and Barbuda[note 2][562]",
+        "visa_requirement": "366",
+        "notes": "",
+        "target_match": "Antigua and Barbuda",
+        "scraped_at": "2025-07-08T20:37:43.568720"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Australia[note 2][563]",
+        "visa_requirement": "302,200",
+        "notes": "",
+        "target_match": "Australia",
+        "scraped_at": "2025-07-08T20:37:43.568785"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Azerbaijan[note 1][565]",
+        "visa_requirement": "6,012",
+        "notes": "",
+        "target_match": "Azerbaijan",
+        "scraped_at": "2025-07-08T20:37:43.568915"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Barbados[note 3][note 1][566]",
+        "visa_requirement": "900",
+        "notes": "",
+        "target_match": "Barbados",
+        "scraped_at": "2025-07-08T20:37:43.568978"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Canada[note 2][574]",
+        "visa_requirement": "261,801",
+        "notes": "",
+        "target_match": "Canada",
+        "scraped_at": "2025-07-08T20:37:43.569371"
+      },
+      {
+        "passport": "Indian",
+        "destination": "China[note 1][577][578]",
+        "visa_requirement": "799,100",
+        "notes": "",
+        "target_match": "China",
+        "scraped_at": "2025-07-08T20:37:43.569531"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Hong Kong[note 2][591]",
+        "visa_requirement": "392,853",
+        "notes": "",
+        "target_match": "Hong Kong",
+        "scraped_at": "2025-07-08T20:37:43.570551"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Jamaica[note 2][596]",
+        "visa_requirement": "1,834",
+        "notes": "",
+        "target_match": "Jamaica",
+        "scraped_at": "2025-07-08T20:37:43.570876"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Japan[597]",
+        "visa_requirement": "103,084",
+        "notes": "",
+        "target_match": "Japan",
+        "scraped_at": "2025-07-08T20:37:43.570927"
+      },
+      {
+        "passport": "Indian",
+        "destination": "New Zealand[note 2][615]",
+        "visa_requirement": "61,440",
+        "notes": "",
+        "target_match": "New Zealand",
+        "scraped_at": "2025-07-08T20:37:43.572361"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Singapore[note 2][625]",
+        "visa_requirement": "1,272,069",
+        "notes": "",
+        "target_match": "Singapore",
+        "scraped_at": "2025-07-08T20:37:43.573077"
+      },
+      {
+        "passport": "Indian",
+        "destination": "South Africa[627]",
+        "visa_requirement": "85,639",
+        "notes": "",
+        "target_match": "South Africa",
+        "scraped_at": "2025-07-08T20:37:43.573200"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Turkey[note 2][637]",
+        "visa_requirement": "86,996",
+        "notes": "",
+        "target_match": "Turkey",
+        "scraped_at": "2025-07-08T20:37:43.573719"
+      },
+      {
+        "passport": "Indian",
+        "destination": "United States[note 2][note 9][641]",
+        "visa_requirement": "2,055,480",
+        "notes": "",
+        "target_match": "United States",
+        "scraped_at": "2025-07-08T20:37:43.573939"
+      },
+      {
+        "passport": "Indian",
+        "destination": "Uzbekistan[note 10][642]",
+        "visa_requirement": "18,100",
+        "notes": "",
+        "target_match": "Uzbekistan",
+        "scraped_at": "2025-07-08T20:37:43.573993"
+      }
+    ],
+    "U.S.": [
+      {
+        "passport": "U.S.",
+        "destination": "Algeria",
+        "visa_requirement": "Visa required[12]",
+        "notes": "",
+        "target_match": "Algeria",
+        "scraped_at": "2025-07-08T20:37:46.622238"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Antigua and Barbuda",
+        "visa_requirement": "Visa not required[18]",
+        "notes": "6 months[19]",
+        "target_match": "Antigua and Barbuda",
+        "scraped_at": "2025-07-08T20:37:46.622618"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Australia",
+        "visa_requirement": "Electronic Travel Authority[23][24]",
+        "notes": "90 days",
+        "target_match": "Australia",
+        "scraped_at": "2025-07-08T20:37:46.622945"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Azerbaijan",
+        "visa_requirement": "eVisa / Visa on arrival (conditional)[27][28]",
+        "notes": "30 days",
+        "target_match": "Azerbaijan",
+        "scraped_at": "2025-07-08T20:37:46.623169"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Barbados",
+        "visa_requirement": "Visa not required[42][43]",
+        "notes": "6 months[44]",
+        "target_match": "Barbados",
+        "scraped_at": "2025-07-08T20:37:46.623527"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Canada",
+        "visa_requirement": "Visa not required[92][93]",
+        "notes": "6 months",
+        "target_match": "Canada",
+        "scraped_at": "2025-07-08T20:37:46.624999"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "China",
+        "visa_requirement": "Visa required",
+        "notes": "",
+        "target_match": "China",
+        "scraped_at": "2025-07-08T20:37:46.625675"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Egypt",
+        "visa_requirement": "eVisa / Visa on arrival[158][159]",
+        "notes": "30 days",
+        "target_match": "Egypt",
+        "scraped_at": "2025-07-08T20:37:46.627290"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Ghana",
+        "visa_requirement": "Visa required[196][197]",
+        "notes": "",
+        "target_match": "Ghana",
+        "scraped_at": "2025-07-08T20:37:46.628641"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Grenada",
+        "visa_requirement": "Visa not required[202][203]",
+        "notes": "3 months",
+        "target_match": "Grenada",
+        "scraped_at": "2025-07-08T20:37:46.628858"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "India",
+        "visa_requirement": "eVisa[222]",
+        "notes": "30 days",
+        "target_match": "India",
+        "scraped_at": "2025-07-08T20:37:46.629609"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Jamaica",
+        "visa_requirement": "Visa not required[247]",
+        "notes": "6 months",
+        "target_match": "Jamaica",
+        "scraped_at": "2025-07-08T20:37:46.630329"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Japan",
+        "visa_requirement": "Visa not required[249]",
+        "notes": "90 days",
+        "target_match": "Japan",
+        "scraped_at": "2025-07-08T20:37:46.630448"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Kenya",
+        "visa_requirement": "Electronic Travel Authorisation[256][257][258]",
+        "notes": "90 days",
+        "target_match": "Kenya",
+        "scraped_at": "2025-07-08T20:37:46.630865"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "New Zealand",
+        "visa_requirement": "Electronic Travel Authority[349]",
+        "notes": "3 months[350][351]",
+        "target_match": "New Zealand",
+        "scraped_at": "2025-07-08T20:37:46.634317"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Niger",
+        "visa_requirement": "Visa required[356][357]",
+        "notes": "",
+        "target_match": "Nigeria",
+        "scraped_at": "2025-07-08T20:37:46.634493"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Nigeria",
+        "visa_requirement": "eVisa[359][360]",
+        "notes": "30 days",
+        "target_match": "Nigeria",
+        "scraped_at": "2025-07-08T20:37:46.634577"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Pakistan",
+        "visa_requirement": "Free eVisa[371][372]",
+        "notes": "90 days",
+        "target_match": "Pakistan",
+        "scraped_at": "2025-07-08T20:37:46.634965"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Saint Lucia",
+        "visa_requirement": "Visa not required[407][408]",
+        "notes": "6 weeks",
+        "target_match": "Saint Lucia",
+        "scraped_at": "2025-07-08T20:37:46.636118"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Saudi Arabia",
+        "visa_requirement": "eVisa / Visa on arrival[415][416]",
+        "notes": "90 days",
+        "target_match": "Saudi Arabia",
+        "scraped_at": "2025-07-08T20:37:46.636550"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Singapore",
+        "visa_requirement": "Visa not required[426]",
+        "notes": "90 days[427]",
+        "target_match": "Singapore",
+        "scraped_at": "2025-07-08T20:37:46.637000"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "South Africa",
+        "visa_requirement": "Visa not required[440]",
+        "notes": "90 days",
+        "target_match": "South Africa",
+        "scraped_at": "2025-07-08T20:37:46.637447"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Turkey",
+        "visa_requirement": "Visa not required[482][483]",
+        "notes": "90 days",
+        "target_match": "Turkey",
+        "scraped_at": "2025-07-08T20:37:46.639015"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Turkmenistan",
+        "visa_requirement": "Visa required[485]",
+        "notes": "",
+        "target_match": "Turkmenistan",
+        "scraped_at": "2025-07-08T20:37:46.639098"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Uzbekistan",
+        "visa_requirement": "Visa not required (conditional) / eVisa[502][503]",
+        "notes": "30 days",
+        "target_match": "Uzbekistan",
+        "scraped_at": "2025-07-08T20:37:46.639868"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "British Indian Ocean Territory",
+        "visa_requirement": "Special permit required",
+        "notes": "",
+        "target_match": "India",
+        "scraped_at": "2025-07-08T20:37:46.643879"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "People's Republic of China-Hainan",
+        "visa_requirement": "Visa not required[554]",
+        "notes": "30 days",
+        "target_match": "China",
+        "scraped_at": "2025-07-08T20:37:46.643956"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Hong Kong",
+        "visa_requirement": "Visa not required[555]",
+        "notes": "90 days",
+        "target_match": "Hong Kong",
+        "scraped_at": "2025-07-08T20:37:46.644028"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "IndiaProtected and restricted areas of India",
+        "visa_requirement": "PAP/RAP required",
+        "notes": "",
+        "target_match": "India",
+        "scraped_at": "2025-07-08T20:37:46.644145"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "People's Republic of China-Tibet Autonomous Region",
+        "visa_requirement": "TTP required",
+        "notes": "",
+        "target_match": "China",
+        "scraped_at": "2025-07-08T20:37:46.644758"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Saudi Arabia-MeccaandMedina",
+        "visa_requirement": "Special access required",
+        "notes": "",
+        "target_match": "Saudi Arabia",
+        "scraped_at": "2025-07-08T20:37:46.644841"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Turkmenistan-Closed citiesofTurkmenistan",
+        "visa_requirement": "Special permit required",
+        "notes": "",
+        "target_match": "Turkmenistan",
+        "scraped_at": "2025-07-08T20:37:46.644991"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Australia-Ashmore and Cartier Islands",
+        "visa_requirement": "Special authorisation required",
+        "notes": "",
+        "target_match": "Australia",
+        "scraped_at": "2025-07-08T20:37:46.646226"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Nigeria[624]",
+        "visa_requirement": "Holders of a visa application who have a Nigerian company taking responsibility for them.",
+        "notes": "",
+        "target_match": "Nigeria",
+        "scraped_at": "2025-07-08T20:37:46.647981"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Turkmenistan[626]",
+        "visa_requirement": "Holders of an invitation letter from the local company that was approved by the Ministry of Foreign Affairs.",
+        "notes": "",
+        "target_match": "Turkmenistan",
+        "scraped_at": "2025-07-08T20:37:46.648129"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Antigua and Barbuda[note 3][688]",
+        "visa_requirement": "96,347",
+        "notes": "",
+        "target_match": "Antigua and Barbuda",
+        "scraped_at": "2025-07-08T20:37:46.650139"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Australia[note 3][690]",
+        "visa_requirement": "781,000",
+        "notes": "",
+        "target_match": "Australia",
+        "scraped_at": "2025-07-08T20:37:46.650323"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Azerbaijan[note 3][692]",
+        "visa_requirement": "15,178",
+        "notes": "",
+        "target_match": "Azerbaijan",
+        "scraped_at": "2025-07-08T20:37:46.650451"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Barbados[note 5][note 2][694]",
+        "visa_requirement": "168,945",
+        "notes": "",
+        "target_match": "Barbados",
+        "scraped_at": "2025-07-08T20:37:46.650584"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Canada[note 3][708]",
+        "visa_requirement": "24,335,415",
+        "notes": "",
+        "target_match": "Canada",
+        "scraped_at": "2025-07-08T20:37:46.651469"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "China[note 3][713][714]",
+        "visa_requirement": "2,312,900",
+        "notes": "",
+        "target_match": "China",
+        "scraped_at": "2025-07-08T20:37:46.651806"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Grenada[note 3][741]",
+        "visa_requirement": "67,250",
+        "notes": "",
+        "target_match": "Grenada",
+        "scraped_at": "2025-07-08T20:37:46.653256"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Hong Kong[note 3][746]",
+        "visa_requirement": "1,215,629",
+        "notes": "",
+        "target_match": "Hong Kong",
+        "scraped_at": "2025-07-08T20:37:46.653523"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "India[note 3][750]",
+        "visa_requirement": "1,376,919",
+        "notes": "",
+        "target_match": "India",
+        "scraped_at": "2025-07-08T20:37:46.653780"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Jamaica[note 3][754]",
+        "visa_requirement": "1,509,963",
+        "notes": "",
+        "target_match": "Jamaica",
+        "scraped_at": "2025-07-08T20:37:46.653998"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Japan[note 3][755]",
+        "visa_requirement": "1,375,000",
+        "notes": "",
+        "target_match": "Japan",
+        "scraped_at": "2025-07-08T20:37:46.654067"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "New Zealand[note 3][785]",
+        "visa_requirement": "330,128",
+        "notes": "",
+        "target_match": "New Zealand",
+        "scraped_at": "2025-07-08T20:37:46.656127"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Pakistan[note 2][791]",
+        "visa_requirement": "73,129",
+        "notes": "",
+        "target_match": "Pakistan",
+        "scraped_at": "2025-07-08T20:37:46.656520"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Saint Lucia[801]",
+        "visa_requirement": "152,738",
+        "notes": "",
+        "target_match": "Saint Lucia",
+        "scraped_at": "2025-07-08T20:37:46.657278"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Singapore[note 3][806]",
+        "visa_requirement": "565,250",
+        "notes": "",
+        "target_match": "Singapore",
+        "scraped_at": "2025-07-08T20:37:46.657597"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "South Africa[811]",
+        "visa_requirement": "297,226",
+        "notes": "",
+        "target_match": "South Africa",
+        "scraped_at": "2025-07-08T20:37:46.657908"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Turkey[note 3][823]",
+        "visa_requirement": "329,257",
+        "notes": "",
+        "target_match": "Turkey",
+        "scraped_at": "2025-07-08T20:37:46.658642"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Turkmenistan[note 10]",
+        "visa_requirement": "660",
+        "notes": "",
+        "target_match": "Turkmenistan",
+        "scraped_at": "2025-07-08T20:37:46.658700"
+      },
+      {
+        "passport": "U.S.",
+        "destination": "Uzbekistan[note 14]",
+        "visa_requirement": "17,160",
+        "notes": "",
+        "target_match": "Uzbekistan",
+        "scraped_at": "2025-07-08T20:37:46.659130"
+      }
+    ]
+  }
+}
