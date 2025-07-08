@@ -41,12 +41,13 @@ interface ProcessedFlightData {
 class ADSBRapidApiService {
   private rapidApiHost = process.env.RAPIDAPI_HOST || 'adsbexchange-com1.p.rapidapi.com';
   private cache: Map<string, ProcessedFlightData[]> = new Map();
-  private cacheTimeout = 30000; // 30 seconds
+  private cacheTimeout = 5000; // 5 seconds - force fresh data
   private lastFetch = 0;
 
   private getHeaders() {
+    const cleanKey = (process.env.RAPIDAPI_KEY || '').replace(/'/g, '').trim();
     return {
-      'X-RapidAPI-Key': process.env.RAPIDAPI_KEY || '',
+      'X-RapidAPI-Key': cleanKey,
       'X-RapidAPI-Host': this.rapidApiHost
     };
   }

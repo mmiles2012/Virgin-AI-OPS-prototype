@@ -8,7 +8,7 @@ class AuthenticVirginAtlanticTracker {
   constructor() {
     // ADS-B Exchange API endpoint via RapidAPI
     this.baseURL = 'https://adsbexchange-com1.p.rapidapi.com/v2';
-    this.rapidApiKey = process.env.RAPIDAPI_KEY || '';
+    this.rapidApiKey = (process.env.RAPIDAPI_KEY || '').replace(/'/g, '').trim();
     
     // Virgin Atlantic flight patterns
     this.virginCallsigns = [
@@ -38,7 +38,7 @@ class AuthenticVirginAtlanticTracker {
     // Cache for performance and rate limiting
     this.lastFetch = 0;
     this.cachedFlights = [];
-    this.cacheTimeout = 5000; // 5 seconds - force fresh API calls to test working subscription
+    this.cacheTimeout = 1000; // 1 second - force immediate fresh API calls
   }
 
   // Make HTTP request to ADS-B Exchange API
