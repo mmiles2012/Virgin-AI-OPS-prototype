@@ -183,12 +183,21 @@ class AuthenticVirginAtlanticTracker {
         aircraftType = 'Airbus A330-300';
       }
       
-      // Show only authentic data - no route guessing
+      // Determine route based on known Virgin Atlantic flights
       let route = 'UNKNOWN';
       let depAirport = 'UNKNOWN';
       let arrAirport = 'UNKNOWN';
       
-      // Only show what we actually know from ADS-B - no route guessing
+      // Match known Virgin Atlantic flight numbers to routes
+      if (callsign.includes('VIR411') || callsign.includes('VS411')) {
+        route = 'LHR-LOS';
+        depAirport = 'LHR';
+        arrAirport = 'LOS';
+      } else if (callsign.includes('VIR412') || callsign.includes('VS412')) {
+        route = 'LOS-LHR';
+        depAirport = 'LOS';
+        arrAirport = 'LHR';
+      }
       
       const currentTime = new Date();
       
@@ -199,8 +208,8 @@ class AuthenticVirginAtlanticTracker {
         route: route,
         departure_airport: depAirport,
         arrival_airport: arrAirport,
-        departure_time: 'UNKNOWN',
-        arrival_time: 'UNKNOWN', 
+        departure_time: route !== 'UNKNOWN' ? 'Scheduled' : 'UNKNOWN',
+        arrival_time: route !== 'UNKNOWN' ? 'Scheduled' : 'UNKNOWN', 
         frequency: 'Real-time ADS-B',
         status: flight.alt_baro > 1000 ? 'En Route (ADS-B Tracking)' : 'On Ground (ADS-B Tracking)',
         gate: 'UNKNOWN',
