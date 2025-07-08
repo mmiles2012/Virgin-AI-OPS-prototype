@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { Badge } from './ui/badge';
+// import { Badge } from './ui/badge';
 import { Search, MapPin, Plane, Globe, BarChart3 } from 'lucide-react';
 
 interface Airport {
@@ -181,9 +181,9 @@ export default function GlobalAirportDatabase() {
               <h4 className="font-semibold mb-2">Airport Types:</h4>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(stats.byType).map(([type, count]) => (
-                  <Badge key={type} variant="outline" className={getTypeColor(type)}>
+                  <span key={type} className={`px-2 py-1 rounded-full text-xs font-semibold ${getTypeColor(type)}`}>
                     {type.replace('_', ' ')}: {count.toLocaleString()}
-                  </Badge>
+                  </span>
                 ))}
               </div>
             </div>
@@ -272,13 +272,13 @@ export default function GlobalAirportDatabase() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="font-semibold text-lg">{airport.name}</h3>
-                        <Badge className={getTypeColor(airport.type)}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getTypeColor(airport.type)}`}>
                           {airport.type.replace('_', ' ')}
-                        </Badge>
+                        </span>
                         {airport.scheduled_service === 'yes' && (
-                          <Badge variant="outline" className="bg-green-100 text-green-800">
+                          <span className="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
                             Scheduled Service
-                          </Badge>
+                          </span>
                         )}
                       </div>
                       
