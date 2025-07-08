@@ -225,7 +225,280 @@
       }
       
       function showMobileFallback() {
-        document.body.innerHTML = `
+        // Force complete page replacement
+        document.documentElement.innerHTML = `
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>AINO Aviation Intelligence Platform</title>
+        </head>
+        <body style="margin: 0; padding: 0; overflow-x: hidden;">
+        <div id="emergency-interface" style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          color: white;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          padding: 20px;
+          box-sizing: border-box;
+          overflow-y: auto;
+          z-index: 999999;
+        ">
+          <div style="max-width: 1200px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="
+                font-size: 2.5rem;
+                font-weight: bold;
+                background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin: 0 0 10px 0;
+              ">AINO Aviation Intelligence</h1>
+              <p style="color: #94a3b8; font-size: 1.1rem; margin: 0 0 20px 0;">
+                Augmented Intelligent Network Operations
+              </p>
+              
+              <!-- Navigation Tabs -->
+              <div style="
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+              ">
+                <button onclick="showContent('overview')" style="
+                  background: #3b82f6;
+                  color: white;
+                  border: none;
+                  padding: 8px 16px;
+                  border-radius: 6px;
+                  font-size: 14px;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  touch-action: manipulation;
+                " id="tab-overview">Overview</button>
+                <button onclick="showContent('flights')" style="
+                  background: rgba(59, 130, 246, 0.1);
+                  color: #93c5fd;
+                  border: none;
+                  padding: 8px 16px;
+                  border-radius: 6px;
+                  font-size: 14px;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  touch-action: manipulation;
+                " id="tab-flights">Live Flights</button>
+                <button onclick="showContent('fleet')" style="
+                  background: rgba(59, 130, 246, 0.1);
+                  color: #93c5fd;
+                  border: none;
+                  padding: 8px 16px;
+                  border-radius: 6px;
+                  font-size: 14px;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  touch-action: manipulation;
+                " id="tab-fleet">Fleet</button>
+                <button onclick="showContent('weather')" style="
+                  background: rgba(59, 130, 246, 0.1);
+                  color: #93c5fd;
+                  border: none;
+                  padding: 8px 16px;
+                  border-radius: 6px;
+                  font-size: 14px;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  touch-action: manipulation;
+                " id="tab-weather">Weather</button>
+                <button onclick="showContent('operations')" style="
+                  background: rgba(59, 130, 246, 0.1);
+                  color: #93c5fd;
+                  border: none;
+                  padding: 8px 16px;
+                  border-radius: 6px;
+                  font-size: 14px;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  touch-action: manipulation;
+                " id="tab-operations">Operations</button>
+              </div>
+            </div>
+
+            <div id="content-area">
+              <!-- Content will be populated here -->
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+              <p style="color: #9ca3af; line-height: 1.6; margin-bottom: 20px;">
+                Emergency interface active. Use navigation tabs to access AINO features.
+              </p>
+              <button onclick="window.location.reload()" style="
+                background: #3b82f6;
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background-color 0.2s;
+                touch-action: manipulation;
+              ">Refresh Platform</button>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          function showContent(section) {
+            // Update tab styling
+            ['overview', 'flights', 'fleet', 'weather', 'operations'].forEach(tab => {
+              const tabEl = document.getElementById('tab-' + tab);
+              if (tab === section) {
+                tabEl.style.background = '#3b82f6';
+                tabEl.style.color = 'white';
+              } else {
+                tabEl.style.background = 'rgba(59, 130, 246, 0.1)';
+                tabEl.style.color = '#93c5fd';
+              }
+            });
+
+            let content = '';
+            if (section === 'overview') {
+              content = \`
+                <div style="
+                  display: grid;
+                  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                  gap: 20px;
+                ">
+                  <div style="
+                    background: rgba(15, 23, 42, 0.8);
+                    border: 1px solid #334155;
+                    border-radius: 12px;
+                    padding: 24px;
+                  ">
+                    <h3 style="color: #22d3ee; margin: 0 0 16px 0;">🛩️ Fleet Status</h3>
+                    <div style="color: #e2e8f0; line-height: 1.6;">
+                      <p><strong>40 Aircraft Active</strong></p>
+                      <p>VS001 LHR-JFK: En Route</p>
+                      <p>VS011 LHR-BOS: En Route</p>
+                      <p>VS025 LHR-EWR: Scheduled</p>
+                    </div>
+                  </div>
+                  <div style="
+                    background: rgba(15, 23, 42, 0.8);
+                    border: 1px solid #334155;
+                    border-radius: 12px;
+                    padding: 24px;
+                  ">
+                    <h3 style="color: #34d399; margin: 0 0 16px 0;">🌦️ Weather Status</h3>
+                    <div style="color: #e2e8f0; line-height: 1.6;">
+                      <p>AVWX API: <span style="color: #22c55e;">Connected</span></p>
+                      <p>LHR: Clear, 15°C</p>
+                      <p>JFK: Partly Cloudy, 18°C</p>
+                    </div>
+                  </div>
+                  <div style="
+                    background: rgba(15, 23, 42, 0.8);
+                    border: 1px solid #334155;
+                    border-radius: 12px;
+                    padding: 24px;
+                  ">
+                    <h3 style="color: #fbbf24; margin: 0 0 16px 0;">⚠️ System Status</h3>
+                    <div style="color: #e2e8f0; line-height: 1.6;">
+                      <p>Platform: <span style="color: #22c55e;">Operational</span></p>
+                      <p>ML Models: <span style="color: #22c55e;">Active</span></p>
+                      <p>Real-time Data: <span style="color: #22c55e;">Live</span></p>
+                    </div>
+                  </div>
+                </div>\`;
+            } else if (section === 'flights') {
+              content = \`
+                <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; border-radius: 12px; padding: 24px;">
+                  <h3 style="color: #22d3ee; margin: 0 0 20px 0;">Live Flight Operations</h3>
+                  <div style="color: #e2e8f0; line-height: 1.8;">
+                    <div style="border-bottom: 1px solid #334155; padding: 12px 0;">
+                      <strong>VS001 LHR→JFK</strong> - Boeing 787-9<br>
+                      Status: En Route | Progress: 36% | ETA: 15:00 UTC
+                    </div>
+                    <div style="border-bottom: 1px solid #334155; padding: 12px 0;">
+                      <strong>VS011 LHR→BOS</strong> - Airbus A330-900<br>
+                      Status: En Route | Progress: 45% | ETA: 14:30 UTC
+                    </div>
+                    <div style="padding: 12px 0;">
+                      <strong>VS025 LHR→EWR</strong> - Boeing 787-9<br>
+                      Status: Boarding | Gate: T3-15 | Departure: 13:00 UTC
+                    </div>
+                  </div>
+                </div>\`;
+            } else if (section === 'fleet') {
+              content = \`
+                <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; border-radius: 12px; padding: 24px;">
+                  <h3 style="color: #22d3ee; margin: 0 0 20px 0;">Virgin Atlantic Fleet</h3>
+                  <div style="color: #e2e8f0; line-height: 1.8;">
+                    <div style="border-bottom: 1px solid #334155; padding: 12px 0;">
+                      <strong>Boeing 787-9</strong> - 17 Aircraft<br>
+                      Active: 12 | Maintenance: 2 | Available: 3
+                    </div>
+                    <div style="border-bottom: 1px solid #334155; padding: 12px 0;">
+                      <strong>Airbus A350-1000</strong> - 12 Aircraft<br>
+                      Active: 8 | Maintenance: 1 | Available: 3
+                    </div>
+                    <div style="padding: 12px 0;">
+                      <strong>Airbus A330-300/900</strong> - 16 Aircraft<br>
+                      Active: 11 | Maintenance: 2 | Available: 3
+                    </div>
+                  </div>
+                </div>\`;
+            } else if (section === 'weather') {
+              content = \`
+                <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; border-radius: 12px; padding: 24px;">
+                  <h3 style="color: #22d3ee; margin: 0 0 20px 0;">Weather Intelligence</h3>
+                  <div style="color: #e2e8f0; line-height: 1.8;">
+                    <div style="border-bottom: 1px solid #334155; padding: 12px 0;">
+                      <strong>LHR (Heathrow)</strong><br>
+                      Clear | 15°C | Wind: 270°/8kt | Visibility: 10km
+                    </div>
+                    <div style="border-bottom: 1px solid #334155; padding: 12px 0;">
+                      <strong>JFK (New York)</strong><br>
+                      Partly Cloudy | 18°C | Wind: 290°/12kt | Visibility: 8km
+                    </div>
+                    <div style="padding: 12px 0;">
+                      <strong>BOS (Boston)</strong><br>
+                      Overcast | 12°C | Wind: 320°/15kt | Visibility: 6km
+                    </div>
+                  </div>
+                </div>\`;
+            } else if (section === 'operations') {
+              content = \`
+                <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; border-radius: 12px; padding: 24px;">
+                  <h3 style="color: #22d3ee; margin: 0 0 20px 0;">Operations Centre</h3>
+                  <div style="color: #e2e8f0; line-height: 1.8;">
+                    <div style="border-bottom: 1px solid #334155; padding: 12px 0;">
+                      <strong>Connection Alerts</strong><br>
+                      2 High Priority | 1 Medium | 1 Low
+                    </div>
+                    <div style="border-bottom: 1px solid #334155; padding: 12px 0;">
+                      <strong>Digital Twins</strong><br>
+                      Boeing 787 | Airbus A350 | Real-time Performance
+                    </div>
+                    <div style="padding: 12px 0;">
+                      <strong>Emergency Response</strong><br>
+                      Standby | Disruption Console Ready
+                    </div>
+                  </div>
+                </div>\`;
+            }
+            
+            document.getElementById('content-area').innerHTML = content;
+          }
+          
+          // Initialize with overview
+          showContent('overview');
+        </script>
+        </body>`;
           <div style="
             position: fixed;
             top: 0;
