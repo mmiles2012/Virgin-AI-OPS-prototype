@@ -175,13 +175,8 @@ class AuthenticVirginAtlanticTracker {
       const longitude = flight.lon || -0.4619;
       const heading = flight.track || 270;
       
-      // Determine aircraft type based on registration or default
-      let aircraftType = 'Boeing 787-9';
-      if (registration.includes('G-VPRD') || registration.includes('G-VLUX')) {
-        aircraftType = 'Airbus A350-1000';
-      } else if (registration.includes('G-VJAM')) {
-        aircraftType = 'Airbus A330-300';
-      }
+      // Only use aircraft type from ADS-B data if available
+      let aircraftType = flight.t || 'UNKNOWN';
       
       // Determine route based on known Virgin Atlantic flights
       let route = 'UNKNOWN';
