@@ -193,13 +193,9 @@ class AuthenticVirginAtlanticTracker {
         depAirport = 'LOS';
         arrAirport = 'LHR';
       } else if (callsign.includes('VIR449') || callsign.includes('VS449')) {
-        route = 'LHR-BKK';
+        route = 'LHR-JNB';
         depAirport = 'LHR';
-        arrAirport = 'BKK';
-      } else if (callsign.includes('VIR450') || callsign.includes('VS450')) {
-        route = 'BKK-LHR';
-        depAirport = 'BKK';
-        arrAirport = 'LHR';
+        arrAirport = 'JNB';
       }
       
       const currentTime = new Date();
