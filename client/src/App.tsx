@@ -93,18 +93,21 @@ function App() {
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Mobile detection and auto-collapse
+  // Mobile detection and auto-collapse - iPads get full interface
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (mobile) {
+      const isIpad = /iPad/i.test(navigator.userAgent) || 
+                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      
+      setIsMobile(mobile && !isIpad); // iPads don't count as mobile
+      
+      if (mobile && !isIpad) {
         setIsNavigationCollapsed(true);
-        // Signal that React loaded successfully on mobile
-        if (window.innerWidth < 768) {
-          document.body.setAttribute('data-react-loaded', 'true');
-        }
       }
+      
+      // Signal that React loaded successfully
+      document.body.setAttribute('data-react-loaded', 'true');
     };
     
     checkMobile();

@@ -218,9 +218,10 @@
     
     <!-- Emergency mobile fallback -->
     <script>
-      // Detect mobile and show fallback if React fails to load
-      function isMobileDevice() {
-        return window.innerWidth < 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      // Detect small mobile devices only (exclude iPads and tablets)
+      function isSmallMobileDevice() {
+        return (window.innerWidth < 640 && window.innerHeight < 800) || 
+               /Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       }
       
       function showMobileFallback() {
@@ -305,15 +306,15 @@
         `;
       }
       
-      // Show fallback immediately on mobile
-      if (isMobileDevice()) {
+      // Show fallback only for small mobile devices (not iPads/tablets)
+      if (isSmallMobileDevice()) {
         setTimeout(() => {
           // Check if React app loaded properly
           if (!document.querySelector('#root').innerHTML.trim() || 
               document.querySelector('#root').innerHTML === '<div></div>') {
             showMobileFallback();
           }
-        }, 3000); // Give React 3 seconds to load
+        }, 5000); // Give React 5 seconds to load on mobile
       }
     </script>
     
