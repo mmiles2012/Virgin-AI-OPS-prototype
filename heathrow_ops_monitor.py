@@ -71,7 +71,7 @@ import numpy as np
 
 load_dotenv()
 
-AVSTACK_KEY        = os.getenv("AVSTACK_KEY")
+AVSTACK_KEY        = "b297f0914a3bf55e65414d09772f7934"
 HEATHROW_STAND_URL = os.getenv("HEATHROW_STAND_URL", "https://ops.heathrow.int/stands")
 RABBIT_URL         = os.getenv("RABBIT_URL")
 OPS_PUBLISH_URL    = os.getenv("OPS_PUBLISH_URL")
@@ -291,8 +291,9 @@ def fetch_flights() -> List[Flight]:
         "access_key": AVSTACK_KEY,
         "airline_iata": ",".join(PARTNER_AIRLINES),
         "arr_iata": "LHR",
-        "dep_iata": "LHR",
-        "limit": 1000,
+        "dep_iata": "LHR", 
+        "limit": 100,
+        "flight_status": "active"
     }
     r = requests.get("http://api.aviationstack.com/v1/flights", params=params, timeout=20)
     r.raise_for_status()

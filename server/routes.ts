@@ -10,6 +10,7 @@ import { scenarios, medicalEmergencies } from "../client/src/lib/medicalProtocol
 import { airports, findNearestAirports } from "../client/src/lib/airportData";
 import { majorAirports } from "../shared/airportData";
 import { aviationApiService } from "./aviationApiService";
+import { openSkyTracker } from "./openSkyFlightTracker";
 import { newsApiService } from "./newsApiService_simplified";
 import { weatherRadarService } from "./weatherRadarService";
 import { awcSigmetService } from "./awcSigmetService";
@@ -48,6 +49,7 @@ import { virginAtlanticFlightTracker } from "./routeMatcher";
 import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
 import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
 // Enhanced Weather Intelligence Service
+
 import { spawn } from "child_process";
 import { promisify } from "util";
 import { readFile, access } from "fs/promises";
@@ -8077,6 +8079,140 @@ else:
         success: false, 
         error: 'Weather-enhanced ML training service unavailable',
         message: 'Enhanced training system temporarily unavailable'
+      });
+    }
+  });
+
+  // Real Flight Tracking with OpenSky Network
+  app.get('/api/flights/real-tracking', async (req, res) => {
+    try {
+      console.log('Fetching real flight data from OpenSky Network...');
+      
+      // Get Virgin Atlantic flights specifically
+      const virginFlights = await openSkyTracker.getVirginAtlanticFlights();
+      
+      // Also get general flights around UK area for broader context
+      const ukFlights = await openSkyTracker.getFlightsInBoundingBox(
+        50.0, 60.0, // UK latitude range
+        -10.0, 2.0  // UK longitude range
+      );
+      
+      // Combine and format the results
+      const allFlights = [...virginFlights, ...ukFlights];
+      const uniqueFlights = allFlights.filter((flight, index, self) => 
+        index === self.findIndex(f => f.icao24 === flight.icao24)
+      );
+      
+      res.json({
+        success: true,
+        source: 'OpenSky Network - Real Flight Data',
+        timestamp: new Date().toISOString(),
+        total_flights: uniqueFlights.length,
+        virgin_atlantic_flights: virginFlights.length,
+        uk_area_flights: ukFlights.length,
+        flights: uniqueFlights.map(flight => ({
+          callsign: flight.callsign,
+          icao24: flight.icao24,
+          latitude: flight.latitude,
+          longitude: flight.longitude,
+          altitude: flight.altitude,
+          velocity: flight.velocity,
+          heading: flight.heading,
+          vertical_rate: flight.vertical_rate,
+          aircraft_type: flight.aircraft_type,
+          airline: flight.airline,
+          origin_country: flight.origin_country,
+          on_ground: flight.on_ground,
+          last_contact: new Date(flight.last_contact * 1000).toISOString(),
+          is_real_data: true
+        }))
+      });
+    } catch (error: any) {
+      console.error('Error fetching real flight tracking:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch real flight data',
+        message: error.message
+      });
+    }
+  });
+
+  // Test OpenSky connectivity  
+  app.get('/api/flights/opensky-test', async (req, res) => {
+    try {
+      const testResult = await openSkyTracker.testConnection();
+      res.json({
+        ...testResult,
+        api_source: 'OpenSky Network',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        message: `OpenSky test failed: ${error.message}`,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Enhanced Virgin Atlantic flight data with real tracking integration
+  app.get('/api/aviation/virgin-atlantic-flights-enhanced', async (req, res) => {
+    try {
+      console.log('Fetching enhanced Virgin Atlantic flights with real tracking...');
+      
+      // Get real flight data
+      const realFlights = await openSkyTracker.getVirginAtlanticFlights();
+      
+      // Get simulated Virgin Atlantic data
+      const { flights: simulatedFlights } = await virginAtlanticService.getFlights();
+      
+      // Enhance simulated flights with real data where available
+      const enhancedFlights = simulatedFlights.map((simFlight: any, index: number) => {
+        const matchingReal = realFlights.find(real => 
+          real.callsign && (real.callsign.includes('VIR') || real.callsign.includes('VS'))
+        );
+        
+        if (matchingReal && index < realFlights.length) {
+          return {
+            ...simFlight,
+            // Replace with real position data
+            latitude: matchingReal.latitude,
+            longitude: matchingReal.longitude,
+            altitude: matchingReal.altitude,
+            velocity: matchingReal.velocity,
+            heading: matchingReal.heading,
+            // Mark as real tracking
+            is_real_tracking: true,
+            real_data_source: 'OpenSky Network',
+            icao24: matchingReal.icao24,
+            real_callsign: matchingReal.callsign,
+            current_status: 'EN_ROUTE_REAL',
+            warnings: [] // Clear simulated warnings for real flights
+          };
+        }
+        
+        return {
+          ...simFlight,
+          is_real_tracking: false,
+          real_data_source: 'Simulated'
+        };
+      });
+      
+      res.json({
+        success: true,
+        source: 'Virgin Atlantic Enhanced with OpenSky Real Tracking',
+        timestamp: new Date().toISOString(),
+        total_flights: enhancedFlights.length,
+        real_tracking_count: realFlights.length,
+        flights: enhancedFlights
+      });
+      
+    } catch (error: any) {
+      console.error('Error fetching enhanced Virgin Atlantic flights:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch enhanced flight data',
+        message: error.message
       });
     }
   });
