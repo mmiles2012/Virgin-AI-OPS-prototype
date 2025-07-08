@@ -33,6 +33,7 @@ import { flightDataCache } from "./flightDataCache";
 import { demoFlightGenerator } from "./demoFlightData";
 import { weatherDataCollector } from "./weatherDataCollector";
 import { adsbFlightTracker } from "./adsbFlightTracker";
+import { adsbIntegratedFlightService } from "./adsbIntegratedFlightService";
 import { icaoApiService } from "./icaoApiService";
 import { icaoMLIntegration } from "./icaoMLIntegration";
 import VirginAtlanticFleetService from "./virginAtlanticFleetService";
@@ -1751,24 +1752,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return;
       }
       
-      // If no real flights, try to get authentic Virgin Atlantic schedule data
-      const authenticFlights = virginAtlanticService.generateOperationalData();
+      // If no real flights from OpenSky, use ADS-B Exchange integrated service
+      const enhancedFlights = await adsbIntegratedFlightService.getEnhancedFlightData();
+      const stats = await adsbIntegratedFlightService.getFlightStats();
       
-      if (authenticFlights.length > 0) {
-        res.json({
-          success: true,
-          flights: authenticFlights,
-          count: authenticFlights.length,
-          timestamp: new Date().toISOString(),
-          source: 'virgin_atlantic_official_schedule',
-          real_time_integration: false,
-          schedule_info: virginAtlanticService.getFlightScheduleInfo(),
-          fleet_composition: virginAtlanticService.getFleetComposition(),
-          route_network: virginAtlanticService.getRouteNetwork(),
-          note: 'Authentic Virgin Atlantic flight data from official cargo schedule (no real flights currently active)'
-        });
-        return;
-      }
+      console.log(`ADS-B Integration: Delivering ${enhancedFlights.length} flights with ${stats.authentic_percentage}% authentic data`);
+      
+      res.json({
+        success: true,
+        flights: enhancedFlights,
+        count: enhancedFlights.length,
+        timestamp: new Date().toISOString(),
+        source: 'ADS-B Exchange Enhanced Service',
+        real_time_integration: true,
+        authentic_flight_count: stats.authentic_flights,
+        simulated_flight_count: stats.simulated_flights,
+        authentic_data_percentage: stats.authentic_percentage,
+        data_sources: stats.data_sources,
+        note: `Enhanced Virgin Atlantic flight data with ${stats.authentic_percentage}% authentic ADS-B tracking`
+      });
+      return;
 
       // Fallback to external APIs if authentic schedule data not available
       const flights = await aviationApiService.getVirginAtlanticFlights();
@@ -1798,6 +1801,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         success: false,
         message: `Failed to fetch Virgin Atlantic flights: ${error instanceof Error ? error.message : 'Unknown error'}`
+      });
+    }
+  });
+
+  // New ADS-B Integrated Flight Service Endpoint
+  app.get('/api/aviation/enhanced-flight-data', async (req, res) => {
+    try {
+      const enhancedFlights = await adsbIntegratedFlightService.getEnhancedFlightData();
+      const stats = await adsbIntegratedFlightService.getFlightStats();
+      
+      res.json({
+        success: true,
+        flights: enhancedFlights,
+        count: enhancedFlights.length,
+        timestamp: new Date().toISOString(),
+        source: 'ADS-B Exchange Enhanced Service',
+        statistics: stats,
+        note: `Enhanced flight data with ${stats.authentic_percentage}% authentic ADS-B tracking`
+      });
+      
+    } catch (error) {
+      console.error('Enhanced flight data error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch enhanced flight data',
+        message: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
