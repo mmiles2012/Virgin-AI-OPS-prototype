@@ -87,27 +87,35 @@ class AuthenticVirginAtlanticTracker {
     });
   }
 
-  // Check if aircraft belongs to Virgin Atlantic
+  // Check if aircraft belongs to Virgin Atlantic with fleet type validation
   isVirginAtlantic(aircraft) {
     const callsign = aircraft.flight?.trim().toUpperCase() || '';
     const registration = aircraft.r?.toUpperCase() || '';
+    const aircraftType = aircraft.t?.toUpperCase() || '';
     
-    // Check callsign patterns
-    const hasVirginCallsign = this.virginCallsigns.some(pattern => 
-      callsign.startsWith(pattern)
-    );
+    // Virgin Atlantic fleet types only (exclude B772 which is British Airways)
+    const virginFleetTypes = ['A339', 'A333', 'A343', 'A359', 'A35K', 'B789'];
+    const hasValidFleetType = virginFleetTypes.includes(aircraftType);
     
-    // Check registration patterns
+    // Check registration patterns (Virgin Atlantic registrations)
     const hasVirginRegistration = this.virginRegistrations.some(pattern => 
       registration.startsWith(pattern)
     );
     
-    // Additional check for Virgin Atlantic specific patterns
-    const isVirginFlight = callsign.includes('VIR') || 
-                          callsign.match(/^VS\d+/) || 
-                          callsign.match(/^VIR\d+/);
+    // Virgin Atlantic callsign patterns (exclude BAW which is British Airways)
+    const isVirginCallsign = (callsign.startsWith('VIR') || callsign.startsWith('VS')) &&
+                            !callsign.startsWith('BAW'); // Explicitly exclude British Airways
     
-    return hasVirginCallsign || hasVirginRegistration || isVirginFlight;
+    // Must have Virgin registration AND valid fleet type, OR Virgin callsign with valid fleet type
+    const isAuthenticVirgin = (hasVirginRegistration && hasValidFleetType) || 
+                             (isVirginCallsign && hasValidFleetType);
+    
+    // Additional exclusion: Don't include B772 aircraft as Virgin Atlantic doesn't operate them
+    if (aircraftType === 'B772' || aircraftType === 'B77W' || aircraftType === 'B773') {
+      return false; // These are British Airways, not Virgin Atlantic
+    }
+    
+    return isAuthenticVirgin;
   }
 
   // Get all aircraft and filter for Virgin Atlantic
@@ -164,9 +172,20 @@ class AuthenticVirginAtlanticTracker {
     }
   }
 
-  // Format flight data for AINO platform compatibility
+  // Format flight data for AINO platform compatibility with additional filtering
   formatForAINO(flights) {
-    return flights.map((flight, index) => {
+    return flights.filter(flight => {
+      const callsign = flight.flight?.trim() || '';
+      const aircraftType = flight.t || '';
+      
+      // Additional filter: Remove any B772 (British Airways) or BAW callsigns that slipped through
+      if (aircraftType === 'B772' || callsign.startsWith('BAW')) {
+        console.log(`⚠️  Filtering out non-Virgin Atlantic aircraft in formatForAINO: ${callsign} (${aircraftType})`);
+        return false;
+      }
+      
+      return true;
+    }).map((flight, index) => {
       const callsign = flight.flight?.trim() || `VIR${index + 1}`;
       const registration = flight.r || 'Unknown';
       const altitude = flight.alt_baro || null;
