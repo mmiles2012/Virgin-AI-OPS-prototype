@@ -1,0 +1,541 @@
+import requests
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import time
+import json
+import sqlite3
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+import warnings
+warnings.filterwarnings('ignore')
+
+class AirportWeatherDelayPredictor:
+    def __init__(self):
+        self.db_path = 'airport_data.db'
+        self.weather_api_key = None  # Set your API key here
+        self.major_airports = [
+            'ATL', 'LAX', 'ORD', 'DFW', 'JFK', 'DEN', 'SFO', 'SEA', 'LAS', 'PHX',
+            'IAH', 'CLT', 'MIA', 'BOS', 'MSP', 'FLL', 'DTW', 'PHL', 'LGA', 'BWI'
+        ]
+        self.setup_database()
+        self.scaler = StandardScaler()
+        self.label_encoders = {}
+        self.model = None
+        
+    def setup_database(self):
+        """Initialize SQLite database for storing weather and delay data"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Weather data table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS weather_data (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                airport_code TEXT,
+                timestamp DATETIME,
+                temperature REAL,
+                humidity REAL,
+                pressure REAL,
+                wind_speed REAL,
+                wind_direction REAL,
+                visibility REAL,
+                precipitation REAL,
+                weather_condition TEXT,
+                cloud_cover REAL
+            )
+        ''')
+        
+        # Delay data table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS delay_data (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                airport_code TEXT,
+                timestamp DATETIME,
+                avg_departure_delay REAL,
+                avg_arrival_delay REAL,
+                total_delays INTEGER,
+                cancellations INTEGER,
+                total_flights INTEGER,
+                delay_reason TEXT
+            )
+        ''')
+        
+        conn.commit()
+        conn.close()
+    
+    def get_weather_data(self, airport_code):
+        """Fetch weather data for a specific airport"""
+        try:
+            # Using Aviation Weather Center API (free)
+            url = f"https://aviationweather.gov/api/data/metar?ids={airport_code}&format=json"
+            response = requests.get(url, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data:
+                    weather_info = self.parse_metar_data(data[0])
+                    return weather_info
+            
+            # Fallback to OpenWeatherMap API if available
+            if self.weather_api_key:
+                return self.get_openweather_data(airport_code)
+                
+        except Exception as e:
+            print(f"Error fetching weather data for {airport_code}: {e}")
+            return None
+    
+    def parse_metar_data(self, metar_data):
+        """Parse METAR weather data"""
+        try:
+            return {
+                'temperature': metar_data.get('temp', 0),
+                'humidity': metar_data.get('humidity', 0),
+                'pressure': metar_data.get('altim', 0),
+                'wind_speed': metar_data.get('wspd', 0),
+                'wind_direction': metar_data.get('wdir', 0),
+                'visibility': metar_data.get('visib', 10),
+                'precipitation': 0,  # Would need to parse from rawOb
+                'weather_condition': metar_data.get('wxString', 'Clear'),
+                'cloud_cover': self.parse_cloud_cover(metar_data.get('clds', []))
+            }
+        except:
+            return self.get_default_weather()
+    
+    def parse_cloud_cover(self, cloud_data):
+        """Parse cloud cover information"""
+        if not cloud_data:
+            return 0
+        # Simple cloud cover calculation
+        total_cover = sum([cloud.get('cover', 0) for cloud in cloud_data])
+        return min(total_cover / len(cloud_data), 8) if cloud_data else 0
+    
+    def get_openweather_data(self, airport_code):
+        """Fetch data from OpenWeatherMap API as fallback"""
+        # This would require airport coordinates mapping
+        return self.get_default_weather()
+    
+    def get_default_weather(self):
+        """Return default weather data when API fails"""
+        return {
+            'temperature': 20,
+            'humidity': 50,
+            'pressure': 1013,
+            'wind_speed': 5,
+            'wind_direction': 0,
+            'visibility': 10,
+            'precipitation': 0,
+            'weather_condition': 'Clear',
+            'cloud_cover': 0
+        }
+    
+    def get_faa_delay_data(self, airport_code):
+        """Fetch FAA delay data (simulated for demo)"""
+        try:
+            # FAA System Operations Data would go here
+            # For now, we'll simulate realistic delay data
+            base_delay = np.random.normal(15, 10)  # Average 15 min delay
+            
+            # Simulate weather impact on delays
+            weather = self.get_weather_data(airport_code)
+            if weather:
+                weather_factor = 1.0
+                if weather['visibility'] < 3:
+                    weather_factor += 0.5
+                if weather['wind_speed'] > 25:
+                    weather_factor += 0.3
+                if weather['precipitation'] > 0:
+                    weather_factor += 0.2
+                
+                base_delay *= weather_factor
+            
+            return {
+                'avg_departure_delay': max(0, base_delay + np.random.normal(0, 5)),
+                'avg_arrival_delay': max(0, base_delay + np.random.normal(0, 3)),
+                'total_delays': np.random.randint(50, 200),
+                'cancellations': np.random.randint(0, 20),
+                'total_flights': np.random.randint(200, 800),
+                'delay_reason': np.random.choice(['Weather', 'Air Traffic', 'Mechanical', 'Other'])
+            }
+            
+        except Exception as e:
+            print(f"Error fetching delay data for {airport_code}: {e}")
+            return None
+    
+    def collect_data(self):
+        """Collect weather and delay data for all airports"""
+        print("Starting data collection...")
+        conn = sqlite3.connect(self.db_path)
+        
+        for airport in self.major_airports:
+            print(f"Collecting data for {airport}...")
+            
+            # Get weather data
+            weather_data = self.get_weather_data(airport)
+            if weather_data:
+                weather_row = (
+                    airport, datetime.now(), weather_data['temperature'],
+                    weather_data['humidity'], weather_data['pressure'],
+                    weather_data['wind_speed'], weather_data['wind_direction'],
+                    weather_data['visibility'], weather_data['precipitation'],
+                    weather_data['weather_condition'], weather_data['cloud_cover']
+                )
+                
+                conn.execute('''
+                    INSERT INTO weather_data 
+                    (airport_code, timestamp, temperature, humidity, pressure, 
+                     wind_speed, wind_direction, visibility, precipitation, 
+                     weather_condition, cloud_cover)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', weather_row)
+            
+            # Get delay data
+            delay_data = self.get_faa_delay_data(airport)
+            if delay_data:
+                delay_row = (
+                    airport, datetime.now(), delay_data['avg_departure_delay'],
+                    delay_data['avg_arrival_delay'], delay_data['total_delays'],
+                    delay_data['cancellations'], delay_data['total_flights'],
+                    delay_data['delay_reason']
+                )
+                
+                conn.execute('''
+                    INSERT INTO delay_data 
+                    (airport_code, timestamp, avg_departure_delay, avg_arrival_delay, 
+                     total_delays, cancellations, total_flights, delay_reason)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ''', delay_row)
+            
+            time.sleep(1)  # Rate limiting
+        
+        conn.commit()
+        conn.close()
+        print("Data collection completed!")
+    
+    def generate_historical_data(self, days=30):
+        """Generate historical data for model training"""
+        print(f"Generating {days} days of historical data...")
+        conn = sqlite3.connect(self.db_path)
+        
+        for day in range(days):
+            date = datetime.now() - timedelta(days=day)
+            
+            for airport in self.major_airports:
+                # Simulate seasonal weather patterns
+                season_factor = np.sin(2 * np.pi * date.timetuple().tm_yday / 365.25)
+                
+                # Weather simulation
+                base_temp = 20 + season_factor * 15
+                weather_data = {
+                    'temperature': base_temp + np.random.normal(0, 5),
+                    'humidity': max(0, min(100, 50 + np.random.normal(0, 15))),
+                    'pressure': 1013 + np.random.normal(0, 20),
+                    'wind_speed': max(0, np.random.exponential(8)),
+                    'wind_direction': np.random.uniform(0, 360),
+                    'visibility': max(0.5, np.random.normal(10, 3)),
+                    'precipitation': max(0, np.random.exponential(0.1)),
+                    'weather_condition': np.random.choice(['Clear', 'Cloudy', 'Rain', 'Snow', 'Fog']),
+                    'cloud_cover': np.random.uniform(0, 8)
+                }
+                
+                # Insert weather data
+                weather_row = (
+                    airport, date, weather_data['temperature'],
+                    weather_data['humidity'], weather_data['pressure'],
+                    weather_data['wind_speed'], weather_data['wind_direction'],
+                    weather_data['visibility'], weather_data['precipitation'],
+                    weather_data['weather_condition'], weather_data['cloud_cover']
+                )
+                
+                conn.execute('''
+                    INSERT INTO weather_data 
+                    (airport_code, timestamp, temperature, humidity, pressure, 
+                     wind_speed, wind_direction, visibility, precipitation, 
+                     weather_condition, cloud_cover)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', weather_row)
+                
+                # Simulate delay correlation with weather
+                weather_delay_factor = 1.0
+                if weather_data['visibility'] < 3:
+                    weather_delay_factor += 1.5
+                if weather_data['wind_speed'] > 25:
+                    weather_delay_factor += 1.0
+                if weather_data['precipitation'] > 0.5:
+                    weather_delay_factor += 0.8
+                if weather_data['weather_condition'] in ['Snow', 'Fog']:
+                    weather_delay_factor += 1.2
+                
+                base_delay = 10 * weather_delay_factor
+                delay_data = {
+                    'avg_departure_delay': max(0, base_delay + np.random.normal(0, 5)),
+                    'avg_arrival_delay': max(0, base_delay + np.random.normal(0, 3)),
+                    'total_delays': int(max(0, 100 * weather_delay_factor + np.random.normal(0, 30))),
+                    'cancellations': int(max(0, 5 * weather_delay_factor + np.random.normal(0, 3))),
+                    'total_flights': np.random.randint(200, 800),
+                    'delay_reason': np.random.choice(['Weather', 'Air Traffic', 'Mechanical', 'Other'])
+                }
+                
+                delay_row = (
+                    airport, date, delay_data['avg_departure_delay'],
+                    delay_data['avg_arrival_delay'], delay_data['total_delays'],
+                    delay_data['cancellations'], delay_data['total_flights'],
+                    delay_data['delay_reason']
+                )
+                
+                conn.execute('''
+                    INSERT INTO delay_data 
+                    (airport_code, timestamp, avg_departure_delay, avg_arrival_delay, 
+                     total_delays, cancellations, total_flights, delay_reason)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ''', delay_row)
+        
+        conn.commit()
+        conn.close()
+        print("Historical data generation completed!")
+    
+    def prepare_training_data(self):
+        """Prepare data for machine learning model"""
+        conn = sqlite3.connect(self.db_path)
+        
+        # Join weather and delay data
+        query = '''
+            SELECT w.airport_code, w.timestamp, w.temperature, w.humidity, w.pressure,
+                   w.wind_speed, w.wind_direction, w.visibility, w.precipitation,
+                   w.weather_condition, w.cloud_cover,
+                   d.avg_departure_delay, d.avg_arrival_delay, d.total_delays,
+                   d.cancellations, d.total_flights, d.delay_reason
+            FROM weather_data w
+            JOIN delay_data d ON w.airport_code = d.airport_code 
+                              AND abs(julianday(w.timestamp) - julianday(d.timestamp)) < 0.1
+        '''
+        
+        df = pd.read_sql_query(query, conn)
+        conn.close()
+        
+        if df.empty:
+            print("No data found. Generating historical data first...")
+            self.generate_historical_data()
+            return self.prepare_training_data()
+        
+        # Feature engineering
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        df['hour'] = df['timestamp'].dt.hour
+        df['day_of_week'] = df['timestamp'].dt.dayofweek
+        df['month'] = df['timestamp'].dt.month
+        
+        # Weather severity index
+        df['weather_severity'] = (
+            (df['wind_speed'] > 20).astype(int) * 2 +
+            (df['visibility'] < 5).astype(int) * 3 +
+            (df['precipitation'] > 0.1).astype(int) * 2 +
+            (df['weather_condition'].isin(['Snow', 'Fog'])).astype(int) * 4
+        )
+        
+        # Encode categorical variables
+        categorical_cols = ['airport_code', 'weather_condition', 'delay_reason']
+        for col in categorical_cols:
+            le = LabelEncoder()
+            df[col + '_encoded'] = le.fit_transform(df[col])
+            self.label_encoders[col] = le
+        
+        return df
+    
+    def train_model(self):
+        """Train the predictive model"""
+        print("Preparing training data...")
+        df = self.prepare_training_data()
+        
+        # Select features
+        feature_cols = [
+            'airport_code_encoded', 'temperature', 'humidity', 'pressure',
+            'wind_speed', 'wind_direction', 'visibility', 'precipitation',
+            'weather_condition_encoded', 'cloud_cover', 'hour', 'day_of_week',
+            'month', 'weather_severity', 'total_flights'
+        ]
+        
+        X = df[feature_cols]
+        y = df['avg_departure_delay']  # Predicting departure delays
+        
+        # Split data
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42
+        )
+        
+        # Scale features
+        X_train_scaled = self.scaler.fit_transform(X_train)
+        X_test_scaled = self.scaler.transform(X_test)
+        
+        # Train model
+        print("Training Random Forest model...")
+        self.model = RandomForestRegressor(
+            n_estimators=100, random_state=42, n_jobs=-1
+        )
+        self.model.fit(X_train_scaled, y_train)
+        
+        # Evaluate model
+        y_pred = self.model.predict(X_test_scaled)
+        mse = mean_squared_error(y_test, y_pred)
+        r2 = r2_score(y_test, y_pred)
+        
+        print(f"Model Performance:")
+        print(f"Mean Squared Error: {mse:.2f}")
+        print(f"R² Score: {r2:.3f}")
+        
+        # Feature importance
+        feature_importance = pd.DataFrame({
+            'feature': feature_cols,
+            'importance': self.model.feature_importances_
+        }).sort_values('importance', ascending=False)
+        
+        print("\nTop 10 Most Important Features:")
+        print(feature_importance.head(10))
+        
+        return self.model
+    
+    def predict_delays(self, airport_code, hours_ahead=24):
+        """Predict delays for a specific airport"""
+        if not self.model:
+            print("Model not trained. Training now...")
+            self.train_model()
+        
+        predictions = []
+        
+        for hour in range(hours_ahead):
+            future_time = datetime.now() + timedelta(hours=hour)
+            
+            # Get current weather (in real implementation, this would be forecast data)
+            weather_data = self.get_weather_data(airport_code)
+            if not weather_data:
+                continue
+            
+            # Create feature vector
+            features = [
+                self.label_encoders['airport_code'].transform([airport_code])[0],
+                weather_data['temperature'],
+                weather_data['humidity'],
+                weather_data['pressure'],
+                weather_data['wind_speed'],
+                weather_data['wind_direction'],
+                weather_data['visibility'],
+                weather_data['precipitation'],
+                self.label_encoders['weather_condition'].transform([weather_data['weather_condition']])[0],
+                weather_data['cloud_cover'],
+                future_time.hour,
+                future_time.weekday(),
+                future_time.month,
+                # Weather severity
+                (weather_data['wind_speed'] > 20) * 2 +
+                (weather_data['visibility'] < 5) * 3 +
+                (weather_data['precipitation'] > 0.1) * 2 +
+                (weather_data['weather_condition'] in ['Snow', 'Fog']) * 4,
+                500  # Estimated flights
+            ]
+            
+            # Scale features and predict
+            features_scaled = self.scaler.transform([features])
+            predicted_delay = self.model.predict(features_scaled)[0]
+            
+            predictions.append({
+                'timestamp': future_time,
+                'predicted_delay': max(0, predicted_delay),
+                'weather_condition': weather_data['weather_condition'],
+                'visibility': weather_data['visibility'],
+                'wind_speed': weather_data['wind_speed']
+            })
+        
+        return predictions
+    
+    def generate_report(self, airport_code):
+        """Generate a comprehensive delay prediction report"""
+        print(f"\n=== Delay Prediction Report for {airport_code} ===")
+        
+        # Current conditions
+        weather = self.get_weather_data(airport_code)
+        if weather:
+            print(f"\nCurrent Weather Conditions:")
+            print(f"Temperature: {weather['temperature']:.1f}°C")
+            print(f"Visibility: {weather['visibility']:.1f} km")
+            print(f"Wind Speed: {weather['wind_speed']:.1f} mph")
+            print(f"Conditions: {weather['weather_condition']}")
+        
+        # Predictions
+        predictions = self.predict_delays(airport_code)
+        if predictions:
+            print(f"\n24-Hour Delay Predictions:")
+            for i, pred in enumerate(predictions[:8]):  # Show first 8 hours
+                print(f"Hour +{i+1}: {pred['predicted_delay']:.1f} min delay")
+        
+        # Risk assessment
+        avg_delay = np.mean([p['predicted_delay'] for p in predictions])
+        if avg_delay > 30:
+            risk_level = "HIGH"
+        elif avg_delay > 15:
+            risk_level = "MEDIUM"
+        else:
+            risk_level = "LOW"
+        
+        print(f"\nRisk Assessment: {risk_level}")
+        print(f"Average Predicted Delay: {avg_delay:.1f} minutes")
+
+
+def main():
+    """Main execution function"""
+    predictor = AirportWeatherDelayPredictor()
+    
+    # Set your weather API key if you have one
+    # predictor.weather_api_key = "YOUR_API_KEY_HERE"
+    
+    print("Airport Weather & Delay Prediction System")
+    print("="*50)
+    
+    while True:
+        print("\nOptions:")
+        print("1. Collect current data")
+        print("2. Generate historical data")
+        print("3. Train model")
+        print("4. Predict delays for airport")
+        print("5. Generate report")
+        print("6. Exit")
+        
+        choice = input("\nEnter your choice (1-6): ")
+        
+        if choice == '1':
+            predictor.collect_data()
+        
+        elif choice == '2':
+            days = int(input("Enter number of days to generate (default 30): ") or "30")
+            predictor.generate_historical_data(days)
+        
+        elif choice == '3':
+            predictor.train_model()
+        
+        elif choice == '4':
+            airport = input("Enter airport code (e.g., ATL, LAX, ORD): ").upper()
+            if airport in predictor.major_airports:
+                predictions = predictor.predict_delays(airport)
+                print(f"\nPredictions for {airport}:")
+                for i, pred in enumerate(predictions[:12]):
+                    print(f"Hour +{i+1}: {pred['predicted_delay']:.1f} min delay")
+            else:
+                print("Airport not in supported list")
+        
+        elif choice == '5':
+            airport = input("Enter airport code: ").upper()
+            if airport in predictor.major_airports:
+                predictor.generate_report(airport)
+            else:
+                print("Airport not in supported list")
+        
+        elif choice == '6':
+            print("Goodbye!")
+            break
+        
+        else:
+            print("Invalid choice. Please try again.")
+
+
+if __name__ == "__main__":
+    main()
