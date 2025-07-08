@@ -1,0 +1,233 @@
+// Virgin Atlantic Flight Tracker for Replit
+// Run this in Node.js environment on Replit
+
+const https = require('https');
+const fs = require('fs');
+
+class VirginAtlanticTracker {
+  constructor() {
+    // ADS-B Exchange API endpoint
+    this.baseURL = 'https://adsbexchange.com/api/aircraft/json';
+    
+    // Virgin Atlantic flight patterns
+    this.virginCallsigns = [
+      'VIR',    // Virgin Atlantic main callsign
+      'VS',     // IATA code flights
+      'VSO',    // Virgin Atlantic occasional
+      'VJT'     // Virgin Atlantic charter
+    ];
+    
+    // Virgin Atlantic aircraft registrations (G- prefix for UK)
+    this.virginRegistrations = [
+      'G-V',    // Virgin Atlantic aircraft often start with G-V
+      'G-VINE', // Some specific Virgin Atlantic registrations
+      'G-VROY',
+      'G-VWEB',
+      'G-VLIB',
+      'G-VLIP'
+    ];
+  }
+
+  // Make HTTP request to ADS-B Exchange API
+  async makeRequest(url) {
+    return new Promise((resolve, reject) => {
+      https.get(url, {
+        headers: {
+          'User-Agent': 'VirginAtlanticTracker/1.0',
+          'Accept': 'application/json'
+        }
+      }, (response) => {
+        let data = '';
+        
+        response.on('data', (chunk) => {
+          data += chunk;
+        });
+        
+        response.on('end', () => {
+          try {
+            const jsonData = JSON.parse(data);
+            resolve(jsonData);
+          } catch (error) {
+            reject(new Error(`JSON parsing error: ${error.message}`));
+          }
+        });
+      }).on('error', (error) => {
+        reject(new Error(`Request error: ${error.message}`));
+      });
+    });
+  }
+
+  // Check if aircraft belongs to Virgin Atlantic
+  isVirginAtlantic(aircraft) {
+    const callsign = aircraft.flight?.trim().toUpperCase() || '';
+    const registration = aircraft.r?.toUpperCase() || '';
+    
+    // Check callsign patterns
+    const hasVirginCallsign = this.virginCallsigns.some(pattern => 
+      callsign.startsWith(pattern)
+    );
+    
+    // Check registration patterns
+    const hasVirginRegistration = this.virginRegistrations.some(pattern => 
+      registration.startsWith(pattern)
+    );
+    
+    // Additional check for Virgin Atlantic specific patterns
+    const isVirginFlight = callsign.includes('VIR') || 
+                          callsign.match(/^VS\d+/) || 
+                          callsign.match(/^VIR\d+/);
+    
+    return hasVirginCallsign || hasVirginRegistration || isVirginFlight;
+  }
+
+  // Get all aircraft and filter for Virgin Atlantic
+  async getVirginAtlanticFlights() {
+    try {
+      console.log('🔍 Fetching aircraft data from ADS-B Exchange...');
+      const data = await this.makeRequest(this.baseURL);
+      
+      if (!data || !data.aircraft) {
+        throw new Error('No aircraft data received');
+      }
+
+      console.log(`📡 Total aircraft found: ${data.aircraft.length}`);
+      
+      // Filter for Virgin Atlantic flights
+      const virginFlights = data.aircraft.filter(aircraft => 
+        this.isVirginAtlantic(aircraft)
+      );
+      
+      console.log(`✈️  Virgin Atlantic flights found: ${virginFlights.length}`);
+      
+      return virginFlights;
+    } catch (error) {
+      console.error('❌ Error fetching Virgin Atlantic flights:', error.message);
+      throw error;
+    }
+  }
+
+  // Format flight data for display
+  formatFlightData(flights) {
+    return flights.map(flight => {
+      const altitude = flight.altitude ? `${flight.altitude} ft` : 'Unknown';
+      const speed = flight.speed ? `${flight.speed} knots` : 'Unknown';
+      const position = flight.lat && flight.lon ? 
+        `${flight.lat.toFixed(4)}, ${flight.lon.toFixed(4)}` : 'Unknown';
+      
+      return {
+        callsign: flight.flight?.trim() || 'Unknown',
+        registration: flight.r || 'Unknown',
+        altitude: altitude,
+        speed: speed,
+        position: position,
+        heading: flight.track ? `${flight.track}°` : 'Unknown',
+        squawk: flight.squawk || 'Unknown',
+        aircraft_type: flight.type || 'Unknown',
+        last_seen: flight.seen ? `${flight.seen} seconds ago` : 'Unknown'
+      };
+    });
+  }
+
+  // Display flights in a nice format
+  displayFlights(flights) {
+    if (flights.length === 0) {
+      console.log('🚫 No Virgin Atlantic flights currently tracked');
+      return;
+    }
+
+    console.log('\n' + '='.repeat(80));
+    console.log('🛫 VIRGIN ATLANTIC FLIGHTS CURRENTLY TRACKED');
+    console.log('='.repeat(80));
+
+    const formattedFlights = this.formatFlightData(flights);
+    
+    formattedFlights.forEach((flight, index) => {
+      console.log(`\n${index + 1}. ${flight.callsign} (${flight.registration})`);
+      console.log(`   Aircraft Type: ${flight.aircraft_type}`);
+      console.log(`   Altitude: ${flight.altitude}`);
+      console.log(`   Speed: ${flight.speed}`);
+      console.log(`   Position: ${flight.position}`);
+      console.log(`   Heading: ${flight.heading}`);
+      console.log(`   Squawk: ${flight.squawk}`);
+      console.log(`   Last Seen: ${flight.last_seen}`);
+      console.log('   ' + '-'.repeat(40));
+    });
+  }
+
+  // Save flight data to JSON file
+  saveFlightData(flights, filename = 'virgin_atlantic_flights.json') {
+    try {
+      const formattedData = {
+        timestamp: new Date().toISOString(),
+        total_flights: flights.length,
+        flights: this.formatFlightData(flights)
+      };
+      
+      fs.writeFileSync(filename, JSON.stringify(formattedData, null, 2));
+      console.log(`💾 Flight data saved to ${filename}`);
+    } catch (error) {
+      console.error('❌ Error saving flight data:', error.message);
+    }
+  }
+
+  // Monitor flights continuously
+  async monitorFlights(intervalMinutes = 5) {
+    console.log(`🔄 Starting Virgin Atlantic flight monitoring (every ${intervalMinutes} minutes)`);
+    console.log('Press Ctrl+C to stop monitoring\n');
+
+    const monitor = async () => {
+      try {
+        const flights = await this.getVirginAtlanticFlights();
+        this.displayFlights(flights);
+        this.saveFlightData(flights);
+        
+        console.log(`\n⏰ Next update in ${intervalMinutes} minutes...`);
+        console.log('=' .repeat(80));
+        
+      } catch (error) {
+        console.error('❌ Monitoring error:', error.message);
+      }
+    };
+
+    // Run immediately
+    await monitor();
+    
+    // Then run at intervals
+    setInterval(monitor, intervalMinutes * 60 * 1000);
+  }
+}
+
+// Main execution function
+async function main() {
+  const tracker = new VirginAtlanticTracker();
+  
+  try {
+    // Get current Virgin Atlantic flights
+    const flights = await tracker.getVirginAtlanticFlights();
+    
+    // Display the flights
+    tracker.displayFlights(flights);
+    
+    // Save to file
+    tracker.saveFlightData(flights);
+    
+    // Ask if user wants to monitor continuously
+    console.log('\n📊 Would you like to monitor Virgin Atlantic flights continuously?');
+    console.log('💡 Uncomment the line below to start monitoring every 5 minutes:');
+    console.log('// await tracker.monitorFlights(5);');
+    
+    // Uncomment the next line to start continuous monitoring
+    // await tracker.monitorFlights(5);
+    
+  } catch (error) {
+    console.error('❌ Application error:', error.message);
+    process.exit(1);
+  }
+}
+
+// Run the application
+if (require.main === module) {
+  main();
+}
+
+module.exports = VirginAtlanticTracker;

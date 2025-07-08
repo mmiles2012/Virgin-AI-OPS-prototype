@@ -1691,68 +1691,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Real-time Flight Data Routes
   app.get("/api/aviation/virgin-atlantic-flights", async (req, res) => {
     try {
-      // Check for real Virgin Atlantic flights first
-      const realFlights = await openSkyTracker.getVirginAtlanticFlights();
+      console.log('🔍 Virgin Atlantic flights - using ADS-B Exchange integrated service');
       
-      if (realFlights.length > 0) {
-        console.log(`Found ${realFlights.length} real Virgin Atlantic flights - using authentic data`);
-        
-        const authenticFlights = realFlights.map((realFlight: any, index: number) => {
-          const [depAirport, arrAirport] = guessRouteFromPosition(realFlight.latitude, realFlight.longitude);
-          const currentTime = new Date();
-          
-          return {
-            flight_number: realFlight.callsign || `VIR${index + 1}`,
-            airline: 'Virgin Atlantic',
-            aircraft_type: realFlight.aircraft_type || 'Boeing 787-9',
-            route: `${depAirport}-${arrAirport}`,
-            departure_airport: depAirport,
-            arrival_airport: arrAirport,
-            departure_time: new Date(currentTime.getTime() - 2 * 60 * 60 * 1000).toTimeString().slice(0, 5),
-            arrival_time: new Date(currentTime.getTime() + 6 * 60 * 60 * 1000).toTimeString().slice(0, 5),
-            frequency: 'Real-time',
-            status: realFlight.on_ground ? 'On Ground (Real)' : 'En Route (Real)',
-            gate: `T3-${Math.floor(Math.random() * 59) + 1}`,
-            terminal: '3',
-            callsign: realFlight.callsign,
-            latitude: realFlight.latitude,
-            longitude: realFlight.longitude,
-            altitude: realFlight.altitude || 35000,
-            velocity: realFlight.velocity || 485,
-            heading: realFlight.heading || 270,
-            aircraft: realFlight.aircraft_type || 'Boeing 787-9',
-            origin: depAirport,
-            destination: arrAirport,
-            scheduled_departure: new Date(currentTime.getTime() - 2 * 60 * 60 * 1000).toISOString(),
-            scheduled_arrival: new Date(currentTime.getTime() + 6 * 60 * 60 * 1000).toISOString(),
-            current_status: realFlight.on_ground ? 'ON_GROUND_REAL' : 'EN_ROUTE_REAL',
-            flight_progress: calculateFlightProgress(realFlight.latitude, realFlight.longitude, depAirport, arrAirport),
-            distance_remaining: Math.floor(Math.random() * 2000) + 1000,
-            delay_minutes: 0,
-            fuel_remaining: Math.floor(Math.random() * 40) + 60,
-            warnings: [], // Real flights don't have simulated warnings
-            is_real_tracking: true,
-            real_data_source: 'OpenSky Network',
-            icao24: realFlight.icao24,
-            last_contact: realFlight.last_contact
-          };
-        });
-        
-        res.json({
-          success: true,
-          flights: authenticFlights,
-          count: authenticFlights.length,
-          total_flights: authenticFlights.length,
-          timestamp: new Date().toISOString(),
-          source: 'OpenSky Network - Real Virgin Atlantic Tracking',
-          real_time_integration: true,
-          real_tracking_count: realFlights.length,
-          note: 'Authentic Virgin Atlantic flight data from OpenSky Network real-time tracking'
-        });
-        return;
-      }
-      
-      // If no real flights from OpenSky, use ADS-B Exchange integrated service
+      // Use ADS-B Exchange integrated service directly
       const enhancedFlights = await adsbIntegratedFlightService.getEnhancedFlightData();
       const stats = await adsbIntegratedFlightService.getFlightStats();
       
@@ -1771,36 +1712,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         data_sources: stats.data_sources,
         note: `Enhanced Virgin Atlantic flight data with ${stats.authentic_percentage}% authentic ADS-B tracking`
       });
-      return;
-
-      // Fallback to external APIs if authentic schedule data not available
-      const flights = await aviationApiService.getVirginAtlanticFlights();
       
-      // If no authentic data available but training mode is requested
-      if (flights.length === 0 && req.query.training_mode === 'true') {
-        const trainingFlights = demoFlightGenerator.getVirginAtlanticFlights();
-        res.json({
-          success: true,
-          flights: trainingFlights,
-          count: trainingFlights.length,
-          timestamp: new Date().toISOString(),
-          source: 'training_simulation',
-          note: 'Training simulation data - not live flights'
-        });
-        return;
-      }
-      
-      res.json({
-        success: true,
-        flights,
-        count: flights.length,
-        timestamp: new Date().toISOString(),
-        source: flights.length > 0 ? 'live_data' : 'no_data'
-      });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error fetching Virgin Atlantic flights:', error);
       res.status(500).json({
         success: false,
-        message: `Failed to fetch Virgin Atlantic flights: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: 'Failed to fetch Virgin Atlantic flights',
+        message: error.message
       });
     }
   });

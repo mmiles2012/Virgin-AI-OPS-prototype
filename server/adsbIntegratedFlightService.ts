@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { virginAtlanticService } from './virginAtlanticService';
 import { adsbExchangeService } from './adsbExchangeService';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const AuthenticVirginAtlanticTracker = require('./authenticVirginAtlanticTracker');
 
 interface EnhancedFlightData {
   flight_number: string;
@@ -46,9 +49,11 @@ class ADSBIntegratedFlightService {
   private cache: Map<string, EnhancedFlightData[]> = new Map();
   private cacheTimeout = 30000; // 30 seconds
   private lastFetch = 0;
+  private authenticTracker: any;
 
   constructor() {
-    console.log('ADS-B Integrated Flight Service: Initialized with real-time data priority');
+    this.authenticTracker = new AuthenticVirginAtlanticTracker();
+    console.log('ADS-B Integrated Flight Service: Initialized with authentic ADS-B Exchange data priority');
   }
 
   async getEnhancedFlightData(): Promise<EnhancedFlightData[]> {
@@ -60,20 +65,36 @@ class ADSBIntegratedFlightService {
     }
 
     try {
-      // Step 1: Get simulated Virgin Atlantic flights as baseline
-      const simulatedFlights = await this.getSimulatedFlights();
+      console.log('🔍 Fetching enhanced Virgin Atlantic flights using authentic ADS-B Exchange data...');
       
-      // Step 2: Try to get real ADS-B Exchange data
-      const adsbFlights = await this.getADSBFlights();
+      // Step 1: Get authentic ADS-B Exchange data
+      const authenticFlights = await this.authenticTracker.getAINOFormattedFlights();
       
-      // Step 3: Merge real data with simulated data
-      const enhancedFlights = this.mergeFlightData(simulatedFlights, adsbFlights);
+      let enhancedFlights: EnhancedFlightData[] = [];
+      
+      if (authenticFlights.success && authenticFlights.flights.length > 0) {
+        console.log(`✈️  Found ${authenticFlights.flights.length} authentic Virgin Atlantic flights via ADS-B Exchange`);
+        enhancedFlights = authenticFlights.flights.map((flight: any) => ({
+          ...flight,
+          data_source: 'ADS-B Exchange',
+          authentic_tracking: true
+        }));
+      } else {
+        console.log('No authentic flights found, using simulated Virgin Atlantic data as fallback');
+        // Step 2: Only if no authentic flights, use simulated data
+        const simulatedFlights = await this.getSimulatedFlights();
+        enhancedFlights = simulatedFlights.map((flight: any) => ({
+          ...flight,
+          data_source: 'Simulated (Virgin Atlantic Schedule)',
+          authentic_tracking: false
+        }));
+      }
       
       // Update cache
       this.cache.set('enhanced_flights', enhancedFlights);
       this.lastFetch = now;
       
-      console.log(`Flight Service: Enhanced ${enhancedFlights.length} flights with ${adsbFlights.length} real ADS-B tracks`);
+      console.log(`Flight Service: Delivered ${enhancedFlights.length} flights with ${authenticFlights.success ? 'authentic' : 'simulated'} data`);
       
       return enhancedFlights;
       
@@ -109,42 +130,7 @@ class ADSBIntegratedFlightService {
     }
   }
 
-  private async getADSBFlights(): Promise<EnhancedFlightData[]> {
-    try {
-      const response = await axios.get('http://localhost:5000/api/flights/virgin-atlantic-adsb');
-      const adsbData = response.data;
-      
-      if (adsbData.success && adsbData.flights) {
-        return adsbData.flights.map((flight: any) => ({
-          ...flight,
-          data_source: 'ADS-B Exchange',
-          authentic_tracking: true
-        }));
-      }
-      
-      return [];
-    } catch (error) {
-      console.error('Error fetching ADS-B flights:', error);
-      return [];
-    }
-  }
-
-  private mergeFlightData(simulated: EnhancedFlightData[], adsb: EnhancedFlightData[]): EnhancedFlightData[] {
-    const merged: EnhancedFlightData[] = [];
-    const adsbCallsigns = new Set(adsb.map(f => f.flight_number));
-    
-    // Add all ADS-B flights first (priority)
-    merged.push(...adsb);
-    
-    // Add simulated flights that don't have ADS-B data
-    simulated.forEach(flight => {
-      if (!adsbCallsigns.has(flight.flight_number)) {
-        merged.push(flight);
-      }
-    });
-    
-    return merged;
-  }
+  // Removed OpenSky Network methods - now using authentic ADS-B Exchange only
 
   async getFlightByCallsign(callsign: string): Promise<EnhancedFlightData | null> {
     const flights = await this.getEnhancedFlightData();

@@ -557,17 +557,8 @@ export class AviationApiService {
         return cachedFlights;
       }
 
-      // Try OpenSky Network first (anonymous access)
-      try {
-        const openSkyFlights = await this.getOpenSkyVirginAtlanticFlightsAnonymous();
-        if (openSkyFlights.length > 0) {
-          flightDataCache.setVirginAtlanticFlights(openSkyFlights, 'OpenSky Network');
-          console.log(`Retrieved and cached ${openSkyFlights.length} Virgin Atlantic flights from OpenSky Network`);
-          return openSkyFlights;
-        }
-      } catch (openSkyError: any) {
-        console.warn('OpenSky Network error:', openSkyError.message);
-      }
+      // OpenSky Network disabled due to rate limiting issues
+      console.log('OpenSky Network disabled - using alternative sources only');
 
       // Fallback to Aviation Stack API
       if (this.aviationStackKey) {

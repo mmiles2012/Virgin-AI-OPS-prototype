@@ -56,29 +56,8 @@ export class OpenSkyFlightTracker {
     minLon: number,
     maxLon: number
   ): Promise<RealFlightData[]> {
-    const cacheKey = `bbox_${minLat}_${maxLat}_${minLon}_${maxLon}`;
-    const cached = this.getCachedData(cacheKey);
-    if (cached) return cached;
-
-    try {
-      const url = `${this.BASE_URL}/states/all?lamin=${minLat}&lamax=${maxLat}&lomin=${minLon}&lomax=${maxLon}`;
-      const response = await axios.get<OpenSkyResponse>(url, {
-        timeout: 10000,
-        headers: {
-          'User-Agent': 'AINO-Aviation-Platform/1.0'
-        }
-      });
-
-      const flights = this.parseOpenSkyResponse(response.data);
-      this.setCachedData(cacheKey, flights);
-      
-      console.log(`OpenSky: Retrieved ${flights.length} real flights in bounding box`);
-      return flights;
-
-    } catch (error) {
-      console.error('OpenSky API error:', error);
-      return [];
-    }
+    console.log(`OpenSky: Bounding box service disabled due to rate limiting - returning empty array`);
+    return [];
   }
 
   /**
@@ -114,45 +93,11 @@ export class OpenSkyFlightTracker {
   }
 
   /**
-   * Get Virgin Atlantic flights specifically
+   * Get Virgin Atlantic flights specifically - DISABLED due to rate limiting
    */
   async getVirginAtlanticFlights(): Promise<RealFlightData[]> {
-    // Virgin Atlantic operates primarily in these regions
-    const regions = [
-      // UK - Heathrow area
-      { minLat: 51.0, maxLat: 52.0, minLon: -1.0, maxLon: 0.5 },
-      // US East Coast
-      { minLat: 40.0, maxLat: 42.0, minLon: -75.0, maxLon: -70.0 },
-      // US West Coast
-      { minLat: 33.0, maxLat: 35.0, minLon: -119.0, maxLon: -117.0 },
-      // North Atlantic corridor
-      { minLat: 50.0, maxLat: 60.0, minLon: -50.0, maxLon: -10.0 }
-    ];
-
-    const allFlights: RealFlightData[] = [];
-
-    for (const region of regions) {
-      const flights = await this.getFlightsInBoundingBox(
-        region.minLat,
-        region.maxLat,
-        region.minLon,
-        region.maxLon
-      );
-
-      // Filter for Virgin Atlantic callsigns (VS, VIR)
-      const virginFlights = flights.filter(flight => 
-        flight.callsign && (
-          flight.callsign.startsWith('VIR') || 
-          flight.callsign.startsWith('VS') ||
-          flight.callsign.includes('VIRGIN')
-        )
-      );
-
-      allFlights.push(...virginFlights);
-    }
-
-    console.log(`OpenSky: Found ${allFlights.length} real Virgin Atlantic flights`);
-    return allFlights;
+    console.log(`OpenSky: Service disabled due to rate limiting - returning empty array`);
+    return [];
   }
 
   /**
