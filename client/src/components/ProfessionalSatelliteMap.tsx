@@ -237,44 +237,33 @@ const getServiceIndicatorColor = (support: string): string => {
   }
 };
 
-// Custom flight icon - Clear directional arrow with high visibility
+// Custom flight icon - Bold directional indicator with maximum visibility
 const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
-  className: 'custom-flight-marker',
+  className: 'custom-flight-marker-v2',
   html: `
     <div style="
       transform: rotate(${heading - 90}deg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
+      position: relative;
       cursor: pointer;
       z-index: 1000;
-      position: relative;
     ">
       <div style="
-        width: 0;
-        height: 0;
-        border-left: 8px solid transparent;
-        border-right: 8px solid transparent;
-        border-bottom: 20px solid ${selected ? '#fbbf24' : '#ef4444'};
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
-        position: relative;
-      "></div>
-      <div style="
         position: absolute;
-        top: 16px;
+        top: 50%;
         left: 50%;
-        transform: translateX(-50%);
-        width: 12px;
-        height: 4px;
-        background: ${selected ? '#fbbf24' : '#ef4444'};
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
-      "></div>
+        transform: translate(-50%, -50%);
+        font-size: 24px;
+        color: ${selected ? '#ffff00' : '#ff0000'};
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(255,255,255,0.3);
+        font-weight: bold;
+        line-height: 1;
+      ">⬆</div>
     </div>
   `,
-  iconSize: [24, 24],
-  iconAnchor: [12, 12],
+  iconSize: [28, 28],
+  iconAnchor: [14, 14],
 });
 
 // Enhanced Weather Radar Overlay Component with interactive features

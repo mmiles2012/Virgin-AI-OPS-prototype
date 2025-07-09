@@ -199,17 +199,14 @@ export default function SimpleFlightMap() {
                 <div 
                   className="w-6 h-6 bg-red-500 rounded-full border-4 border-yellow-400 shadow-lg animate-pulse flex items-center justify-center"
                   style={{
-                    transform: `rotate(${(flight.heading || 0) - 90}deg)`
+                    transform: `rotate(${(flight.heading || 0) - 90}deg)`,
+                    fontSize: '16px',
+                    color: '#fbbf24',
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                    fontWeight: 'bold'
                   }}
                 >
-                  <div style={{
-                    width: '0',
-                    height: '0',
-                    borderLeft: '4px solid transparent',
-                    borderRight: '4px solid transparent',
-                    borderBottom: '10px solid #fbbf24',
-                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))'
-                  }}></div>
+                  ⬆
                 </div>
                 <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black/90 text-white px-3 py-2 rounded text-sm whitespace-nowrap border border-yellow-400">
                   <div className="font-bold text-yellow-400">{flight.callsign}</div>
