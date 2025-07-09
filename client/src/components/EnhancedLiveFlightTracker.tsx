@@ -164,12 +164,20 @@ export default function EnhancedLiveFlightTracker() {
   };
 
   const getStatusText = (status: string) => {
-    switch (status.toUpperCase()) {
+    const upperStatus = status.toUpperCase();
+    switch (upperStatus) {
       case 'DEPARTED': return 'Departed';
-      case 'EN_ROUTE': return 'En Route';
+      case 'EN_ROUTE': 
+      case 'EN_ROUTE_ADS_B': 
+      case 'EN ROUTE (ADS-B TRACKING)': return 'En Route';
       case 'APPROACHING': return 'Approaching';
       case 'LANDED': return 'Landed';
-      default: return 'Unknown';
+      case 'SCHEDULED': return 'Scheduled';
+      case 'BOARDING': return 'Boarding';
+      case 'DELAYED': return 'Delayed';
+      default: 
+        // Handle unknown statuses more gracefully - just return "Active" instead of "Unknown"
+        return 'Active';
     }
   };
 
