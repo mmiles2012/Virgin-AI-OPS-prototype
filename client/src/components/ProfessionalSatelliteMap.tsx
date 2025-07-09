@@ -394,8 +394,8 @@ function ProfessionalSatelliteMapCore() {
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [showAirports, setShowAirports] = useState(true);
   const [showFlights, setShowFlights] = useState(true);
-  const [showWeatherOverlay, setShowWeatherOverlay] = useState(false);
-  const [showSigmets, setShowSigmets] = useState(false);
+  const [showWeatherOverlay, setShowWeatherOverlay] = useState(true);
+  const [showSigmets, setShowSigmets] = useState(true);
   const [weatherRadarImage, setWeatherRadarImage] = useState<string | null>(null);
   const [radarLoading, setRadarLoading] = useState(false);
   const [radarOpacity, setRadarOpacity] = useState(1.0);
@@ -450,14 +450,16 @@ function ProfessionalSatelliteMapCore() {
     }
   };
 
-  // Load weather radar when overlay is enabled
+  // Load weather radar when overlay is enabled (now enabled by default)
   useEffect(() => {
-    if (showWeatherOverlay && autoRefresh) {
+    if (showWeatherOverlay) {
       fetchWeatherRadar();
-      const interval = setInterval(() => {
-        fetchWeatherRadar(); // Use current map center for smart selection
-      }, refreshInterval * 60 * 1000);
-      return () => clearInterval(interval);
+      if (autoRefresh) {
+        const interval = setInterval(() => {
+          fetchWeatherRadar(); // Use current map center for smart selection
+        }, refreshInterval * 60 * 1000);
+        return () => clearInterval(interval);
+      }
     }
   }, [showWeatherOverlay, autoRefresh, refreshInterval]);
 
@@ -586,73 +588,7 @@ function ProfessionalSatelliteMapCore() {
   return (
     <div className="w-full h-full bg-gray-900 relative">
       
-      {/* Compact Weather Controls */}
-      <div className="absolute top-4 left-4 z-[1000] bg-black/90 border border-gray-600 rounded-lg p-2 backdrop-blur-sm max-w-[160px]">
-        <div className="flex items-center gap-2 mb-1">
-          <Cloud className="h-3 w-3 text-blue-400" />
-          <span className="text-white text-xs font-medium">Weather</span>
-          <Switch
-            checked={showWeatherOverlay}
-            onCheckedChange={(checked) => {
-              setShowWeatherOverlay(checked);
-              if (checked && !weatherRadarImage) {
-                fetchWeatherRadar();
-              }
-            }}
-            className="scale-75"
-          />
-          {radarLoading && (
-            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-400"></div>
-          )}
-        </div>
-        
-        <div className="flex items-center gap-2 mb-1">
-          <Zap className="h-3 w-3 text-orange-400" />
-          <span className="text-white text-xs font-medium">SIGMET</span>
-          <Switch
-            checked={showSigmets}
-            onCheckedChange={setShowSigmets}
-            className="scale-75"
-          />
-        </div>
-        
-        {showWeatherOverlay && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-1">
-              <span className="text-xs text-gray-400">Opacity:</span>
-              <input
-                type="range"
-                min="0.3"
-                max="1.0"
-                step="0.1"
-                value={radarOpacity}
-                onChange={(e) => setRadarOpacity(parseFloat(e.target.value))}
-                className="w-12 h-1 bg-gray-600 rounded"
-              />
-              <span className="text-xs text-gray-400 w-8">{Math.round(radarOpacity * 100)}%</span>
-            </div>
-            
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => fetchWeatherRadar()}
-                disabled={radarLoading}
-                className="flex items-center gap-1 px-1 py-0.5 text-xs bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded transition-colors"
-              >
-                <Cloud className="h-2 w-2" />
-                Refresh
-              </button>
-              <Switch
-                checked={autoRefresh}
-                onCheckedChange={setAutoRefresh}
-                className="scale-75"
-              />
-              <span className="text-xs text-gray-400">{refreshInterval}min</span>
-            </div>
-          </div>
-        )}
-        
 
-      </div>
 
 
       {/* Selected Airport Weather Panel */}
