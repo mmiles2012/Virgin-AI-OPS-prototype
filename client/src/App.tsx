@@ -129,21 +129,9 @@ function App() {
 
   // Enhanced fallback system for Replit app and mobile
   const isReplitApp = navigator.userAgent.includes('Replit');
-  const [showReplitFallback, setShowReplitFallback] = useState(false);
   
-  // Timer to detect if React fails to load properly in Replit app
-  useEffect(() => {
-    if (isReplitApp) {
-      const timer = setTimeout(() => {
-        setShowReplitFallback(true);
-      }, 5000); // 5 second timeout for Replit app
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isReplitApp]);
-
-  // Mobile fallback component
-  if (isMobile || (isReplitApp && showReplitFallback)) {
+  // Force fallback for Replit app since white screen issues persist
+  if (isMobile || isReplitApp) {
     return (
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
