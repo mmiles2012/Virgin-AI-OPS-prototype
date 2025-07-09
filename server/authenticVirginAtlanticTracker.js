@@ -333,9 +333,9 @@ class AuthenticVirginAtlanticTracker {
           depAirport = 'MCO';
           arrAirport = 'LHR';
         } else if (flightNumber === '23') {
-          route = 'LHR-JFK';
+          route = 'LHR-LAX';
           depAirport = 'LHR';
-          arrAirport = 'JFK';
+          arrAirport = 'LAX';
         } else if (flightNumber === '8') {
           route = 'LHR-LAX';
           depAirport = 'LHR';
