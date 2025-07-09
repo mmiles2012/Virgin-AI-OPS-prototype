@@ -207,6 +207,17 @@ class AuthenticVirginAtlanticTracker {
         return false;
       }
       
+      // Filter out corrupted/invalid Virgin Atlantic flight numbers
+      const invalidFlightNumbers = ['VIR58', 'VIR36', 'VIR128', 'VS58', 'VS36', 'VS128'];
+      const cleanCallsign = callsign.replace(/[^A-Z0-9]/g, '');
+      
+      for (const invalid of invalidFlightNumbers) {
+        if (cleanCallsign.startsWith(invalid)) {
+          console.log(`⚠️  Filtering out corrupted Virgin Atlantic flight number: ${callsign} (invalid flight number)`);
+          return false;
+        }
+      }
+      
       return true;
     }).map((flight, index) => {
       const callsign = flight.flight?.trim() || `VIR${index + 1}`;
