@@ -244,7 +244,8 @@ class AuthenticVirginAtlanticTracker {
         // Specific known Virgin Atlantic routes that we can verify
         { pattern: /VIR?242|VS242/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
         { pattern: /VIR?411|VS411/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
-        { pattern: /VIR?449|VS449/, route: 'LHR-JNB', dep: 'LHR', arr: 'JNB' }
+        { pattern: /VIR?449|VS449/, route: 'LHR-JNB', dep: 'LHR', arr: 'JNB' },
+        { pattern: /VIR?92/, route: 'LHR-DEL', dep: 'LHR', arr: 'DEL' }
       ];
       
       // Find matching route pattern
@@ -288,6 +289,10 @@ class AuthenticVirginAtlanticTracker {
           route = 'LHR-RUH';
           depAirport = 'LHR';
           arrAirport = 'RUH';
+        } else if (cleanCallsign.includes('92')) {
+          route = 'LHR-DEL';
+          depAirport = 'LHR';
+          arrAirport = 'DEL';
         } else {
           // Geographic detection with route validation - only confident matches
           const registration = flight.r || flight.reg || '';
