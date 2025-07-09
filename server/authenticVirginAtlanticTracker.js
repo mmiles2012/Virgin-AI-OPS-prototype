@@ -207,9 +207,21 @@ class AuthenticVirginAtlanticTracker {
         return false;
       }
       
-      // Filter out corrupted/invalid Virgin Atlantic flight numbers
-      const invalidFlightNumbers = ['VIR58', 'VIR36', 'VIR128', 'VS58', 'VS36', 'VS128'];
-      const cleanCallsign = callsign.replace(/[^A-Z0-9]/g, '');
+      // Handle corrupted callsigns that may map to valid Virgin Atlantic flights
+      let correctedCallsign = callsign;
+      const registration = flight.r || 'Unknown';
+      
+      if (callsign === 'VIR58N' && registration === 'G-VLDY') {
+        correctedCallsign = 'VIR158';
+        console.log(`✅ Corrected corrupted callsign: ${callsign} → ${correctedCallsign} for aircraft ${registration}`);
+      } else if (callsign === 'VIR36VL') {
+        correctedCallsign = 'VIR136';
+        console.log(`✅ Corrected corrupted callsign: ${callsign} → ${correctedCallsign} (MCO-LHR route)`);
+      }
+      
+      // Filter out genuinely invalid Virgin Atlantic flight numbers (keeping VIR128 as potentially corrupted)
+      const invalidFlightNumbers = ['VIR128', 'VS128'];
+      const cleanCallsign = correctedCallsign.replace(/[^A-Z0-9]/g, '');
       
       for (const invalid of invalidFlightNumbers) {
         if (cleanCallsign.startsWith(invalid)) {
@@ -220,8 +232,17 @@ class AuthenticVirginAtlanticTracker {
       
       return true;
     }).map((flight, index) => {
-      const callsign = flight.flight?.trim() || `VIR${index + 1}`;
+      let callsign = flight.flight?.trim() || `VIR${index + 1}`;
       const registration = flight.r || 'Unknown';
+      
+      // Handle corrupted callsigns that may map to valid Virgin Atlantic flights
+      if (callsign === 'VIR58N' && registration === 'G-VLDY') {
+        callsign = 'VIR158';
+        console.log(`✅ Route Detection: Corrected corrupted callsign VIR58N → VIR158 for aircraft ${registration}`);
+      } else if (callsign === 'VIR36VL') {
+        callsign = 'VIR136';
+        console.log(`✅ Route Detection: Corrected corrupted callsign VIR36VL → VIR136 (MCO-LHR route)`);
+      }
       const altitude = flight.alt_baro || null;
       const speed = flight.gs || null;
       const latitude = flight.lat || 51.4706;
@@ -257,6 +278,7 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?411[A-Z]*|VS411[A-Z]*/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
         { pattern: /VIR?449[A-Z]*|VS449[A-Z]*/, route: 'LHR-JNB', dep: 'LHR', arr: 'JNB' },
         { pattern: /VIR?92[A-Z]*|VS92[A-Z]*/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' },
+        { pattern: /VIR?136[A-Z]*|VS136[A-Z]*/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' },
         
         // Additional Virgin Atlantic routes based on observed patterns
         { pattern: /VIR?23[A-Z]*|VS23[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR23X likely LHR-JFK
