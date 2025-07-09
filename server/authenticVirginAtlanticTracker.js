@@ -337,6 +337,9 @@ class AuthenticVirginAtlanticTracker {
         // India routes - MUST come before generic VIR3 pattern
         { pattern: /^(VIR|VS)0?302[A-Z]*$/, route: 'LHR-DEL', dep: 'LHR', arr: 'DEL' },
         
+        // Mumbai route - VS355 (BOM-LHR as user confirmed)
+        { pattern: /^(VIR|VS)0?355[A-Z]*$/, route: 'BOM-LHR', dep: 'BOM', arr: 'LHR' },
+        
         // Specific known Virgin Atlantic routes that we can verify (numeric part only)
         { pattern: /VIR?242[A-Z]*|VS242[A-Z]*/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
         { pattern: /VIR?411[A-Z]*|VS411[A-Z]*/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
@@ -544,6 +547,10 @@ class AuthenticVirginAtlanticTracker {
         } else if (flightNumber === '106') {
           route = 'SEA-LHR';
           depAirport = 'SEA';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '355') {
+          route = 'BOM-LHR';
+          depAirport = 'BOM';
           arrAirport = 'LHR';
         } else {
           // Geographic detection with route validation - only confident matches
