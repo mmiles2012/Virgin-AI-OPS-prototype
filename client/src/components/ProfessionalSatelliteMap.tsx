@@ -237,32 +237,40 @@ const getServiceIndicatorColor = (support: string): string => {
   }
 };
 
-// Custom flight icon - Enhanced with proper coordinate system alignment
+// Custom flight icon - Clear directional arrow with high visibility
 const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
   className: 'custom-flight-marker',
   html: `
     <div style="
       transform: rotate(${heading - 90}deg);
-      color: ${selected ? '#fbbf24' : '#ef4444'};
-      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
       display: flex;
       align-items: center;
       justify-content: center;
-      background: ${selected ? 'rgba(251, 191, 36, 0.2)' : 'rgba(239, 68, 68, 0.2)'};
-      border-radius: 50%;
-      border: 1.5px solid ${selected ? '#fbbf24' : '#ef4444'};
-      width: 20px;
-      height: 20px;
-      transition: all 0.3s ease;
+      width: 24px;
+      height: 24px;
       cursor: pointer;
       z-index: 1000;
       position: relative;
     ">
       <div style="
-        font-size: 14px;
-        font-weight: bold;
-        line-height: 1;
-      ">▶</div>
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 20px solid ${selected ? '#fbbf24' : '#ef4444'};
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
+        position: relative;
+      "></div>
+      <div style="
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 12px;
+        height: 4px;
+        background: ${selected ? '#fbbf24' : '#ef4444'};
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
+      "></div>
     </div>
   `,
   iconSize: [24, 24],
