@@ -340,6 +340,12 @@ class AuthenticVirginAtlanticTracker {
         // Mumbai route - VS355 (BOM-LHR as user confirmed)
         { pattern: /^(VIR|VS)0?355[A-Z]*$/, route: 'BOM-LHR', dep: 'BOM', arr: 'LHR' },
         
+        // Riyadh route - VS243 (RUH-LHR as user confirmed)
+        { pattern: /^(VIR|VS)0?243[A-Z]*$/, route: 'RUH-LHR', dep: 'RUH', arr: 'LHR' },
+        
+        // SFO route - VS42 (SFO-LHR as user confirmed) - MUST come before VIR4 pattern
+        { pattern: /^(VIR|VS)0?42[A-Z]*$/, route: 'SFO-LHR', dep: 'SFO', arr: 'LHR' },
+        
         // Specific known Virgin Atlantic routes that we can verify (numeric part only)
         { pattern: /VIR?242[A-Z]*|VS242[A-Z]*/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
         { pattern: /VIR?411[A-Z]*|VS411[A-Z]*/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
@@ -359,7 +365,7 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?25[A-Z]*|VS25[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VS25B
         { pattern: /VIR?4[A-Z]*|VS4[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR4C
         { pattern: /VIR?41[A-Z]*|VS41[A-Z]*/, route: 'LHR-SFO', dep: 'LHR', arr: 'SFO' }, // VIR41R
-        { pattern: /VIR?42[A-Z]*|VS42[A-Z]*/, route: 'SFO-LHR', dep: 'SFO', arr: 'LHR' }, // VS42X
+        // VIR42 pattern moved up to avoid conflict with VIR4 pattern
         { pattern: /VIR?6[A-Z]*|VS6[A-Z]*/, route: 'MIA-LHR', dep: 'MIA', arr: 'LHR' }, // VIR6J
         { pattern: /VIR?10[A-Z]*|VS10[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR10H
         { pattern: /VIR?20[A-Z]*|VS20[A-Z]*/, route: 'SFO-LHR', dep: 'SFO', arr: 'LHR' }, // VIR20V
@@ -551,6 +557,14 @@ class AuthenticVirginAtlanticTracker {
         } else if (flightNumber === '355') {
           route = 'BOM-LHR';
           depAirport = 'BOM';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '243') {
+          route = 'RUH-LHR';
+          depAirport = 'RUH';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '42') {
+          route = 'SFO-LHR';
+          depAirport = 'SFO';
           arrAirport = 'LHR';
         } else {
           // Geographic detection with route validation - only confident matches
