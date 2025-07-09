@@ -328,38 +328,7 @@ function WeatherRadarOverlay({ weatherRadarImage, radarOpacity = 1.0 }: { weathe
     };
   }, [map, weatherRadarImage, radarOpacity]);
   
-  return (
-    <>
-      {/* Weather Overlay Status Indicator */}
-      {overlayVisible && (
-        <div className="absolute top-16 left-4 z-[1000] bg-green-900/90 backdrop-blur-sm border border-green-500/50 px-3 py-2 rounded-lg text-white text-sm">
-          <div className="flex items-center gap-2">
-            <Cloud className="w-4 h-4 text-green-400" />
-            <span className="font-bold text-green-300">Weather Radar Active</span>
-          </div>
-          <div className="text-xs text-gray-300 mt-1">NOAA Live Data</div>
-        </div>
-      )}
-      
-      {/* Weather data display */}
-      {weatherIntensity && (
-        <div className="absolute top-32 left-4 z-[1000] bg-black/90 backdrop-blur-sm border border-blue-500/50 px-3 py-2 rounded-lg text-white text-sm">
-          <div className="flex items-center gap-2">
-            <Cloud className="w-4 h-4 text-blue-400" />
-            <span className="font-bold text-blue-300">{weatherIntensity}</span>
-          </div>
-          <div className="text-xs text-gray-400 mt-1">Radar Intensity</div>
-        </div>
-      )}
-      
-      {/* Last update timestamp */}
-      {lastUpdate && (
-        <div className="absolute bottom-16 left-4 z-[1000] bg-black/80 backdrop-blur-sm border border-gray-600 px-3 py-2 rounded-lg text-white text-xs">
-          <div className="text-gray-400">Last Update: {lastUpdate}</div>
-        </div>
-      )}
-    </>
-  );
+  return null; // Weather radar overlay displays on map without status indicators
 }
 
 // Coordinate display component

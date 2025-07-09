@@ -334,6 +334,12 @@ class AuthenticVirginAtlanticTracker {
         // UK Domestic routes
         { pattern: /^(VIR|VS)0?810[A-Z]*$/, route: 'MAN-EDI', dep: 'MAN', arr: 'EDI' },
         
+        // Edinburgh-Orlando route - VIR225 (EDI-MCO as user confirmed)
+        { pattern: /^(VIR|VS)0?225[A-Z]*$/, route: 'EDI-MCO', dep: 'EDI', arr: 'MCO' },
+        
+        // Manchester-JFK route - VIR127 (MAN-JFK as user confirmed)
+        { pattern: /^(VIR|VS)0?127[A-Z]*$/, route: 'MAN-JFK', dep: 'MAN', arr: 'JFK' },
+        
         // India routes - MUST come before generic VIR3 pattern
         { pattern: /^(VIR|VS)0?302[A-Z]*$/, route: 'LHR-DEL', dep: 'LHR', arr: 'DEL' },
         
