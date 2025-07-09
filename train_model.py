@@ -41,12 +41,11 @@ class AINODelayPredictor:
         if len(df) < 10:
             raise ValueError("Insufficient data for training. Need at least 10 records.")
         
-        # Define enhanced feature set for Virgin Atlantic operations
+        # Enhanced feature set matching your METAR weather integration
         feature_cols = [
-            'delay_minutes', 'altitude', 'latitude', 'longitude', 'velocity',
-            'day_of_week', 'hour_of_day', 'weather_visibility',
-            'weather_wind_speed', 'weather_temperature', 'weather_impact_score',
-            'is_weekend', 'month', 'quarter'
+            'departure_delay_mins', 'enroute_time_min', 'altitude',
+            'ground_speed', 'lat', 'lon', 'day_of_week',
+            'hour_of_day', 'weather_score'
         ]
         
         # Create enhanced features if they don't exist

@@ -15,6 +15,7 @@ from typing import Dict, List, Optional
 import os
 import logging
 from geopy.distance import geodesic
+from metar_weather import get_airport_weather, get_weather_service
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -153,6 +154,56 @@ class AINOLiveDataBuffer:
             logger.error(f"Error fetching weather for {airport_code}: {e}")
             return self._get_default_weather()
     
+    def enrich_live_flight(self, flight: Dict) -> Dict:
+        """Enhanced flight enrichment using authentic METAR weather data"""
+        from datetime import datetime
+        
+        now = datetime.utcnow()
+        
+        # Get authentic weather data
+        dest_airport = flight.get('dest', flight.get('arrival_airport', 'UNKNOWN'))
+        weather_data = self.get_authentic_weather(dest_airport)
+        
+        # Calculate delay information
+        delay_minutes = 0
+        if flight.get('estimated_arrival') and flight.get('scheduled_arrival'):
+            try:
+                delay_minutes = (flight['estimated_arrival'] - flight['scheduled_arrival']).total_seconds() / 60.0
+            except:
+                delay_minutes = 0
+        
+        delay_label = 2 if delay_minutes > 60 else 1 if delay_minutes > 15 else 0
+        
+        # Calculate enroute time
+        enroute_time_min = 0
+        if flight.get('departure_time'):
+            try:
+                enroute_time_min = (now - flight['departure_time']).total_seconds() / 60.0
+            except:
+                enroute_time_min = 0
+        
+        enriched = {
+            'flight_id': flight.get('flight_id', flight.get('flight_number', 'UNKNOWN')),
+            'origin': flight.get('origin', flight.get('departure_airport', 'UNKNOWN')),
+            'dest': dest_airport,
+            'departure_time': flight.get('departure_time', now),
+            'scheduled_arrival': flight.get('scheduled_arrival', now),
+            'estimated_arrival': flight.get('estimated_arrival', now),
+            'departure_delay_mins': flight.get('dep_delay', 0),
+            'enroute_time_min': max(0, enroute_time_min),
+            'altitude': flight.get('alt', flight.get('altitude', 35000)),
+            'ground_speed': flight.get('gs', flight.get('velocity', 450)),
+            'lat': flight.get('lat', flight.get('latitude', 51.5)),
+            'lon': flight.get('lon', flight.get('longitude', -1.0)),
+            'day_of_week': now.weekday(),
+            'hour_of_day': now.hour,
+            'weather_score': weather_data.get('impact_score', 0.2),
+            'delay_minutes': delay_minutes,
+            'delay_label': delay_label
+        }
+        
+        return enriched
+    
     def _get_default_weather(self) -> Dict:
         """Default weather data when API fails"""
         return {
@@ -290,11 +341,11 @@ class AINOLiveDataBuffer:
                 'registration': flight.get('registration', 'UNKNOWN')
             }
             
-            # Get weather data for departure airport
+            # Get authentic weather data for departure airport
             dep_airport = processed['departure_airport']
-            weather = self._get_default_weather()  # Use default for now
+            weather = self.get_authentic_weather(dep_airport)
             
-            # Add weather features
+            # Add authentic weather features
             processed.update({
                 'weather_visibility': weather['visibility'],
                 'weather_wind_speed': weather['wind_speed'],
@@ -302,7 +353,7 @@ class AINOLiveDataBuffer:
                 'weather_pressure': weather['pressure'],
                 'weather_humidity': weather['humidity'],
                 'weather_conditions': weather['conditions'],
-                'weather_impact_score': self.calculate_weather_impact_score(weather)
+                'weather_impact_score': weather.get('impact_score', self.calculate_weather_impact_score(weather))
             })
             
             # Add temporal features

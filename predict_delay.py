@@ -91,22 +91,17 @@ class AINODelayPredictor:
         # Calculate enroute time
         enroute_minutes = (now - departure_time).total_seconds() / 60.0
         
-        # Features that match exactly what the model was trained on
+        # Features matching enhanced METAR weather integration
         features = {
-            'delay_minutes': flight.get('delay_minutes', 0),
+            'departure_delay_mins': flight.get('delay_minutes', 0),
+            'enroute_time_min': max(0, enroute_minutes),
             'altitude': flight.get('altitude', 35000),
-            'latitude': flight.get('latitude', 51.5),
-            'longitude': flight.get('longitude', -1.0),
-            'velocity': flight.get('velocity', 450),
+            'ground_speed': flight.get('velocity', 450),
+            'lat': flight.get('latitude', 51.5),
+            'lon': flight.get('longitude', -1.0),
             'day_of_week': now.weekday(),
             'hour_of_day': now.hour,
-            'weather_visibility': 10.0,  # Default good visibility
-            'weather_wind_speed': 8.0,   # Default moderate wind
-            'weather_temperature': 15.0, # Default temperature
-            'weather_impact_score': 0.2,  # Default low impact
-            'is_weekend': 1 if now.weekday() >= 5 else 0,
-            'month': now.month,
-            'quarter': (now.month - 1) // 3 + 1
+            'weather_score': 0.2  # Will be enhanced with authentic METAR data
         }
         
         # Add aircraft type encoding

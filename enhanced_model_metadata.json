@@ -1,0 +1,30 @@
+{
+  "model_accuracy": 0.5,
+  "feature_count": 9,
+  "feature_columns": [
+    "departure_delay_mins",
+    "enroute_time_min",
+    "altitude",
+    "ground_speed",
+    "lat",
+    "lon",
+    "day_of_week",
+    "hour_of_day",
+    "weather_score"
+  ],
+  "training_date": "2025-07-09T00:36:44.272096",
+  "training_records": 38,
+  "feature_importance": {
+    "departure_delay_mins": 0.12056043036445231,
+    "enroute_time_min": 0.2945509136575098,
+    "altitude": 0.12650451814235936,
+    "ground_speed": 0.13799747856781766,
+    "lat": 0.1454844260333699,
+    "lon": 0.13090823669531157,
+    "day_of_week": 0.0,
+    "hour_of_day": 0.0,
+    "weather_score": 0.04399399653917951
+  },
+  "weather_integration": true,
+  "metar_enhanced": true
+}
