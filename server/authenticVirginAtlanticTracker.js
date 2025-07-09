@@ -320,6 +320,9 @@ class AuthenticVirginAtlanticTracker {
         // UK Domestic routes
         { pattern: /^(VIR|VS)0?810[A-Z]*$/, route: 'MAN-EDI', dep: 'MAN', arr: 'EDI' },
         
+        // India routes - MUST come before generic VIR3 pattern
+        { pattern: /^(VIR|VS)0?302[A-Z]*$/, route: 'LHR-DEL', dep: 'LHR', arr: 'DEL' },
+        
         // Specific known Virgin Atlantic routes that we can verify (numeric part only)
         { pattern: /VIR?242[A-Z]*|VS242[A-Z]*/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
         { pattern: /VIR?411[A-Z]*|VS411[A-Z]*/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
@@ -328,6 +331,7 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?136[A-Z]*|VS136[A-Z]*/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' },
         
         // Additional Virgin Atlantic routes based on observed patterns
+        // NOTE: VIR302 pattern moved above to India routes section to avoid conflict with VIR3 pattern
         { pattern: /VIR?23[A-Z]*|VS23[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR23X likely LHR-JFK
         { pattern: /VIR?8[A-Z]*|VS8[A-Z]*/, route: 'LHR-LAX', dep: 'LHR', arr: 'LAX' },   // VIR8Y likely LHR-LAX  
         { pattern: /VIR?86[A-Z]*|VS86[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR86 likely LHR-MIA
@@ -351,7 +355,7 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?19[A-Z]*|VS19[A-Z]*/, route: 'LHR-SFO', dep: 'LHR', arr: 'SFO' }, // VIR19Z
         { pattern: /VIR?73[A-Z]*|VS73[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR73Q
         { pattern: /VIR?5[A-Z]*|VS5[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR5C
-        { pattern: /VIR?3[A-Z]*|VS3[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR3N
+        { pattern: /VIR?3[A-Z]*|VS3[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR3N but NOT VIR302 (see India routes)
       ];
       
       // Find matching route pattern using normalized callsign
