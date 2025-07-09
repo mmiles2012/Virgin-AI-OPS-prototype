@@ -346,6 +346,9 @@ class AuthenticVirginAtlanticTracker {
         // SFO route - VS42 (SFO-LHR as user confirmed) - MUST come before VIR4 pattern
         { pattern: /^(VIR|VS)0?42[A-Z]*$/, route: 'SFO-LHR', dep: 'SFO', arr: 'LHR' },
         
+        // Manchester-Atlanta route - VS142 (MAN-ATL as user confirmed)
+        { pattern: /^(VIR|VS)0?142[A-Z]*$/, route: 'MAN-ATL', dep: 'MAN', arr: 'ATL' },
+        
         // Specific known Virgin Atlantic routes that we can verify (numeric part only)
         { pattern: /VIR?242[A-Z]*|VS242[A-Z]*/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
         { pattern: /VIR?411[A-Z]*|VS411[A-Z]*/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
@@ -373,7 +376,7 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?138[A-Z]*|VS138[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR138M
         { pattern: /VIR?106[A-Z]*|VS106[A-Z]*/, route: 'SEA-LHR', dep: 'SEA', arr: 'LHR' }, // VIR106F
         { pattern: /VIR?91[A-Z]*|VS91[A-Z]*/, route: 'LHR-MCO', dep: 'LHR', arr: 'MCO' }, // VIR91U
-        { pattern: /VIR?142[A-Z]*|VS142[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR142
+        // VIR142 pattern moved up to MAN-ATL section
         { pattern: /VIR?166[A-Z]*|VS166[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR166G
         { pattern: /VIR?19[A-Z]*|VS19[A-Z]*/, route: 'LHR-SFO', dep: 'LHR', arr: 'SFO' }, // VIR19Z
         { pattern: /VIR?73[A-Z]*|VS73[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR73Q
@@ -566,6 +569,10 @@ class AuthenticVirginAtlanticTracker {
           route = 'SFO-LHR';
           depAirport = 'SFO';
           arrAirport = 'LHR';
+        } else if (flightNumber === '142') {
+          route = 'MAN-ATL';
+          depAirport = 'MAN';
+          arrAirport = 'ATL';
         } else {
           // Geographic detection with route validation - only confident matches
           const registration = flight.r || flight.reg || '';
