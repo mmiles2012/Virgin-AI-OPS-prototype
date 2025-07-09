@@ -61,8 +61,12 @@ class FlightAwareService {
     const cached = this.cache.get(cacheKey);
     
     if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
+      console.log(`[FlightAware] Cache hit for ${endpoint} - age: ${Math.round((Date.now() - cached.timestamp) / 1000)}s`);
       return cached.data;
     }
+
+    const startTime = Date.now();
+    console.log(`[FlightAware] Making API request to: ${endpoint}`);
 
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
@@ -73,23 +77,35 @@ class FlightAwareService {
         }
       });
 
+      const responseTime = Date.now() - startTime;
+      console.log(`[FlightAware] API response received - Status: ${response.status}, Time: ${responseTime}ms`);
+
       const responseText = await response.text();
 
       // Check if response is HTML (error page)
       if (responseText.trim().startsWith('<!') || responseText.trim().startsWith('<html')) {
         console.error('[FlightAware] API returned HTML instead of JSON - possible authentication issue');
+        console.error(`[FlightAware] Response preview: ${responseText.substring(0, 200)}...`);
         throw new Error('FlightAware API returned HTML error page - check API key authentication');
       }
 
       if (!response.ok) {
+        console.error(`[FlightAware] API error response: ${response.status} ${response.statusText}`);
+        console.error(`[FlightAware] Error details: ${responseText}`);
         throw new Error(`FlightAware API error: ${response.status} ${response.statusText} - ${responseText}`);
       }
 
       const data = JSON.parse(responseText);
+      console.log(`[FlightAware] Successful API response parsed - Data size: ${JSON.stringify(data).length} chars`);
+      
       this.cache.set(cacheKey, { data, timestamp: Date.now() });
+      console.log(`[FlightAware] Response cached for ${endpoint}`);
+      
       return data;
     } catch (error) {
-      console.error('[FlightAware] API request failed:', error);
+      const responseTime = Date.now() - startTime;
+      console.error(`[FlightAware] API request failed after ${responseTime}ms:`, error);
+      console.warn('[FlightAware] Falling back to simulated data');
       // Return fallback data instead of throwing
       return this.getFallbackApiResponse();
     }
@@ -105,16 +121,28 @@ class FlightAwareService {
       console.log('[FlightAware] Fetching Virgin Atlantic flights using operators endpoint...');
       const response = await this.makeRequest('/operators/VIR/flights');
       
+      console.log(`[FlightAware] Operators endpoint response received - flights array length: ${response.flights?.length || 0}`);
+      
       const flights: FlightAwareTrack[] = [];
       
       if (response.flights) {
-        for (const flight of response.flights) {
+        console.log(`[FlightAware] Processing ${response.flights.length} flights from operators endpoint`);
+        
+        for (let i = 0; i < response.flights.length; i++) {
+          const flight = response.flights[i];
+          console.log(`[FlightAware] Processing flight ${i + 1}/${response.flights.length}: ${flight.ident}`);
+          
           // Get detailed track information for each flight
           const trackData = await this.getFlightTrack(flight.ident);
           if (trackData) {
             flights.push(trackData);
+            console.log(`[FlightAware] Successfully added track data for ${flight.ident}`);
+          } else {
+            console.warn(`[FlightAware] No track data available for ${flight.ident}`);
           }
         }
+      } else {
+        console.warn('[FlightAware] No flights array found in operators endpoint response');
       }
 
       console.log(`[FlightAware] Found ${flights.length} Virgin Atlantic flights via operators endpoint`);
@@ -154,14 +182,25 @@ class FlightAwareService {
    */
   async getFlightTrack(ident: string): Promise<FlightAwareTrack | null> {
     try {
+      console.log(`[FlightAware] Getting track data for flight: ${ident}`);
+      
       // First get basic flight information
+      console.log(`[FlightAware] Fetching basic flight info for ${ident}`);
       const flightResponse = await this.makeRequest(`/flights/${ident}`);
+      console.log(`[FlightAware] Flight info received for ${ident} - Status: ${flightResponse.status || 'Unknown'}`);
       
       // Then get track/position data
+      console.log(`[FlightAware] Fetching track/position data for ${ident}`);
       const trackResponse = await this.makeRequest(`/flights/${ident}/track`);
+      console.log(`[FlightAware] Track data received for ${ident} - Positions: ${trackResponse.positions?.length || 0}`);
       
       // Get route information if available
-      const routeResponse = await this.makeRequest(`/flights/${ident}/route`).catch(() => ({ waypoints: [] }));
+      console.log(`[FlightAware] Fetching route data for ${ident}`);
+      const routeResponse = await this.makeRequest(`/flights/${ident}/route`).catch((error) => {
+        console.warn(`[FlightAware] Route data not available for ${ident}:`, error.message);
+        return { waypoints: [] };
+      });
+      console.log(`[FlightAware] Route data received for ${ident} - Waypoints: ${routeResponse.waypoints?.length || 0}`);
       
       const positions: FlightAwarePosition[] = trackResponse.positions?.map((pos: any) => ({
         timestamp: pos.timestamp,
@@ -208,7 +247,9 @@ class FlightAwareService {
    */
   async getFlightPosition(ident: string): Promise<FlightAwarePosition | null> {
     try {
+      console.log(`[FlightAware] Fetching real-time position for flight: ${ident}`);
       const response = await this.makeRequest(`/flights/${ident}/position`);
+      console.log(`[FlightAware] Position data received for ${ident} - Lat: ${response.latitude}, Lon: ${response.longitude}, Alt: ${response.altitude}ft`);
       
       return {
         timestamp: response.timestamp,
@@ -253,7 +294,9 @@ class FlightAwareService {
    */
   async getFleetAnalytics(): Promise<any> {
     try {
+      console.log('[FlightAware] Generating fleet analytics for Virgin Atlantic');
       const flights = await this.getVirginAtlanticFlights();
+      console.log(`[FlightAware] Processing analytics for ${flights.length} flights`);
       
       const analytics = {
         total_flights: flights.length,
@@ -388,7 +431,10 @@ class FlightAwareService {
    * Health check for FlightAware service using proper AeroAPI endpoints
    */
   async healthCheck(): Promise<{ status: string; message: string; authenticated: boolean }> {
+    console.log('[FlightAware] Starting health check...');
+    
     if (!this.apiKey) {
+      console.warn('[FlightAware] Health check failed - no API key configured');
       return {
         status: 'error',
         message: 'FlightAware API key not configured',
@@ -397,18 +443,22 @@ class FlightAwareService {
     }
 
     try {
+      console.log('[FlightAware] Testing API connection with operators endpoint...');
       // Test with a simple operators endpoint call
       const response = await this.makeRequest('/operators/VIR');
       if (response) {
+        console.log('[FlightAware] Health check successful - API connection verified');
         return {
           status: 'ok',
           message: 'FlightAware AeroAPI connection successful',
           authenticated: true
         };
       } else {
+        console.error('[FlightAware] Health check failed - empty response from API');
         throw new Error('Empty response from API');
       }
     } catch (error) {
+      console.error('[FlightAware] Health check failed:', error);
       return {
         status: 'error',
         message: `FlightAware AeroAPI connection failed: ${error}`,
