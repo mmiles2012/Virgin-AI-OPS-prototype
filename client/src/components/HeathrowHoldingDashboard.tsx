@@ -383,20 +383,20 @@ export default function HeathrowHoldingDashboard() {
                           <td className="p-2">
                             <div>
                               <p className="font-semibold text-white">{flight.flight_number}</p>
-                              <p className="text-xs text-gray-400">{flight.registration}</p>
+                              <p className="text-xs text-gray-400">{flight.registration || 'N/A'}</p>
                             </div>
                           </td>
                           <td className="p-2 text-gray-300">{flight.route}</td>
                           <td className="p-2 text-gray-300">{flight.aircraft_type}</td>
                           <td className="p-2">
                             <p className="text-xs text-gray-400">
-                              {flight.latitude.toFixed(4)}°N<br />
-                              {flight.longitude.toFixed(4)}°W
+                              {flight.latitude?.toFixed(4) || 'N/A'}°N<br />
+                              {flight.longitude ? Math.abs(flight.longitude).toFixed(4) : 'N/A'}°W
                             </p>
                           </td>
-                          <td className="p-2 text-gray-300">{flight.altitude}ft</td>
+                          <td className="p-2 text-gray-300">{flight.altitude || 'N/A'}ft</td>
                           <td className="p-2">
-                            {flight.holding.isHolding ? (
+                            {flight.holding && flight.holding.isHolding ? (
                               <div>
                                 <Badge variant="destructive" className="mb-1">
                                   HOLDING
