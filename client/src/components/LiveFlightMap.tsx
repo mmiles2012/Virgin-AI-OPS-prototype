@@ -73,8 +73,8 @@ function FlightMarker({ flight, scale = 10 }: { flight: LiveFlight, scale?: numb
   
   return (
     <group position={[position.x, position.y + 2, position.z]}>
-      {/* Large bright aircraft marker */}
-      <mesh rotation={[0, flight.heading * Math.PI / 180, 0]}>
+      {/* Large bright aircraft marker with proper heading orientation */}
+      <mesh rotation={[0, (flight.heading - 90) * Math.PI / 180, 0]}>
         <coneGeometry args={[1.5, 3, 8]} />
         <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={0.5} />
       </mesh>

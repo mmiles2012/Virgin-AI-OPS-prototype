@@ -197,12 +197,13 @@ export default function SimpleFlightMap() {
               {/* Flight marker - larger and more visible with heading alignment */}
               <div className="relative">
                 <div 
-                  className="w-6 h-6 bg-red-500 rounded-full border-4 border-yellow-400 shadow-lg animate-pulse flex items-center justify-center"
+                  className="w-6 h-6 bg-red-500 rounded-full border-4 border-yellow-400 shadow-lg animate-pulse flex items-center justify-center text-yellow-400 font-bold"
                   style={{
-                    transform: `rotate(${flight.heading || 0}deg)`
+                    transform: `rotate(${flight.heading || 0}deg)`,
+                    fontSize: '14px'
                   }}
                 >
-                  <div className="w-2 h-3 bg-yellow-400 rounded-sm transform -translate-y-0.5"></div>
+                  ▲
                 </div>
                 <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black/90 text-white px-3 py-2 rounded text-sm whitespace-nowrap border border-yellow-400">
                   <div className="font-bold text-yellow-400">{flight.callsign}</div>

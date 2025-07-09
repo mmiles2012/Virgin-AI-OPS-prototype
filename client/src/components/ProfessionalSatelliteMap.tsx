@@ -237,7 +237,7 @@ const getServiceIndicatorColor = (support: string): string => {
   }
 };
 
-// Custom flight icon - Compact size for less crowding
+// Custom flight icon - Enhanced with directional arrow for clear heading visualization
 const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
   className: 'custom-flight-marker',
   html: `
@@ -245,8 +245,6 @@ const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
       transform: rotate(${heading}deg);
       color: ${selected ? '#fbbf24' : '#ef4444'};
       filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
-      font-size: 16px;
-      font-weight: bold;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -258,8 +256,24 @@ const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
       transition: all 0.3s ease;
       cursor: pointer;
       z-index: 1000;
+      position: relative;
     ">
-      ✈
+      <div style="
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 1;
+      ">▲</div>
+      <div style="
+        position: absolute;
+        top: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 3px solid transparent;
+        border-right: 3px solid transparent;
+        border-bottom: 6px solid ${selected ? '#fbbf24' : '#ef4444'};
+      "></div>
     </div>
   `,
   iconSize: [24, 24],
