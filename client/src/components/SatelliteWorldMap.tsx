@@ -471,11 +471,11 @@ export default function SatelliteWorldMap() {
                   <div 
                     className="w-3 h-3 text-white flex items-center justify-center font-bold" 
                     style={{ 
-                      transform: `rotate(${headingRotation}deg)`,
+                      transform: `rotate(${headingRotation - 90}deg)`,
                       fontSize: '12px'
                     }}
                   >
-                    ▲
+                    ▶
                   </div>
                 </div>
                 
