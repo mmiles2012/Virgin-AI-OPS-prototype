@@ -96,17 +96,20 @@ class FlightAwareService {
   }
 
   /**
-   * Get all Virgin Atlantic flights currently in operation
+   * Get all Virgin Atlantic flights currently in operation using proper AeroAPI endpoints
    */
   async getVirginAtlanticFlights(): Promise<FlightAwareTrack[]> {
     try {
-      // Search for Virgin Atlantic flights (VS/VIR prefix)
-      const response = await this.makeRequest('/flights/search?query=VS*');
+      // Use the operators endpoint to get Virgin Atlantic flights
+      // Virgin Atlantic ICAO code is VIR
+      console.log('[FlightAware] Fetching Virgin Atlantic flights using operators endpoint...');
+      const response = await this.makeRequest('/operators/VIR/flights');
       
       const flights: FlightAwareTrack[] = [];
       
-      for (const flight of response.flights || []) {
-        if (flight.ident.startsWith('VS') || flight.ident.startsWith('VIR')) {
+      if (response.flights) {
+        for (const flight of response.flights) {
+          // Get detailed track information for each flight
           const trackData = await this.getFlightTrack(flight.ident);
           if (trackData) {
             flights.push(trackData);
@@ -114,34 +117,65 @@ class FlightAwareService {
         }
       }
 
-      console.log(`[FlightAware] Found ${flights.length} Virgin Atlantic flights`);
+      console.log(`[FlightAware] Found ${flights.length} Virgin Atlantic flights via operators endpoint`);
       return flights;
     } catch (error) {
-      console.error('[FlightAware] Failed to get Virgin Atlantic flights:', error);
-      return this.getFallbackFlights();
+      console.error('[FlightAware] Failed to get Virgin Atlantic flights via operators endpoint:', error);
+      
+      // Fallback to flights search with Virgin Atlantic identifiers
+      try {
+        console.log('[FlightAware] Trying fallback search with VS* pattern...');
+        const searchResponse = await this.makeRequest('/flights/search?query=VS*&max_pages=1');
+        
+        const flights: FlightAwareTrack[] = [];
+        
+        if (searchResponse.flights) {
+          for (const flight of searchResponse.flights) {
+            if (flight.ident.startsWith('VS') || flight.ident.startsWith('VIR')) {
+              const trackData = await this.getFlightTrack(flight.ident);
+              if (trackData) {
+                flights.push(trackData);
+              }
+            }
+          }
+        }
+
+        console.log(`[FlightAware] Found ${flights.length} Virgin Atlantic flights via search fallback`);
+        return flights;
+      } catch (searchError) {
+        console.error('[FlightAware] Search fallback also failed:', searchError);
+        return this.getFallbackFlights();
+      }
     }
   }
 
   /**
-   * Get detailed track information for a specific flight
+   * Get detailed track information for a specific flight using proper AeroAPI endpoints
    */
   async getFlightTrack(ident: string): Promise<FlightAwareTrack | null> {
     try {
-      const response = await this.makeRequest(`/flights/${ident}/track`);
+      // First get basic flight information
+      const flightResponse = await this.makeRequest(`/flights/${ident}`);
       
-      const positions: FlightAwarePosition[] = response.positions?.map((pos: any) => ({
+      // Then get track/position data
+      const trackResponse = await this.makeRequest(`/flights/${ident}/track`);
+      
+      // Get route information if available
+      const routeResponse = await this.makeRequest(`/flights/${ident}/route`).catch(() => ({ waypoints: [] }));
+      
+      const positions: FlightAwarePosition[] = trackResponse.positions?.map((pos: any) => ({
         timestamp: pos.timestamp,
         latitude: pos.latitude,
         longitude: pos.longitude,
         altitude: pos.altitude,
         groundspeed: pos.groundspeed,
         track: pos.track,
-        ident: response.ident,
-        registration: response.registration,
-        aircraft_type: response.aircraft_type
+        ident: flightResponse.ident || ident,
+        registration: flightResponse.registration || 'Unknown',
+        aircraft_type: flightResponse.aircraft_type || 'Unknown'
       })) || [];
 
-      const waypoints: FlightAwareWaypoint[] = response.waypoints?.map((wp: any) => ({
+      const waypoints: FlightAwareWaypoint[] = routeResponse.waypoints?.map((wp: any) => ({
         name: wp.name,
         latitude: wp.latitude,
         longitude: wp.longitude,
@@ -151,17 +185,17 @@ class FlightAwareService {
       })) || [];
 
       return {
-        ident: response.ident,
-        registration: response.registration,
-        aircraft_type: response.aircraft_type,
-        origin: response.origin?.code || 'UNKNOWN',
-        destination: response.destination?.code || 'UNKNOWN',
-        departure_time: response.scheduled_departure,
-        arrival_time: response.scheduled_arrival,
+        ident: flightResponse.ident || ident,
+        registration: flightResponse.registration || 'Unknown',
+        aircraft_type: flightResponse.aircraft_type || 'Unknown',
+        origin: flightResponse.origin?.code || flightResponse.origin || 'UNKNOWN',
+        destination: flightResponse.destination?.code || flightResponse.destination || 'UNKNOWN',
+        departure_time: flightResponse.scheduled_departure || flightResponse.actual_departure,
+        arrival_time: flightResponse.scheduled_arrival || flightResponse.actual_arrival,
         positions,
         waypoints,
-        status: response.status,
-        progress_percent: response.progress_percent || 0
+        status: flightResponse.status || 'Unknown',
+        progress_percent: flightResponse.progress_percent || 0
       };
     } catch (error) {
       console.error(`[FlightAware] Failed to get track for ${ident}:`, error);
@@ -351,7 +385,7 @@ class FlightAwareService {
   }
 
   /**
-   * Health check for FlightAware service
+   * Health check for FlightAware service using proper AeroAPI endpoints
    */
   async healthCheck(): Promise<{ status: string; message: string; authenticated: boolean }> {
     if (!this.apiKey) {
@@ -363,16 +397,21 @@ class FlightAwareService {
     }
 
     try {
-      await this.makeRequest('/flights/search?query=VS1&max_pages=1');
-      return {
-        status: 'ok',
-        message: 'FlightAware API connection successful',
-        authenticated: true
-      };
+      // Test with a simple operators endpoint call
+      const response = await this.makeRequest('/operators/VIR');
+      if (response) {
+        return {
+          status: 'ok',
+          message: 'FlightAware AeroAPI connection successful',
+          authenticated: true
+        };
+      } else {
+        throw new Error('Empty response from API');
+      }
     } catch (error) {
       return {
         status: 'error',
-        message: `FlightAware API connection failed: ${error}`,
+        message: `FlightAware AeroAPI connection failed: ${error}`,
         authenticated: false
       };
     }
