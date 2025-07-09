@@ -235,13 +235,27 @@ class AuthenticVirginAtlanticTracker {
       let callsign = flight.flight?.trim() || `VIR${index + 1}`;
       const registration = flight.r || 'Unknown';
       
-      // Handle corrupted callsigns that may map to valid Virgin Atlantic flights
+      // Enhanced callsign normalization - strip trailing letters for route matching
+      let normalizedCallsign = callsign;
+      
+      // Step 1: Handle specific known corrupted callsigns first
       if (callsign === 'VIR58N' && registration === 'G-VLDY') {
-        callsign = 'VIR158';
+        normalizedCallsign = 'VIR158';
         console.log(`✅ Route Detection: Corrected corrupted callsign VIR58N → VIR158 for aircraft ${registration}`);
       } else if (callsign === 'VIR36VL') {
-        callsign = 'VIR136';
+        normalizedCallsign = 'VIR136';
         console.log(`✅ Route Detection: Corrected corrupted callsign VIR36VL → VIR136 (MCO-LHR route)`);
+      } else {
+        // Step 2: General callsign normalization - remove trailing letters from any VIR/VS callsign
+        const virMatch = callsign.match(/^(VIR|VS)(\d+)[A-Z]*$/);
+        if (virMatch) {
+          const prefix = virMatch[1];
+          const flightNumber = virMatch[2];
+          normalizedCallsign = `${prefix}${flightNumber}`;
+          if (normalizedCallsign !== callsign) {
+            console.log(`📡 Normalized callsign for route matching: ${callsign} → ${normalizedCallsign}`);
+          }
+        }
       }
       const altitude = flight.alt_baro || null;
       const speed = flight.gs || null;
@@ -261,17 +275,43 @@ class AuthenticVirginAtlanticTracker {
       const lat = flight.lat || 0;
       const lon = flight.lon || 0;
       
-      // Virgin Atlantic route mapping based on authentic S25 schedule
+      // Virgin Atlantic route mapping based on authentic W25 schedule (26/10/2025 - 28/03/2026)
       const routePatterns = [
-        // Authentic S25 transatlantic routes from schedule
-        { pattern: /VIR?0?103|VS0?103/, route: 'LHR-ATL', dep: 'LHR', arr: 'ATL' },
-        { pattern: /VIR?0?104|VS0?104/, route: 'ATL-LHR', dep: 'ATL', arr: 'LHR' },
-        { pattern: /VIR?0?011|VS0?011/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' },
-        { pattern: /VIR?0?012|VS0?012/, route: 'BOS-LHR', dep: 'BOS', arr: 'LHR' },
-        { pattern: /VIR?0?157|VS0?157/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' },
-        { pattern: /VIR?0?158|VS0?158/, route: 'BOS-LHR', dep: 'BOS', arr: 'LHR' },
-        { pattern: /VIR?0?021|VS0?021/, route: 'LHR-IAD', dep: 'LHR', arr: 'IAD' },
-        { pattern: /VIR?0?022|VS0?022/, route: 'IAD-LHR', dep: 'IAD', arr: 'LHR' },
+        // Authentic W25 transatlantic routes from official schedule
+        { pattern: /^(VIR|VS)0?103$/, route: 'LHR-ATL', dep: 'LHR', arr: 'ATL' },
+        { pattern: /^(VIR|VS)0?104$/, route: 'ATL-LHR', dep: 'ATL', arr: 'LHR' },
+        { pattern: /^(VIR|VS)0?11$/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' },
+        { pattern: /^(VIR|VS)0?12$/, route: 'BOS-LHR', dep: 'BOS', arr: 'LHR' },
+        { pattern: /^(VIR|VS)0?157$/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' },
+        { pattern: /^(VIR|VS)0?158$/, route: 'BOS-LHR', dep: 'BOS', arr: 'LHR' },
+        { pattern: /^(VIR|VS)0?21$/, route: 'LHR-IAD', dep: 'LHR', arr: 'IAD' },
+        { pattern: /^(VIR|VS)0?22$/, route: 'IAD-LHR', dep: 'IAD', arr: 'LHR' },
+        
+        // Authentic W25 JFK routes from official schedule
+        { pattern: /^(VIR|VS)0?3$/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' },
+        { pattern: /^(VIR|VS)0?4$/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' },
+        { pattern: /^(VIR|VS)0?25$/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' },
+        { pattern: /^(VIR|VS)0?26$/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' },
+        { pattern: /^(VIR|VS)0?9$/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' },
+        { pattern: /^(VIR|VS)0?10$/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' },
+        { pattern: /^(VIR|VS)0?45$/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' },
+        { pattern: /^(VIR|VS)0?46$/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' },
+        { pattern: /^(VIR|VS)0?153$/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' },
+        { pattern: /^(VIR|VS)0?154$/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' },
+        
+        // Authentic W25 Las Vegas routes from official schedule
+        { pattern: /^(VIR|VS)0?155$/, route: 'LHR-LAS', dep: 'LHR', arr: 'LAS' },
+        { pattern: /^(VIR|VS)0?156$/, route: 'LAS-LHR', dep: 'LAS', arr: 'LHR' },
+        
+        // Authentic W25 Los Angeles routes from official schedule
+        { pattern: /^(VIR|VS)0?23$/, route: 'LHR-LAX', dep: 'LHR', arr: 'LAX' },
+        { pattern: /^(VIR|VS)0?24$/, route: 'LAX-LHR', dep: 'LAX', arr: 'LHR' },
+        { pattern: /^(VIR|VS)0?7$/, route: 'LHR-LAX', dep: 'LHR', arr: 'LAX' },
+        { pattern: /^(VIR|VS)0?8$/, route: 'LAX-LHR', dep: 'LAX', arr: 'LHR' },
+        
+        // Authentic W25 Orlando routes from official schedule
+        { pattern: /^(VIR|VS)0?91$/, route: 'LHR-MCO', dep: 'LHR', arr: 'MCO' },
+        { pattern: /^(VIR|VS)0?92$/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' },
         
         // Specific known Virgin Atlantic routes that we can verify (numeric part only)
         { pattern: /VIR?242[A-Z]*|VS242[A-Z]*/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
@@ -286,37 +326,47 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?86[A-Z]*|VS86[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR86 likely LHR-MIA
         { pattern: /VIR?110[A-Z]*|VS110[A-Z]*/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' }, // VIR110 
         { pattern: /VIR?104[A-Z]*|VS104[A-Z]*/, route: 'ATL-LHR', dep: 'ATL', arr: 'LHR' }, // VIR104L
-        { pattern: /VIR?155[A-Z]*|VS155[A-Z]*/, route: 'LHR-LAS', dep: 'LHR', arr: 'LAS' }, // VIR155M
+
         { pattern: /VIR?25[A-Z]*|VS25[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VS25B
         { pattern: /VIR?4[A-Z]*|VS4[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR4C
         { pattern: /VIR?41[A-Z]*|VS41[A-Z]*/, route: 'LHR-SFO', dep: 'LHR', arr: 'SFO' }, // VIR41R
+        { pattern: /VIR?42[A-Z]*|VS42[A-Z]*/, route: 'SFO-LHR', dep: 'SFO', arr: 'LHR' }, // VS42X
         { pattern: /VIR?6[A-Z]*|VS6[A-Z]*/, route: 'MIA-LHR', dep: 'MIA', arr: 'LHR' }, // VIR6J
         { pattern: /VIR?10[A-Z]*|VS10[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR10H
         { pattern: /VIR?20[A-Z]*|VS20[A-Z]*/, route: 'SFO-LHR', dep: 'SFO', arr: 'LHR' }, // VIR20V
         { pattern: /VIR?137[A-Z]*|VS137[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR137Y
+        { pattern: /VIR?138[A-Z]*|VS138[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR138M
         { pattern: /VIR?106[A-Z]*|VS106[A-Z]*/, route: 'SEA-LHR', dep: 'SEA', arr: 'LHR' }, // VIR106F
+        { pattern: /VIR?91[A-Z]*|VS91[A-Z]*/, route: 'LHR-MCO', dep: 'LHR', arr: 'MCO' }, // VIR91U
+        { pattern: /VIR?142[A-Z]*|VS142[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR142
+        { pattern: /VIR?166[A-Z]*|VS166[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR166G
+        { pattern: /VIR?19[A-Z]*|VS19[A-Z]*/, route: 'LHR-SFO', dep: 'LHR', arr: 'SFO' }, // VIR19Z
+        { pattern: /VIR?73[A-Z]*|VS73[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR73Q
+        { pattern: /VIR?5[A-Z]*|VS5[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR5C
+        { pattern: /VIR?3[A-Z]*|VS3[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR3N
       ];
       
-      // Find matching route pattern
-      const matchedRoute = routePatterns.find(r => r.pattern.test(callsign));
+      // Find matching route pattern using normalized callsign
+      const matchedRoute = routePatterns.find(r => r.pattern.test(normalizedCallsign));
       
       if (matchedRoute) {
         // Use the matched route directly (flight numbers already indicate direction)
         route = matchedRoute.route;
         depAirport = matchedRoute.dep;
         arrAirport = matchedRoute.arr;
+        console.log(`✅ Route Match Found: ${callsign} → ${normalizedCallsign} matched pattern for ${route}`);
       } else {
-        // Enhanced callsign analysis - extract only numbers from VIR/VS callsigns
-        const cleanCallsign = callsign.replace(/[^A-Z0-9]/g, '');
+        // Enhanced callsign analysis - extract only numbers from normalized callsigns
+        const cleanCallsign = normalizedCallsign.replace(/[^A-Z0-9]/g, '');
         
-        // Extract numeric part from VIR/VS callsigns (ignore trailing letters)
+        // Extract numeric part from VIR/VS callsigns (trailing letters already removed)
         let flightNumber = '';
         const virMatch = cleanCallsign.match(/(?:VIR|VS)(\d+)/);
         if (virMatch) {
           flightNumber = virMatch[1]; // Get only the numeric part
         }
         
-        // Try to match flight numbers (numeric part only)
+        // Try to match flight numbers (based on authentic W25 schedule)
         if (flightNumber === '103') {
           route = 'LHR-ATL';
           depAirport = 'LHR';
@@ -348,6 +398,46 @@ class AuthenticVirginAtlanticTracker {
         } else if (flightNumber === '22' || flightNumber === '022') {
           route = 'IAD-LHR';
           depAirport = 'IAD';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '3' || flightNumber === '003') {
+          route = 'LHR-JFK';
+          depAirport = 'LHR';
+          arrAirport = 'JFK';
+        } else if (flightNumber === '4' || flightNumber === '004') {
+          route = 'JFK-LHR';
+          depAirport = 'JFK';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '25' || flightNumber === '025') {
+          route = 'LHR-JFK';
+          depAirport = 'LHR';
+          arrAirport = 'JFK';
+        } else if (flightNumber === '26' || flightNumber === '026') {
+          route = 'JFK-LHR';
+          depAirport = 'JFK';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '9' || flightNumber === '009') {
+          route = 'LHR-JFK';
+          depAirport = 'LHR';
+          arrAirport = 'JFK';
+        } else if (flightNumber === '10' || flightNumber === '010') {
+          route = 'JFK-LHR';
+          depAirport = 'JFK';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '45' || flightNumber === '045') {
+          route = 'LHR-JFK';
+          depAirport = 'LHR';
+          arrAirport = 'JFK';
+        } else if (flightNumber === '46' || flightNumber === '046') {
+          route = 'JFK-LHR';
+          depAirport = 'JFK';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '153') {
+          route = 'LHR-JFK';
+          depAirport = 'LHR';
+          arrAirport = 'JFK';
+        } else if (flightNumber === '154') {
+          route = 'JFK-LHR';
+          depAirport = 'JFK';
           arrAirport = 'LHR';
         } else if (flightNumber === '411') {
           route = 'LHR-LOS';
