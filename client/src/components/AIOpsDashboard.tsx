@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle, Plane, Activity, Cloud, Radio, Radar, MapPin } from "lucide-react";
 import ProfessionalSatelliteMap from "./ProfessionalSatelliteMap";
 import PassengerImpactModelingComponent from "./PassengerImpactModelingComponent";
+import HeathrowHoldingMonitor from "./HeathrowHoldingMonitor";
 
 
 
@@ -447,6 +448,11 @@ export default function AIOpsDashboard() {
 
           {/* Weather data now integrated directly into satellite map */}
         </div>
+      </div>
+      
+      {/* Heathrow Holding Areas - Full Width Section */}
+      <div className="p-4 pt-0">
+        <HeathrowHoldingMonitor />
       </div>
       
       {/* Passenger Impact Modeling - Full Width Bottom Section */}

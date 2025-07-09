@@ -3,8 +3,8 @@
  * Integrates with existing live_flight_board_scraper.py for authentic data
  */
 
-const { spawn } = require('child_process');
-const path = require('path');
+import { spawn } from 'child_process';
+import { join } from 'path';
 
 class HeathrowLiveDataService {
   constructor() {
@@ -24,7 +24,7 @@ class HeathrowLiveDataService {
       console.log('Fetching fresh Heathrow arrival/departure data...');
       
       // Execute Python scraper
-      const scraperPath = path.join(process.cwd(), 'live_flight_board_scraper.py');
+      const scraperPath = join(process.cwd(), 'live_flight_board_scraper.py');
       const pythonProcess = spawn('python3', ['-c', `
 import sys
 sys.path.append('${process.cwd()}')
@@ -182,4 +182,5 @@ except Exception as e:
   }
 }
 
-module.exports = new HeathrowLiveDataService();
+const heathrowLiveDataService = new HeathrowLiveDataService();
+export default heathrowLiveDataService;

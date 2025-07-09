@@ -68,6 +68,7 @@
     "input-otp": "^1.2.4",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.453.0",
+    "mathjs": "^14.5.3",
     "matter-js": "^0.20.0",
     "memorystore": "^1.6.7",
     "meshline": "^3.3.1",
