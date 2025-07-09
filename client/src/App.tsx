@@ -99,22 +99,43 @@ function App() {
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Mobile detection and auto-collapse - iPads get full interface
+  // Mobile detection and auto-collapse - iPads and desktops get full interface
   useEffect(() => {
     const checkMobile = () => {
-      const mobile = window.innerWidth < 768;
+      const width = window.innerWidth;
+      const userAgent = navigator.userAgent;
       
       // Enhanced iPad detection for all iPad models and iOS Safari on iPad
-      const isIpad = /iPad/i.test(navigator.userAgent) || 
+      const isIpad = /iPad/i.test(userAgent) || 
                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
-                     (/iPhone|iPod/i.test(navigator.userAgent) && window.innerWidth >= 768) ||
-                     navigator.userAgent.includes('iPad');
+                     (/iPhone|iPod/i.test(userAgent) && width >= 768) ||
+                     userAgent.includes('iPad');
       
-      console.log('Device detection:', { mobile, isIpad, userAgent: navigator.userAgent, platform: navigator.platform, touchPoints: navigator.maxTouchPoints });
+      // Desktop detection - any device with large screen is desktop
+      const isDesktop = width >= 1024 || 
+                       userAgent.includes('Windows') || 
+                       userAgent.includes('Macintosh') ||
+                       userAgent.includes('Linux');
       
-      setIsMobile(mobile && !isIpad); // iPads don't count as mobile
+      // Only treat as mobile if it's actually a small phone screen
+      const isTrueMobile = /Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) && 
+                          !isIpad && 
+                          !isDesktop &&
+                          width < 640;
       
-      if (mobile && !isIpad) {
+      console.log('Device detection:', { 
+        mobile: isTrueMobile, 
+        isIpad, 
+        isDesktop,
+        width,
+        userAgent, 
+        platform: navigator.platform, 
+        touchPoints: navigator.maxTouchPoints 
+      });
+      
+      setIsMobile(isTrueMobile); // Only true mobile phones count as mobile
+      
+      if (isTrueMobile) {
         setIsNavigationCollapsed(true);
       }
       
@@ -127,11 +148,8 @@ function App() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Enhanced fallback system for Replit app and mobile
-  const isReplitApp = navigator.userAgent.includes('Replit');
-  
-  // Force fallback for Replit app since white screen issues persist
-  if (isMobile || isReplitApp) {
+  // Only use fallback for actual mobile phones, not desktop or iPad
+  if (isMobile) {
     return (
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
