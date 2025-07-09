@@ -1,0 +1,179 @@
+{
+  "analysis_date": "2025-07-09T11:09:24.386349",
+  "seasonal_analysis": {
+    "W25": {
+      "period": "Winter 2025 (Oct 26, 2025 - Mar 28, 2026)",
+      "total_weekly_flights": 126,
+      "average_delay_probability": 0.33666666666666667,
+      "high_risk_routes": [
+        "LHR-JFK",
+        "JFK-LHR",
+        "LHR-BOS",
+        "BOS-LHR",
+        "LHR-LAX",
+        "LAX-LHR"
+      ],
+      "route_analysis": {
+        "LHR-JFK": {
+          "frequency": 21,
+          "weather_risk": "HIGH",
+          "delay_probability": 0.43000000000000005,
+          "weekly_impact": 9.030000000000001
+        },
+        "JFK-LHR": {
+          "frequency": 21,
+          "weather_risk": "HIGH",
+          "delay_probability": 0.43000000000000005,
+          "weekly_impact": 9.030000000000001
+        },
+        "LHR-BOS": {
+          "frequency": 7,
+          "weather_risk": "VERY_HIGH",
+          "delay_probability": 0.47,
+          "weekly_impact": 3.29
+        },
+        "BOS-LHR": {
+          "frequency": 7,
+          "weather_risk": "VERY_HIGH",
+          "delay_probability": 0.47,
+          "weekly_impact": 3.29
+        },
+        "LHR-ATL": {
+          "frequency": 7,
+          "weather_risk": "MEDIUM",
+          "delay_probability": 0.27,
+          "weekly_impact": 1.8900000000000001
+        },
+        "ATL-LHR": {
+          "frequency": 7,
+          "weather_risk": "MEDIUM",
+          "delay_probability": 0.27,
+          "weekly_impact": 1.8900000000000001
+        },
+        "LHR-LAS": {
+          "frequency": 7,
+          "weather_risk": "LOW",
+          "delay_probability": 0.2,
+          "weekly_impact": 1.4000000000000001
+        },
+        "LAS-LHR": {
+          "frequency": 7,
+          "weather_risk": "LOW",
+          "delay_probability": 0.2,
+          "weekly_impact": 1.4000000000000001
+        },
+        "LHR-LAX": {
+          "frequency": 14,
+          "weather_risk": "MEDIUM",
+          "delay_probability": 0.30000000000000004,
+          "weekly_impact": 4.200000000000001
+        },
+        "LAX-LHR": {
+          "frequency": 14,
+          "weather_risk": "MEDIUM",
+          "delay_probability": 0.30000000000000004,
+          "weekly_impact": 4.200000000000001
+        },
+        "LHR-MCO": {
+          "frequency": 7,
+          "weather_risk": "LOW",
+          "delay_probability": 0.2,
+          "weekly_impact": 1.4000000000000001
+        },
+        "MCO-LHR": {
+          "frequency": 7,
+          "weather_risk": "LOW",
+          "delay_probability": 0.2,
+          "weekly_impact": 1.4000000000000001
+        }
+      }
+    },
+    "S25": {
+      "period": "Summer 2025 (Mar 30, 2025 - Oct 25, 2025)",
+      "total_weekly_flights": 154,
+      "average_delay_probability": 0.18545454545454546,
+      "high_risk_routes": [],
+      "route_analysis": {
+        "LHR-JFK": {
+          "frequency": 28,
+          "weather_risk": "MEDIUM",
+          "delay_probability": 0.27,
+          "weekly_impact": 7.5600000000000005
+        },
+        "JFK-LHR": {
+          "frequency": 28,
+          "weather_risk": "MEDIUM",
+          "delay_probability": 0.27,
+          "weekly_impact": 7.5600000000000005
+        },
+        "LHR-BOS": {
+          "frequency": 14,
+          "weather_risk": "MEDIUM",
+          "delay_probability": 0.2,
+          "weekly_impact": 2.8000000000000003
+        },
+        "BOS-LHR": {
+          "frequency": 14,
+          "weather_risk": "MEDIUM",
+          "delay_probability": 0.2,
+          "weekly_impact": 2.8000000000000003
+        },
+        "LHR-ATL": {
+          "frequency": 7,
+          "weather_risk": "LOW",
+          "delay_probability": 0.1,
+          "weekly_impact": 0.7000000000000001
+        },
+        "ATL-LHR": {
+          "frequency": 7,
+          "weather_risk": "LOW",
+          "delay_probability": 0.1,
+          "weekly_impact": 0.7000000000000001
+        },
+        "LHR-LAS": {
+          "frequency": 7,
+          "weather_risk": "LOW",
+          "delay_probability": 0.1,
+          "weekly_impact": 0.7000000000000001
+        },
+        "LAS-LHR": {
+          "frequency": 7,
+          "weather_risk": "LOW",
+          "delay_probability": 0.1,
+          "weekly_impact": 0.7000000000000001
+        },
+        "LHR-LAX": {
+          "frequency": 14,
+          "weather_risk": "LOW",
+          "delay_probability": 0.13,
+          "weekly_impact": 1.82
+        },
+        "LAX-LHR": {
+          "frequency": 14,
+          "weather_risk": "LOW",
+          "delay_probability": 0.13,
+          "weekly_impact": 1.82
+        },
+        "LHR-MCO": {
+          "frequency": 7,
+          "weather_risk": "LOW",
+          "delay_probability": 0.1,
+          "weekly_impact": 0.7000000000000001
+        },
+        "MCO-LHR": {
+          "frequency": 7,
+          "weather_risk": "LOW",
+          "delay_probability": 0.1,
+          "weekly_impact": 0.7000000000000001
+        }
+      }
+    }
+  },
+  "seasonal_difference": 0.15121212121212121,
+  "recommendations": [
+    "Enhanced winter weather monitoring for Boston routes",
+    "Summer capacity management optimization needed",
+    "JFK route congestion management for summer peak"
+  ],
+  "methodology": "Authentic Virgin Atlantic W25/S25 schedule analysis with weather and capacity modeling"
+}
