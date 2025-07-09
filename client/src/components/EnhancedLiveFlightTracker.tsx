@@ -288,7 +288,9 @@ export default function EnhancedLiveFlightTracker() {
                     </div>
                     <div className="text-center">
                       <div className="text-gray-400">Speed</div>
-                      <div className="text-white font-mono">{Math.round(flight.velocity)} kts</div>
+                      <div className="text-white font-mono">
+                        {flight.velocity != null ? Math.round(flight.velocity) : 'N/A'} kts
+                      </div>
                     </div>
                     <div className="text-center">
                       <div className="text-gray-400">Progress</div>

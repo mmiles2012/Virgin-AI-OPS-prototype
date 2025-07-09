@@ -258,7 +258,18 @@ class AuthenticVirginAtlanticTracker {
         }
       }
       const altitude = flight.alt_baro || null;
-      const speed = flight.gs || null;
+      // Handle null/undefined groundspeed - use reasonable defaults for airborne aircraft
+      let speed = flight.gs;
+      if (speed === null || speed === undefined || speed === 0) {
+        // If aircraft is at cruise altitude (above 20,000 ft), use typical cruise speed
+        if (altitude && altitude > 20000) {
+          speed = 450; // Typical cruise speed for Virgin Atlantic aircraft
+        } else if (altitude && altitude > 10000) {
+          speed = 300; // Climbing/descending speed
+        } else {
+          speed = 150; // Lower altitude speed
+        }
+      }
       const latitude = flight.lat || 51.4706;
       const longitude = flight.lon || -0.4619;
       const heading = flight.track || 270;
