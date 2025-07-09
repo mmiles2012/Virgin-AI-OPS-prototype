@@ -349,6 +349,9 @@ class AuthenticVirginAtlanticTracker {
         // Los Angeles-London route - VS142 (LAX-LHR as user confirmed)
         { pattern: /^(VIR|VS)0?142[A-Z]*$/, route: 'LAX-LHR', dep: 'LAX', arr: 'LHR' },
         
+        // Manchester-Atlanta route - VS109 (MAN-ATL as user confirmed)
+        { pattern: /^(VIR|VS)0?109[A-Z]*$/, route: 'MAN-ATL', dep: 'MAN', arr: 'ATL' },
+        
         // Specific known Virgin Atlantic routes that we can verify (numeric part only)
         { pattern: /VIR?242[A-Z]*|VS242[A-Z]*/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
         { pattern: /VIR?411[A-Z]*|VS411[A-Z]*/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
@@ -573,6 +576,10 @@ class AuthenticVirginAtlanticTracker {
           route = 'LAX-LHR';
           depAirport = 'LAX';
           arrAirport = 'LHR';
+        } else if (flightNumber === '109') {
+          route = 'MAN-ATL';
+          depAirport = 'MAN';
+          arrAirport = 'ATL';
         } else {
           // Geographic detection with route validation - only confident matches
           const registration = flight.r || flight.reg || '';
