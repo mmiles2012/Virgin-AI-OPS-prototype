@@ -317,6 +317,9 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /^(VIR|VS)0?117$/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' },
         { pattern: /^(VIR|VS)0?118$/, route: 'MIA-LHR', dep: 'MIA', arr: 'LHR' },
         
+        // UK Domestic routes
+        { pattern: /^(VIR|VS)0?810[A-Z]*$/, route: 'MAN-EDI', dep: 'MAN', arr: 'EDI' },
+        
         // Specific known Virgin Atlantic routes that we can verify (numeric part only)
         { pattern: /VIR?242[A-Z]*|VS242[A-Z]*/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
         { pattern: /VIR?411[A-Z]*|VS411[A-Z]*/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
