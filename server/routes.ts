@@ -61,6 +61,7 @@ import integratedHoldingMLService from "./integratedHoldingMLService.js";
 import { flightAwareService } from "./flightAwareService";
 import { faaNotamService } from "./faaNotamService";
 import { aviationIntelligenceService } from "./aviationIntelligenceService.js";
+import { hybridFlightService } from "./hybridFlightService";
 // Enhanced Weather Intelligence Service
 
 import { spawn } from "child_process";
@@ -9484,6 +9485,84 @@ function calculateUSUKCorrelation() {
       res.status(500).json({
         success: false,
         error: 'FlightAware health check failed',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Hybrid Flight Service API Endpoints (FlightAware + ADS-B)
+  app.get('/api/aviation/hybrid/virgin-atlantic', async (req, res) => {
+    try {
+      const flights = await hybridFlightService.getVirginAtlanticFlights();
+      
+      res.json({
+        success: true,
+        source: 'Hybrid FlightAware + ADS-B Exchange Data',
+        total_flights: flights.length,
+        flights: flights,
+        data_quality_summary: {
+          high_position_accuracy: flights.filter(f => f.data_quality.position_accuracy === 'HIGH').length,
+          high_schedule_accuracy: flights.filter(f => f.data_quality.schedule_accuracy === 'HIGH').length,
+          adsb_sourced: flights.filter(f => f.data_sources.position === 'ADS-B').length,
+          flightaware_sourced: flights.filter(f => f.data_sources.schedule === 'FlightAware').length
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('Hybrid flight service error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get hybrid flight data',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/aviation/hybrid/flight/:callsign', async (req, res) => {
+    try {
+      const { callsign } = req.params;
+      const flightDetails = await hybridFlightService.getFlightDetails(callsign);
+      
+      if (!flightDetails) {
+        return res.status(404).json({
+          success: false,
+          error: 'Flight not found',
+          callsign: callsign,
+          timestamp: new Date().toISOString()
+        });
+      }
+      
+      res.json({
+        success: true,
+        source: 'Hybrid FlightAware + ADS-B Exchange Data',
+        flight_details: flightDetails,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error(`Hybrid flight details error for ${req.params.callsign}:`, error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get flight details',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/aviation/hybrid/health', async (req, res) => {
+    try {
+      const health = await hybridFlightService.getServiceHealth();
+      
+      res.json({
+        hybrid_service_status: health,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'Hybrid service health check failed',
         message: error.message,
         timestamp: new Date().toISOString()
       });
