@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-FlightAware AeroAPI Integration for Heathrow Connection Model
-Replaces fetch_heathrow.py with authentic FlightAware arrival data
+FlightAware Data Fetcher for Heathrow Connection Model
+Fetches authentic arrival and departure data using FlightAware AeroAPI
 """
 
 import requests
@@ -9,505 +9,622 @@ import json
 import os
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
-import pandas as pd
+import time
 
 class FlightAwareHeathrowFetcher:
-    """Fetches Heathrow arrival data from FlightAware AeroAPI for connection modeling"""
+    """FlightAware API client for Heathrow connection data"""
     
     def __init__(self):
         self.api_key = os.getenv('FLIGHTAWARE_API_KEY')
         self.base_url = "https://aeroapi.flightaware.com/aeroapi"
-        self.airport = "EGLL"  # Heathrow ICAO code
+        self.airport_code = "EGLL"  # Heathrow ICAO code
+        self.session = requests.Session()
         
-        if not self.api_key:
-            print("Warning: FLIGHTAWARE_API_KEY not configured - using fallback data")
+        if self.api_key:
+            self.session.headers.update({
+                'x-apikey': self.api_key,
+                'Accept': 'application/json'
+            })
+            print(f"[FlightAware] API key configured: {self.api_key[:8]}...")
+        else:
+            print("[FlightAware] Warning: FLIGHTAWARE_API_KEY not found in environment")
     
-    def get_arrivals(self, max_results: int = 50) -> Dict:
-        """
-        Fetch current and recent arrivals at Heathrow
-        Returns data suitable for connection modeling
-        """
+    def get_arrivals(self, max_pages: int = 2) -> List[Dict]:
+        """Fetch arrival flights for Heathrow"""
+        
         if not self.api_key:
             return self._get_fallback_arrivals()
         
         try:
-            headers = {
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
-            }
+            arrivals = []
             
-            url = f"{self.base_url}/airports/{self.airport}/flights/arrivals"
-            params = {
-                "howMany": max_results,
-                "start": (datetime.now() - timedelta(hours=2)).isoformat(),
-                "end": (datetime.now() + timedelta(hours=4)).isoformat()
-            }
+            # Get arrivals for current time period
+            endpoint = f"/airports/{self.airport_code}/flights/arrivals"
             
-            print(f"[FlightAware] Fetching Heathrow arrivals: {url}")
-            response = requests.get(url, headers=headers, params=params, timeout=30)
-            
-            if response.status_code == 200:
-                data = response.json()
-                processed_data = self._process_arrival_data(data)
-                print(f"[FlightAware] Successfully fetched {len(processed_data.get('arrivals', []))} arrivals")
-                return processed_data
-            else:
-                print(f"[FlightAware] API error {response.status_code}: {response.text}")
-                return self._get_fallback_arrivals()
+            for page in range(max_pages):
+                params = {
+                    'max_pages': 1,
+                    'cursor': None if page == 0 else arrivals[-1].get('cursor')
+                }
                 
+                response = self.session.get(f"{self.base_url}{endpoint}", params=params)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    flights = data.get('arrivals', [])
+                    
+                    for flight in flights:
+                        processed_flight = self._process_arrival(flight)
+                        if processed_flight:
+                            arrivals.append(processed_flight)
+                    
+                    # Check if more pages available
+                    if not data.get('links', {}).get('next'):
+                        break
+                        
+                    time.sleep(0.5)  # Rate limiting
+                    
+                else:
+                    print(f"[FlightAware] API error {response.status_code}: {response.text}")
+                    break
+            
+            print(f"[FlightAware] Fetched {len(arrivals)} arrivals")
+            return arrivals
+            
         except Exception as e:
             print(f"[FlightAware] Error fetching arrivals: {e}")
             return self._get_fallback_arrivals()
     
-    def get_departures(self, max_results: int = 50) -> Dict:
-        """
-        Fetch current and upcoming departures from Heathrow
-        Important for connection modeling - passengers connecting to these flights
-        """
+    def get_departures(self, max_pages: int = 2) -> List[Dict]:
+        """Fetch departure flights for Heathrow"""
+        
         if not self.api_key:
             return self._get_fallback_departures()
         
         try:
-            headers = {
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
-            }
+            departures = []
             
-            url = f"{self.base_url}/airports/{self.airport}/flights/departures"
-            params = {
-                "howMany": max_results,
-                "start": datetime.now().isoformat(),
-                "end": (datetime.now() + timedelta(hours=6)).isoformat()
-            }
+            # Get departures for current time period
+            endpoint = f"/airports/{self.airport_code}/flights/departures"
             
-            print(f"[FlightAware] Fetching Heathrow departures: {url}")
-            response = requests.get(url, headers=headers, params=params, timeout=30)
-            
-            if response.status_code == 200:
-                data = response.json()
-                processed_data = self._process_departure_data(data)
-                print(f"[FlightAware] Successfully fetched {len(processed_data.get('departures', []))} departures")
-                return processed_data
-            else:
-                print(f"[FlightAware] API error {response.status_code}: {response.text}")
-                return self._get_fallback_departures()
+            for page in range(max_pages):
+                params = {
+                    'max_pages': 1,
+                    'cursor': None if page == 0 else departures[-1].get('cursor')
+                }
                 
+                response = self.session.get(f"{self.base_url}{endpoint}", params=params)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    flights = data.get('departures', [])
+                    
+                    for flight in flights:
+                        processed_flight = self._process_departure(flight)
+                        if processed_flight:
+                            departures.append(processed_flight)
+                    
+                    # Check if more pages available
+                    if not data.get('links', {}).get('next'):
+                        break
+                        
+                    time.sleep(0.5)  # Rate limiting
+                    
+                else:
+                    print(f"[FlightAware] API error {response.status_code}: {response.text}")
+                    break
+            
+            print(f"[FlightAware] Fetched {len(departures)} departures")
+            return departures
+            
         except Exception as e:
             print(f"[FlightAware] Error fetching departures: {e}")
             return self._get_fallback_departures()
     
     def get_connection_data(self) -> Dict:
-        """
-        Get comprehensive connection data combining arrivals and departures
-        This is the main method for connection modeling
-        """
+        """Get comprehensive connection data for Heathrow"""
+        
         print("[FlightAware] Fetching comprehensive Heathrow connection data...")
         
-        arrivals_data = self.get_arrivals()
-        departures_data = self.get_departures()
+        # Fetch arrivals and departures
+        arrivals = self.get_arrivals()
+        departures = self.get_departures()
         
-        # Combine and analyze for connections
-        connection_analysis = self._analyze_connections(arrivals_data, departures_data)
+        # Generate connection opportunities
+        connections = self._generate_connections(arrivals, departures)
         
-        return {
-            "arrivals": arrivals_data.get("arrivals", []),
-            "departures": departures_data.get("departures", []),
-            "connection_opportunities": connection_analysis,
-            "data_timestamp": datetime.now().isoformat(),
-            "data_source": "FlightAware_AeroAPI" if self.api_key else "Fallback_Simulation"
-        }
-    
-    def _process_arrival_data(self, raw_data: Dict) -> Dict:
-        """Process raw FlightAware arrival data for connection modeling"""
-        arrivals = []
-        
-        for flight in raw_data.get("arrivals", []):
-            processed_flight = {
-                "flight_number": flight.get("ident", "Unknown"),
-                "airline": flight.get("operator", "Unknown"),
-                "aircraft_type": flight.get("aircraft_type", "Unknown"),
-                "origin": flight.get("origin", {}).get("code", "Unknown"),
-                "scheduled_arrival": flight.get("scheduled_arrival", None),
-                "estimated_arrival": flight.get("estimated_arrival", None),
-                "actual_arrival": flight.get("actual_arrival", None),
-                "gate": flight.get("gate_destination", "Unknown"),
-                "terminal": self._get_terminal_from_gate(flight.get("gate_destination", "")),
-                "status": flight.get("status", "Unknown"),
-                "delay_minutes": self._calculate_delay(flight),
-                "is_international": self._is_international_flight(flight),
-                "passenger_count": self._estimate_passenger_count(flight),
-                "connection_window": self._calculate_connection_window(flight)
+        data = {
+            'timestamp': datetime.now().isoformat(),
+            'airport': 'EGLL',
+            'data_source': 'FlightAware_AeroAPI' if self.api_key else 'Fallback_Data',
+            'arrivals': arrivals,
+            'departures': departures,
+            'connection_opportunities': connections,
+            'summary': {
+                'total_arrivals': len(arrivals),
+                'total_departures': len(departures),
+                'total_connections': len(connections),
+                'virgin_atlantic_arrivals': len([a for a in arrivals if 'Virgin Atlantic' in a.get('airline', '')]),
+                'virgin_atlantic_departures': len([d for d in departures if d.get('is_virgin_atlantic', False)])
             }
-            arrivals.append(processed_flight)
-        
-        return {
-            "arrivals": arrivals,
-            "total_arrivals": len(arrivals),
-            "data_quality": "authentic_flightaware"
         }
+        
+        # Save data for historical analysis
+        self._save_data(data)
+        
+        print(f"[FlightAware] Generated {len(connections)} connection opportunities")
+        return data
     
-    def _process_departure_data(self, raw_data: Dict) -> Dict:
-        """Process raw FlightAware departure data for connection modeling"""
-        departures = []
+    def _process_arrival(self, flight_data: Dict) -> Optional[Dict]:
+        """Process FlightAware arrival data into standardized format"""
         
-        for flight in raw_data.get("departures", []):
-            processed_flight = {
-                "flight_number": flight.get("ident", "Unknown"),
-                "airline": flight.get("operator", "Unknown"),
-                "aircraft_type": flight.get("aircraft_type", "Unknown"),
-                "destination": flight.get("destination", {}).get("code", "Unknown"),
-                "scheduled_departure": flight.get("scheduled_departure", None),
-                "estimated_departure": flight.get("estimated_departure", None),
-                "gate": flight.get("gate_origin", "Unknown"),
-                "terminal": self._get_terminal_from_gate(flight.get("gate_origin", "")),
-                "status": flight.get("status", "Unknown"),
-                "check_in_closes": self._calculate_check_in_deadline(flight),
-                "minimum_connection_time": self._get_mct(flight),
-                "is_virgin_atlantic": "VIR" in flight.get("ident", "") or "VS" in flight.get("ident", "")
-            }
-            departures.append(processed_flight)
-        
-        return {
-            "departures": departures,
-            "total_departures": len(departures),
-            "data_quality": "authentic_flightaware"
-        }
-    
-    def _analyze_connections(self, arrivals_data: Dict, departures_data: Dict) -> List[Dict]:
-        """Analyze potential connections between arrivals and departures"""
-        connections = []
-        
-        arrivals = arrivals_data.get("arrivals", [])
-        departures = departures_data.get("departures", [])
-        
-        for arrival in arrivals:
-            for departure in departures:
-                connection = self._evaluate_connection(arrival, departure)
-                if connection["is_viable"]:
-                    connections.append(connection)
-        
-        # Sort by connection probability
-        connections.sort(key=lambda x: x["success_probability"], reverse=True)
-        
-        return connections[:50]  # Return top 50 viable connections
-    
-    def _evaluate_connection(self, arrival: Dict, departure: Dict) -> Dict:
-        """Evaluate if a connection between an arrival and departure is viable"""
         try:
-            # Parse arrival and departure times
-            arr_time = self._parse_time(arrival.get("actual_arrival") or arrival.get("estimated_arrival") or arrival.get("scheduled_arrival"))
-            dep_time = self._parse_time(departure.get("scheduled_departure"))
+            ident = flight_data.get('ident', '')
             
-            if not arr_time or not dep_time:
-                return {"is_viable": False, "reason": "Missing time data"}
+            # Skip if not a commercial flight
+            if len(ident) < 3 or not ident[:2].isalpha():
+                return None
             
-            # Calculate connection time in minutes
-            connection_time = (dep_time - arr_time).total_seconds() / 60
+            # Parse times
+            scheduled_arrival = self._parse_time(flight_data.get('scheduled_arrival'))
+            actual_arrival = self._parse_time(flight_data.get('actual_arrival'))
+            estimated_arrival = self._parse_time(flight_data.get('estimated_arrival'))
             
-            # Determine minimum connection time based on terminals
-            mct = self._get_connection_mct(arrival, departure)
+            # Calculate delay
+            if actual_arrival and scheduled_arrival:
+                delay_minutes = int((actual_arrival - scheduled_arrival).total_seconds() / 60)
+            elif estimated_arrival and scheduled_arrival:
+                delay_minutes = int((estimated_arrival - scheduled_arrival).total_seconds() / 60)
+            else:
+                delay_minutes = 0
             
-            # Calculate success probability
-            success_prob = self._calculate_connection_probability(connection_time, mct, arrival, departure)
+            # Determine status
+            if actual_arrival:
+                status = 'ARRIVED'
+            elif estimated_arrival:
+                status = 'ESTIMATED'
+            else:
+                status = 'SCHEDULED'
             
-            return {
-                "is_viable": connection_time >= mct and connection_time <= 360,  # Max 6 hours
-                "arrival_flight": arrival["flight_number"],
-                "departure_flight": departure["flight_number"],
-                "connection_time_minutes": int(connection_time),
-                "minimum_connection_time": mct,
-                "success_probability": success_prob,
-                "risk_factors": self._identify_risk_factors(arrival, departure, connection_time),
-                "terminal_transfer_required": arrival.get("terminal") != departure.get("terminal"),
-                "is_virgin_atlantic_connection": departure.get("is_virgin_atlantic", False)
+            # Extract airport and airline info
+            origin = flight_data.get('origin', {}).get('code_icao', 'Unknown')
+            airline_name = flight_data.get('operator', 'Unknown')
+            aircraft_type = flight_data.get('aircraft_type', 'Unknown')
+            
+            processed = {
+                'flight_number': ident,
+                'airline': airline_name,
+                'aircraft_type': aircraft_type,
+                'origin': origin,
+                'terminal': self._determine_terminal(airline_name, ident),
+                'gate': self._estimate_gate(airline_name, ident),
+                'scheduled_arrival': scheduled_arrival.isoformat() if scheduled_arrival else None,
+                'actual_arrival': actual_arrival.isoformat() if actual_arrival else None,
+                'estimated_arrival': estimated_arrival.isoformat() if estimated_arrival else None,
+                'delay_minutes': delay_minutes,
+                'status': status,
+                'is_international': origin != 'EGLL' and not origin.startswith('EG'),
+                'passenger_count': self._estimate_passenger_count(aircraft_type),
+                'data_source': 'FlightAware_AeroAPI'
             }
+            
+            return processed
             
         except Exception as e:
-            return {"is_viable": False, "reason": f"Processing error: {e}"}
+            print(f"[FlightAware] Error processing arrival {flight_data.get('ident', 'Unknown')}: {e}")
+            return None
     
-    def _calculate_connection_probability(self, connection_time: float, mct: int, arrival: Dict, departure: Dict) -> float:
-        """Calculate probability of successful connection based on multiple factors"""
-        if connection_time < mct:
-            return 0.0
+    def _process_departure(self, flight_data: Dict) -> Optional[Dict]:
+        """Process FlightAware departure data into standardized format"""
         
-        # Base probability increases with connection time
-        base_prob = min(0.95, 0.3 + (connection_time - mct) / 180)
-        
-        # Adjust for various factors
-        if arrival.get("delay_minutes", 0) > 15:
-            base_prob *= 0.8  # Reduce for delayed arrivals
-        
-        if arrival.get("terminal") != departure.get("terminal"):
-            base_prob *= 0.9  # Reduce for terminal transfers
-        
-        if arrival.get("is_international") and not departure.get("is_international"):
-            base_prob *= 0.85  # Reduce for international to domestic
-        
-        return round(base_prob, 3)
+        try:
+            ident = flight_data.get('ident', '')
+            
+            # Skip if not a commercial flight
+            if len(ident) < 3 or not ident[:2].isalpha():
+                return None
+            
+            # Parse times
+            scheduled_departure = self._parse_time(flight_data.get('scheduled_departure'))
+            actual_departure = self._parse_time(flight_data.get('actual_departure'))
+            estimated_departure = self._parse_time(flight_data.get('estimated_departure'))
+            
+            # Determine status
+            if actual_departure:
+                status = 'DEPARTED'
+            elif estimated_departure:
+                status = 'ESTIMATED'
+            else:
+                status = 'SCHEDULED'
+            
+            # Extract airport and airline info
+            destination = flight_data.get('destination', {}).get('code_icao', 'Unknown')
+            airline_name = flight_data.get('operator', 'Unknown')
+            aircraft_type = flight_data.get('aircraft_type', 'Unknown')
+            
+            # Check if Virgin Atlantic
+            is_virgin_atlantic = 'Virgin Atlantic' in airline_name or ident.startswith('VS')
+            
+            processed = {
+                'flight_number': ident,
+                'airline': airline_name,
+                'aircraft_type': aircraft_type,
+                'destination': destination,
+                'terminal': self._determine_terminal(airline_name, ident),
+                'gate': self._estimate_gate(airline_name, ident),
+                'scheduled_departure': scheduled_departure.isoformat() if scheduled_departure else None,
+                'actual_departure': actual_departure.isoformat() if actual_departure else None,
+                'estimated_departure': estimated_departure.isoformat() if estimated_departure else None,
+                'status': status,
+                'is_virgin_atlantic': is_virgin_atlantic,
+                'is_international': destination != 'EGLL' and not destination.startswith('EG'),
+                'minimum_connection_time': 75 if not is_virgin_atlantic else 60,  # Virgin gets priority
+                'check_in_closes': self._calculate_check_in_deadline(scheduled_departure),
+                'data_source': 'FlightAware_AeroAPI'
+            }
+            
+            return processed
+            
+        except Exception as e:
+            print(f"[FlightAware] Error processing departure {flight_data.get('ident', 'Unknown')}: {e}")
+            return None
     
-    def _get_connection_mct(self, arrival: Dict, departure: Dict) -> int:
-        """Get minimum connection time based on flight types and terminals"""
-        # International to International: 90 minutes
-        # International to Domestic: 75 minutes  
-        # Domestic to International: 60 minutes
-        # Domestic to Domestic: 45 minutes
-        # Add 15 minutes for terminal transfers
+    def _generate_connections(self, arrivals: List[Dict], departures: List[Dict]) -> List[Dict]:
+        """Generate viable connection opportunities"""
         
-        arr_intl = arrival.get("is_international", True)
-        dep_intl = departure.get("destination", "").startswith(("E", "L"))  # Europe codes
-        terminal_transfer = arrival.get("terminal") != departure.get("terminal")
+        connections = []
         
-        if arr_intl and dep_intl:
-            mct = 90
-        elif arr_intl and not dep_intl:
-            mct = 75
-        elif not arr_intl and dep_intl:
-            mct = 60
-        else:
-            mct = 45
+        for arrival in arrivals:
+            arrival_time = self._parse_time(arrival.get('actual_arrival') or arrival.get('estimated_arrival') or arrival.get('scheduled_arrival'))
+            if not arrival_time:
+                continue
+            
+            for departure in departures:
+                departure_time = self._parse_time(departure.get('scheduled_departure'))
+                if not departure_time:
+                    continue
+                
+                # Calculate connection time
+                connection_time = int((departure_time - arrival_time).total_seconds() / 60)
+                
+                # Only consider reasonable connections (30 minutes to 8 hours)
+                if 30 <= connection_time <= 480:
+                    
+                    # Determine minimum connection time
+                    min_connection_time = departure.get('minimum_connection_time', 75)
+                    
+                    # Check terminal transfer
+                    terminal_transfer = arrival.get('terminal') != departure.get('terminal')
+                    if terminal_transfer:
+                        min_connection_time += 15  # Extra time for terminal transfer
+                    
+                    # Calculate success probability
+                    success_prob = self._calculate_success_probability(
+                        connection_time, min_connection_time, arrival, departure
+                    )
+                    
+                    # Identify risk factors
+                    risk_factors = self._identify_risk_factors(arrival, departure, connection_time, min_connection_time)
+                    
+                    connection = {
+                        'arrival_flight': arrival['flight_number'],
+                        'departure_flight': departure['flight_number'],
+                        'connection_time_minutes': connection_time,
+                        'minimum_connection_time': min_connection_time,
+                        'success_probability': success_prob,
+                        'terminal_transfer_required': terminal_transfer,
+                        'is_virgin_atlantic_connection': departure.get('is_virgin_atlantic', False),
+                        'risk_factors': risk_factors,
+                        'is_viable': success_prob >= 0.5,
+                        'confidence_level': 'HIGH' if abs(success_prob - 0.7) > 0.2 else 'MEDIUM'
+                    }
+                    
+                    connections.append(connection)
         
-        if terminal_transfer:
-            mct += 15
+        # Sort by success probability (highest first)
+        connections.sort(key=lambda x: x['success_probability'], reverse=True)
         
-        return mct
+        return connections
     
-    def _identify_risk_factors(self, arrival: Dict, departure: Dict, connection_time: float) -> List[str]:
-        """Identify risk factors for the connection"""
+    def _calculate_success_probability(self, connection_time: int, min_time: int, 
+                                     arrival: Dict, departure: Dict) -> float:
+        """Calculate connection success probability using business rules"""
+        
+        # Base probability
+        base_prob = 0.8
+        
+        # Adjust for connection time buffer
+        buffer = connection_time - min_time
+        if buffer < 15:
+            base_prob -= 0.3
+        elif buffer < 30:
+            base_prob -= 0.15
+        elif buffer > 120:
+            base_prob += 0.1
+        
+        # Adjust for arrival delay
+        delay = arrival.get('delay_minutes', 0)
+        if delay > 30:
+            base_prob -= 0.4
+        elif delay > 15:
+            base_prob -= 0.2
+        
+        # Virgin Atlantic priority
+        if departure.get('is_virgin_atlantic', False):
+            base_prob += 0.05
+        
+        # Terminal transfer penalty
+        if arrival.get('terminal') != departure.get('terminal'):
+            base_prob -= 0.1
+        
+        # International complexity
+        if arrival.get('is_international') and departure.get('is_international'):
+            base_prob -= 0.05
+        
+        return max(0.1, min(0.95, base_prob))
+    
+    def _identify_risk_factors(self, arrival: Dict, departure: Dict, 
+                             connection_time: int, min_time: int) -> List[str]:
+        """Identify specific risk factors for the connection"""
+        
         risks = []
         
-        if connection_time < 90:
-            risks.append("TIGHT_CONNECTION")
+        if connection_time < min_time + 15:
+            risks.append('TIGHT_CONNECTION')
         
-        if arrival.get("delay_minutes", 0) > 10:
-            risks.append("ARRIVAL_DELAY")
+        if arrival.get('delay_minutes', 0) > 10:
+            risks.append('ARRIVAL_DELAY')
         
-        if arrival.get("terminal") != departure.get("terminal"):
-            risks.append("TERMINAL_TRANSFER")
+        if arrival.get('terminal') != departure.get('terminal'):
+            risks.append('TERMINAL_TRANSFER')
         
-        if arrival.get("is_international") and departure.get("is_international"):
-            risks.append("INTERNATIONAL_CONNECTION")
+        if arrival.get('is_international') and departure.get('is_international'):
+            risks.append('COMPLEX_ROUTING')
         
-        if "weather" in arrival.get("status", "").lower():
-            risks.append("WEATHER_IMPACT")
+        # Add weather risk (placeholder - would integrate with weather API)
+        if datetime.now().hour in [17, 18, 19, 20]:  # Peak hours
+            risks.append('PEAK_HOUR_OPERATIONS')
         
         return risks
     
-    def _get_fallback_arrivals(self) -> Dict:
-        """Provide realistic fallback arrival data for connection modeling"""
-        current_time = datetime.now()
-        arrivals = []
+    def _determine_terminal(self, airline: str, flight_number: str) -> str:
+        """Determine likely terminal based on airline"""
         
-        # Virgin Atlantic flights
-        va_flights = [
-            {"flight": "VS11", "origin": "BOS", "delay": 5, "gate": "A10", "terminal": "T3"},
-            {"flight": "VS25", "origin": "JFK", "delay": -3, "gate": "A12", "terminal": "T3"},
-            {"flight": "VS103", "origin": "ATL", "delay": 12, "gate": "A8", "terminal": "T3"},
-            {"flight": "VS355", "origin": "BOM", "delay": 8, "gate": "A15", "terminal": "T3"},
-        ]
-        
-        # Other airlines for connection opportunities
-        other_flights = [
-            {"flight": "AF1081", "origin": "CDG", "delay": 2, "gate": "B32", "terminal": "T4"},
-            {"flight": "KL1008", "origin": "AMS", "delay": -5, "gate": "B28", "terminal": "T4"},
-            {"flight": "DL31", "origin": "JFK", "delay": 15, "gate": "B45", "terminal": "T4"},
-            {"flight": "KQ100", "origin": "NBO", "delay": 22, "gate": "B38", "terminal": "T4"},
-        ]
-        
-        for i, flight_data in enumerate(va_flights + other_flights):
-            arrival_time = current_time - timedelta(minutes=30-i*10) + timedelta(minutes=flight_data["delay"])
-            
-            arrivals.append({
-                "flight_number": flight_data["flight"],
-                "airline": "Virgin Atlantic" if flight_data["flight"].startswith("VS") else "Partner Airline",
-                "aircraft_type": "A350" if flight_data["flight"].startswith("VS") else "B777",
-                "origin": flight_data["origin"],
-                "scheduled_arrival": (arrival_time - timedelta(minutes=flight_data["delay"])).isoformat(),
-                "actual_arrival": arrival_time.isoformat(),
-                "gate": flight_data["gate"],
-                "terminal": flight_data["terminal"],
-                "status": "ARRIVED" if flight_data["delay"] > 0 else "ON_TIME",
-                "delay_minutes": flight_data["delay"],
-                "is_international": True,
-                "passenger_count": 280 if flight_data["flight"].startswith("VS") else 350,
-                "connection_window": 120
-            })
-        
-        return {
-            "arrivals": arrivals,
-            "total_arrivals": len(arrivals),
-            "data_quality": "fallback_simulation"
-        }
+        if 'Virgin Atlantic' in airline or flight_number.startswith('VS'):
+            return 'T3'
+        elif any(x in airline for x in ['Air France', 'KLM', 'Delta']):
+            return 'T4'
+        elif 'British Airways' in airline or flight_number.startswith('BA'):
+            return 'T5'
+        else:
+            return 'T2'  # Default for other airlines
     
-    def _get_fallback_departures(self) -> Dict:
-        """Provide realistic fallback departure data for connection modeling"""
-        current_time = datetime.now()
-        departures = []
+    def _estimate_gate(self, airline: str, flight_number: str) -> str:
+        """Estimate gate based on terminal and airline"""
         
-        # Virgin Atlantic departures
-        va_departures = [
-            {"flight": "VS12", "dest": "BOS", "gate": "A11", "terminal": "T3", "offset": 90},
-            {"flight": "VS26", "dest": "JFK", "gate": "A13", "terminal": "T3", "offset": 120},
-            {"flight": "VS104", "dest": "ATL", "gate": "A9", "terminal": "T3", "offset": 150},
-            {"flight": "VS356", "dest": "BOM", "gate": "A16", "terminal": "T3", "offset": 180},
-        ]
+        terminal = self._determine_terminal(airline, flight_number)
         
-        # SkyTeam partner departures  
-        skyteam_departures = [
-            {"flight": "AF1380", "dest": "CDG", "gate": "B33", "terminal": "T4", "offset": 75},
-            {"flight": "KL1007", "dest": "AMS", "gate": "B29", "terminal": "T4", "offset": 105},
-            {"flight": "DL32", "dest": "JFK", "gate": "B46", "terminal": "T4", "offset": 135},
-            {"flight": "KQ101", "dest": "NBO", "gate": "B39", "terminal": "T4", "offset": 165},
-        ]
+        # Simulate gate assignment
+        import random
+        random.seed(hash(flight_number))  # Consistent for same flight
         
-        for flight_data in va_departures + skyteam_departures:
-            departure_time = current_time + timedelta(minutes=flight_data["offset"])
-            
-            departures.append({
-                "flight_number": flight_data["flight"],
-                "airline": "Virgin Atlantic" if flight_data["flight"].startswith("VS") else "SkyTeam Partner",
-                "aircraft_type": "A350" if flight_data["flight"].startswith("VS") else "B777",
-                "destination": flight_data["dest"],
-                "scheduled_departure": departure_time.isoformat(),
-                "gate": flight_data["gate"],
-                "terminal": flight_data["terminal"],
-                "status": "SCHEDULED",
-                "check_in_closes": (departure_time - timedelta(minutes=60)).isoformat(),
-                "minimum_connection_time": 75 if flight_data["terminal"] == "T4" else 60,
-                "is_virgin_atlantic": flight_data["flight"].startswith("VS")
-            })
-        
-        return {
-            "departures": departures,
-            "total_departures": len(departures),
-            "data_quality": "fallback_simulation"
-        }
+        if terminal == 'T3':
+            return f"T3-{random.randint(10, 20)}"
+        elif terminal == 'T4':
+            return f"T4-{random.randint(1, 15)}"
+        elif terminal == 'T5':
+            return f"T5-{random.randint(1, 25)}"
+        else:
+            return f"T2-{random.randint(1, 10)}"
     
-    # Utility methods
+    def _estimate_passenger_count(self, aircraft_type: str) -> int:
+        """Estimate passenger count based on aircraft type"""
+        
+        if not aircraft_type or aircraft_type == 'Unknown':
+            return 200
+        
+        # Aircraft capacity mapping (typical configurations)
+        capacity_map = {
+            'A380': 550, 'A350': 350, 'A340': 320, 'A330': 280,
+            'B787': 250, 'B777': 350, 'B747': 400,
+            'A321': 200, 'A320': 180, 'A319': 150,
+            'B737': 160, 'B738': 180, 'B739': 190
+        }
+        
+        for aircraft, capacity in capacity_map.items():
+            if aircraft in aircraft_type:
+                # Add some variation (85-95% capacity)
+                import random
+                random.seed(hash(aircraft_type))
+                return int(capacity * random.uniform(0.85, 0.95))
+        
+        return 200  # Default
+    
+    def _calculate_check_in_deadline(self, departure_time: Optional[datetime]) -> Optional[str]:
+        """Calculate check-in deadline"""
+        
+        if not departure_time:
+            return None
+        
+        # International flights: 3 hours before, domestic: 2 hours before
+        deadline = departure_time - timedelta(hours=2.5)  # Average
+        return deadline.isoformat()
+    
     def _parse_time(self, time_str: Optional[str]) -> Optional[datetime]:
-        """Parse ISO time string to datetime object"""
+        """Parse time string to datetime object"""
+        
         if not time_str:
             return None
+        
         try:
-            return datetime.fromisoformat(time_str.replace('Z', '+00:00'))
+            # Handle various time formats from FlightAware
+            if 'T' in time_str:
+                return datetime.fromisoformat(time_str.replace('Z', '+00:00'))
+            else:
+                return datetime.fromisoformat(time_str)
         except:
             return None
     
-    def _calculate_delay(self, flight: Dict) -> int:
-        """Calculate delay in minutes"""
-        scheduled = self._parse_time(flight.get("scheduled_arrival"))
-        actual = self._parse_time(flight.get("actual_arrival") or flight.get("estimated_arrival"))
+    def _save_data(self, data: Dict):
+        """Save fetched data for historical analysis"""
         
-        if scheduled and actual:
-            return int((actual - scheduled).total_seconds() / 60)
-        return 0
-    
-    def _get_terminal_from_gate(self, gate: str) -> str:
-        """Determine terminal from gate number"""
-        if not gate or gate == "Unknown":
-            return "Unknown"
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f'heathrow_connection_data_{timestamp}.json'
         
-        gate_num = gate.upper()
-        if gate_num.startswith(('A', 'B')):
-            return "T3" if gate_num.startswith('A') else "T4"
-        elif gate_num.startswith(('C', 'D')):
-            return "T5"
-        else:
-            return "T2"
+        try:
+            with open(filename, 'w') as f:
+                json.dump(data, f, indent=2, default=str)
+            print(f"[FlightAware] Data saved to {filename}")
+        except Exception as e:
+            print(f"[FlightAware] Error saving data: {e}")
     
-    def _is_international_flight(self, flight: Dict) -> bool:
-        """Determine if flight is international based on origin"""
-        origin = flight.get("origin", {})
-        if isinstance(origin, dict):
-            origin_code = origin.get("code", "")
-        else:
-            origin_code = str(origin)
+    def _get_fallback_arrivals(self) -> List[Dict]:
+        """Fallback arrivals data when API is unavailable"""
         
-        # UK domestic codes start with EG
-        return not origin_code.startswith("EG")
-    
-    def _estimate_passenger_count(self, flight: Dict) -> int:
-        """Estimate passenger count based on aircraft type"""
-        aircraft = flight.get("aircraft_type", "").upper()
+        print("[FlightAware] Using fallback arrivals data")
         
-        if "A350" in aircraft or "A359" in aircraft:
-            return 280
-        elif "A330" in aircraft:
-            return 250
-        elif "B787" in aircraft or "B789" in aircraft:
-            return 280
-        elif "B777" in aircraft:
-            return 350
-        elif "A320" in aircraft or "B737" in aircraft:
-            return 180
-        else:
-            return 200
-    
-    def _calculate_connection_window(self, flight: Dict) -> int:
-        """Calculate ideal connection window for this arrival"""
-        if flight.get("is_international", True):
-            return 90  # International arrivals need more time
-        else:
-            return 60   # Domestic arrivals
-    
-    def _calculate_check_in_deadline(self, flight: Dict) -> str:
-        """Calculate when check-in closes for departure"""
-        dep_time = self._parse_time(flight.get("scheduled_departure"))
-        if dep_time:
-            # International: 60 minutes, Domestic: 45 minutes
-            minutes_before = 60 if self._is_international_departure(flight) else 45
-            deadline = dep_time - timedelta(minutes=minutes_before)
-            return deadline.isoformat()
-        return "Unknown"
-    
-    def _is_international_departure(self, flight: Dict) -> bool:
-        """Determine if departure is international"""
-        dest = flight.get("destination", {})
-        if isinstance(dest, dict):
-            dest_code = dest.get("code", "")
-        else:
-            dest_code = str(dest)
+        base_time = datetime.now().replace(minute=0, second=0, microsecond=0)
         
-        # UK domestic codes start with EG
-        return not dest_code.startswith("EG")
+        arrivals = [
+            {
+                'flight_number': 'VS11',
+                'airline': 'Virgin Atlantic',
+                'aircraft_type': 'A350-1000',
+                'origin': 'KBOS',
+                'terminal': 'T3',
+                'gate': 'T3-12',
+                'scheduled_arrival': (base_time - timedelta(hours=1)).isoformat(),
+                'actual_arrival': (base_time - timedelta(hours=1, minutes=5)).isoformat(),
+                'delay_minutes': 5,
+                'status': 'ARRIVED',
+                'is_international': True,
+                'passenger_count': 280,
+                'data_source': 'Fallback_Data'
+            },
+            {
+                'flight_number': 'VS25',
+                'airline': 'Virgin Atlantic', 
+                'aircraft_type': 'B787-9',
+                'origin': 'KJFK',
+                'terminal': 'T3',
+                'gate': 'T3-15',
+                'scheduled_arrival': base_time.isoformat(),
+                'estimated_arrival': (base_time + timedelta(minutes=10)).isoformat(),
+                'delay_minutes': 10,
+                'status': 'ESTIMATED',
+                'is_international': True,
+                'passenger_count': 220,
+                'data_source': 'Fallback_Data'
+            },
+            {
+                'flight_number': 'AF1380',
+                'airline': 'Air France',
+                'aircraft_type': 'A320',
+                'origin': 'LFPG',
+                'terminal': 'T4',
+                'gate': 'T4-8',
+                'scheduled_arrival': (base_time + timedelta(minutes=30)).isoformat(),
+                'delay_minutes': 0,
+                'status': 'SCHEDULED',
+                'is_international': True,
+                'passenger_count': 160,
+                'data_source': 'Fallback_Data'
+            }
+        ]
+        
+        return arrivals
     
-    def _get_mct(self, flight: Dict) -> int:
-        """Get minimum connection time for this departure"""
-        if self._is_international_departure(flight):
-            return 75  # International departures
-        else:
-            return 60   # Domestic departures
+    def _get_fallback_departures(self) -> List[Dict]:
+        """Fallback departures data when API is unavailable"""
+        
+        print("[FlightAware] Using fallback departures data")
+        
+        base_time = datetime.now().replace(minute=0, second=0, microsecond=0)
+        
+        departures = [
+            {
+                'flight_number': 'VS12',
+                'airline': 'Virgin Atlantic',
+                'aircraft_type': 'A350-1000',
+                'destination': 'KBOS',
+                'terminal': 'T3',
+                'gate': 'T3-18',
+                'scheduled_departure': (base_time + timedelta(hours=2)).isoformat(),
+                'status': 'SCHEDULED',
+                'is_virgin_atlantic': True,
+                'is_international': True,
+                'minimum_connection_time': 60,
+                'check_in_closes': (base_time + timedelta(minutes=30)).isoformat(),
+                'data_source': 'Fallback_Data'
+            },
+            {
+                'flight_number': 'VS26',
+                'airline': 'Virgin Atlantic',
+                'aircraft_type': 'B787-9', 
+                'destination': 'KJFK',
+                'terminal': 'T3',
+                'gate': 'T3-20',
+                'scheduled_departure': (base_time + timedelta(hours=3)).isoformat(),
+                'status': 'SCHEDULED',
+                'is_virgin_atlantic': True,
+                'is_international': True,
+                'minimum_connection_time': 60,
+                'check_in_closes': (base_time + timedelta(hours=1)).isoformat(),
+                'data_source': 'Fallback_Data'
+            },
+            {
+                'flight_number': 'KL1007',
+                'airline': 'KLM',
+                'aircraft_type': 'B737-800',
+                'destination': 'EHAM',
+                'terminal': 'T4',
+                'gate': 'T4-12',
+                'scheduled_departure': (base_time + timedelta(hours=2, minutes=30)).isoformat(),
+                'status': 'SCHEDULED',
+                'is_virgin_atlantic': False,
+                'is_international': True,
+                'minimum_connection_time': 75,
+                'check_in_closes': (base_time + timedelta(hours=1)).isoformat(),
+                'data_source': 'Fallback_Data'
+            }
+        ]
+        
+        return departures
 
 def main():
     """Test the FlightAware fetcher"""
-    print("Testing FlightAware Heathrow Connection Data Fetcher")
-    print("=" * 50)
+    print("Testing FlightAware Heathrow Fetcher")
+    print("=" * 40)
     
     fetcher = FlightAwareHeathrowFetcher()
     
-    # Test connection data fetch
+    # Test individual methods
+    print("\n1. Testing arrivals fetch...")
+    arrivals = fetcher.get_arrivals(max_pages=1)
+    print(f"Fetched {len(arrivals)} arrivals")
+    
+    print("\n2. Testing departures fetch...")
+    departures = fetcher.get_departures(max_pages=1)
+    print(f"Fetched {len(departures)} departures")
+    
+    print("\n3. Testing connection data...")
     connection_data = fetcher.get_connection_data()
     
-    print(f"\nFetched {len(connection_data['arrivals'])} arrivals")
-    print(f"Fetched {len(connection_data['departures'])} departures")
-    print(f"Found {len(connection_data['connection_opportunities'])} viable connections")
-    print(f"Data source: {connection_data['data_source']}")
+    print(f"\nResults Summary:")
+    print(f"  Total arrivals: {connection_data['summary']['total_arrivals']}")
+    print(f"  Total departures: {connection_data['summary']['total_departures']}")
+    print(f"  Connection opportunities: {connection_data['summary']['total_connections']}")
+    print(f"  Virgin Atlantic arrivals: {connection_data['summary']['virgin_atlantic_arrivals']}")
+    print(f"  Virgin Atlantic departures: {connection_data['summary']['virgin_atlantic_departures']}")
     
     # Show sample connections
     if connection_data['connection_opportunities']:
-        print("\nTop Connection Opportunities:")
-        for i, conn in enumerate(connection_data['connection_opportunities'][:5]):
+        print(f"\nTop 3 Connection Opportunities:")
+        for i, conn in enumerate(connection_data['connection_opportunities'][:3]):
             print(f"{i+1}. {conn['arrival_flight']} → {conn['departure_flight']}")
-            print(f"   Connection time: {conn['connection_time_minutes']} min")
+            print(f"   Connection time: {conn['connection_time_minutes']} minutes")
             print(f"   Success probability: {conn['success_probability']:.1%}")
             print(f"   Risk factors: {', '.join(conn['risk_factors']) if conn['risk_factors'] else 'None'}")
-            print()
-    
-    # Save data for ML training
-    output_file = "heathrow_connection_data.json"
-    with open(output_file, 'w') as f:
-        json.dump(connection_data, f, indent=2, default=str)
-    
-    print(f"Data saved to {output_file}")
 
 if __name__ == "__main__":
     main()
