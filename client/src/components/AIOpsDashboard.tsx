@@ -63,49 +63,76 @@ export default function AIOpsDashboard() {
   const [isLoadingFlights, setIsLoadingFlights] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string>('');
 
-  // Generate predictive alerts based on authentic Virgin Atlantic flight data
-  const generatePredictiveAlerts = (flights: any[]) => {
+  // Generate predictive alerts based on authentic Virgin Atlantic flight data and real weather
+  const generatePredictiveAlerts = async (flights: any[]) => {
     const alerts: DigitalTwinAlert[] = [];
     
-    // Predictive delay analysis based on route patterns and time of day
+    // Predictive analysis based on authentic data patterns
     const currentHour = new Date().getHours();
-    flights.forEach((flight: any) => {
-      // Trans-Atlantic delay prediction (based on historical patterns)
-      if (flight.route?.includes('LHR') && (flight.route?.includes('JFK') || flight.route?.includes('BOS') || flight.route?.includes('ATL'))) {
-        // Peak hours delay prediction
-        if (currentHour >= 15 && currentHour <= 19) {
+    
+    try {
+      // Fetch real LHR weather data to inform predictions
+      const weatherResponse = await fetch('/api/weather/avwx/EGLL');
+      let weatherImpacting = false;
+      
+      if (weatherResponse.ok) {
+        const weatherData = await weatherResponse.json();
+        // Only flag weather impact if visibility < 5km, wind > 30kt, or severe conditions
+        const visibility = weatherData.visibility_statute_mi || 10;
+        const windSpeed = weatherData.wind_speed_kt || 0;
+        const conditions = weatherData.flight_rules || 'VFR';
+        
+        weatherImpacting = visibility < 3 || windSpeed > 30 || conditions === 'LIFR' || conditions === 'IFR';
+      }
+      
+      flights.forEach((flight: any) => {
+        // Real weather-based prediction (only when weather is actually impacting)
+        if (weatherImpacting && flight.route?.includes('LHR')) {
           alerts.push({
-            id: `delay_prediction_${flight.flight_number}`,
-            message: `Peak hour delay risk predicted for ${flight.flight_number} (${flight.route})`,
+            id: `weather_impact_${flight.flight_number}`,
+            message: `Weather monitoring: ${flight.flight_number} (${flight.route}) - conditions affecting operations`,
             severity: 'medium'
           });
         }
-      }
-      
-      // Connection risk prediction for flights arriving at LHR
-      if (flight.route?.endsWith('LHR') && flight.altitude < 20000) {
-        alerts.push({
-          id: `connection_risk_${flight.flight_number}`,
-          message: `Connection optimization recommended for ${flight.flight_number} arrival`,
-          severity: 'low'
-        });
-      }
-      
-      // Fuel efficiency optimization based on altitude and route
-      if (flight.altitude > 35000 && (flight.route?.includes('SFO') || flight.route?.includes('LAX'))) {
-        alerts.push({
-          id: `fuel_optimization_${flight.flight_number}`,
-          message: `Fuel efficiency optimization available for ${flight.flight_number}`,
-          severity: 'low'
-        });
-      }
-    });
+        
+        // Peak hour delay prediction for trans-Atlantic routes (3-7 PM)
+        if (flight.route?.includes('LHR') && (flight.route?.includes('JFK') || flight.route?.includes('BOS') || flight.route?.includes('ATL'))) {
+          if (currentHour >= 15 && currentHour <= 19) {
+            alerts.push({
+              id: `peak_hour_${flight.flight_number}`,
+              message: `Peak hour operations: ${flight.flight_number} (${flight.route}) - enhanced monitoring`,
+              severity: 'low'
+            });
+          }
+        }
+        
+        // Connection optimization for approaching flights
+        if (flight.route?.endsWith('LHR') && flight.altitude < 20000) {
+          alerts.push({
+            id: `connection_${flight.flight_number}`,
+            message: `Connection optimization: ${flight.flight_number} approaching LHR`,
+            severity: 'low'
+          });
+        }
+        
+        // Fuel efficiency for long-haul Pacific routes
+        if (flight.altitude > 35000 && (flight.route?.includes('SFO') || flight.route?.includes('LAX'))) {
+          alerts.push({
+            id: `fuel_efficiency_${flight.flight_number}`,
+            message: `Fuel optimization available: ${flight.flight_number} Pacific route`,
+            severity: 'low'
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Weather data fetch failed for predictions:', error);
+    }
     
-    // Always show at least one system-level predictive alert
+    // Network performance monitoring
     if (alerts.length === 0) {
       alerts.push({
-        id: 'network_prediction',
-        message: `Network performance optimization: ${flights.length} flights monitored`,
+        id: 'network_performance',
+        message: `Network status: ${flights.length} Virgin Atlantic flights monitored - all systems optimal`,
         severity: 'low'
       });
     }
@@ -137,9 +164,10 @@ export default function AIOpsDashboard() {
         });
         setLastUpdate(new Date().toLocaleTimeString());
         
-        // Generate predictive alerts based on authentic flight data
-        const predictiveAlerts = generatePredictiveAlerts(flights);
-        setDigitalTwinAlerts(predictiveAlerts);
+        // Generate predictive alerts with real weather data
+        generatePredictiveAlerts(flights).then(predictiveAlerts => {
+          setDigitalTwinAlerts(predictiveAlerts);
+        });
       }
     } catch (error) {
       console.error('Error fetching ADS-B data:', error);
