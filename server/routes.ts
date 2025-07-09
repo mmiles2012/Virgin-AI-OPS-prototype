@@ -1091,6 +1091,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Heathrow Live Network Health Data from arrival/departure scraper
+  app.get("/api/aviation/heathrow-network-health", async (req, res) => {
+    try {
+      const heathrowLiveDataService = require('./heathrowLiveDataService.js');
+      const flightData = await heathrowLiveDataService.getHeathrowData();
+      const networkHealth = heathrowLiveDataService.calculateNetworkHealth(flightData);
+      
+      res.json({
+        success: true,
+        network_health: networkHealth,
+        flight_data: {
+          total_flights: flightData.total_flights,
+          virgin_atlantic_flights: flightData.virgin_atlantic_flights,
+          data_source: 'Heathrow Live Arrival/Departure Boards',
+          last_updated: flightData.scraped_at
+        },
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error fetching Heathrow network health:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve Heathrow network health data',
+        network_health: {
+          onTimePerformance: 95, // Fallback value
+          delays: 0,
+          cancellations: 0,
+          diversions: 0
+        }
+      });
+    }
+  });
+
   app.post("/api/scenarios/decision", (req, res) => {
     const { decisionId, optionId, source = 'unknown' } = req.body;
     

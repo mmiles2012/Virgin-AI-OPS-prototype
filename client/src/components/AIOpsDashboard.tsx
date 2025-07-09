@@ -164,29 +164,52 @@ export default function AIOpsDashboard() {
         });
         setLastUpdate(new Date().toLocaleTimeString());
         
-        // Calculate real-time network health from authentic flight data
-        const activeFlights = flights.filter((f: any) => f.authentic_tracking);
-        const onTimeFlights = activeFlights.filter((f: any) => 
-          f.status?.includes('En Route') && !f.status?.includes('Delayed')
-        ).length;
-        const onTimePerformance = activeFlights.length > 0 ? 
-          Math.round((onTimeFlights / activeFlights.length) * 100) : 95;
-        
-        // Count any actual disruptions from flight data
-        const diversions = flights.filter((f: any) => 
-          f.status?.includes('Diverted') || f.warnings?.some((w: any) => w.includes('diversion'))
-        ).length;
-        
-        const cancellations = flights.filter((f: any) => 
-          f.status?.includes('Cancelled')
-        ).length;
-        
-        setNetworkHealth({
-          onTimePerformance,
-          cancellations,
-          diversions,
-          curfews: 0 // No current curfew restrictions
-        });
+        // Fetch authentic Heathrow network health data from arrival/departure boards
+        fetch('/api/aviation/heathrow-network-health')
+          .then(response => response.json())
+          .then(data => {
+            if (data.success && data.network_health) {
+              setNetworkHealth({
+                onTimePerformance: data.network_health.onTimePerformance,
+                cancellations: data.network_health.cancellations || 0,
+                diversions: data.network_health.diversions || 0,
+                curfews: 0 // No current curfew restrictions
+              });
+              console.log('✅ Network health updated from Heathrow live data:', data.network_health);
+            } else {
+              // Fallback to ADS-B flight data calculation
+              const activeFlights = flights.filter((f: any) => f.authentic_tracking);
+              const onTimeFlights = activeFlights.filter((f: any) => 
+                f.status?.includes('En Route') && !f.status?.includes('Delayed')
+              ).length;
+              const onTimePerformance = activeFlights.length > 0 ? 
+                Math.round((onTimeFlights / activeFlights.length) * 100) : 95;
+              
+              setNetworkHealth({
+                onTimePerformance,
+                cancellations: 0,
+                diversions: 0,
+                curfews: 0
+              });
+            }
+          })
+          .catch(error => {
+            console.log('Using ADS-B flight data for network health (Heathrow scraper unavailable)');
+            // Fallback to ADS-B data when scraper is unavailable
+            const activeFlights = flights.filter((f: any) => f.authentic_tracking);
+            const onTimeFlights = activeFlights.filter((f: any) => 
+              f.status?.includes('En Route') && !f.status?.includes('Delayed')
+            ).length;
+            const onTimePerformance = activeFlights.length > 0 ? 
+              Math.round((onTimeFlights / activeFlights.length) * 100) : 100;
+            
+            setNetworkHealth({
+              onTimePerformance,
+              cancellations: 0, 
+              diversions: 0,
+              curfews: 0
+            });
+          });
 
         // Generate predictive alerts with real weather data
         generatePredictiveAlerts(flights).then(predictiveAlerts => {
