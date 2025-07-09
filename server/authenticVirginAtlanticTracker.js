@@ -265,34 +265,66 @@ class AuthenticVirginAtlanticTracker {
         depAirport = matchedRoute.dep;
         arrAirport = matchedRoute.arr;
       } else {
-        // Enhanced geographic position-based route estimation for unmatched flights
-        if (lat > 30 && lat < 60 && lon > -80 && lon < -60) {
-          route = 'Trans-Atlantic';
-          depAirport = 'LHR';
-          arrAirport = 'US';
-        } else if (lat > 50 && lon < 10 && lon > -10) {
-          route = 'LHR-Europe';
-          depAirport = 'LHR';
-          arrAirport = 'EUR';
-        } else if (lat < 0 && lon > 15 && lon < 35) {
-          route = 'LHR-JNB';
-          depAirport = 'LHR'; 
-          arrAirport = 'JNB';
-        } else if (lat > 6 && lat < 7 && lon > 3 && lon < 4) {
-          route = 'LHR-LOS';
-          depAirport = 'LHR';
-          arrAirport = 'LOS';
-        } else if (lat > 25 && lat < 30 && lon > 76 && lon < 78) {
-          route = 'LHR-DEL';
-          depAirport = 'LHR';
-          arrAirport = 'DEL';
+        // Enhanced callsign analysis for better route detection
+        const cleanCallsign = callsign.replace(/[^A-Z0-9]/g, '');
+        
+        // Try to match partial flight numbers or patterns
+        if (cleanCallsign.includes('103') || cleanCallsign.includes('104')) {
+          route = cleanCallsign.includes('103') ? 'LHR-ATL' : 'ATL-LHR';
+          depAirport = cleanCallsign.includes('103') ? 'LHR' : 'ATL';
+          arrAirport = cleanCallsign.includes('103') ? 'ATL' : 'LHR';
+        } else if (cleanCallsign.includes('011') || cleanCallsign.includes('012')) {
+          route = cleanCallsign.includes('011') ? 'LHR-BOS' : 'BOS-LHR';
+          depAirport = cleanCallsign.includes('011') ? 'LHR' : 'BOS';
+          arrAirport = cleanCallsign.includes('011') ? 'BOS' : 'LHR';
+        } else if (cleanCallsign.includes('157') || cleanCallsign.includes('158')) {
+          route = cleanCallsign.includes('157') ? 'LHR-BOS' : 'BOS-LHR';
+          depAirport = cleanCallsign.includes('157') ? 'LHR' : 'BOS';
+          arrAirport = cleanCallsign.includes('157') ? 'BOS' : 'LHR';
+        } else if (cleanCallsign.includes('021') || cleanCallsign.includes('022')) {
+          route = cleanCallsign.includes('021') ? 'LHR-IAD' : 'IAD-LHR';
+          depAirport = cleanCallsign.includes('021') ? 'LHR' : 'IAD';
+          arrAirport = cleanCallsign.includes('021') ? 'IAD' : 'LHR';
+        } else if (cleanCallsign.includes('411') || cleanCallsign.includes('412')) {
+          route = cleanCallsign.includes('411') ? 'LHR-LOS' : 'LOS-LHR';
+          depAirport = cleanCallsign.includes('411') ? 'LHR' : 'LOS';
+          arrAirport = cleanCallsign.includes('411') ? 'LOS' : 'LHR';
+        } else if (cleanCallsign.includes('449') || cleanCallsign.includes('450')) {
+          route = cleanCallsign.includes('449') ? 'LHR-JNB' : 'JNB-LHR';
+          depAirport = cleanCallsign.includes('449') ? 'LHR' : 'JNB';
+          arrAirport = cleanCallsign.includes('449') ? 'JNB' : 'LHR';
         } else {
-          // For flights with registration but no clear callsign pattern
-          const registration = flight.r || flight.reg || '';
-          if (registration.startsWith('G-V')) {
-            route = 'Virgin Atlantic Service';
-            depAirport = 'LHR';
-            arrAirport = 'INTL';
+          // Precise geographic location-based detection only
+          if (lat > 33.3 && lat < 33.8 && lon > -84.5 && lon < -84.3) {
+            route = 'ATL-LHR';
+            depAirport = 'ATL';
+            arrAirport = 'LHR';
+          } else if (lat > 42.3 && lat < 42.4 && lon > -71.1 && lon < -71.0) {
+            route = 'BOS-LHR';
+            depAirport = 'BOS';
+            arrAirport = 'LHR';
+          } else if (lat > 38.9 && lat < 39.0 && lon > -77.5 && lon < -77.4) {
+            route = 'IAD-LHR';
+            depAirport = 'IAD';
+            arrAirport = 'LHR';
+          } else if (lat > 6.4 && lat < 6.6 && lon > 3.3 && lon < 3.4) {
+            route = 'LOS-LHR';
+            depAirport = 'LOS';
+            arrAirport = 'LHR';
+          } else if (lat > -26.2 && lat < -26.1 && lon > 28.2 && lon < 28.3) {
+            route = 'JNB-LHR';
+            depAirport = 'JNB';
+            arrAirport = 'LHR';
+          } else {
+            // Only set specific routes or leave as UNKNOWN
+            const registration = flight.r || flight.reg || '';
+            if (registration.startsWith('G-V') && lat > 51.4 && lat < 51.5 && lon > -0.5 && lon < -0.4) {
+              // Aircraft on ground at Heathrow
+              route = 'On Ground LHR';
+              depAirport = 'LHR';
+              arrAirport = 'LHR';
+            }
+            // Otherwise keep as UNKNOWN - better than wrong info
           }
         }
       }
