@@ -284,7 +284,9 @@ export default function EnhancedLiveFlightTracker() {
                   <div className="flex items-center gap-6 text-sm">
                     <div className="text-center">
                       <div className="text-gray-400">Altitude</div>
-                      <div className="text-white font-mono">{flight.altitude.toLocaleString()} ft</div>
+                      <div className="text-white font-mono">
+                        {flight.altitude != null ? flight.altitude.toLocaleString() : 'N/A'} ft
+                      </div>
                     </div>
                     <div className="text-center">
                       <div className="text-gray-400">Speed</div>
