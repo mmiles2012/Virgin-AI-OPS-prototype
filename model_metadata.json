@@ -1,0 +1,45 @@
+{
+  "training_date": "2025-07-09T00:27:07.922453",
+  "training_records": 43,
+  "feature_columns": [
+    "delay_minutes",
+    "altitude",
+    "latitude",
+    "longitude",
+    "velocity",
+    "day_of_week",
+    "hour_of_day",
+    "weather_visibility",
+    "weather_wind_speed",
+    "weather_temperature",
+    "weather_impact_score",
+    "is_weekend",
+    "month",
+    "quarter"
+  ],
+  "model_type": "RandomForestClassifier",
+  "train_accuracy": 1.0,
+  "test_accuracy": 1.0,
+  "cv_mean_accuracy": 1.0,
+  "cv_std_accuracy": 0.0,
+  "feature_importance": {
+    "delay_minutes": 0.0,
+    "altitude": 0.0,
+    "latitude": 0.0,
+    "longitude": 0.0,
+    "velocity": 0.0,
+    "day_of_week": 0.0,
+    "hour_of_day": 0.0,
+    "weather_visibility": 0.0,
+    "weather_wind_speed": 0.0,
+    "weather_temperature": 0.0
+  },
+  "class_distribution": {
+    "0": 43
+  },
+  "delay_classes": {
+    "0": "On Time",
+    "1": "Minor Delay (15-60 min)",
+    "2": "Major Delay (60+ min)"
+  }
+}

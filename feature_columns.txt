@@ -1,0 +1,1 @@
+delay_minutes,altitude,latitude,longitude,velocity,day_of_week,hour_of_day,weather_visibility,weather_wind_speed,weather_temperature,weather_impact_score,is_weekend,month,quarter

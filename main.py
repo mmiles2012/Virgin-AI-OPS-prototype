@@ -1,97 +1,224 @@
-from utils.fetch_weather import fetch_and_save_weather_data
-from utils.train_model import train_and_save_model
-from utils.plot_features import plot_feature_importance
-from utils.economics import calculate_total_operational_risk, comprehensive_economic_analysis, economic_dashboard_summary
-import pandas as pd
+#!/usr/bin/env python3
+"""
+AINO Aviation Intelligence Platform - ML Pipeline Main Entry Point
+Coordinates the complete machine learning workflow for Virgin Atlantic delay prediction
+"""
+
+import sys
 import os
+import time
+import argparse
+import subprocess
+from datetime import datetime
+from buffer_live_data import AINOLiveDataBuffer
+from train_model import AINODelayPredictor as Trainer
+from predict_delay import AINODelayPredictor as Predictor
+from schedule_tasks import AINOScheduler
+
+def print_banner():
+    """Print AINO platform banner"""
+    print("=" * 60)
+    print("✈️  AINO Aviation Intelligence Platform")
+    print("    Machine Learning Pipeline for Virgin Atlantic")
+    print("=" * 60)
+
+def check_dependencies():
+    """Check if required dependencies are available"""
+    try:
+        import pandas as pd
+        import numpy as np
+        import sklearn
+        import joblib
+        import requests
+        import geopy
+        return True
+    except ImportError as e:
+        print(f"❌ Missing dependency: {e}")
+        print("Please install: pip install pandas scikit-learn joblib requests geopy")
+        return False
+
+def show_status():
+    """Show current system status"""
+    print("\n📊 System Status:")
+    print("-" * 30)
+    
+    # Check buffer file
+    buffer_exists = os.path.exists('live_buffer.csv')
+    print(f"Data Buffer: {'✅ Available' if buffer_exists else '❌ Not found'}")
+    
+    if buffer_exists:
+        try:
+            buffer = AINOLiveDataBuffer()
+            stats = buffer.get_buffer_stats()
+            print(f"  Records: {stats.get('total_records', 0)}")
+            print(f"  Date range: {stats.get('date_range', {}).get('start', 'N/A')} to {stats.get('date_range', {}).get('end', 'N/A')}")
+        except Exception as e:
+            print(f"  Error reading buffer: {e}")
+    
+    # Check model
+    model_exists = os.path.exists('delay_model.pkl')
+    print(f"ML Model: {'✅ Available' if model_exists else '❌ Not found'}")
+    
+    if model_exists:
+        try:
+            predictor = Predictor()
+            status = predictor.get_model_status()
+            print(f"  Accuracy: {status.get('model_accuracy', 'Unknown')}")
+            print(f"  Features: {status.get('feature_count', 0)}")
+            print(f"  Training date: {status.get('training_date', 'Unknown')}")
+        except Exception as e:
+            print(f"  Error loading model: {e}")
+    
+    # Check AINO platform connection
+    try:
+        import requests
+        response = requests.get("http://localhost:5000/api/aviation/virgin-atlantic-flights", timeout=5)
+        print(f"AINO Platform: {'✅ Connected' if response.status_code == 200 else '❌ Connection failed'}")
+        if response.status_code == 200:
+            data = response.json()
+            flight_count = len(data.get('flights', []))
+            print(f"  Live flights: {flight_count}")
+    except Exception as e:
+        print(f"AINO Platform: ❌ Not available ({e})")
+
+def run_complete_workflow():
+    """Run the complete ML workflow"""
+    print("\n🚀 Starting Complete ML Workflow")
+    print("-" * 40)
+    
+    # Step 1: Buffer data
+    print("Step 1: Collecting live flight data...")
+    try:
+        buffer = AINOLiveDataBuffer()
+        count = buffer.buffer_current_data()
+        print(f"✅ Buffered {count} flights")
+    except Exception as e:
+        print(f"❌ Data collection failed: {e}")
+        return False
+    
+    # Step 2: Train model
+    print("\nStep 2: Training ML model...")
+    try:
+        from train_model import train_from_buffer
+        success = train_from_buffer()
+        if success:
+            print("✅ Model trained successfully")
+        else:
+            print("❌ Model training failed")
+            return False
+    except Exception as e:
+        print(f"❌ Training failed: {e}")
+        return False
+    
+    # Step 3: Generate predictions
+    print("\nStep 3: Generating predictions...")
+    try:
+        predictor = Predictor()
+        predictions = predictor.predict_all_live_flights()
+        print(f"✅ Generated predictions for {len(predictions)} flights")
+        
+        # Show sample predictions
+        for pred in predictions[:3]:
+            if 'error' not in pred:
+                print(f"  {pred['flight_number']}: {pred['prediction']} (confidence: {pred['confidence']:.2f})")
+    except Exception as e:
+        print(f"❌ Prediction failed: {e}")
+        return False
+    
+    print("\n🎉 Complete workflow executed successfully!")
+    return True
+
+def run_dashboard():
+    """Launch the Streamlit dashboard"""
+    print("\n🖥️ Launching Streamlit Dashboard...")
+    try:
+        subprocess.run([sys.executable, "-m", "streamlit", "run", "dashboard.py"])
+    except KeyboardInterrupt:
+        print("\n⏹️ Dashboard stopped")
+    except Exception as e:
+        print(f"❌ Dashboard failed: {e}")
+
+def main():
+    """Main entry point"""
+    parser = argparse.ArgumentParser(description="AINO Aviation Intelligence Platform")
+    parser.add_argument('command', nargs='?', choices=[
+        'status', 'collect', 'train', 'predict', 'workflow', 'dashboard', 'schedule'
+    ], default='status', help='Command to execute')
+    parser.add_argument('--continuous', action='store_true', help='Run continuous data collection')
+    parser.add_argument('--interval', type=int, default=5, help='Collection interval in minutes')
+    
+    args = parser.parse_args()
+    
+    print_banner()
+    
+    # Check dependencies
+    if not check_dependencies():
+        sys.exit(1)
+    
+    if args.command == 'status':
+        show_status()
+    
+    elif args.command == 'collect':
+        print("\n📊 Collecting Live Flight Data")
+        print("-" * 35)
+        
+        buffer = AINOLiveDataBuffer()
+        
+        if args.continuous:
+            print(f"Starting continuous collection (every {args.interval} minutes)")
+            print("Press Ctrl+C to stop")
+            try:
+                buffer.continuous_buffering(interval_minutes=args.interval)
+            except KeyboardInterrupt:
+                print("\n⏹️ Collection stopped")
+        else:
+            count = buffer.buffer_current_data()
+            print(f"✅ Collected {count} flight records")
+    
+    elif args.command == 'train':
+        print("\n🧠 Training ML Model")
+        print("-" * 25)
+        
+        try:
+            trainer = Trainer()
+            metadata = trainer.train_model()
+            print(f"✅ Model trained with {metadata['test_accuracy']:.1%} accuracy")
+        except Exception as e:
+            print(f"❌ Training failed: {e}")
+    
+    elif args.command == 'predict':
+        print("\n🔮 Generating Predictions")
+        print("-" * 30)
+        
+        try:
+            predictor = Predictor()
+            predictions = predictor.predict_all_live_flights()
+            
+            print(f"Generated predictions for {len(predictions)} flights:")
+            for pred in predictions:
+                if 'error' not in pred:
+                    print(f"  {pred['flight_number']}: {pred['prediction']} "
+                          f"(confidence: {pred['confidence']:.1%})")
+                else:
+                    print(f"  {pred['flight_number']}: Error")
+        except Exception as e:
+            print(f"❌ Prediction failed: {e}")
+    
+    elif args.command == 'workflow':
+        run_complete_workflow()
+    
+    elif args.command == 'dashboard':
+        run_dashboard()
+    
+    elif args.command == 'schedule':
+        print("\n📅 Starting Task Scheduler")
+        print("-" * 30)
+        
+        scheduler = AINOScheduler()
+        scheduler.start_scheduler()
+    
+    else:
+        parser.print_help()
 
 if __name__ == "__main__":
-    print("1. Fetching weather data...")
-    fetch_and_save_weather_data()
-
-    print("2. Training model with updated data...")
-    train_and_save_model()
-
-    print("3. Plotting feature importances...")
-    plot_feature_importance()
-
-    print("4. Calculating operational risk scores...")
-    
-    # Load enhanced training data if available
-    if os.path.exists("data/enhanced_training_data.csv"):
-        df = pd.read_csv("data/enhanced_training_data.csv")
-        print(f"Loaded enhanced dataset: {len(df)} records")
-    else:
-        df = pd.read_csv("data/latest_training_data.csv")
-        print(f"Loaded standard dataset: {len(df)} records")
-    
-    # Ensure required columns exist
-    if 'icao_code' not in df.columns and 'station' in df.columns:
-        df['icao_code'] = df['station']
-    elif 'icao_code' not in df.columns and 'reporting_airport' in df.columns:
-        df["icao_code"] = df["reporting_airport"].astype(str).str.upper()
-
-    # Sample economic evaluation on subset (limit to top 20 for analysis)
-    examples = df.head(20)
-    economic_results = []
-    
-    for _, row in examples.iterrows():
-        # Prepare flight data
-        flight_data = {
-            'passenger_count': row.get('pax_count', 200),
-            'distance_km': row.get('distance_km', 5000),
-            'flight_duration_hrs': row.get('flight_duration_hrs', 8.0),
-            'route_class': row.get('route_class', 'long-haul')
-        }
-        
-        # Prepare weather data
-        weather_data = {
-            'wind_speed': row.get('wind_speed', 25),
-            'temperature': row.get('temperature', 15),
-            'visibility': row.get('visibility', 9999)
-        }
-        
-        # Get delay prediction
-        delay_mins = row.get("average_delay_mins", 0)
-        
-        # Calculate comprehensive economic analysis
-        econ = comprehensive_economic_analysis(flight_data, weather_data, delay_mins)
-        
-        # Add flight identifier
-        flight_id = row.get("flight_number", f"{row.get('icao_code', 'UNKN')}-{row.name}")
-        econ["flight"] = flight_id
-        econ["airline"] = row.get("airline_name", "Unknown")
-        econ["icao_code"] = row.get("icao_code", "UNKN")
-        
-        economic_results.append(econ)
-
-    # Create economic analysis DataFrame
-    econ_df = pd.DataFrame(economic_results)
-    
-    # Generate executive summary
-    summary = economic_dashboard_summary(economic_results)
-    
-    # Save results
-    os.makedirs("data", exist_ok=True)
-    econ_df.to_csv("data/economic_risk_summary.csv", index=False)
-    
-    # Display results
-    print("\n💰 ECONOMIC ANALYSIS SUMMARY")
-    print("=" * 50)
-    print(f"Total Flights Analyzed: {summary['total_flights_analyzed']}")
-    print(f"Total Economic Impact: ${summary['total_economic_impact']:,.0f}")
-    print(f"Average Cost per Flight: ${summary['average_cost_per_flight']:,.0f}")
-    print(f"Total EU261 Exposure: ${summary['total_eu261_exposure']:,.0f}")
-    print(f"High Risk Flights: {summary['high_risk_flights']}")
-    print(f"Fuel Savings Potential: {summary['fuel_savings_potential']:,.0f} kg")
-    
-    print(f"\nCost Distribution:")
-    print(f"  Low Cost (<$10k): {summary['cost_distribution']['low_cost']} flights")
-    print(f"  Medium Cost ($10k-$50k): {summary['cost_distribution']['medium_cost']} flights")
-    print(f"  High Cost (>$50k): {summary['cost_distribution']['high_cost']} flights")
-    
-    print(f"\nWorst Performing Flight: {summary['worst_performing_flight']}")
-    print(f"Best Performing Flight: {summary['best_performing_flight']}")
-    
-    print("✅ Economic risk summary saved to data/economic_risk_summary.csv")
-    print("✅ Done!")
+    main()
