@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AINO Aviation Intelligence</title>
+    <script>
+      // Immediate Replit app detection and redirect
+      if (navigator.userAgent.includes('Replit')) {
+        console.log('Replit app detected - redirecting to emergency interface');
+        window.location.href = '/emergency.html';
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Fallback redirect if React fails to load in 3 seconds
+      setTimeout(function() {
+        if (!document.body.hasAttribute('data-react-loaded') && navigator.userAgent.includes('Replit')) {
+          console.log('React failed to load in Replit app - redirecting to emergency interface');
+          window.location.href = '/emergency.html';
+        }
+      }, 3000);
+    </script>
+  </body>
+</html>
