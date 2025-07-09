@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle, Plane, Activity, Cloud, Radio, Radar, MapPin } from "lucide-react";
 import ProfessionalSatelliteMap from "./ProfessionalSatelliteMap";
 import PassengerImpactModelingComponent from "./PassengerImpactModelingComponent";
-import ADSBSubscriptionStatus from "./ADSBSubscriptionStatus";
+
 
 
 interface NetworkHealthData {
@@ -188,9 +188,6 @@ export default function AIOpsDashboard() {
 
         {/* Right Column - Takes up 1/4 width, allows scrolling */}
         <div className="w-1/4 space-y-4 overflow-y-auto max-h-screen">
-          {/* ADS-B Subscription Status */}
-          <ADSBSubscriptionStatus />
-          
           {/* Network Health */}
           <Card className="bg-slate-800 border-slate-700">
           <CardContent className="p-4">
