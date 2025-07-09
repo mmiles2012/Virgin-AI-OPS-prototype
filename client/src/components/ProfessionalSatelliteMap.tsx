@@ -237,33 +237,33 @@ const getServiceIndicatorColor = (support: string): string => {
   }
 };
 
-// Custom flight icon - Bold directional indicator with maximum visibility
+// Custom flight icon - Aircraft symbol with proper directional heading
 const createFlightIcon = (heading: number, selected: boolean) => L.divIcon({
-  className: 'custom-flight-marker-v2',
+  className: 'custom-flight-marker',
   html: `
     <div style="
       transform: rotate(${heading - 90}deg);
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       position: relative;
       cursor: pointer;
       z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     ">
       <div style="
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 24px;
-        color: ${selected ? '#ffff00' : '#ff0000'};
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(255,255,255,0.3);
+        font-size: 20px;
+        color: ${selected ? '#fbbf24' : '#ef4444'};
+        text-shadow: 0 0 6px rgba(0,0,0,0.9), 0 0 3px rgba(255,255,255,0.3);
         font-weight: bold;
         line-height: 1;
-      ">⬆</div>
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
+      ">✈</div>
     </div>
   `,
-  iconSize: [28, 28],
-  iconAnchor: [14, 14],
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
 });
 
 // Enhanced Weather Radar Overlay Component with interactive features

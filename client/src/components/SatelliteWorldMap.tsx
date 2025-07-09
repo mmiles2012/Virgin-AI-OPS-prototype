@@ -469,16 +469,17 @@ export default function SatelliteWorldMap() {
                   }}
                 >
                   <div 
-                    className="w-6 h-6 flex items-center justify-center" 
+                    className="w-5 h-5 flex items-center justify-center" 
                     style={{ 
                       transform: `rotate(${headingRotation - 90}deg)`,
-                      fontSize: '20px',
+                      fontSize: '16px',
                       color: 'white',
-                      textShadow: '2px 2px 4px rgba(0,0,0,0.9), -1px -1px 2px rgba(255,255,255,0.3)',
-                      fontWeight: 'bold'
+                      textShadow: '0 0 4px rgba(0,0,0,0.9), 0 0 2px rgba(255,255,255,0.3)',
+                      fontWeight: 'bold',
+                      filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.8))'
                     }}
                   >
-                    ⬆
+                    ✈
                   </div>
                 </div>
                 

@@ -200,13 +200,13 @@ export default function SimpleFlightMap() {
                   className="w-6 h-6 bg-red-500 rounded-full border-4 border-yellow-400 shadow-lg animate-pulse flex items-center justify-center"
                   style={{
                     transform: `rotate(${(flight.heading || 0) - 90}deg)`,
-                    fontSize: '16px',
+                    fontSize: '14px',
                     color: '#fbbf24',
-                    textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                    textShadow: '0 0 3px rgba(0,0,0,0.9)',
                     fontWeight: 'bold'
                   }}
                 >
-                  ⬆
+                  ✈
                 </div>
                 <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black/90 text-white px-3 py-2 rounded text-sm whitespace-nowrap border border-yellow-400">
                   <div className="font-bold text-yellow-400">{flight.callsign}</div>
