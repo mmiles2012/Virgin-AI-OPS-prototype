@@ -58,6 +58,9 @@ import { globalAirportService } from "./globalAirportService";
 import heathrowHoldingService from "./heathrowHoldingService";
 import heathrowLiveDataService from "./heathrowLiveDataService";
 import integratedHoldingMLService from "./integratedHoldingMLService.js";
+import { flightAwareService } from "./flightAwareService";
+import { faaNotamService } from "./faaNotamService";
+import { aviationIntelligenceService } from "./aviationIntelligenceService.js";
 // Enhanced Weather Intelligence Service
 
 import { spawn } from "child_process";
@@ -9335,6 +9338,399 @@ function calculateUSUKCorrelation() {
         success: false,
         error: 'Failed to fetch ADS-B Exchange Virgin Atlantic data',
         message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // FlightAware ADS-B API Endpoints
+  app.get('/api/flightaware/virgin-atlantic', async (req, res) => {
+    try {
+      const flights = await flightAwareService.getVirginAtlanticFlights();
+      
+      res.json({
+        success: true,
+        source: 'FlightAware ADS-B API',
+        timestamp: new Date().toISOString(),
+        total_flights: flights.length,
+        flights: flights
+      });
+    } catch (error: any) {
+      console.error('FlightAware Virgin Atlantic error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch FlightAware Virgin Atlantic data',
+        message: error.message,
+        timestamp: new Date().toISOString(),
+        fallback_available: true
+      });
+    }
+  });
+
+  app.get('/api/flightaware/flight/:ident/track', async (req, res) => {
+    try {
+      const { ident } = req.params;
+      const track = await flightAwareService.getFlightTrack(ident);
+      
+      if (!track) {
+        return res.status(404).json({
+          success: false,
+          message: `Flight track not found for ${ident}`,
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      res.json({
+        success: true,
+        source: 'FlightAware ADS-B Track API',
+        flight_track: track,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error(`FlightAware track error for ${req.params.ident}:`, error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch FlightAware track data',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/flightaware/flight/:ident/position', async (req, res) => {
+    try {
+      const { ident } = req.params;
+      const position = await flightAwareService.getFlightPosition(ident);
+      
+      if (!position) {
+        return res.status(404).json({
+          success: false,
+          message: `Flight position not found for ${ident}`,
+          timestamp: new Date().toISOString()
+        });
+      }
+
+      res.json({
+        success: true,
+        source: 'FlightAware Real-time Position API',
+        position: position,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error(`FlightAware position error for ${req.params.ident}:`, error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch FlightAware position data',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/flightaware/flight/:ident/route', async (req, res) => {
+    try {
+      const { ident } = req.params;
+      const waypoints = await flightAwareService.getFlightRoute(ident);
+      
+      res.json({
+        success: true,
+        source: 'FlightAware Route/Waypoint API',
+        flight_ident: ident,
+        waypoints: waypoints,
+        waypoint_count: waypoints.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error(`FlightAware route error for ${req.params.ident}:`, error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch FlightAware route data',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/flightaware/analytics', async (req, res) => {
+    try {
+      const analytics = await flightAwareService.getFleetAnalytics();
+      
+      res.json({
+        success: true,
+        source: 'FlightAware Fleet Analytics API',
+        analytics: analytics,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('FlightAware analytics error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch FlightAware analytics',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/flightaware/health', async (req, res) => {
+    try {
+      const health = await flightAwareService.healthCheck();
+      
+      res.json({
+        flightaware_status: health,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'FlightAware health check failed',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // FAA NOTAM API Endpoints
+  app.get('/api/faa/notams/search', async (req, res) => {
+    try {
+      const {
+        locations,
+        startDate,
+        endDate,
+        featureTypes,
+        maxResults
+      } = req.query;
+
+      const searchParams = {
+        locations: locations ? (locations as string).split(',') : undefined,
+        startDate: startDate as string,
+        endDate: endDate as string,
+        featureTypes: featureTypes ? (featureTypes as string).split(',') : undefined,
+        maxResults: maxResults ? parseInt(maxResults as string) : undefined
+      };
+
+      const notams = await faaNotamService.searchNotams(searchParams);
+      
+      res.json({
+        success: true,
+        source: 'Official FAA NOTAM API',
+        search_parameters: searchParams,
+        total_notams: notams.length,
+        notams: notams,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('FAA NOTAM search error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to search FAA NOTAMs',
+        message: error.message,
+        timestamp: new Date().toISOString(),
+        fallback_available: true
+      });
+    }
+  });
+
+  app.get('/api/faa/notams/virgin-atlantic', async (req, res) => {
+    try {
+      const notams = await faaNotamService.getVirginAtlanticRouteNotams();
+      
+      res.json({
+        success: true,
+        source: 'Official FAA NOTAM API - Virgin Atlantic Routes',
+        total_notams: notams.length,
+        notams: notams,
+        coverage: 'Virgin Atlantic route network airports',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('FAA Virgin Atlantic NOTAMs error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch Virgin Atlantic NOTAMs',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/faa/notams/airport/:icao', async (req, res) => {
+    try {
+      const { icao } = req.params;
+      const notams = await faaNotamService.getAirportNotams(icao.toUpperCase());
+      
+      res.json({
+        success: true,
+        source: 'Official FAA NOTAM API',
+        airport_icao: icao.toUpperCase(),
+        total_notams: notams.length,
+        notams: notams,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error(`FAA NOTAMs error for ${req.params.icao}:`, error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch airport NOTAMs',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/faa/notams/route/:origin/:destination', async (req, res) => {
+    try {
+      const { origin, destination } = req.params;
+      const notams = await faaNotamService.getRouteNotams(
+        origin.toUpperCase(),
+        destination.toUpperCase()
+      );
+      
+      res.json({
+        success: true,
+        source: 'Official FAA NOTAM API',
+        route: `${origin.toUpperCase()}-${destination.toUpperCase()}`,
+        total_notams: notams.length,
+        notams: notams,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error(`FAA route NOTAMs error for ${req.params.origin}-${req.params.destination}:`, error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch route NOTAMs',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/faa/notams/critical', async (req, res) => {
+    try {
+      const criticalNotams = await faaNotamService.getCriticalNotams();
+      
+      res.json({
+        success: true,
+        source: 'Official FAA NOTAM API - Critical Alerts',
+        total_critical_notams: criticalNotams.length,
+        critical_notams: criticalNotams,
+        alert_level: 'HIGH_PRIORITY',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('FAA critical NOTAMs error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch critical NOTAMs',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/faa/notams/summary', async (req, res) => {
+    try {
+      const summary = await faaNotamService.getNotamSummary();
+      
+      res.json({
+        success: true,
+        source: 'Official FAA NOTAM API Summary',
+        notam_summary: summary,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('FAA NOTAM summary error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch NOTAM summary',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/faa/notams/health', async (req, res) => {
+    try {
+      const health = await faaNotamService.healthCheck();
+      
+      res.json({
+        faa_notam_status: health,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: 'FAA NOTAM health check failed',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Aviation Intelligence Service - Integrated FlightAware & NOTAM Analysis
+  app.get('/api/aviation/intelligence/alerts', async (req, res) => {
+    try {
+      const alerts = await aviationIntelligenceService.generateAviationAlerts();
+      
+      res.json({
+        success: true,
+        source: 'Integrated FlightAware & FAA NOTAM Intelligence',
+        total_alerts: alerts.length,
+        alerts,
+        data_sources: ['FlightAware_ADS-B', 'FAA_NOTAM_API', 'AINO_Analysis'],
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('Aviation intelligence alerts error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Aviation intelligence service unavailable',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/aviation/intelligence/routes', async (req, res) => {
+    try {
+      const routeAnalysis = await aviationIntelligenceService.analyzeRoutePerformance();
+      
+      res.json({
+        success: true,
+        source: 'Virgin Atlantic Route Intelligence Analysis',
+        total_routes: routeAnalysis.length,
+        routes: routeAnalysis,
+        analysis_includes: ['delay_patterns', 'notam_impacts', 'alternative_routing', 'performance_metrics'],
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('Route analysis error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Route analysis service unavailable',
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/aviation/intelligence/recommendations', async (req, res) => {
+    try {
+      const recommendations = await aviationIntelligenceService.getOperationalRecommendations();
+      
+      res.json({
+        success: true,
+        source: 'AINO Operational Intelligence Engine',
+        recommendations,
+        intelligence_categories: ['immediate_actions', 'strategic_planning', 'rerouting_options', 'delay_mitigation'],
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('Operational recommendations error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Operational recommendations unavailable',
+        error: error.message,
         timestamp: new Date().toISOString()
       });
     }
