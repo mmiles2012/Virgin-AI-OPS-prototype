@@ -260,7 +260,10 @@ class AuthenticVirginAtlanticTracker {
       const altitude = flight.alt_baro || null;
       // Handle null/undefined groundspeed - use reasonable defaults for airborne aircraft
       let speed = flight.gs;
+      let speedEstimated = false;
+      
       if (speed === null || speed === undefined || speed === 0) {
+        speedEstimated = true;
         // If aircraft is at cruise altitude (above 20,000 ft), use typical cruise speed
         if (altitude && altitude > 20000) {
           speed = 450; // Typical cruise speed for Virgin Atlantic aircraft
@@ -608,6 +611,7 @@ class AuthenticVirginAtlanticTracker {
         longitude: longitude,
         altitude: altitude,
         velocity: speed,
+        velocity_estimated: speedEstimated,
         heading: heading,
         aircraft: aircraftType,
         origin: depAirport,

@@ -288,8 +288,9 @@ export default function EnhancedLiveFlightTracker() {
                     </div>
                     <div className="text-center">
                       <div className="text-gray-400">Speed</div>
-                      <div className="text-white font-mono">
+                      <div className={`font-mono ${flight.velocity_estimated ? 'text-orange-400' : 'text-white'}`}>
                         {flight.velocity != null ? Math.round(flight.velocity) : 'N/A'} kts
+                        {flight.velocity_estimated && <span className="text-orange-300 text-xs ml-1">est</span>}
                       </div>
                     </div>
                     <div className="text-center">
