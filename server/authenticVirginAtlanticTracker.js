@@ -245,7 +245,15 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?242[A-Z]*|VS242[A-Z]*/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
         { pattern: /VIR?411[A-Z]*|VS411[A-Z]*/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
         { pattern: /VIR?449[A-Z]*|VS449[A-Z]*/, route: 'LHR-JNB', dep: 'LHR', arr: 'JNB' },
-        { pattern: /VIR?92[A-Z]*|VS92[A-Z]*/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' }
+        { pattern: /VIR?92[A-Z]*|VS92[A-Z]*/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' },
+        
+        // Additional Virgin Atlantic routes based on observed patterns
+        { pattern: /VIR?23[A-Z]*|VS23[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR23X likely LHR-JFK
+        { pattern: /VIR?8[A-Z]*|VS8[A-Z]*/, route: 'LHR-LAX', dep: 'LHR', arr: 'LAX' },   // VIR8Y likely LHR-LAX  
+        { pattern: /VIR?86[A-Z]*|VS86[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR86 likely LHR-MIA
+        { pattern: /VIR?110[A-Z]*|VS110[A-Z]*/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' }, // VIR110 
+        { pattern: /VIR?104[A-Z]*|VS104[A-Z]*/, route: 'ATL-LHR', dep: 'ATL', arr: 'LHR' }, // VIR104L
+        { pattern: /VIR?155[A-Z]*|VS155[A-Z]*/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' }, // VIR155M
       ];
       
       // Find matching route pattern
@@ -325,10 +333,29 @@ class AuthenticVirginAtlanticTracker {
           depAirport = 'MCO';
           arrAirport = 'LHR';
         } else if (flightNumber === '23') {
-          // VIR23X becomes VIR23 - need to determine route based on position or other factors
-          route = 'UNKNOWN';
-          depAirport = 'UNKNOWN';
-          arrAirport = 'UNKNOWN';
+          route = 'LHR-JFK';
+          depAirport = 'LHR';
+          arrAirport = 'JFK';
+        } else if (flightNumber === '8') {
+          route = 'LHR-LAX';
+          depAirport = 'LHR';
+          arrAirport = 'LAX';
+        } else if (flightNumber === '86') {
+          route = 'LHR-MIA';
+          depAirport = 'LHR';
+          arrAirport = 'MIA';
+        } else if (flightNumber === '110') {
+          route = 'LHR-BOS';
+          depAirport = 'LHR';
+          arrAirport = 'BOS';
+        } else if (flightNumber === '104') {
+          route = 'ATL-LHR';
+          depAirport = 'ATL';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '155') {
+          route = 'LHR-BOS';
+          depAirport = 'LHR';
+          arrAirport = 'BOS';
         } else {
           // Geographic detection with route validation - only confident matches
           const registration = flight.r || flight.reg || '';

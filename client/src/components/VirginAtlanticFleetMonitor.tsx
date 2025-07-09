@@ -68,7 +68,7 @@ export default function VirginAtlanticFleetMonitor() {
               registration: flight.registration || flight.icao24 || 'UNKNOWN',
               aircraft_type: flight.aircraft_type || 'UNKNOWN',
               current_flight: flight.flight_number || flight.callsign || 'UNKNOWN',
-              route: flight.route || `${flight.departure_airport || 'UNKNOWN'}-${flight.arrival_airport || 'UNKNOWN'}`,
+              route: flight.route && flight.route !== 'UNKNOWN' ? flight.route : 'UNKNOWN',
               status: flight.authentic_tracking ? 'AIRBORNE' : 'UNKNOWN',
               health_score: Math.floor(85 + Math.random() * 15), // Simulated health score
               fuel_efficiency: Math.floor(80 + Math.random() * 20),
