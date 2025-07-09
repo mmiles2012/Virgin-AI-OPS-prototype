@@ -355,6 +355,9 @@ class AuthenticVirginAtlanticTracker {
         // Los Angeles-London route - VS142 (LAX-LHR as user confirmed)
         { pattern: /^(VIR|VS)0?142[A-Z]*$/, route: 'LAX-LHR', dep: 'LAX', arr: 'LHR' },
         
+        // London-Los Angeles route - VIR141 (LHR-LAX as user confirmed)
+        { pattern: /^(VIR|VS)0?141[A-Z]*$/, route: 'LHR-LAX', dep: 'LHR', arr: 'LAX' },
+        
         // Manchester-Atlanta route - VS109 (MAN-ATL as user confirmed)
         { pattern: /^(VIR|VS)0?109[A-Z]*$/, route: 'MAN-ATL', dep: 'MAN', arr: 'ATL' },
         
