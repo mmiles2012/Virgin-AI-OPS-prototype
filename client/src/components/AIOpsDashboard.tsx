@@ -4,6 +4,7 @@ import { AlertTriangle, Plane, Activity, Cloud, Radio, Radar, MapPin } from "luc
 import ProfessionalSatelliteMap from "./ProfessionalSatelliteMap";
 import PassengerImpactModelingComponent from "./PassengerImpactModelingComponent";
 import HeathrowHoldingMonitor from "./HeathrowHoldingMonitor";
+import SigmetOperationalMonitor from "./SigmetOperationalMonitor";
 
 
 
@@ -446,6 +447,9 @@ export default function AIOpsDashboard() {
           </CardContent>
         </Card>
 
+          {/* SIGMET Operational Monitor */}
+          <SigmetOperationalMonitor />
+          
           {/* Weather data now integrated directly into satellite map */}
         </div>
       </div>

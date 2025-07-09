@@ -62,6 +62,7 @@ import { flightAwareService } from "./flightAwareService";
 import { faaNotamService } from "./faaNotamService";
 import { aviationIntelligenceService } from "./aviationIntelligenceService.js";
 import { hybridFlightService } from "./hybridFlightService";
+import sigmetRoutes from "./sigmetRoutes.js";
 // Enhanced Weather Intelligence Service
 
 import { spawn } from "child_process";
@@ -9814,6 +9815,9 @@ function calculateUSUKCorrelation() {
       });
     }
   });
+
+  // Enhanced SIGMET Routes
+  app.use('/api/sigmet', sigmetRoutes);
 
   return server;
 }
