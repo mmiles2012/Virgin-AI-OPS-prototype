@@ -401,7 +401,6 @@ function ProfessionalSatelliteMapCore() {
       
       if (data.success && data.imageUrl) {
         setWeatherRadarImage(data.imageUrl);
-        console.log('Weather radar loaded - global coverage active');
       } else {
         console.error('Failed to load weather radar:', data.error);
         // Try RainViewer as global fallback
@@ -409,7 +408,6 @@ function ProfessionalSatelliteMapCore() {
         const fallbackData = await fallbackResponse.json();
         if (fallbackData.success && fallbackData.imageUrl) {
           setWeatherRadarImage(fallbackData.imageUrl);
-          console.log('Fallback global radar loaded successfully');
         }
       }
     } catch (error) {
