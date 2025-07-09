@@ -288,10 +288,10 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?104[A-Z]*|VS104[A-Z]*/, route: 'ATL-LHR', dep: 'ATL', arr: 'LHR' }, // VIR104L
         { pattern: /VIR?155[A-Z]*|VS155[A-Z]*/, route: 'LHR-LAS', dep: 'LHR', arr: 'LAS' }, // VIR155M
         { pattern: /VIR?25[A-Z]*|VS25[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VS25B
-        { pattern: /VIR?4[A-Z]*|VS4[A-Z]*/, route: 'JFL-LHR', dep: 'JFL', arr: 'LHR' }, // VIR4C
+        { pattern: /VIR?4[A-Z]*|VS4[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR4C
         { pattern: /VIR?41[A-Z]*|VS41[A-Z]*/, route: 'LHR-SFO', dep: 'LHR', arr: 'SFO' }, // VIR41R
         { pattern: /VIR?6[A-Z]*|VS6[A-Z]*/, route: 'MIA-LHR', dep: 'MIA', arr: 'LHR' }, // VIR6J
-        { pattern: /VIR?10[A-Z]*|VS10[A-Z]*/, route: 'JFL-LHR', dep: 'JFL', arr: 'LHR' }, // VIR10H
+        { pattern: /VIR?10[A-Z]*|VS10[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR10H
         { pattern: /VIR?20[A-Z]*|VS20[A-Z]*/, route: 'SFO-LHR', dep: 'SFO', arr: 'LHR' }, // VIR20V
         { pattern: /VIR?137[A-Z]*|VS137[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR137Y
         { pattern: /VIR?106[A-Z]*|VS106[A-Z]*/, route: 'SEA-LHR', dep: 'SEA', arr: 'LHR' }, // VIR106F
@@ -402,8 +402,8 @@ class AuthenticVirginAtlanticTracker {
           depAirport = 'LHR';
           arrAirport = 'JFK';
         } else if (flightNumber === '4') {
-          route = 'JFL-LHR';
-          depAirport = 'JFL';
+          route = 'JFK-LHR';
+          depAirport = 'JFK';
           arrAirport = 'LHR';
         } else if (flightNumber === '41') {
           route = 'LHR-SFO';
@@ -414,8 +414,8 @@ class AuthenticVirginAtlanticTracker {
           depAirport = 'MIA';
           arrAirport = 'LHR';
         } else if (flightNumber === '10') {
-          route = 'JFL-LHR';
-          depAirport = 'JFL';
+          route = 'JFK-LHR';
+          depAirport = 'JFK';
           arrAirport = 'LHR';
         } else if (flightNumber === '20') {
           route = 'SFO-LHR';
