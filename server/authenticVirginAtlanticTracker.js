@@ -253,7 +253,12 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?86[A-Z]*|VS86[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR86 likely LHR-MIA
         { pattern: /VIR?110[A-Z]*|VS110[A-Z]*/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' }, // VIR110 
         { pattern: /VIR?104[A-Z]*|VS104[A-Z]*/, route: 'ATL-LHR', dep: 'ATL', arr: 'LHR' }, // VIR104L
-        { pattern: /VIR?155[A-Z]*|VS155[A-Z]*/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' }, // VIR155M
+        { pattern: /VIR?155[A-Z]*|VS155[A-Z]*/, route: 'LHR-LAS', dep: 'LHR', arr: 'LAS' }, // VIR155M
+        { pattern: /VIR?25[A-Z]*|VS25[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VS25B
+        { pattern: /VIR?4[A-Z]*|VS4[A-Z]*/, route: 'JFL-LHR', dep: 'JFL', arr: 'LHR' }, // VIR4C
+        { pattern: /VIR?41[A-Z]*|VS41[A-Z]*/, route: 'LHR-SFO', dep: 'LHR', arr: 'SFO' }, // VIR41R
+        { pattern: /VIR?6[A-Z]*|VS6[A-Z]*/, route: 'MIA-LHR', dep: 'MIA', arr: 'LHR' }, // VIR6J
+        { pattern: /VIR?10[A-Z]*|VS10[A-Z]*/, route: 'JFL-LHR', dep: 'JFL', arr: 'LHR' }, // VIR10H
       ];
       
       // Find matching route pattern
@@ -353,9 +358,29 @@ class AuthenticVirginAtlanticTracker {
           depAirport = 'ATL';
           arrAirport = 'LHR';
         } else if (flightNumber === '155') {
-          route = 'LHR-BOS';
+          route = 'LHR-LAS';
           depAirport = 'LHR';
-          arrAirport = 'BOS';
+          arrAirport = 'LAS';
+        } else if (flightNumber === '25') {
+          route = 'LHR-JFK';
+          depAirport = 'LHR';
+          arrAirport = 'JFK';
+        } else if (flightNumber === '4') {
+          route = 'JFL-LHR';
+          depAirport = 'JFL';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '41') {
+          route = 'LHR-SFO';
+          depAirport = 'LHR';
+          arrAirport = 'SFO';
+        } else if (flightNumber === '6') {
+          route = 'MIA-LHR';
+          depAirport = 'MIA';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '10') {
+          route = 'JFL-LHR';
+          depAirport = 'JFL';
+          arrAirport = 'LHR';
         } else {
           // Geographic detection with route validation - only confident matches
           const registration = flight.r || flight.reg || '';
