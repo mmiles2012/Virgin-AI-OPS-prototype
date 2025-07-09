@@ -50,6 +50,7 @@ import DataAuthenticityDashboard from "./components/DataAuthenticityDashboard";
 import EnhancedNetworkOTPDashboard from "./components/EnhancedNetworkOTPDashboard";
 import AdsxExchangeDataDashboard from "./components/AdsxExchangeDataDashboard";
 import VisaRequirementsDashboard from "./components/VisaRequirementsDashboard";
+import HeathrowHoldingDashboard from "./components/HeathrowHoldingDashboard";
 // import GlobalAirportDatabase from "./components/GlobalAirportDatabase";
 
 
@@ -90,7 +91,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'disruption-response' | 'what-if-scenarios' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'emergency-testing' | 'airport-contacts' | 'enhanced-facilities' | 'data-authenticity' | 'visa-requirements';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'disruption-response' | 'what-if-scenarios' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'emergency-testing' | 'airport-contacts' | 'enhanced-facilities' | 'data-authenticity' | 'visa-requirements' | 'heathrow-holding';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -325,6 +326,17 @@ function App() {
                     }`}
                   >
                     Visa Requirements
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('heathrow-holding')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'heathrow-holding' 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Heathrow Holding
                   </button>
                   
                   <button
@@ -725,6 +737,12 @@ function App() {
             {viewMode === 'visa-requirements' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
                 <VisaRequirementsDashboard />
+              </div>
+            )}
+
+            {viewMode === 'heathrow-holding' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+                <HeathrowHoldingDashboard />
               </div>
             )}
 
