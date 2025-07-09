@@ -241,11 +241,11 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?0?021|VS0?021/, route: 'LHR-IAD', dep: 'LHR', arr: 'IAD' },
         { pattern: /VIR?0?022|VS0?022/, route: 'IAD-LHR', dep: 'IAD', arr: 'LHR' },
         
-        // Specific known Virgin Atlantic routes that we can verify
-        { pattern: /VIR?242|VS242/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
-        { pattern: /VIR?411|VS411/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
-        { pattern: /VIR?449|VS449/, route: 'LHR-JNB', dep: 'LHR', arr: 'JNB' },
-        { pattern: /VIR?92/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' }
+        // Specific known Virgin Atlantic routes that we can verify (numeric part only)
+        { pattern: /VIR?242[A-Z]*|VS242[A-Z]*/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
+        { pattern: /VIR?411[A-Z]*|VS411[A-Z]*/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
+        { pattern: /VIR?449[A-Z]*|VS449[A-Z]*/, route: 'LHR-JNB', dep: 'LHR', arr: 'JNB' },
+        { pattern: /VIR?92[A-Z]*|VS92[A-Z]*/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' }
       ];
       
       // Find matching route pattern
@@ -257,42 +257,78 @@ class AuthenticVirginAtlanticTracker {
         depAirport = matchedRoute.dep;
         arrAirport = matchedRoute.arr;
       } else {
-        // Enhanced callsign analysis for better route detection
+        // Enhanced callsign analysis - extract only numbers from VIR/VS callsigns
         const cleanCallsign = callsign.replace(/[^A-Z0-9]/g, '');
         
-        // Try to match partial flight numbers or patterns
-        if (cleanCallsign.includes('103') || cleanCallsign.includes('104')) {
-          route = cleanCallsign.includes('103') ? 'LHR-ATL' : 'ATL-LHR';
-          depAirport = cleanCallsign.includes('103') ? 'LHR' : 'ATL';
-          arrAirport = cleanCallsign.includes('103') ? 'ATL' : 'LHR';
-        } else if (cleanCallsign.includes('011') || cleanCallsign.includes('012')) {
-          route = cleanCallsign.includes('011') ? 'LHR-BOS' : 'BOS-LHR';
-          depAirport = cleanCallsign.includes('011') ? 'LHR' : 'BOS';
-          arrAirport = cleanCallsign.includes('011') ? 'BOS' : 'LHR';
-        } else if (cleanCallsign.includes('157') || cleanCallsign.includes('158')) {
-          route = cleanCallsign.includes('157') ? 'LHR-BOS' : 'BOS-LHR';
-          depAirport = cleanCallsign.includes('157') ? 'LHR' : 'BOS';
-          arrAirport = cleanCallsign.includes('157') ? 'BOS' : 'LHR';
-        } else if (cleanCallsign.includes('021') || cleanCallsign.includes('022')) {
-          route = cleanCallsign.includes('021') ? 'LHR-IAD' : 'IAD-LHR';
-          depAirport = cleanCallsign.includes('021') ? 'LHR' : 'IAD';
-          arrAirport = cleanCallsign.includes('021') ? 'IAD' : 'LHR';
-        } else if (cleanCallsign.includes('411') || cleanCallsign.includes('412')) {
-          route = cleanCallsign.includes('411') ? 'LHR-LOS' : 'LOS-LHR';
-          depAirport = cleanCallsign.includes('411') ? 'LHR' : 'LOS';
-          arrAirport = cleanCallsign.includes('411') ? 'LOS' : 'LHR';
-        } else if (cleanCallsign.includes('449') || cleanCallsign.includes('450')) {
-          route = cleanCallsign.includes('449') ? 'LHR-JNB' : 'JNB-LHR';
-          depAirport = cleanCallsign.includes('449') ? 'LHR' : 'JNB';
-          arrAirport = cleanCallsign.includes('449') ? 'JNB' : 'LHR';
-        } else if (cleanCallsign.includes('242')) {
+        // Extract numeric part from VIR/VS callsigns (ignore trailing letters)
+        let flightNumber = '';
+        const virMatch = cleanCallsign.match(/(?:VIR|VS)(\d+)/);
+        if (virMatch) {
+          flightNumber = virMatch[1]; // Get only the numeric part
+        }
+        
+        // Try to match flight numbers (numeric part only)
+        if (flightNumber === '103') {
+          route = 'LHR-ATL';
+          depAirport = 'LHR';
+          arrAirport = 'ATL';
+        } else if (flightNumber === '104') {
+          route = 'ATL-LHR';
+          depAirport = 'ATL';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '11' || flightNumber === '011') {
+          route = 'LHR-BOS';
+          depAirport = 'LHR';
+          arrAirport = 'BOS';
+        } else if (flightNumber === '12' || flightNumber === '012') {
+          route = 'BOS-LHR';
+          depAirport = 'BOS';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '157') {
+          route = 'LHR-BOS';
+          depAirport = 'LHR';
+          arrAirport = 'BOS';
+        } else if (flightNumber === '158') {
+          route = 'BOS-LHR';
+          depAirport = 'BOS';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '21' || flightNumber === '021') {
+          route = 'LHR-IAD';
+          depAirport = 'LHR';
+          arrAirport = 'IAD';
+        } else if (flightNumber === '22' || flightNumber === '022') {
+          route = 'IAD-LHR';
+          depAirport = 'IAD';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '411') {
+          route = 'LHR-LOS';
+          depAirport = 'LHR';
+          arrAirport = 'LOS';
+        } else if (flightNumber === '412') {
+          route = 'LOS-LHR';
+          depAirport = 'LOS';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '449') {
+          route = 'LHR-JNB';
+          depAirport = 'LHR';
+          arrAirport = 'JNB';
+        } else if (flightNumber === '450') {
+          route = 'JNB-LHR';
+          depAirport = 'JNB';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '242') {
           route = 'LHR-RUH';
           depAirport = 'LHR';
           arrAirport = 'RUH';
-        } else if (cleanCallsign.includes('92')) {
+        } else if (flightNumber === '92') {
           route = 'MCO-LHR';
           depAirport = 'MCO';
           arrAirport = 'LHR';
+        } else if (flightNumber === '23') {
+          // VIR23X becomes VIR23 - need to determine route based on position or other factors
+          route = 'UNKNOWN';
+          depAirport = 'UNKNOWN';
+          arrAirport = 'UNKNOWN';
         } else {
           // Geographic detection with route validation - only confident matches
           const registration = flight.r || flight.reg || '';
