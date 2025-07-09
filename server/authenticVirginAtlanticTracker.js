@@ -245,7 +245,7 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?242|VS242/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
         { pattern: /VIR?411|VS411/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
         { pattern: /VIR?449|VS449/, route: 'LHR-JNB', dep: 'LHR', arr: 'JNB' },
-        { pattern: /VIR?92/, route: 'LHR-DEL', dep: 'LHR', arr: 'DEL' }
+        { pattern: /VIR?92/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' }
       ];
       
       // Find matching route pattern
@@ -290,9 +290,9 @@ class AuthenticVirginAtlanticTracker {
           depAirport = 'LHR';
           arrAirport = 'RUH';
         } else if (cleanCallsign.includes('92')) {
-          route = 'LHR-DEL';
-          depAirport = 'LHR';
-          arrAirport = 'DEL';
+          route = 'MCO-LHR';
+          depAirport = 'MCO';
+          arrAirport = 'LHR';
         } else {
           // Geographic detection with route validation - only confident matches
           const registration = flight.r || flight.reg || '';
@@ -326,6 +326,10 @@ class AuthenticVirginAtlanticTracker {
             route = 'On Ground RUH';
             depAirport = 'RUH';
             arrAirport = 'RUH';
+          } else if (lat > 28.3 && lat < 28.6 && lon > -81.4 && lon < -81.3) {
+            route = 'On Ground MCO';
+            depAirport = 'MCO';
+            arrAirport = 'MCO';
           } else {
             // For flights in the air with unknown routes, keep as UNKNOWN
             route = 'UNKNOWN';
