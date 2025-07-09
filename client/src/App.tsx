@@ -103,8 +103,14 @@ function App() {
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
+      
+      // Enhanced iPad detection for all iPad models and iOS Safari on iPad
       const isIpad = /iPad/i.test(navigator.userAgent) || 
-                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+                     (/iPhone|iPod/i.test(navigator.userAgent) && window.innerWidth >= 768) ||
+                     navigator.userAgent.includes('iPad');
+      
+      console.log('Device detection:', { mobile, isIpad, userAgent: navigator.userAgent, platform: navigator.platform, touchPoints: navigator.maxTouchPoints });
       
       setIsMobile(mobile && !isIpad); // iPads don't count as mobile
       
