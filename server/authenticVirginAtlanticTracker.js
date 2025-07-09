@@ -259,6 +259,9 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?41[A-Z]*|VS41[A-Z]*/, route: 'LHR-SFO', dep: 'LHR', arr: 'SFO' }, // VIR41R
         { pattern: /VIR?6[A-Z]*|VS6[A-Z]*/, route: 'MIA-LHR', dep: 'MIA', arr: 'LHR' }, // VIR6J
         { pattern: /VIR?10[A-Z]*|VS10[A-Z]*/, route: 'JFL-LHR', dep: 'JFL', arr: 'LHR' }, // VIR10H
+        { pattern: /VIR?20[A-Z]*|VS20[A-Z]*/, route: 'SFO-LHR', dep: 'SFO', arr: 'LHR' }, // VIR20V
+        { pattern: /VIR?137[A-Z]*|VS137[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR137Y
+        { pattern: /VIR?106[A-Z]*|VS106[A-Z]*/, route: 'SEA-LHR', dep: 'SEA', arr: 'LHR' }, // VIR106F
       ];
       
       // Find matching route pattern
@@ -380,6 +383,18 @@ class AuthenticVirginAtlanticTracker {
         } else if (flightNumber === '10') {
           route = 'JFL-LHR';
           depAirport = 'JFL';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '20') {
+          route = 'SFO-LHR';
+          depAirport = 'SFO';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '137') {
+          route = 'LHR-JFK';
+          depAirport = 'LHR';
+          arrAirport = 'JFK';
+        } else if (flightNumber === '106') {
+          route = 'SEA-LHR';
+          depAirport = 'SEA';
           arrAirport = 'LHR';
         } else {
           // Geographic detection with route validation - only confident matches
