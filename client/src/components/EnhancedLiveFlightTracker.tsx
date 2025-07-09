@@ -154,11 +154,27 @@ export default function EnhancedLiveFlightTracker() {
   }, [autoRefresh]);
 
   const getStatusColor = (status: string) => {
-    switch (status.toUpperCase()) {
-      case 'DEPARTED': return 'bg-blue-600';
-      case 'EN_ROUTE': return 'bg-green-600';
-      case 'APPROACHING': return 'bg-yellow-600';
-      case 'LANDED': return 'bg-gray-600';
+    const upperStatus = status.toUpperCase();
+    switch (upperStatus) {
+      case 'ON_GROUND':
+      case 'BOARDING':
+      case 'PUSHBACK':
+      case 'TAXI': return 'bg-blue-500';
+      case 'DEPARTED':
+      case 'TAKEOFF':
+      case 'CLIMBING': return 'bg-blue-600';
+      case 'EN_ROUTE':
+      case 'EN_ROUTE_ADS_B':
+      case 'CRUISE': return 'bg-green-600';
+      case 'APPROACHING':
+      case 'DESCENDING':
+      case 'FINAL_APPROACH': return 'bg-yellow-600';
+      case 'LANDED':
+      case 'ARRIVED':
+      case 'AT_GATE': return 'bg-gray-600';
+      case 'DELAYED': return 'bg-red-600';
+      case 'CANCELLED': return 'bg-red-800';
+      case 'SCHEDULED': return 'bg-purple-600';
       default: return 'bg-blue-600';
     }
   };
@@ -166,15 +182,27 @@ export default function EnhancedLiveFlightTracker() {
   const getStatusText = (status: string) => {
     const upperStatus = status.toUpperCase();
     switch (upperStatus) {
+      case 'ON_GROUND': return 'On Ground';
+      case 'BOARDING': return 'Boarding';
+      case 'PUSHBACK': return 'Pushback';
+      case 'TAXI': return 'Taxiing';
       case 'DEPARTED': return 'Departed';
+      case 'TAKEOFF': return 'Taking Off';
+      case 'CLIMBING': return 'Climbing';
       case 'EN_ROUTE': 
       case 'EN_ROUTE_ADS_B': 
-      case 'EN ROUTE (ADS-B TRACKING)': return 'En Route';
+      case 'EN ROUTE (ADS-B TRACKING)': 
+      case 'CRUISE': return 'En Route';
       case 'APPROACHING': return 'Approaching';
+      case 'DESCENDING': return 'Descending';
+      case 'FINAL_APPROACH': return 'Final Approach';
       case 'LANDED': return 'Landed';
+      case 'ARRIVED': return 'Arrived';
+      case 'AT_GATE': return 'At Gate';
       case 'SCHEDULED': return 'Scheduled';
-      case 'BOARDING': return 'Boarding';
       case 'DELAYED': return 'Delayed';
+      case 'CANCELLED': return 'Cancelled';
+      case 'ON_TIME': return 'On Time';
       default: 
         // Handle unknown statuses more gracefully - just return "Active" instead of "Unknown"
         return 'Active';
