@@ -12,7 +12,7 @@
     "hour_of_day",
     "weather_score"
   ],
-  "training_date": "2025-07-09T00:41:09.123513",
+  "training_date": "2025-07-09T02:03:47.913526",
   "training_records": 63,
   "feature_importance": {
     "departure_delay_mins": 0.08447883415504938,
