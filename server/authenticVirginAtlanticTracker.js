@@ -313,6 +313,10 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /^(VIR|VS)0?91$/, route: 'LHR-MCO', dep: 'LHR', arr: 'MCO' },
         { pattern: /^(VIR|VS)0?92$/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' },
         
+        // Authentic W25 Miami routes from official schedule
+        { pattern: /^(VIR|VS)0?117$/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' },
+        { pattern: /^(VIR|VS)0?118$/, route: 'MIA-LHR', dep: 'MIA', arr: 'LHR' },
+        
         // Specific known Virgin Atlantic routes that we can verify (numeric part only)
         { pattern: /VIR?242[A-Z]*|VS242[A-Z]*/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
         { pattern: /VIR?411[A-Z]*|VS411[A-Z]*/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
@@ -326,6 +330,7 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?86[A-Z]*|VS86[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR86 likely LHR-MIA
         { pattern: /VIR?110[A-Z]*|VS110[A-Z]*/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' }, // VIR110 
         { pattern: /VIR?104[A-Z]*|VS104[A-Z]*/, route: 'ATL-LHR', dep: 'ATL', arr: 'LHR' }, // VIR104L
+        { pattern: /^VIR?118[A-Z]*$|^VS118[A-Z]*$/, route: 'MIA-LHR', dep: 'MIA', arr: 'LHR' }, // VIR118 MIA-LHR (different timing than VS6)
 
         { pattern: /VIR?25[A-Z]*|VS25[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VS25B
         { pattern: /VIR?4[A-Z]*|VS4[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR4C
