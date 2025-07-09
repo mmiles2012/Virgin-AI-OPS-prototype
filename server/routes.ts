@@ -57,6 +57,7 @@ import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
 import { globalAirportService } from "./globalAirportService";
 import heathrowHoldingService from "./heathrowHoldingService";
 import heathrowLiveDataService from "./heathrowLiveDataService";
+import integratedHoldingMLService from "./integratedHoldingMLService.js";
 // Enhanced Weather Intelligence Service
 
 import { spawn } from "child_process";
@@ -1198,6 +1199,145 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({
         success: false,
         error: 'Failed to train holding detection model'
+      });
+    }
+  });
+
+  // Integrated Holding Pattern ML Analysis Endpoints
+  
+  // Get comprehensive holding impact analysis combining OTP and passenger connections
+  app.get("/api/aviation/holding-ml-analysis", async (req, res) => {
+    try {
+      // Get current Virgin Atlantic flights
+      const flightResponse = await fetch(`http://localhost:5000/api/aviation/virgin-atlantic-flights`);
+      const flightData = await flightResponse.json();
+      
+      if (!flightData.success) {
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to fetch flight data for analysis'
+        });
+      }
+      
+      // Generate integrated analysis
+      const analysis = await integratedHoldingMLService.getIntegratedAnalysis(flightData.flights);
+      
+      res.json(analysis);
+    } catch (error) {
+      console.error('Error generating integrated holding ML analysis:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate integrated analysis'
+      });
+    }
+  });
+
+  // Get holding impact on Network OTP specifically
+  app.get("/api/aviation/holding-otp-impact", async (req, res) => {
+    try {
+      const flightResponse = await fetch(`http://localhost:5000/api/aviation/virgin-atlantic-flights`);
+      const flightData = await flightResponse.json();
+      
+      if (!flightData.success) {
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to fetch flight data'
+        });
+      }
+
+      // Get holding data
+      const holdingData = await heathrowHoldingService.getHoldingAnalysis(flightData.flights);
+      
+      // Analyze OTP impact
+      const otpImpact = integratedHoldingMLService.analyzeHoldingOTPImpact(holdingData, flightData.flights);
+      
+      res.json({
+        success: true,
+        otp_impact_analysis: otpImpact,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error analyzing holding OTP impact:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to analyze OTP impact'
+      });
+    }
+  });
+
+  // Get holding impact on passenger connections
+  app.get("/api/aviation/holding-connection-impact", async (req, res) => {
+    try {
+      const flightResponse = await fetch(`http://localhost:5000/api/aviation/virgin-atlantic-flights`);
+      const flightData = await flightResponse.json();
+      
+      if (!flightData.success) {
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to fetch flight data'
+        });
+      }
+
+      // Get holding data
+      const holdingData = await heathrowHoldingService.getHoldingAnalysis(flightData.flights);
+      
+      // Analyze connection impact
+      const connectionImpact = integratedHoldingMLService.analyzeHoldingConnectionImpact(holdingData, []);
+      
+      res.json({
+        success: true,
+        connection_impact_analysis: connectionImpact,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error analyzing holding connection impact:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to analyze connection impact'
+      });
+    }
+  });
+
+  // Get real-time holding flow predictions
+  app.get("/api/aviation/holding-flow-predictions", async (req, res) => {
+    try {
+      const flightResponse = await fetch(`http://localhost:5000/api/aviation/virgin-atlantic-flights`);
+      const flightData = await flightResponse.json();
+      
+      if (!flightData.success) {
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to fetch flight data'
+        });
+      }
+
+      // Get holding data and generate flow predictions
+      const holdingData = await heathrowHoldingService.getHoldingAnalysis(flightData.flights);
+      
+      const flowPredictions = {
+        timestamp: new Date().toISOString(),
+        current_holding: holdingData.holding_status?.totalHolding || 0,
+        predicted_peak: Math.max((holdingData.holding_status?.totalHolding || 0) + 3, 8),
+        estimated_duration: integratedHoldingMLService.estimateRecoveryTime(holdingData),
+        capacity_utilization: Math.min(((holdingData.holding_status?.totalHolding || 0) / 20) * 100, 100),
+        flow_efficiency: Math.max(100 - ((holdingData.holding_status?.totalHolding || 0) * 5), 60),
+        stack_distribution: holdingData.holding_status?.stackCounts || {},
+        recommendations: integratedHoldingMLService.generateIntegratedRecommendations(
+          { otp_predictions: { degradation_percentage: (holdingData.holding_status?.totalHolding || 0) * 2 }},
+          { total_affected_passengers: Math.round((holdingData.holding_status?.totalHolding || 0) * 1.5) }
+        )
+      };
+      
+      res.json({
+        success: true,
+        flow_predictions: flowPredictions,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error generating holding flow predictions:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate flow predictions'
       });
     }
   });

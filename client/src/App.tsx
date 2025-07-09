@@ -51,6 +51,7 @@ import EnhancedNetworkOTPDashboard from "./components/EnhancedNetworkOTPDashboar
 import AdsxExchangeDataDashboard from "./components/AdsxExchangeDataDashboard";
 import VisaRequirementsDashboard from "./components/VisaRequirementsDashboard";
 import HeathrowHoldingDashboard from "./components/HeathrowHoldingDashboard";
+import IntegratedHoldingMLDashboard from "./components/IntegratedHoldingMLDashboard";
 // import GlobalAirportDatabase from "./components/GlobalAirportDatabase";
 
 
@@ -91,7 +92,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'disruption-response' | 'what-if-scenarios' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'emergency-testing' | 'airport-contacts' | 'enhanced-facilities' | 'data-authenticity' | 'visa-requirements' | 'heathrow-holding';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'disruption-response' | 'what-if-scenarios' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'emergency-testing' | 'airport-contacts' | 'enhanced-facilities' | 'data-authenticity' | 'visa-requirements' | 'heathrow-holding' | 'integrated-holding-ml';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -337,6 +338,17 @@ function App() {
                     }`}
                   >
                     Heathrow Holding
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('integrated-holding-ml')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'integrated-holding-ml' 
+                        ? 'bg-purple-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Integrated Holding ML
                   </button>
                   
                   <button
@@ -743,6 +755,12 @@ function App() {
             {viewMode === 'heathrow-holding' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
                 <HeathrowHoldingDashboard />
+              </div>
+            )}
+
+            {viewMode === 'integrated-holding-ml' && (
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+                <IntegratedHoldingMLDashboard />
               </div>
             )}
 
