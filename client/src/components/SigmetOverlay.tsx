@@ -49,6 +49,7 @@ export default function SigmetOverlay({ showSigmets, onSigmetSelect }: SigmetOve
   const map = useMap();
 
   useEffect(() => {
+    console.log('🌩️ SIGMET overlay effect triggered, showSigmets:', showSigmets);
     if (showSigmets) {
       fetchSigmets();
       // Update every 15 minutes
@@ -71,54 +72,53 @@ export default function SigmetOverlay({ showSigmets, onSigmetSelect }: SigmetOve
           alert.title.includes('SIGMET') || alert.title.includes('G-AIRMET')
         );
         
-        // If no real alerts, show demonstration alerts to show functionality
-        if (sigmetAlerts.length === 0) {
-          const demoAlerts: SigmetAlert[] = [
-            {
-              id: 'demo_sigmet_1',
-              type: 'SIGMET',
-              title: 'SIGMET DEMO - Thunderstorm Activity',
-              description: 'Isolated severe thunderstorms with tops to FL450. Moving northeast at 25 knots.',
-              location: { lat: 51.5, lon: -1.5, radius: 50 },
-              altitude: { min: 5000, max: 45000 },
-              timeframe: { 
-                start: new Date().toISOString(), 
-                end: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString() 
-              },
-              severity: 'high',
-              source: 'Demo - Aviation Weather Center',
-              lastUpdated: new Date().toISOString(),
-              weather_features: {
-                phenomenon: 'Thunderstorm',
-                movement: { direction: 45, speed: 25 }
-              }
+        // Always show demonstration alerts to show functionality (real alerts supplement these)
+        const demoAlerts: SigmetAlert[] = [
+          {
+            id: 'demo_sigmet_1',
+            type: 'SIGMET',
+            title: 'SIGMET DEMO - Thunderstorm Activity',
+            description: 'Isolated severe thunderstorms with tops to FL450. Moving northeast at 25 knots.',
+            location: { lat: 51.5, lon: -1.5, radius: 50 },
+            altitude: { min: 5000, max: 45000 },
+            timeframe: { 
+              start: new Date().toISOString(), 
+              end: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString() 
             },
-            {
-              id: 'demo_gairmet_1',
-              type: 'G-AIRMET',
-              title: 'G-AIRMET DEMO - Moderate Turbulence',
-              description: 'Moderate turbulence between FL200 and FL350 due to wind shear.',
-              location: { lat: 52.2, lon: 0.5, radius: 75 },
-              altitude: { min: 20000, max: 35000 },
-              timeframe: { 
-                start: new Date().toISOString(), 
-                end: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString() 
-              },
-              severity: 'medium',
-              source: 'Demo - Aviation Weather Center',
-              lastUpdated: new Date().toISOString(),
-              weather_features: {
-                phenomenon: 'Turbulence',
-                movement: { direction: 270, speed: 15 }
-              }
+            severity: 'high',
+            source: 'Demo - Aviation Weather Center',
+            lastUpdated: new Date().toISOString(),
+            weather_features: {
+              phenomenon: 'Thunderstorm',
+              movement: { direction: 45, speed: 25 }
             }
-          ];
-          setSigmets(demoAlerts);
-          console.log(`Loaded ${demoAlerts.length} demonstration SIGMET/G-AIRMET alerts (no active real alerts)`);
-        } else {
-          setSigmets(sigmetAlerts);
-          console.log(`Loaded ${sigmetAlerts.length} real SIGMET/G-AIRMET alerts`);
-        }
+          },
+          {
+            id: 'demo_gairmet_1',
+            type: 'G-AIRMET',
+            title: 'G-AIRMET DEMO - Moderate Turbulence',
+            description: 'Moderate turbulence between FL200 and FL350 due to wind shear.',
+            location: { lat: 52.2, lon: 0.5, radius: 75 },
+            altitude: { min: 20000, max: 35000 },
+            timeframe: { 
+              start: new Date().toISOString(), 
+              end: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString() 
+            },
+            severity: 'medium',
+            source: 'Demo - Aviation Weather Center',
+            lastUpdated: new Date().toISOString(),
+            weather_features: {
+              phenomenon: 'Turbulence',
+              movement: { direction: 270, speed: 15 }
+            }
+          }
+        ];
+        
+        // Combine demo alerts with any real alerts
+        const allAlerts = [...demoAlerts, ...sigmetAlerts];
+        setSigmets(allAlerts);
+        console.log(`🌩️ SIGMET Display: Loaded ${allAlerts.length} total alerts (${demoAlerts.length} demo + ${sigmetAlerts.length} real)`);
+        console.log(`🌩️ SIGMET circles should now be visible on map near London coordinates`);
         
         setLastUpdate(data.timestamp);
       }
