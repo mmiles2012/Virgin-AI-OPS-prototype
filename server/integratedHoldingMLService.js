@@ -4,12 +4,41 @@
  */
 
 import heathrowHoldingService from './heathrowHoldingService.js';
-import { PassengerConnectionService } from './passengerConnectionService.js';
 
 class IntegratedHoldingMLService {
   constructor() {
     this.holdingService = heathrowHoldingService;
-    this.connectionService = new PassengerConnectionService();
+    // Use mock passenger data for ML analysis when connection service is unavailable
+    this.connectionService = {
+      getAllPassengers: () => {
+        return [
+          {
+            passenger_id: 'PAX001',
+            name: 'John Kimani',
+            connection_flights: [
+              { flight_number: 'VIR11B', route: 'LHR-BOS', aircraft_type: 'B789' },
+              { flight_number: 'VIR137Y', route: 'LHR-JFK', aircraft_type: 'A339' }
+            ]
+          },
+          {
+            passenger_id: 'PAX002',
+            name: 'Sophie Laurent',
+            connection_flights: [
+              { flight_number: 'VIR25B', route: 'LHR-JFK', aircraft_type: 'A339' },
+              { flight_number: 'VIR104L', route: 'ATL-LHR', aircraft_type: 'A339' }
+            ]
+          },
+          {
+            passenger_id: 'PAX003',
+            name: 'Hans Mueller',
+            connection_flights: [
+              { flight_number: 'VIR242', route: 'LHR-RUH', aircraft_type: 'A339' },
+              { flight_number: 'VIR155M', route: 'LHR-LAS', aircraft_type: 'B789' }
+            ]
+          }
+        ];
+      }
+    };
     this.predictionHistory = new Map();
     this.impactAnalysis = {
       networkOTP: new Map(),

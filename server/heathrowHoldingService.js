@@ -312,6 +312,105 @@ class HeathrowHoldingService {
       }
     }
   }
+
+  /**
+   * Get comprehensive holding analysis for ML integration
+   * This function is required by the integrated ML service
+   */
+  async getHoldingAnalysis(flights) {
+    try {
+      // Process current flight data
+      const analysis = this.processFlightData(flights);
+      const status = this.getHoldingStatus();
+      const alerts = this.checkHoldingAlerts();
+      const areas = this.getHoldingAreas();
+      
+      // Create comprehensive holding analysis structure
+      return {
+        timestamp: new Date().toISOString(),
+        holding_status: status,
+        holding_analysis: analysis,
+        holding_alerts: alerts,
+        holding_areas: areas,
+        summary: {
+          totalHolding: status.totalHolding,
+          stackCounts: status.stackCounts,
+          alerts: alerts
+        },
+        // ML-ready data structure
+        ml_data: {
+          total_aircraft_holding: status.totalHolding,
+          stack_distribution: status.stackCounts,
+          estimated_delay_minutes: this.calculateAverageHoldingDelay(status.activeHoldings),
+          affected_routes: this.getAffectedRoutes(status.activeHoldings),
+          holding_efficiency: this.calculateHoldingEfficiency(status)
+        }
+      };
+    } catch (error) {
+      console.error('Error generating holding analysis:', error);
+      return {
+        timestamp: new Date().toISOString(),
+        holding_status: { totalHolding: 0, stackCounts: {}, activeHoldings: [] },
+        holding_analysis: { summary: { totalHolding: 0, stackCounts: {}, alerts: [] }},
+        holding_alerts: [],
+        holding_areas: this.getHoldingAreas(),
+        summary: { totalHolding: 0, stackCounts: {}, alerts: [] },
+        ml_data: {
+          total_aircraft_holding: 0,
+          stack_distribution: {},
+          estimated_delay_minutes: 0,
+          affected_routes: [],
+          holding_efficiency: 1.0
+        },
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Calculate average holding delay for ML analysis
+   */
+  calculateAverageHoldingDelay(activeHoldings) {
+    if (!activeHoldings || activeHoldings.length === 0) return 0;
+    
+    // Estimate delay based on holding duration and pattern
+    const totalDelay = activeHoldings.reduce((sum, holding) => {
+      // Base delay estimation: 5-20 minutes depending on holding confidence
+      const baseDelay = 5 + (holding.confidence * 15);
+      return sum + baseDelay;
+    }, 0);
+    
+    return Math.round(totalDelay / activeHoldings.length);
+  }
+
+  /**
+   * Get affected routes for ML analysis
+   */
+  getAffectedRoutes(activeHoldings) {
+    if (!activeHoldings || activeHoldings.length === 0) return [];
+    
+    return activeHoldings.map(holding => ({
+      flight_number: holding.flight_number,
+      route: holding.route || 'UNKNOWN-LHR',
+      aircraft_type: holding.aircraft_type || 'UNKNOWN',
+      holding_stack: holding.stack,
+      estimated_delay: this.calculateAverageHoldingDelay([holding])
+    }));
+  }
+
+  /**
+   * Calculate holding efficiency for ML analysis
+   */
+  calculateHoldingEfficiency(status) {
+    const totalCapacity = Object.keys(this.HOLDING_STACKS).length * 5; // Assume 5 aircraft capacity per stack
+    const currentOccupancy = status.totalHolding;
+    
+    if (currentOccupancy === 0) return 1.0;
+    
+    // Efficiency decreases as occupancy increases
+    const utilizationRate = currentOccupancy / totalCapacity;
+    return Math.max(0.2, 1.0 - (utilizationRate * 0.8));
+  }
 }
 
 const heathrowHoldingService = new HeathrowHoldingService();
