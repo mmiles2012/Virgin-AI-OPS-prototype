@@ -566,54 +566,54 @@ function App() {
               </div>
             )}
 
-            {/* Mode-specific Interfaces - Adjusted for left sidebar */}
+            {/* Mode-specific Interfaces - Adjusted for left sidebar with scrollbar spacing */}
             
 
             
             {viewMode === 'decisions' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className={`absolute top-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <EnhancedOperationalDecisionEngine />
               </div>
             )}
             
             {viewMode === 'airspace' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 overflow-auto">
+              <div className={`absolute top-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 overflow-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <SafeAirspaceAlerts />
               </div>
             )}
             
             {viewMode === 'realtime' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 overflow-auto">
+              <div className={`absolute top-4 right-4 bottom-4 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 overflow-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <EnhancedLiveFlightTracker />
               </div>
             )}
             
             {viewMode === 'geopolitical' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className={`absolute top-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <GeopoliticalRiskCenter />
               </div>
             )}
             
             {viewMode === 'diversion' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className={`absolute top-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <DiversionDecisionEngine />
               </div>
             )}
             
             {viewMode === 'diversion-support' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto">
+              <div className={`absolute top-4 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <DiversionSupportDashboard />
               </div>
             )}
             
             {viewMode === 'api-testing' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4">
+              <div className={`absolute top-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <ApiTestingCenter />
               </div>
             )}
             
             {viewMode === 'news-intelligence' && (
-              <div className="absolute top-4 left-56 right-4 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden">
+              <div className={`absolute top-4 right-4 bottom-32 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-hidden ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <NewsIntelligenceDashboard />
               </div>
             )}
@@ -621,31 +621,31 @@ function App() {
 
             
             {viewMode === 'delay-prediction' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <HubDelayPredictionDashboard />
               </div>
             )}
             
             {viewMode === 'disruption-response' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <DisruptionResponseConsole />
               </div>
             )}
             
             {viewMode === 'operations' && (
-              <div className="absolute top-4 left-56 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto">
+              <div className={`absolute top-4 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <VirginAtlanticFleetMonitor />
               </div>
             )}
 
             {viewMode === 'what-if-scenarios' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <WhatIfScenarioEngine />
               </div>
             )}
             
             {viewMode === 'nm-punctuality' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-purple-600/50 overflow-auto">
+              <div className={`absolute top-4 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-purple-600/50 overflow-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <div className="p-6">
                   <NMPunctualityChart />
                 </div>
@@ -653,49 +653,49 @@ function App() {
             )}
             
             {viewMode === 'us-aviation' && (
-              <div className="absolute top-4 left-56 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-auto">
+              <div className={`absolute top-4 right-4 bottom-4 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <ConsolidatedFaaDashboard />
               </div>
             )}
             
             {viewMode === 'boeing787-twin' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto bg-white overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <Boeing787DigitalTwin />
               </div>
             )}
             
             {viewMode === 'training-simulator' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto bg-white ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <AinoTrainingSimulator />
               </div>
             )}
             
             {viewMode === 'airbus-ops' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto bg-white overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <AirbusDigitalTwins />
               </div>
             )}
             
             {viewMode === 'financial-analytics' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto bg-white overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <FinancialAnalyticsDashboard />
               </div>
             )}
             
             {viewMode === 'fleet-substitution' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <FleetSubstitutionCalculator />
               </div>
             )}
             
             {viewMode === 'skygate-airports' && (
-              <div className="absolute top-4 left-56 right-4 bottom-16 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto">
+              <div className={`absolute top-4 right-4 bottom-16 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <SkyGateAirportDashboard />
               </div>
             )}
             
             {viewMode === 'otp-dashboard' && (
-              <div className="fixed inset-0 left-56 pointer-events-auto z-40">
+              <div className={`fixed inset-0 pointer-events-auto z-40 ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <div className="h-full w-full p-4">
                   <div className="h-full bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 flex flex-col">
                     <div className="flex-1 overflow-y-auto">
@@ -707,13 +707,13 @@ function App() {
             )}
             
             {viewMode === 'fleet-monitor' && (
-              <div className="absolute top-4 left-56 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto">
+              <div className={`absolute top-4 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <VirginAtlanticFleetMonitor />
               </div>
             )}
             
             {viewMode === 'intelligence-dashboard' && (
-              <div className="absolute top-4 left-56 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto">
+              <div className={`absolute top-4 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <IntelligenceDashboard />
               </div>
             )}
@@ -722,62 +722,62 @@ function App() {
 
             
             {viewMode === 'emergency-comm' && (
-              <div className="absolute top-4 left-56 right-4 bottom-16 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-y-auto">
+              <div className={`absolute top-4 right-4 bottom-16 pointer-events-auto bg-white/95 backdrop-blur-sm rounded-lg border border-red-600/50 overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <EmergencyCommDashboard />
               </div>
             )}
 
             {/* Full-Screen Enhanced Satellite Map - Overview Mode */}
             {viewMode === 'emergency-testing' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <EmergencyResponseTesting />
               </div>
             )}
 
             {viewMode === 'overview' && (
-              <div className={`absolute top-0 ${isNavigationCollapsed ? 'left-16 md:left-20' : 'left-52 md:left-56'} right-0 bottom-0 pointer-events-auto transition-all duration-300 overflow-y-auto`}>
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto transition-all duration-300 overflow-y-auto ${isNavigationCollapsed ? 'left-16 md:left-20' : 'left-60'}`}>
                 <AIOpsDashboard />
               </div>
             )}
             
             {viewMode === 'enhanced-facilities' && (
-              <div className="absolute top-4 left-56 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto">
+              <div className={`absolute top-4 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <EnhancedAirportFacilities />
               </div>
             )}
             
             {viewMode === 'data-authenticity' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <DataAuthenticityDashboard />
               </div>
             )}
             
             {viewMode === 'adsb-exchange' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <AdsxExchangeDataDashboard />
               </div>
             )}
 
             {viewMode === 'visa-requirements' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <VisaRequirementsDashboard />
               </div>
             )}
 
             {viewMode === 'heathrow-holding' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <HeathrowHoldingDashboard />
               </div>
             )}
 
             {viewMode === 'integrated-holding-ml' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <IntegratedHoldingMLDashboard />
               </div>
             )}
 
             {viewMode === 'flightaware-notam' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <FlightAwareNotamDashboard />
               </div>
             )}
