@@ -365,13 +365,6 @@ function ProfessionalSatelliteMapCore() {
   const [showFlights, setShowFlights] = useState(true);
   const [showWeatherOverlay, setShowWeatherOverlay] = useState(true);
   const [showSigmets, setShowSigmets] = useState(true);
-  
-  // Force SIGMET display logging for debugging
-  useEffect(() => {
-    console.log('🌩️ SIGMET overlay state:', showSigmets);
-    console.log('☔ Weather radar overlay state:', showWeatherOverlay);
-    console.log('🗂️ Weather radar image available:', !!weatherRadarImage);
-  }, [showSigmets, showWeatherOverlay, weatherRadarImage]);
   const [weatherRadarImage, setWeatherRadarImage] = useState<string | null>(null);
   const [radarLoading, setRadarLoading] = useState(false);
   const [radarOpacity, setRadarOpacity] = useState(1.0);
@@ -383,6 +376,13 @@ function ProfessionalSatelliteMapCore() {
   const [serviceData, setServiceData] = useState<ServiceCoverageData[]>([]);
   
   const { selectFlight, selectedFlight } = useSelectedFlight();
+
+  // Debug logging for overlay states
+  useEffect(() => {
+    console.log('🌩️ SIGMET overlay state:', showSigmets);
+    console.log('☔ Weather radar overlay state:', showWeatherOverlay);
+    console.log('🗂️ Weather radar image available:', !!weatherRadarImage);
+  }, [showSigmets, showWeatherOverlay, weatherRadarImage]);
   
   // Enhanced weather radar functionality with smart geographic selection
   const fetchWeatherRadar = async (mapCenter?: { lat: number; lng: number }) => {
