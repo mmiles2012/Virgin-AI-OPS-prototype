@@ -45,9 +45,15 @@ class FlightAwareService {
   private readonly cacheTimeout = 30000; // 30 seconds
 
   constructor() {
+    console.log('[FlightAware] Constructor called');
+    console.log('[FlightAware] process.env.FLIGHTAWARE_API_KEY exists:', !!process.env.FLIGHTAWARE_API_KEY);
+    console.log('[FlightAware] API key length:', process.env.FLIGHTAWARE_API_KEY?.length || 0);
+    
     this.apiKey = process.env.FLIGHTAWARE_API_KEY || '';
     if (!this.apiKey) {
       console.warn('[FlightAware] API key not configured - service will use fallback data');
+    } else {
+      console.log('[FlightAware] API key configured successfully');
     }
   }
 

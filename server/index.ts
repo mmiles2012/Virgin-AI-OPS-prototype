@@ -1,12 +1,24 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { addIntelligenceRoutes } from "./intelligenceRoutes";
+import envTestRouter from "./envTest";
 import { setupVite, serveStatic, log } from "./vite";
 import { virginAtlanticConnectionService } from "./virginAtlanticConnectionService";
 import dotenv from "dotenv";
 
 // Load environment variables
 dotenv.config();
+
+// Debug environment variables loading
+console.log('🔍 Environment Variables Debug:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('FLIGHTAWARE_API_KEY:', process.env.FLIGHTAWARE_API_KEY ? 'Present' : 'Missing');
+console.log('RAPIDAPI_KEY:', process.env.RAPIDAPI_KEY ? 'Present' : 'Missing');
+console.log('OPENAI_API_KEY:', process.env.OPENAI_API_KEY ? 'Present' : 'Missing');
+console.log('AVIATIONSTACK_API_KEY:', process.env.AVIATIONSTACK_API_KEY ? 'Present' : 'Missing');
+console.log('NEWS_API_KEY:', process.env.NEWS_API_KEY ? 'Present' : 'Missing');
+console.log('AVWX_API_KEY:', process.env.AVWX_API_KEY ? 'Present' : 'Missing');
+console.log('FAA_NOTAM_API_KEY:', process.env.FAA_NOTAM_API_KEY ? 'Present' : 'Missing');
 
 const app = express();
 app.use(express.json());
@@ -47,6 +59,9 @@ app.use((req, res, next) => {
   
   // Add intelligence routes
   addIntelligenceRoutes(app);
+  
+  // Add environment test routes
+  app.use('/api/env', envTestRouter);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
