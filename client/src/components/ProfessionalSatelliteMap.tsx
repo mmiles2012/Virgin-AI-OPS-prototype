@@ -16,6 +16,19 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
+// Map Events Component for handling pan/zoom events to update weather radar  
+function MapEvents({ onMoveEnd }: { onMoveEnd?: (map: any) => void }) {
+  const map = useMap();
+
+  useMapEvents({
+    moveend: () => {
+      onMoveEnd?.(map);
+    },
+  });
+
+  return null;
+}
+
 // Error Boundary Component for Map - Less restrictive to allow minor rendering issues
 class SatelliteMapErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, errorCount: number}> {
   constructor(props: {children: React.ReactNode}) {
@@ -283,10 +296,10 @@ function WeatherRadarOverlay({ weatherRadarImage, radarOpacity = 1.0 }: { weathe
     const mapCenter = map.getCenter();
     
     // Determine if we're viewing US or global area and set appropriate bounds
-    const isUSView = mapCenter.lat >= 20 && mapCenter.lat <= 50 && mapCenter.lng >= -130 && mapCenter.lng <= -60;
+    const isUSView = mapCenter.lat >= 20 && mapCenter.lat <= 60 && mapCenter.lng >= -170 && mapCenter.lng <= -50;
     
     const imageBounds: [[number, number], [number, number]] = isUSView 
-      ? [[20, -130], [50, -60]]  // Continental US bounds for NOAA radar
+      ? [[20, -170], [60, -50]]  // Enhanced US bounds for NOAA radar (includes Alaska/Hawaii)
       : [[mapCenter.lat - 15, mapCenter.lng - 20], [mapCenter.lat + 15, mapCenter.lng + 20]]; // Regional bounds for global radar
     
     console.log('Weather radar bounds:', imageBounds, 'isUSView:', isUSView);
@@ -374,6 +387,7 @@ function ProfessionalSatelliteMapCore() {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
   const [serviceData, setServiceData] = useState<ServiceCoverageData[]>([]);
+  const [mapRef, setMapRef] = useState<any>(null);
   
   const { selectFlight, selectedFlight } = useSelectedFlight();
 
@@ -385,40 +399,35 @@ function ProfessionalSatelliteMapCore() {
   }, [showSigmets, showWeatherOverlay, weatherRadarImage]);
   
   // Enhanced weather radar functionality with smart geographic selection
-  const fetchWeatherRadar = async (mapCenter?: { lat: number; lng: number }) => {
+  const fetchWeatherRadar = async (mapInstance?: any) => {
     if (radarLoading) return;
     
     setRadarLoading(true);
     try {
-      // Get current map center or use provided coordinates
+      // Get current map bounds to determine which region to fetch radar for
+      const mapCenter = mapInstance ? mapInstance.getCenter() : { lat: 39.0, lng: -98.0 };
+      
       const params = new URLSearchParams({
-        source: 'smart'
+        source: 'smart',
+        lat: mapCenter.lat.toString(),
+        lng: mapCenter.lng.toString()
       });
       
-      if (mapCenter) {
-        params.append('lat', mapCenter.lat.toString());
-        params.append('lng', mapCenter.lng.toString());
-        console.log(`🌦️ Requesting weather radar for: ${mapCenter.lat}, ${mapCenter.lng}`);
-      } else {
-        // Default to US center for better North American coverage detection
-        params.append('lat', '39.0');
-        params.append('lng', '-98.0');
-        console.log('🌦️ Requesting weather radar with North American default coordinates (enhanced coverage)');
-      }
+      console.log(`🌦️ Requesting weather radar for current map view: ${mapCenter.lat}, ${mapCenter.lng}`);
       
       const response = await fetch(`/api/weather/radar?${params.toString()}`);
       const data = await response.json();
       
       if (data.success && data.imageUrl) {
         setWeatherRadarImage(data.imageUrl);
-        console.log('✅ Weather radar loaded successfully');
+        console.log('✅ Weather radar loaded successfully for current map region');
       } else {
         console.error('❌ Primary weather radar failed:', data.error);
         // Try RainViewer as global fallback
         const fallbackParams = new URLSearchParams({
           source: 'rainviewer',
-          lat: mapCenter?.lat.toString() || '39.0',
-          lng: mapCenter?.lng.toString() || '-98.0'
+          lat: mapCenter.lat.toString(),
+          lng: mapCenter.lng.toString()
         });
         const fallbackResponse = await fetch(`/api/weather/radar?${fallbackParams.toString()}`);
         const fallbackData = await fallbackResponse.json();
@@ -436,16 +445,16 @@ function ProfessionalSatelliteMapCore() {
 
   // Load weather radar when overlay is enabled (now enabled by default)
   useEffect(() => {
-    if (showWeatherOverlay) {
-      fetchWeatherRadar();
+    if (showWeatherOverlay && mapRef) {
+      fetchWeatherRadar(mapRef);
       if (autoRefresh) {
         const interval = setInterval(() => {
-          fetchWeatherRadar(); // Use current map center for smart selection
+          fetchWeatherRadar(mapRef); // Use current map center for smart selection
         }, refreshInterval * 60 * 1000);
         return () => clearInterval(interval);
       }
     }
-  }, [showWeatherOverlay, autoRefresh, refreshInterval]);
+  }, [showWeatherOverlay, autoRefresh, refreshInterval, mapRef]);
 
   // Helper function to get service coverage for an airport
   const getServiceCoverage = (airport: Airport): ServiceCoverageData | null => {
@@ -639,6 +648,12 @@ function ProfessionalSatelliteMapCore() {
           scrollWheelZoom={true}
           attributionControl={false}
           key="main-map"
+          ref={(map) => {
+            if (map && !mapRef) {
+              setMapRef(map);
+              console.log('🗺️ Map reference captured for weather radar requests');
+            }
+          }}
           whenReady={() => {
             console.log('Map ready');
             setTimeout(() => {
@@ -669,6 +684,18 @@ function ProfessionalSatelliteMapCore() {
               radarOpacity={radarOpacity}
             />
           )}
+
+          {/* Map Event Handlers for Weather Radar Updates */}
+          <MapEvents 
+            onMoveEnd={(map) => {
+              // Update weather radar when map is moved to a different region
+              if (mapRef && showWeatherOverlay) {
+                const center = map.getCenter();
+                console.log(`🗺️ Map moved to: ${center.lat.toFixed(2)}, ${center.lng.toFixed(2)} - updating weather radar`);
+                fetchWeatherRadar(map);
+              }
+            }}
+          />
 
           {/* SIGMET Weather Alerts Overlay */}
           <SigmetOverlay 
