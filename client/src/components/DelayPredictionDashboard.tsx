@@ -555,7 +555,7 @@ const DelayPredictionDashboard: React.FC = () => {
   }, [statistics]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 overflow-y-auto">
+    <div className="min-h-screen w-full bg-gray-50 p-6 overflow-y-auto">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -599,7 +599,7 @@ const DelayPredictionDashboard: React.FC = () => {
 
         {/* Overview Tab */}
         {activeTab === 'overview' && statistics && (
-          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+          <div className="space-y-6">
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="bg-white p-6 rounded-lg shadow">
@@ -688,7 +688,7 @@ const DelayPredictionDashboard: React.FC = () => {
 
         {/* Flight Prediction Tab */}
         {activeTab === 'predict' && (
-          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+          <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow">
               <h2 className="text-xl font-semibold mb-4">Flight Delay Prediction</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -984,7 +984,7 @@ const DelayPredictionDashboard: React.FC = () => {
 
         {/* Holding Analysis Tab */}
         {activeTab === 'holding' && (
-          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+          <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow">
               <h2 className="text-xl font-semibold mb-4">Holding Pattern Analysis</h2>
               
@@ -1311,7 +1311,7 @@ const DelayPredictionDashboard: React.FC = () => {
 
         {/* Seasonal Patterns Tab */}
         {activeTab === 'seasonal' && (
-          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+          <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow">
               <h2 className="text-xl font-semibold mb-4">Seasonal Delay Patterns</h2>
               <div className="mb-6">
@@ -1376,7 +1376,7 @@ const DelayPredictionDashboard: React.FC = () => {
 
         {/* Heathrow Analysis Tab */}
         {activeTab === 'heathrow' && (
-          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+          <div className="space-y-6">
             {/* Heathrow Overview */}
             {heathrowMetrics && (
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -1673,7 +1673,7 @@ const DelayPredictionDashboard: React.FC = () => {
 
         {/* TensorFlow Neural Network Tab */}
         {activeTab === 'tensorflow' && (
-          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+          <div className="space-y-6">
             {/* AI Model Status */}
             {tensorflowStatus && (
               <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg shadow">
@@ -1964,7 +1964,7 @@ const DelayPredictionDashboard: React.FC = () => {
 
         {/* Dual-Model AI Tab */}
         {activeTab === 'dual-model' && (
-          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+          <div className="space-y-6">
             {/* Dual-Model System Status */}
             {dualModelStatus && (
               <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 rounded-lg shadow">
@@ -2295,7 +2295,7 @@ const DelayPredictionDashboard: React.FC = () => {
 
         {/* AI Training Monitor Tab */}
         {activeTab === 'training' && (
-          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+          <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Neural Network Training Monitor</h2>
