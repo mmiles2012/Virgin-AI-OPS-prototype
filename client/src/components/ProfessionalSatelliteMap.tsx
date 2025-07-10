@@ -398,9 +398,12 @@ function ProfessionalSatelliteMapCore() {
       if (mapCenter) {
         params.append('lat', mapCenter.lat.toString());
         params.append('lng', mapCenter.lng.toString());
-        console.log(`Fetching weather radar for coordinates: ${mapCenter.lat}, ${mapCenter.lng}`);
+        console.log(`🌦️ Requesting weather radar for: ${mapCenter.lat}, ${mapCenter.lng}`);
       } else {
-        console.log('Fetching weather radar with smart global detection');
+        // Default to US center for better North American coverage detection
+        params.append('lat', '39.0');
+        params.append('lng', '-98.0');
+        console.log('🌦️ Requesting weather radar with North American default coordinates (enhanced coverage)');
       }
       
       const response = await fetch(`/api/weather/radar?${params.toString()}`);
@@ -408,13 +411,20 @@ function ProfessionalSatelliteMapCore() {
       
       if (data.success && data.imageUrl) {
         setWeatherRadarImage(data.imageUrl);
+        console.log('✅ Weather radar loaded successfully');
       } else {
-        console.error('Failed to load weather radar:', data.error);
+        console.error('❌ Primary weather radar failed:', data.error);
         // Try RainViewer as global fallback
-        const fallbackResponse = await fetch('/api/weather/radar?source=rainviewer');
+        const fallbackParams = new URLSearchParams({
+          source: 'rainviewer',
+          lat: mapCenter?.lat.toString() || '39.0',
+          lng: mapCenter?.lng.toString() || '-98.0'
+        });
+        const fallbackResponse = await fetch(`/api/weather/radar?${fallbackParams.toString()}`);
         const fallbackData = await fallbackResponse.json();
         if (fallbackData.success && fallbackData.imageUrl) {
           setWeatherRadarImage(fallbackData.imageUrl);
+          console.log('✅ Fallback weather radar loaded successfully');
         }
       }
     } catch (error) {

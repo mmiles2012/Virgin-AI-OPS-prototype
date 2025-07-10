@@ -12,7 +12,7 @@ class WeatherRadarService {
 
   // Determine if coordinates are in NOAA coverage area (Continental US)
   private isNoaaCoverage(lat: number, lng: number): boolean {
-    return lat >= 20 && lat <= 50 && lng >= -130 && lng <= -60;
+    return lat >= 20 && lat <= 60 && lng >= -170 && lng <= -50;
   }
 
   // Smart radar selection based on geographic location
@@ -21,30 +21,31 @@ class WeatherRadarService {
     const centerLng = lng || -100;
     
     try {
-      // Use NOAA for Continental US, MapTiler for global coverage
+      // Use NOAA for Continental US, including broader US coverage
       if (this.isNoaaCoverage(centerLat, centerLng)) {
-        console.log('Using NOAA radar for Continental US coverage');
+        console.log(`🇺🇸 Using NOAA radar for US coverage at coordinates: ${centerLat}, ${centerLng}`);
         const noaaRadar = await this.getNoaaRadar(bbox, width, height);
         if (noaaRadar) {
           return { success: true, imageUrl: noaaRadar };
         }
+        console.log('NOAA radar failed, trying RainViewer for US region...');
       }
       
-      // Use RainViewer for global coverage outside US
-      console.log('Using RainViewer radar for global coverage');
+      // Use RainViewer for global coverage (including when NOAA fails)
+      console.log(`🌍 Using RainViewer radar for global coverage at coordinates: ${centerLat}, ${centerLng}`);
       const rainViewerRadar = await this.getRainViewerRadar(centerLat, centerLng);
       if (rainViewerRadar) {
         return { success: true, imageUrl: rainViewerRadar };
       }
       
       // Fall back to MapTiler if available
-      console.log('Trying MapTiler radar as backup');
+      console.log('Trying MapTiler radar as final backup');
       const mapTilerRadar = await this.getMapTilerRadar(centerLat, centerLng);
       if (mapTilerRadar) {
         return { success: true, imageUrl: mapTilerRadar };
       }
       
-      return { success: false, error: 'No weather radar data available' };
+      return { success: false, error: 'No weather radar data available from any source' };
     } catch (error) {
       console.error('Smart radar selection failed:', error);
       return { success: false, error: 'Weather radar service unavailable' };
@@ -52,8 +53,8 @@ class WeatherRadarService {
   }
 
   async getNoaaRadar(bbox?: number[], width = 800, height = 600): Promise<string | null> {
-    // Default to Continental US
-    const defaultBbox = [-130, 20, -60, 50];
+    // Default to Continental US - expanded coverage
+    const defaultBbox = [-170, 20, -50, 60];
     const useBbox = bbox || defaultBbox;
     
     try {
