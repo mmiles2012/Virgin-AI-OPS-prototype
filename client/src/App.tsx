@@ -621,7 +621,7 @@ function App() {
 
             
             {viewMode === 'delay-prediction' && (
-              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto">
+              <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto overflow-y-auto">
                 <HubDelayPredictionDashboard />
               </div>
             )}
