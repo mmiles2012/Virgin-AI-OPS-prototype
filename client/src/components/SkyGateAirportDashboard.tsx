@@ -318,171 +318,19 @@ const SkyGateAirportDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">SkyGate Airport Intelligence</h1>
+        <h1 className="text-3xl font-bold">Airport Database</h1>
         <Badge className="bg-green-100 text-green-800">
           <CheckCircle className="h-3 w-3 mr-1" />
           Connected
         </Badge>
       </div>
 
-      <Tabs defaultValue="diversion" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="diversion">Diversion Analysis</TabsTrigger>
+      <Tabs defaultValue="airports" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-1">
           <TabsTrigger value="airports">Airport Network Intelligence</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="diversion" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Emergency Diversion Analysis
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Current Position</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      step="0.0001"
-                      placeholder="Latitude"
-                      className="flex-1 p-2 border rounded-md text-sm"
-                      value={selectedPosition.lat}
-                      onChange={(e) => setSelectedPosition(prev => ({ ...prev, lat: parseFloat(e.target.value) || 0 }))}
-                    />
-                    <input
-                      type="number"
-                      step="0.0001"
-                      placeholder="Longitude"
-                      className="flex-1 p-2 border rounded-md text-sm"
-                      value={selectedPosition.lon}
-                      onChange={(e) => setSelectedPosition(prev => ({ ...prev, lon: parseFloat(e.target.value) || 0 }))}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Aircraft Type</label>
-                  <select 
-                    className="w-full p-2 border rounded-md"
-                    value={selectedAircraft}
-                    onChange={(e) => setSelectedAircraft(e.target.value)}
-                  >
-                    <option value="Boeing 787-9">Boeing 787-9</option>
-                    <option value="Airbus A350-1000">Airbus A350-1000</option>
-                    <option value="Airbus A330-900">Airbus A330-900</option>
-                    <option value="Airbus A330-300">Airbus A330-300</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Emergency Type</label>
-                  <select 
-                    className="w-full p-2 border rounded-md"
-                    value={selectedEmergency}
-                    onChange={(e) => setSelectedEmergency(e.target.value)}
-                  >
-                    <option value="medical">Medical Emergency</option>
-                    <option value="technical">Technical Issue</option>
-                    <option value="weather">Weather Diversion</option>
-                    <option value="fuel">Fuel Emergency</option>
-                  </select>
-                </div>
-              </div>
-              <Button 
-                onClick={() => performDiversionAnalysis(selectedAircraft, selectedEmergency)}
-                disabled={loading}
-                className="w-full"
-              >
-                {loading ? 'Analyzing...' : 'Perform Diversion Analysis'}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {diversionAnalysis && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Recommended Diversion Option</CardTitle>
-                <Badge className={`w-fit ${getSuitabilityColor(diversionAnalysis.recommended_diversion.suitability_score)}`}>
-                  {diversionAnalysis.recommended_diversion.suitability_score.toUpperCase()}
-                </Badge>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <h4 className="font-semibold flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      {diversionAnalysis.recommended_diversion.airport.name}
-                    </h4>
-                    <p className="text-sm text-gray-600">
-                      {diversionAnalysis.recommended_diversion.airport.closest_big_city}, {diversionAnalysis.recommended_diversion.airport.country.name}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(diversionAnalysis.recommended_diversion.emergency_readiness)}
-                      <span className="text-sm">Emergency Readiness: {diversionAnalysis.recommended_diversion.emergency_readiness}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4" />
-                      <span className="text-sm">Medical Facilities: {diversionAnalysis.recommended_diversion.medical_facilities ? 'Available' : 'Limited'}</span>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      <span className="text-sm">ETA: {diversionAnalysis.recommended_diversion.estimated_time} minutes</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Fuel className="h-4 w-4" />
-                      <span className="text-sm">Fuel Required: {diversionAnalysis.recommended_diversion.fuel_required} kg</span>
-                    </div>
-                    <div className="text-sm">
-                      <span className="font-medium">Distance:</span> {diversionAnalysis.recommended_diversion.decision_factors.distance_km} km
-                    </div>
-                    <div className="text-sm">
-                      <span className="font-medium">Approach:</span> {diversionAnalysis.recommended_diversion.decision_factors.approach_difficulty}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <h5 className="font-semibold mb-2">Operational Impact Assessment</h5>
-                  <div className="grid grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <span className="font-medium">Delay:</span> {diversionAnalysis.operational_impact.delay_estimate} min
-                    </div>
-                    <div>
-                      <span className="font-medium">Cost:</span> ${diversionAnalysis.operational_impact.cost_impact.toLocaleString()}
-                    </div>
-                    <div>
-                      <span className="font-medium">Risk:</span> {diversionAnalysis.risk_assessment}
-                    </div>
-                  </div>
-                </div>
-
-                {diversionAnalysis.alternative_options.length > 0 && (
-                  <div className="border-t pt-4">
-                    <h5 className="font-semibold mb-2">Alternative Options ({diversionAnalysis.alternative_options.length})</h5>
-                    <div className="space-y-2">
-                      {diversionAnalysis.alternative_options.slice(0, 3).map((option, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
-                          <div>
-                            <span className="font-medium">{option.airport.name}</span>
-                            <span className="text-sm text-gray-600 ml-2">
-                              {option.decision_factors.distance_km} km • {option.estimated_time} min
-                            </span>
-                          </div>
-                          <Badge className={`${getSuitabilityColor(option.suitability_score)} text-xs`}>
-                            {option.suitability_score}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
+        {/* Diversion analysis tab removed as requested by user */}
 
 
 
