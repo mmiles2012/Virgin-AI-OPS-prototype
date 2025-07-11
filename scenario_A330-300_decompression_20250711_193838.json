@@ -1,0 +1,458 @@
+{
+  "scenario_id": "VS127_decompression_20250711_193838",
+  "timestamp": "2025-07-11T19:38:38.846994",
+  "aircraft": {
+    "type": "A330-300",
+    "registration": "G-VSXY",
+    "flight_number": "VS127"
+  },
+  "route": {
+    "origin": "LHR",
+    "destination": "JFK",
+    "total_distance_nm": 3440,
+    "completed_distance_nm": 1800,
+    "remaining_distance_nm": 1640,
+    "progress_percent": 52.3
+  },
+  "failure": {
+    "type": "decompression",
+    "description": "Cabin pressurization failure requiring emergency descent",
+    "severity": "HIGH"
+  },
+  "position": {
+    "distance_from_origin_nm": 1800,
+    "initial_altitude_ft": 37000,
+    "adjusted_altitude_ft": 10000,
+    "phase_of_flight": "CRUISE"
+  },
+  "operational_impact": {
+    "fuel_penalty_factor": 1.25,
+    "landing_distance_factor": 1.0,
+    "speed_restriction_knots": null,
+    "diversion_required": false,
+    "emergency_descent_required": true
+  },
+  "systems_affected": {
+    "primary_systems_lost": [],
+    "backup_systems_available": true,
+    "flight_controls_affected": false,
+    "landing_gear_affected": false,
+    "pressurization_affected": true
+  },
+  "crew_actions": [
+    "Don oxygen masks immediately",
+    "Execute emergency descent to 10,000 ft",
+    "Declare emergency with ATC",
+    "Secure cabin and check passenger oxygen",
+    "Consider nearest suitable airport"
+  ],
+  "operational_actions": {
+    "timeline": {
+      "failure_type": "decompression",
+      "total_actions": 6,
+      "timeline": {
+        "immediate_response": {
+          "timeframe": "0-5 minutes",
+          "actions": [
+            {
+              "id": "decompression_2_Unknown",
+              "trigger": "decompression",
+              "action": "Initiate oxygen duration monitoring",
+              "target_team": "Ops Centre",
+              "method": "UI",
+              "deadline_mins": 1,
+              "priority": "CRITICAL",
+              "issued_at": "2025-07-11T19:38:38.847793Z",
+              "status": "pending",
+              "flight_number": "Unknown",
+              "estimated_completion": "2025-07-11T19:39:38.847793+00:00Z"
+            },
+            {
+              "id": "decompression_3_Unknown",
+              "trigger": "decompression",
+              "action": "Coordinate immediate descent clearance",
+              "target_team": "ATC",
+              "method": "Radio",
+              "deadline_mins": 1,
+              "priority": "CRITICAL",
+              "issued_at": "2025-07-11T19:38:38.847793Z",
+              "status": "pending",
+              "flight_number": "Unknown",
+              "estimated_completion": "2025-07-11T19:39:38.847793+00:00Z"
+            },
+            {
+              "id": "decompression_0_Unknown",
+              "trigger": "decompression",
+              "action": "Trigger emergency descent advisory",
+              "target_team": "Flight Crew",
+              "method": "ACARS",
+              "deadline_mins": 2,
+              "priority": "CRITICAL",
+              "issued_at": "2025-07-11T19:38:38.847793Z",
+              "status": "pending",
+              "flight_number": "Unknown",
+              "estimated_completion": "2025-07-11T19:40:38.847793+00:00Z"
+            },
+            {
+              "id": "decompression_4_Unknown",
+              "trigger": "decompression",
+              "action": "Calculate oxygen supply remaining",
+              "target_team": "Flight Crew",
+              "method": "ACARS",
+              "deadline_mins": 3,
+              "priority": "HIGH",
+              "issued_at": "2025-07-11T19:38:38.847793Z",
+              "status": "pending",
+              "flight_number": "Unknown",
+              "estimated_completion": "2025-07-11T19:41:38.847793+00:00Z"
+            },
+            {
+              "id": "decompression_5_Unknown",
+              "trigger": "decompression",
+              "action": "Prepare passenger oxygen briefing",
+              "target_team": "Cabin Crew",
+              "method": "PA",
+              "deadline_mins": 5,
+              "priority": "HIGH",
+              "issued_at": "2025-07-11T19:38:38.847793Z",
+              "status": "pending",
+              "flight_number": "Unknown",
+              "estimated_completion": "2025-07-11T19:43:38.847793+00:00Z"
+            }
+          ],
+          "count": 5
+        },
+        "short_term_response": {
+          "timeframe": "5-15 minutes",
+          "actions": [
+            {
+              "id": "decompression_1_Unknown",
+              "trigger": "decompression",
+              "action": "Alert medical and customs at arrival",
+              "target_team": "Arrival Station",
+              "method": "Email",
+              "deadline_mins": 15,
+              "priority": "MEDIUM",
+              "issued_at": "2025-07-11T19:38:38.847793Z",
+              "status": "pending",
+              "flight_number": "Unknown",
+              "estimated_completion": "2025-07-11T19:53:38.847793+00:00Z"
+            }
+          ],
+          "count": 1
+        },
+        "medium_term_response": {
+          "timeframe": "15+ minutes",
+          "actions": [],
+          "count": 0
+        }
+      },
+      "priority_breakdown": {
+        "critical": 3,
+        "high": 2,
+        "medium": 1,
+        "low": 0
+      }
+    },
+    "critical_actions": [
+      {
+        "id": "decompression_2_Unknown",
+        "trigger": "decompression",
+        "action": "Initiate oxygen duration monitoring",
+        "target_team": "Ops Centre",
+        "method": "UI",
+        "deadline_mins": 1,
+        "priority": "CRITICAL",
+        "issued_at": "2025-07-11T19:38:38.847845Z",
+        "status": "pending",
+        "flight_number": "Unknown",
+        "estimated_completion": "2025-07-11T19:39:38.847845+00:00Z"
+      },
+      {
+        "id": "decompression_3_Unknown",
+        "trigger": "decompression",
+        "action": "Coordinate immediate descent clearance",
+        "target_team": "ATC",
+        "method": "Radio",
+        "deadline_mins": 1,
+        "priority": "CRITICAL",
+        "issued_at": "2025-07-11T19:38:38.847845Z",
+        "status": "pending",
+        "flight_number": "Unknown",
+        "estimated_completion": "2025-07-11T19:39:38.847845+00:00Z"
+      },
+      {
+        "id": "decompression_0_Unknown",
+        "trigger": "decompression",
+        "action": "Trigger emergency descent advisory",
+        "target_team": "Flight Crew",
+        "method": "ACARS",
+        "deadline_mins": 2,
+        "priority": "CRITICAL",
+        "issued_at": "2025-07-11T19:38:38.847845Z",
+        "status": "pending",
+        "flight_number": "Unknown",
+        "estimated_completion": "2025-07-11T19:40:38.847845+00:00Z"
+      }
+    ],
+    "crew_specific_actions": [
+      {
+        "id": "decompression_0_Unknown",
+        "trigger": "decompression",
+        "action": "Trigger emergency descent advisory",
+        "target_team": "Flight Crew",
+        "method": "ACARS",
+        "deadline_mins": 2,
+        "priority": "CRITICAL",
+        "issued_at": "2025-07-11T19:38:38.847874Z",
+        "status": "pending",
+        "flight_number": "Unknown",
+        "estimated_completion": "2025-07-11T19:40:38.847874+00:00Z"
+      },
+      {
+        "id": "decompression_4_Unknown",
+        "trigger": "decompression",
+        "action": "Calculate oxygen supply remaining",
+        "target_team": "Flight Crew",
+        "method": "ACARS",
+        "deadline_mins": 3,
+        "priority": "HIGH",
+        "issued_at": "2025-07-11T19:38:38.847874Z",
+        "status": "pending",
+        "flight_number": "Unknown",
+        "estimated_completion": "2025-07-11T19:41:38.847874+00:00Z"
+      }
+    ],
+    "total_actions": 6,
+    "priority_summary": {
+      "critical": 3,
+      "high": 2,
+      "medium": 1,
+      "low": 0
+    },
+    "diversion_context": null
+  },
+  "operational_notes": [
+    "Failure occurred during CRUISE phase",
+    "Emergency descent required - oxygen limits may apply",
+    "Crew oxygen duration: 22 minutes"
+  ],
+  "diversion_analysis": {
+    "diversion_required": false,
+    "severity": "HIGH",
+    "recommended_action": "CONTINUE",
+    "suitable_airports": [
+      "EINN",
+      "EGPF",
+      "BIKF"
+    ],
+    "minimum_runway_length_ft": 8000,
+    "special_requirements": [
+      "Medical facilities",
+      "Low altitude approach",
+      "Emergency services"
+    ],
+    "intelligent_ranking": {
+      "flight_number": "VS127",
+      "aircraft_type": "A330-300",
+      "failure_type": "decompression",
+      "analysis": {
+        "total_alternates_evaluated": 7,
+        "suitable_alternates": 3,
+        "recommended_alternates": 3,
+        "best_alternate": {
+          "icao": "EINN",
+          "name": "Shannon (Ireland)",
+          "distance_nm": 180,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 2.5,
+          "score": 6.2,
+          "suitability": "GOOD",
+          "comments": [],
+          "region": "EUROPE"
+        }
+      },
+      "recommended_alternates": [
+        {
+          "icao": "EINN",
+          "name": "Shannon (Ireland)",
+          "distance_nm": 180,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 2.5,
+          "score": 6.2,
+          "suitability": "GOOD",
+          "comments": [],
+          "region": "EUROPE"
+        },
+        {
+          "icao": "EGPF",
+          "name": "Glasgow (Scotland)",
+          "distance_nm": 200,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 2.8,
+          "score": 6.0,
+          "suitability": "GOOD",
+          "comments": [],
+          "region": "EUROPE"
+        },
+        {
+          "icao": "BIKF",
+          "name": "Keflavik (Iceland)",
+          "distance_nm": 400,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 3.2,
+          "score": 4.0,
+          "suitability": "ADEQUATE",
+          "comments": [],
+          "region": "NORTH_ATLANTIC"
+        }
+      ],
+      "all_alternates": [
+        {
+          "icao": "EINN",
+          "name": "Shannon (Ireland)",
+          "distance_nm": 180,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 2.5,
+          "score": 6.2,
+          "suitability": "GOOD",
+          "comments": [],
+          "region": "EUROPE"
+        },
+        {
+          "icao": "EGPF",
+          "name": "Glasgow (Scotland)",
+          "distance_nm": 200,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 2.8,
+          "score": 6.0,
+          "suitability": "GOOD",
+          "comments": [],
+          "region": "EUROPE"
+        },
+        {
+          "icao": "BIKF",
+          "name": "Keflavik (Iceland)",
+          "distance_nm": 400,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 3.2,
+          "score": 4.0,
+          "suitability": "ADEQUATE",
+          "comments": [],
+          "region": "NORTH_ATLANTIC"
+        },
+        {
+          "icao": "BGSF",
+          "name": "Kangerlussuaq (Greenland)",
+          "distance_nm": 530,
+          "runway_ok": true,
+          "firecat_ok": false,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 3.5,
+          "score": 0.7,
+          "suitability": "UNSUITABLE",
+          "comments": [
+            "Fire category insufficient: 7 < 8 required"
+          ],
+          "region": "NORTH_ATLANTIC"
+        },
+        {
+          "icao": "CYQX",
+          "name": "Gander (Newfoundland)",
+          "distance_nm": 580,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": false,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 3.8,
+          "score": 0.2,
+          "suitability": "UNSUITABLE",
+          "comments": [
+            "Weather below minimums"
+          ],
+          "region": "NORTH_ATLANTIC"
+        },
+        {
+          "icao": "CYYT",
+          "name": "St John's (Newfoundland)",
+          "distance_nm": 620,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": false,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 4.0,
+          "score": -0.2,
+          "suitability": "UNSUITABLE",
+          "comments": [
+            "Weather below minimums"
+          ],
+          "region": "NORTH_ATLANTIC"
+        },
+        {
+          "icao": "BGBW",
+          "name": "Narsarsuaq (Greenland)",
+          "distance_nm": 450,
+          "runway_ok": false,
+          "firecat_ok": false,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 3.0,
+          "score": -1.5,
+          "suitability": "UNSUITABLE",
+          "comments": [
+            "Runway too short: 6000ft < 7500.0ft required",
+            "Fire category insufficient: 6 < 8 required"
+          ],
+          "region": "NORTH_ATLANTIC"
+        }
+      ]
+    }
+  },
+  "fuel_analysis": {
+    "fuel_penalty_factor": 1.25,
+    "expected_fuel_burn_penalty_per_hour": 0.25,
+    "estimated_extra_fuel_gallons": 328,
+    "range_impact_percent": 25.0,
+    "fuel_status": "MONITOR"
+  },
+  "passenger_impact": {
+    "comfort": "HIGH",
+    "safety": "MEDIUM",
+    "schedule": "HIGH"
+  },
+  "regulatory_considerations": [
+    "Mandatory occurrence report",
+    "Cabin altitude exceeded certification limits",
+    "Medical assessment required"
+  ],
+  "aino_recommendations": [
+    "Activate enhanced monitoring in AINO Operations Center",
+    "Initiate passenger communication protocols",
+    "Alert medical coordination team",
+    "Prepare passenger assistance protocols",
+    "Update Virgin Atlantic operations center",
+    "Monitor fuel consumption via AINO fuel optimization engine"
+  ]
+}

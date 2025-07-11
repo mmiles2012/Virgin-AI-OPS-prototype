@@ -197,6 +197,7 @@ class EnhancedScenarioSimulator:
             },
             "systems_affected": self.analyze_systems_impact(failure, failure_type),
             "crew_actions": self.generate_crew_actions(failure_type, failure),
+            "operational_actions": self.generate_operational_actions(failure_type, progress_percent),
             "operational_notes": self.generate_operational_notes(failure_type, failure, progress_percent),
             "diversion_analysis": self.analyze_diversion_options(failure_type, progress_percent),
             "fuel_analysis": self.calculate_fuel_impact(failure, remaining_distance),
@@ -484,6 +485,54 @@ class EnhancedScenarioSimulator:
         except Exception as e:
             logger.error(f"Error exporting scenario: {e}")
             return None
+    
+    def generate_operational_actions(self, failure_type: str, progress_percent: float) -> Dict:
+        """Generate comprehensive operational actions using post-failure knowledge base"""
+        try:
+            from post_failure_actions import PostFailureActionsManager
+            
+            actions_manager = PostFailureActionsManager()
+            
+            # Get diversion information if available
+            diversion_analysis = self.analyze_diversion_options(failure_type, progress_percent)
+            diversion_info = None
+            
+            if diversion_analysis.get("diversion_required") and "intelligent_ranking" in diversion_analysis:
+                ranking = diversion_analysis["intelligent_ranking"]
+                if "analysis" in ranking and ranking["analysis"].get("best_alternate"):
+                    best_alt = ranking["analysis"]["best_alternate"]
+                    diversion_info = {
+                        "icao": best_alt["icao"],
+                        "name": best_alt["name"],
+                        "distance_nm": best_alt["distance_nm"],
+                        "fuel_required_tonnes": best_alt["fuel_required_tonnes"]
+                    }
+            
+            # Generate comprehensive action timeline
+            timeline = actions_manager.generate_action_timeline(failure_type, diversion_info)
+            
+            # Get specific action types
+            critical_actions = actions_manager.get_critical_actions(failure_type)
+            crew_specific = actions_manager.get_crew_specific_actions(failure_type, "Flight Crew")
+            
+            return {
+                "timeline": timeline,
+                "critical_actions": critical_actions,
+                "crew_specific_actions": crew_specific,
+                "total_actions": timeline["total_actions"],
+                "priority_summary": timeline["priority_breakdown"],
+                "diversion_context": diversion_info
+            }
+            
+        except Exception as e:
+            # Fallback if post-failure actions module fails
+            return {
+                "timeline": {"error": str(e)},
+                "critical_actions": [],
+                "crew_specific_actions": [],
+                "total_actions": 0,
+                "fallback_active": True
+            }
 
 def main():
     """Main function for standalone operation and testing"""
