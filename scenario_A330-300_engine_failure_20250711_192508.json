@@ -1,0 +1,283 @@
+{
+  "scenario_id": "VS127_engine_failure_20250711_192508",
+  "timestamp": "2025-07-11T19:25:08.940810",
+  "aircraft": {
+    "type": "A330-300",
+    "registration": "G-VSXY",
+    "flight_number": "VS127"
+  },
+  "route": {
+    "origin": "LHR",
+    "destination": "JFK",
+    "total_distance_nm": 3440,
+    "completed_distance_nm": 1800,
+    "remaining_distance_nm": 1640,
+    "progress_percent": 52.3
+  },
+  "failure": {
+    "type": "engine_failure",
+    "description": "Engine failure requiring single-engine operations",
+    "severity": "MEDIUM"
+  },
+  "position": {
+    "distance_from_origin_nm": 1800,
+    "initial_altitude_ft": 37000,
+    "adjusted_altitude_ft": 27000,
+    "phase_of_flight": "CRUISE"
+  },
+  "operational_impact": {
+    "fuel_penalty_factor": 1.22,
+    "landing_distance_factor": 1.0,
+    "speed_restriction_knots": 290,
+    "diversion_required": true,
+    "emergency_descent_required": false
+  },
+  "systems_affected": {
+    "primary_systems_lost": [
+      "GEN 2",
+      "HYD 2",
+      "BLEED 2"
+    ],
+    "backup_systems_available": true,
+    "flight_controls_affected": true,
+    "landing_gear_affected": false,
+    "pressurization_affected": false,
+    "engine_failure_systems": {
+      "hydraulics_2": true,
+      "gen_2": true,
+      "bleed_2": true
+    }
+  },
+  "crew_actions": [
+    "Execute engine failure checklist",
+    "Configure for single-engine operations",
+    "Enable maximum continuous thrust",
+    "Consider nearest suitable airport for diversion",
+    "Coordinate with ATC for priority handling"
+  ],
+  "operational_notes": [
+    "Failure occurred during CRUISE phase",
+    "Single-engine operations - max continuous thrust enabled",
+    "Autothrust functionality may be limited"
+  ],
+  "diversion_analysis": {
+    "diversion_required": true,
+    "severity": "MEDIUM",
+    "recommended_action": "DIVERT",
+    "suitable_airports": [
+      "EINN",
+      "EGPF",
+      "BIKF"
+    ],
+    "minimum_runway_length_ft": 8000,
+    "special_requirements": [
+      "Maintenance capability",
+      "Long runway",
+      "Emergency services"
+    ],
+    "intelligent_ranking": {
+      "flight_number": "VS127",
+      "aircraft_type": "A330-300",
+      "failure_type": "engine_failure",
+      "analysis": {
+        "total_alternates_evaluated": 7,
+        "suitable_alternates": 3,
+        "recommended_alternates": 3,
+        "best_alternate": {
+          "icao": "EINN",
+          "name": "Shannon (Ireland)",
+          "distance_nm": 180,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 2.5,
+          "score": 6.2,
+          "suitability": "GOOD",
+          "comments": [],
+          "region": "EUROPE"
+        }
+      },
+      "recommended_alternates": [
+        {
+          "icao": "EINN",
+          "name": "Shannon (Ireland)",
+          "distance_nm": 180,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 2.5,
+          "score": 6.2,
+          "suitability": "GOOD",
+          "comments": [],
+          "region": "EUROPE"
+        },
+        {
+          "icao": "EGPF",
+          "name": "Glasgow (Scotland)",
+          "distance_nm": 200,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 2.8,
+          "score": 6.0,
+          "suitability": "GOOD",
+          "comments": [],
+          "region": "EUROPE"
+        },
+        {
+          "icao": "BIKF",
+          "name": "Keflavik (Iceland)",
+          "distance_nm": 400,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 3.2,
+          "score": 4.0,
+          "suitability": "ADEQUATE",
+          "comments": [],
+          "region": "NORTH_ATLANTIC"
+        }
+      ],
+      "all_alternates": [
+        {
+          "icao": "EINN",
+          "name": "Shannon (Ireland)",
+          "distance_nm": 180,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 2.5,
+          "score": 6.2,
+          "suitability": "GOOD",
+          "comments": [],
+          "region": "EUROPE"
+        },
+        {
+          "icao": "EGPF",
+          "name": "Glasgow (Scotland)",
+          "distance_nm": 200,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 2.8,
+          "score": 6.0,
+          "suitability": "GOOD",
+          "comments": [],
+          "region": "EUROPE"
+        },
+        {
+          "icao": "BIKF",
+          "name": "Keflavik (Iceland)",
+          "distance_nm": 400,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": true,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 3.2,
+          "score": 4.0,
+          "suitability": "ADEQUATE",
+          "comments": [],
+          "region": "NORTH_ATLANTIC"
+        },
+        {
+          "icao": "CYQX",
+          "name": "Gander (Newfoundland)",
+          "distance_nm": 580,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": false,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 3.8,
+          "score": 0.2,
+          "suitability": "UNSUITABLE",
+          "comments": [
+            "Weather below minimums"
+          ],
+          "region": "NORTH_ATLANTIC"
+        },
+        {
+          "icao": "CYYT",
+          "name": "St John's (Newfoundland)",
+          "distance_nm": 620,
+          "runway_ok": true,
+          "firecat_ok": true,
+          "weather_ok": false,
+          "maintenance_ok": true,
+          "fuel_required_tonnes": 4.0,
+          "score": -0.2,
+          "suitability": "UNSUITABLE",
+          "comments": [
+            "Weather below minimums"
+          ],
+          "region": "NORTH_ATLANTIC"
+        },
+        {
+          "icao": "BGSF",
+          "name": "Kangerlussuaq (Greenland)",
+          "distance_nm": 530,
+          "runway_ok": true,
+          "firecat_ok": false,
+          "weather_ok": true,
+          "maintenance_ok": false,
+          "fuel_required_tonnes": 3.5,
+          "score": -0.3,
+          "suitability": "UNSUITABLE",
+          "comments": [
+            "Fire category insufficient: 7 < 8 required",
+            "No maintenance capability available"
+          ],
+          "region": "NORTH_ATLANTIC"
+        },
+        {
+          "icao": "BGBW",
+          "name": "Narsarsuaq (Greenland)",
+          "distance_nm": 450,
+          "runway_ok": false,
+          "firecat_ok": false,
+          "weather_ok": true,
+          "maintenance_ok": false,
+          "fuel_required_tonnes": 3.0,
+          "score": -2.5,
+          "suitability": "UNSUITABLE",
+          "comments": [
+            "Runway too short: 6000ft < 7500.0ft required",
+            "Fire category insufficient: 6 < 8 required",
+            "No maintenance capability available"
+          ],
+          "region": "NORTH_ATLANTIC"
+        }
+      ]
+    }
+  },
+  "fuel_analysis": {
+    "fuel_penalty_factor": 1.22,
+    "expected_fuel_burn_penalty_per_hour": 0.21999999999999997,
+    "estimated_extra_fuel_gallons": 288,
+    "range_impact_percent": 22.0,
+    "fuel_status": "MONITOR"
+  },
+  "passenger_impact": {
+    "comfort": "MODERATE",
+    "safety": "LOW",
+    "schedule": "HIGH"
+  },
+  "regulatory_considerations": [
+    "ETOPS regulations may apply",
+    "Report to manufacturer and authority",
+    "Enhanced inspection requirements"
+  ],
+  "aino_recommendations": [
+    "Activate enhanced monitoring in AINO Operations Center",
+    "Initiate passenger communication protocols",
+    "Execute AINO automated diversion support workflow",
+    "Coordinate ground services at diversion airport",
+    "Update Virgin Atlantic operations center",
+    "Monitor fuel consumption via AINO fuel optimization engine"
+  ]
+}

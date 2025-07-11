@@ -346,26 +346,38 @@ class EnhancedScenarioSimulator:
         return notes
 
     def analyze_diversion_options(self, failure_type: str, progress_percent: float) -> Dict:
-        """Analyze diversion requirements and options"""
+        """Analyze diversion requirements and options using intelligent ranking"""
         diversion_required = self.twin_profile[failure_type].get("diversion_required", False)
         
-        # Major airports by region for diversion
-        diversion_airports = {
-            "NORTH_ATLANTIC": ["CYQX", "BGBW", "BIKF", "EGPF", "EINN"],
-            "EUROPE": ["EGLL", "LFPG", "EDDF", "EHAM", "EGKK"],
-            "NORTH_AMERICA_EAST": ["KJFK", "KBOS", "CYYZ", "KPHL", "KDCA"],
-            "NORTH_AMERICA_WEST": ["KLAX", "KSFO", "KLAS", "KPHX", "KDEN"],
-            "CARIBBEAN": ["MKJS", "TNCM", "TJSJ", "MDSD"],
-            "MIDDLE_EAST": ["OMDB", "OERK", "OTHH", "OEJN"]
-        }
+        # Initialize alternate airport ranker
+        try:
+            from alternate_airport_ranking import AlternateAirportRanker
+            ranker = AlternateAirportRanker()
+            
+            # Get failure profile for ranking
+            failure_profile = self.twin_profile[failure_type].copy()
+            failure_profile["type"] = failure_type
+            
+            # Get ranked alternates
+            recommended = ranker.get_recommended_alternates(failure_profile, self.aircraft_type, max_results=5)
+            suitable_airports = [alt["icao"] for alt in recommended]
+            
+            # Generate diversion report
+            diversion_report = ranker.generate_diversion_report(failure_profile, self.aircraft_type, self.flight_number)
+            
+        except Exception as e:
+            # Fallback to static list if ranking fails
+            suitable_airports = ["CYQX", "BGBW", "BIKF", "EGPF", "EINN"]
+            diversion_report = {"error": str(e)}
         
         return {
             "diversion_required": diversion_required,
             "severity": self.calculate_failure_severity(failure_type, progress_percent),
             "recommended_action": "CONTINUE" if not diversion_required else "DIVERT",
-            "suitable_airports": diversion_airports.get("NORTH_ATLANTIC", []),
+            "suitable_airports": suitable_airports,
             "minimum_runway_length_ft": self.calculate_minimum_runway_length(failure_type),
-            "special_requirements": self.get_diversion_requirements(failure_type)
+            "special_requirements": self.get_diversion_requirements(failure_type),
+            "intelligent_ranking": diversion_report
         }
 
     def calculate_minimum_runway_length(self, failure_type: str) -> int:

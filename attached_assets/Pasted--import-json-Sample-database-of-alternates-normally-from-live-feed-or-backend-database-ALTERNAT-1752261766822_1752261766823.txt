@@ -1,0 +1,78 @@
+
+import json
+
+# Sample database of alternates (normally from live feed or backend database)
+ALTERNATE_DATABASE = [
+    {
+        "icao": "KEF",
+        "name": "Keflavik",
+        "distance_nm": 400,
+        "runway_length_ft": 10000,
+        "rescue_fire_category": 9,
+        "weather": {"visibility_m": 8000, "ceiling_ft": 1200},
+        "fuel_required_tonnes": 3.2
+    },
+    {
+        "icao": "YYT",
+        "name": "St John's",
+        "distance_nm": 620,
+        "runway_length_ft": 8500,
+        "rescue_fire_category": 8,
+        "weather": {"visibility_m": 3000, "ceiling_ft": 700},
+        "fuel_required_tonnes": 4.0
+    },
+    {
+        "icao": "BGSF",
+        "name": "Kangerlussuaq",
+        "distance_nm": 530,
+        "runway_length_ft": 9200,
+        "rescue_fire_category": 7,
+        "weather": {"visibility_m": 10000, "ceiling_ft": 3000},
+        "fuel_required_tonnes": 3.5
+    }
+]
+
+def evaluate_alternate(alt, failure_profile):
+    # Check runway length requirement
+    required_runway = 8000 * failure_profile.get("landing_distance_factor", 1.0)
+    runway_ok = alt["runway_length_ft"] >= required_runway
+
+    # Check fire category
+    firecat_ok = alt["rescue_fire_category"] >= 8
+
+    # Check weather minimums
+    vis_ok = alt["weather"]["visibility_m"] >= 3000
+    ceiling_ok = alt["weather"]["ceiling_ft"] >= 1000
+
+    # Score alternate
+    score = 0
+    if runway_ok: score += 1
+    if firecat_ok: score += 1
+    if vis_ok: score += 1
+    if ceiling_ok: score += 1
+
+    return {
+        "icao": alt["icao"],
+        "name": alt["name"],
+        "distance_nm": alt["distance_nm"],
+        "runway_ok": runway_ok,
+        "firecat_ok": firecat_ok,
+        "weather_ok": vis_ok and ceiling_ok,
+        "fuel_required_tonnes": alt["fuel_required_tonnes"],
+        "score": score,
+        "comments": []
+    }
+
+def rank_alternates(failure_profile):
+    ranked = [evaluate_alternate(alt, failure_profile) for alt in ALTERNATE_DATABASE]
+    return sorted(ranked, key=lambda x: (-x["score"], x["distance_nm"]))
+
+# Example use
+if __name__ == "__main__":
+    with open("digital_twin_profiles/A350_1000_digital_twin.json") as f:
+        twin = json.load(f)
+
+    failure_profile = twin["hydraulic_failure"]
+    results = rank_alternates(failure_profile)
+
+    print(json.dumps(results, indent=2))
