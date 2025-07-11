@@ -1,0 +1,100 @@
+{
+  "scenario_id": "VS3_engine_failure_20250711_184953",
+  "timestamp": "2025-07-11T18:49:53.322576",
+  "aircraft": {
+    "type": "A350-1000",
+    "registration": "G-VLUX",
+    "flight_number": "VS3"
+  },
+  "route": {
+    "origin": "LHR",
+    "destination": "JFK",
+    "total_distance_nm": 3440,
+    "completed_distance_nm": 1700,
+    "remaining_distance_nm": 1740,
+    "progress_percent": 49.4
+  },
+  "failure": {
+    "type": "engine_failure",
+    "description": "Engine failure requiring single-engine operations",
+    "severity": "MEDIUM"
+  },
+  "position": {
+    "distance_from_origin_nm": 1700,
+    "initial_altitude_ft": 37000,
+    "adjusted_altitude_ft": 28000,
+    "phase_of_flight": "CRUISE"
+  },
+  "operational_impact": {
+    "fuel_penalty_factor": 1.18,
+    "landing_distance_factor": 1.0,
+    "speed_restriction_knots": 300,
+    "diversion_required": true,
+    "emergency_descent_required": false
+  },
+  "systems_affected": {
+    "primary_systems_lost": [
+      "GEN 2",
+      "HYD 2",
+      "BLEED 2"
+    ],
+    "backup_systems_available": true,
+    "flight_controls_affected": true,
+    "landing_gear_affected": false,
+    "pressurization_affected": false
+  },
+  "crew_actions": [
+    "Execute engine failure checklist",
+    "Configure for single-engine operations",
+    "Enable maximum continuous thrust",
+    "Consider nearest suitable airport for diversion",
+    "Coordinate with ATC for priority handling"
+  ],
+  "operational_notes": [
+    "Failure occurred during CRUISE phase",
+    "Single-engine operations - max continuous thrust enabled",
+    "Autothrust functionality may be limited"
+  ],
+  "diversion_analysis": {
+    "diversion_required": true,
+    "severity": "MEDIUM",
+    "recommended_action": "DIVERT",
+    "suitable_airports": [
+      "CYQX",
+      "BGBW",
+      "BIKF",
+      "EGPF",
+      "EINN"
+    ],
+    "minimum_runway_length_ft": 8000,
+    "special_requirements": [
+      "Maintenance capability",
+      "Long runway",
+      "Emergency services"
+    ]
+  },
+  "fuel_analysis": {
+    "fuel_penalty_factor": 1.18,
+    "estimated_extra_fuel_gallons": 250,
+    "range_impact_percent": 18.0,
+    "fuel_status": "ADEQUATE"
+  },
+  "passenger_impact": {
+    "comfort": "MODERATE",
+    "safety": "LOW",
+    "schedule": "HIGH"
+  },
+  "regulatory_considerations": [
+    "ETOPS regulations may apply",
+    "Report to manufacturer and authority",
+    "Enhanced inspection requirements"
+  ],
+  "aino_recommendations": [
+    "Activate enhanced monitoring in AINO Operations Center",
+    "Initiate passenger communication protocols",
+    "Execute AINO automated diversion support workflow",
+    "Coordinate ground services at diversion airport",
+    "Update Virgin Atlantic operations center",
+    "Monitor fuel consumption via AINO fuel optimization engine"
+  ]
+}

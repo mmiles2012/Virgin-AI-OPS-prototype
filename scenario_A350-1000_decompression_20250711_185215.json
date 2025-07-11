@@ -1,0 +1,96 @@
+{
+  "scenario_id": "VS3_decompression_20250711_185215",
+  "timestamp": "2025-07-11T18:52:15.886330",
+  "aircraft": {
+    "type": "A350-1000",
+    "registration": "G-VLUX",
+    "flight_number": "VS3"
+  },
+  "route": {
+    "origin": "LHR",
+    "destination": "JFK",
+    "total_distance_nm": 3440,
+    "completed_distance_nm": 1700,
+    "remaining_distance_nm": 1740,
+    "progress_percent": 49.4
+  },
+  "failure": {
+    "type": "decompression",
+    "description": "Cabin pressurization failure requiring emergency descent",
+    "severity": "HIGH"
+  },
+  "position": {
+    "distance_from_origin_nm": 1700,
+    "initial_altitude_ft": 37000,
+    "adjusted_altitude_ft": 10000,
+    "phase_of_flight": "CRUISE"
+  },
+  "operational_impact": {
+    "fuel_penalty_factor": 1.28,
+    "landing_distance_factor": 1.0,
+    "speed_restriction_knots": null,
+    "diversion_required": false,
+    "emergency_descent_required": true
+  },
+  "systems_affected": {
+    "primary_systems_lost": [],
+    "backup_systems_available": true,
+    "flight_controls_affected": false,
+    "landing_gear_affected": false,
+    "pressurization_affected": true
+  },
+  "crew_actions": [
+    "Don oxygen masks immediately",
+    "Execute emergency descent to 10,000 ft",
+    "Declare emergency with ATC",
+    "Secure cabin and check passenger oxygen",
+    "Consider nearest suitable airport"
+  ],
+  "operational_notes": [
+    "Failure occurred during CRUISE phase",
+    "Emergency descent required - oxygen limits may apply",
+    "Crew oxygen duration: 22 minutes"
+  ],
+  "diversion_analysis": {
+    "diversion_required": false,
+    "severity": "HIGH",
+    "recommended_action": "CONTINUE",
+    "suitable_airports": [
+      "CYQX",
+      "BGBW",
+      "BIKF",
+      "EGPF",
+      "EINN"
+    ],
+    "minimum_runway_length_ft": 8000,
+    "special_requirements": [
+      "Medical facilities",
+      "Low altitude approach",
+      "Emergency services"
+    ]
+  },
+  "fuel_analysis": {
+    "fuel_penalty_factor": 1.28,
+    "estimated_extra_fuel_gallons": 389,
+    "range_impact_percent": 28.0,
+    "fuel_status": "MONITOR"
+  },
+  "passenger_impact": {
+    "comfort": "HIGH",
+    "safety": "MEDIUM",
+    "schedule": "HIGH"
+  },
+  "regulatory_considerations": [
+    "Mandatory occurrence report",
+    "Cabin altitude exceeded certification limits",
+    "Medical assessment required"
+  ],
+  "aino_recommendations": [
+    "Activate enhanced monitoring in AINO Operations Center",
+    "Initiate passenger communication protocols",
+    "Alert medical coordination team",
+    "Prepare passenger assistance protocols",
+    "Update Virgin Atlantic operations center",
+    "Monitor fuel consumption via AINO fuel optimization engine"
+  ]
+}

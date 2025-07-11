@@ -1,0 +1,110 @@
+{
+  "scenario_id": "VS127_hydraulic_failure_20250711_185238",
+  "timestamp": "2025-07-11T18:52:38.601981",
+  "aircraft": {
+    "type": "A330-300",
+    "registration": "G-VSXY",
+    "flight_number": "VS127"
+  },
+  "route": {
+    "origin": "MAN",
+    "destination": "JFK",
+    "total_distance_nm": 3330,
+    "completed_distance_nm": 1500,
+    "remaining_distance_nm": 1830,
+    "progress_percent": 45.0
+  },
+  "failure": {
+    "type": "hydraulic_failure",
+    "description": "Hydraulic system failure affecting flight controls and landing gear",
+    "severity": "LOW"
+  },
+  "position": {
+    "distance_from_origin_nm": 1500,
+    "initial_altitude_ft": 35000,
+    "adjusted_altitude_ft": 35000,
+    "phase_of_flight": "CRUISE"
+  },
+  "operational_impact": {
+    "fuel_penalty_factor": 1.0,
+    "landing_distance_factor": 1.2,
+    "speed_restriction_knots": null,
+    "diversion_required": false,
+    "emergency_descent_required": false
+  },
+  "systems_affected": {
+    "primary_systems_lost": [],
+    "backup_systems_available": true,
+    "flight_controls_affected": true,
+    "landing_gear_affected": true,
+    "pressurization_affected": false,
+    "lost_hydraulic_systems": {
+      "green": [
+        "normal brakes",
+        "gear",
+        "slats"
+      ],
+      "blue": [
+        "alternate brakes",
+        "cargo doors"
+      ],
+      "yellow": [
+        "rudder backup",
+        "PTU"
+      ]
+    },
+    "alternate_gear_extension": true
+  },
+  "crew_actions": [
+    "Execute hydraulic failure checklist",
+    "Configure for alternate gear extension",
+    "Review landing distance requirements",
+    "Coordinate with maintenance for system status",
+    "Brief cabin crew on emergency procedures"
+  ],
+  "operational_notes": [
+    "Failure occurred during CRUISE phase",
+    "Check for alternate gear extension and brake mode impact",
+    "Flap limitation: Flaps 3"
+  ],
+  "diversion_analysis": {
+    "diversion_required": false,
+    "severity": "LOW",
+    "recommended_action": "CONTINUE",
+    "suitable_airports": [
+      "CYQX",
+      "BGBW",
+      "BIKF",
+      "EGPF",
+      "EINN"
+    ],
+    "minimum_runway_length_ft": 9600,
+    "special_requirements": [
+      "Long runway",
+      "Arresting gear available",
+      "Emergency services"
+    ]
+  },
+  "fuel_analysis": {
+    "fuel_penalty_factor": 1.0,
+    "estimated_extra_fuel_gallons": 0,
+    "range_impact_percent": 0.0,
+    "fuel_status": "ADEQUATE"
+  },
+  "passenger_impact": {
+    "comfort": "LOW",
+    "safety": "LOW",
+    "schedule": "MEDIUM"
+  },
+  "regulatory_considerations": [
+    "System redundancy analysis required",
+    "Maintenance inspection mandatory",
+    "Component replacement needed"
+  ],
+  "aino_recommendations": [
+    "Activate enhanced monitoring in AINO Operations Center",
+    "Initiate passenger communication protocols",
+    "Update Virgin Atlantic operations center",
+    "Monitor fuel consumption via AINO fuel optimization engine"
+  ]
+}

@@ -56,6 +56,7 @@ import visaRoutes from "./visaRoutes";
 import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
 import { globalAirportService } from "./globalAirportService";
 import { AirportDetailsService } from "./airportDetailsService";
+import { scenarioSimulatorService, ScenarioRequest } from './scenarioSimulatorService';
 import heathrowHoldingService from "./heathrowHoldingService";
 import heathrowLiveDataService from "./heathrowLiveDataService";
 import integratedHoldingMLService from "./integratedHoldingMLService.js";
@@ -9935,6 +9936,141 @@ function calculateUSUKCorrelation() {
       });
     }
   });
+
+  // Enhanced Scenario Simulator API Endpoints
+  app.post('/api/scenario/simulate', async (req, res) => {
+    try {
+      console.log('[Scenario API] Received simulation request:', req.body);
+      
+      const request: ScenarioRequest = {
+        aircraftType: req.body.aircraftType,
+        origin: req.body.origin,
+        destination: req.body.destination,
+        positionNm: req.body.positionNm,
+        altitudeFt: req.body.altitudeFt,
+        registration: req.body.registration,
+        flightNumber: req.body.flightNumber,
+        failureType: req.body.failureType
+      };
+
+      // Validate required fields
+      if (!request.aircraftType || !request.origin || !request.destination || 
+          !request.positionNm || !request.altitudeFt || !request.failureType) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required fields: aircraftType, origin, destination, positionNm, altitudeFt, failureType'
+        });
+      }
+
+      const result = await scenarioSimulatorService.simulateFailureScenario(request);
+      
+      res.json({
+        success: true,
+        scenario: result,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('[Scenario API] Simulation error:', error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Scenario simulation failed'
+      });
+    }
+  });
+
+  app.get('/api/scenario/aircraft-types', async (req, res) => {
+    try {
+      const aircraftTypes = await scenarioSimulatorService.getAvailableAircraftTypes();
+      res.json({
+        success: true,
+        aircraft_types: aircraftTypes
+      });
+    } catch (error) {
+      console.error('[Scenario API] Error fetching aircraft types:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch aircraft types'
+      });
+    }
+  });
+
+  app.get('/api/scenario/failure-types', async (req, res) => {
+    try {
+      const failureTypes = await scenarioSimulatorService.getAvailableFailureTypes();
+      res.json({
+        success: true,
+        failure_types: failureTypes
+      });
+    } catch (error) {
+      console.error('[Scenario API] Error fetching failure types:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch failure types'
+      });
+    }
+  });
+
+  app.get('/api/scenario/history', async (req, res) => {
+    try {
+      const history = await scenarioSimulatorService.getScenarioHistory();
+      res.json({
+        success: true,
+        scenario_files: history
+      });
+    } catch (error) {
+      console.error('[Scenario API] Error fetching scenario history:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch scenario history'
+      });
+    }
+  });
+
+  app.get('/api/scenario/quick-demo/:aircraftType/:failureType', async (req, res) => {
+    try {
+      const { aircraftType, failureType } = req.params;
+      
+      // Generate a quick demo scenario with realistic Virgin Atlantic flight data
+      const demoScenarios = {
+        'A350-1000': { origin: 'LHR', destination: 'JFK', positionNm: 1700, altitudeFt: 37000, flightNumber: 'VS3', registration: 'G-VLUX' },
+        'B787-9': { origin: 'LHR', destination: 'ATL', positionNm: 2100, altitudeFt: 39000, flightNumber: 'VS103', registration: 'G-VBOW' },
+        'A330-300': { origin: 'MAN', destination: 'JFK', positionNm: 1500, altitudeFt: 35000, flightNumber: 'VS127', registration: 'G-VSXY' },
+        'A330-900': { origin: 'LHR', destination: 'BOS', positionNm: 1400, altitudeFt: 36000, flightNumber: 'VS11', registration: 'G-VNYL' }
+      };
+
+      const demo = demoScenarios[aircraftType as keyof typeof demoScenarios];
+      if (!demo) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid aircraft type for demo'
+        });
+      }
+
+      const request: ScenarioRequest = {
+        ...demo,
+        failureType: failureType as any
+      };
+
+      const result = await scenarioSimulatorService.simulateFailureScenario(request);
+      
+      res.json({
+        success: true,
+        demo_scenario: result,
+        note: 'This is a demonstration scenario using realistic Virgin Atlantic flight parameters',
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (error) {
+      console.error('[Scenario API] Demo scenario error:', error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Demo scenario failed'
+      });
+    }
+  });
+
+  console.log('[Scenario Simulator] API endpoints initialized');
 
   return server;
 }
