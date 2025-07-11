@@ -110,15 +110,15 @@ The AINO (Augmented Intelligent Network Operations) Aviation Intelligence Platfo
 - **EU261 Compliance Integration**: Automated compensation calculations based on airport selection
 - **Airport Operational Cost Modeling**: Real-time financial impact assessment for alternate selections
 
-### **Advanced Fuel Optimization Engine**
-- **Comprehensive Fuel Analysis**: Multi-factor optimization considering discretionary fuel, connection risks, crew duty limits
-- **Real-Time Cost Modeling**: Fuel savings vs operational risk cost analysis with $0.85/kg fuel pricing
-- **Passenger Connection Impact**: Automated assessment of missed connections with $150 average reaccommodation cost
-- **Crew Duty Breach Analysis**: Risk assessment with HIGH/MEDIUM/LOW categorization and automated action recommendations
-- **Diversion Cost Modeling**: Distance-based cost estimation with $10,000 base diversion cost plus $2/km
-- **Net Impact Calculation**: Comprehensive financial analysis showing total savings vs total risk costs
-- **Batch Fleet Analysis**: Multi-flight optimization with fleet-wide financial impact assessment
-- **Operational Priority Scoring**: HIGH/MEDIUM/LOW priority recommendations based on net financial benefit
+### **Total Risk Intelligence (TRI) Command Centre**
+- **Risk Synthesis Engine**: Combines fuel optimization with connection risk and crew duty analysis
+- **Multi-Factor Risk Assessment**: Real-time analysis of fuel, passenger connections, crew legality, and diversion scenarios
+- **Connection Risk Engine**: Specialized assessment of passenger connection success with MCT analysis
+- **Batch Connection Analysis**: Multi-flight connection risk evaluation with risk level categorization (Missed/Tight/Caution/Safe)
+- **TRI Summary Generation**: Comprehensive operational recommendations with priority scoring (HIGH/MEDIUM/LOW)
+- **Interactive Command Centre**: Streamlit-based dashboard for real-time risk intelligence and decision support
+- **Financial Impact Modeling**: Net impact calculation balancing fuel savings vs operational risk costs
+- **Executive Risk Reporting**: Export-ready analysis with timestamp tracking and comprehensive action items
 
 ### **Performance Analytics**
 - **Virgin Atlantic Fleet Intelligence**: 43 aircraft with authentic registrations
@@ -175,14 +175,14 @@ The AINO (Augmented Intelligent Network Operations) Aviation Intelligence Platfo
 5. **Automated Assistance**: Terminal transfer coordination and priority passenger handling
 6. **Performance Analytics**: Success rate tracking and model refinement with confidence scoring
 
-### **Scenario 3: Advanced Fuel Optimization**
-1. **Fleet-Wide Analysis**: Batch optimization across 43 Virgin Atlantic aircraft
-2. **Multi-Factor Assessment**: VS103 analysis showing 800kg potential reduction from 2000kg discretionary fuel
-3. **Risk-Cost Modeling**: Connection impact (12 passengers = $1,800), crew duty analysis (180min remaining)
-4. **Diversion Risk Assessment**: MEDIUM risk level with 350km distance = $7,500 estimated cost
-5. **Net Impact Calculation**: $680 fuel savings vs $9,300 risk costs = -$8,620 (MAINTAIN current fuel load)
-6. **Operational Recommendations**: HIGH/MEDIUM/LOW priority scoring with specific action items
-7. **Executive Dashboard**: Fleet-wide fuel optimization with net financial impact reporting
+### **Scenario 3: Total Risk Intelligence Command Centre**
+1. **Multi-Risk Analysis**: VS3 (LHR-JFK) with 18 at-risk passengers across 3 SkyTeam connections (DL215, DL411, KL602)
+2. **Connection Risk Assessment**: MCT analysis showing DL411 (5min buffer) TIGHT risk, DL215 (20min) CAUTION
+3. **TRI Synthesis**: 400kg fuel reduction potential from 600kg discretionary vs 18 passenger connection impacts
+4. **Financial Modeling**: $340 fuel savings vs $2,700 connection costs + crew duty analysis (90min remaining)
+5. **Risk Priority Scoring**: MEDIUM overall risk with "Monitor connections and prepare assistance" recommendation
+6. **Interactive Dashboard**: Real-time parameter adjustment with instant recalculation and export capabilities
+7. **Command Centre Intelligence**: Comprehensive risk synthesis enabling proactive operational decision-making
 
 ---
 
