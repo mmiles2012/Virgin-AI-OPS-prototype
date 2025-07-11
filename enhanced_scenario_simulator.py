@@ -262,6 +262,15 @@ class EnhancedScenarioSimulator:
             "pressurization_affected": failure_type == "decompression"
         }
         
+        # Engine failure specific systems mapping
+        if failure_type == "engine_failure":
+            systems_affected = failure.get("systems_lost", [])
+            systems_impact["engine_failure_systems"] = {
+                "hydraulics_2": "HYD 2" in systems_affected,
+                "gen_2": "GEN 2" in systems_affected,
+                "bleed_2": "BLEED 2" in systems_affected
+            }
+        
         if failure_type == "hydraulic_failure":
             systems_impact["lost_hydraulic_systems"] = failure.get("lost_systems", {})
             systems_impact["alternate_gear_extension"] = failure.get("alternate_gear_extension_required", False)
@@ -380,14 +389,16 @@ class EnhancedScenarioSimulator:
 
     def calculate_fuel_impact(self, failure: Dict, remaining_distance: float) -> Dict:
         """Calculate fuel consumption impact"""
-        fuel_penalty = failure.get("fuel_penalty_factor", 1.0)
+        fuel_penalty_factor = failure.get("fuel_penalty_factor", 1.0)
+        expected_fuel_burn_penalty_per_hour = fuel_penalty_factor - 1.0
         base_consumption = remaining_distance * 0.8  # Rough estimate: 0.8 gallons per nm
         
         return {
-            "fuel_penalty_factor": fuel_penalty,
-            "estimated_extra_fuel_gallons": int((fuel_penalty - 1.0) * base_consumption),
-            "range_impact_percent": round((fuel_penalty - 1.0) * 100, 1),
-            "fuel_status": "ADEQUATE" if fuel_penalty < 1.2 else "MONITOR" if fuel_penalty < 1.3 else "CRITICAL"
+            "fuel_penalty_factor": fuel_penalty_factor,
+            "expected_fuel_burn_penalty_per_hour": expected_fuel_burn_penalty_per_hour,
+            "estimated_extra_fuel_gallons": int(expected_fuel_burn_penalty_per_hour * base_consumption),
+            "range_impact_percent": round(expected_fuel_burn_penalty_per_hour * 100, 1),
+            "fuel_status": "ADEQUATE" if fuel_penalty_factor < 1.2 else "MONITOR" if fuel_penalty_factor < 1.3 else "CRITICAL"
         }
 
     def assess_passenger_impact(self, failure_type: str) -> Dict:
