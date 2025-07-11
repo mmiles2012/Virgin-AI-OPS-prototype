@@ -55,6 +55,7 @@ import mlOtpRoutes from "./mlOtpRoutes";
 import visaRoutes from "./visaRoutes";
 import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
 import { globalAirportService } from "./globalAirportService";
+import { AirportDetailsService } from "./airportDetailsService";
 import heathrowHoldingService from "./heathrowHoldingService";
 import heathrowLiveDataService from "./heathrowLiveDataService";
 import integratedHoldingMLService from "./integratedHoldingMLService.js";
@@ -278,6 +279,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const passengerConnectionService = new PassengerConnectionService();
   passengerConnectionService.generateMockScenarios(); // Add demo data
   passengerConnectionService.startRealTimeMonitoring(); // Start monitoring
+
+  // Initialize Airport Details Service for on-demand airport information
+  const airportDetailsService = new AirportDetailsService();
+  console.log('[Airport Details] On-demand airport details service initialized');
 
   // Mapbox configuration endpoint
   app.get('/api/config/mapbox', (req, res) => {
@@ -9818,6 +9823,118 @@ function calculateUSUKCorrelation() {
 
   // Enhanced SIGMET Routes
   app.use('/api/sigmet', sigmetRoutes);
+
+  // Airport Details Service API Endpoints - On-Demand Airport Information
+  app.get('/api/airports/:icao/details', async (req, res) => {
+    try {
+      const { icao } = req.params;
+      console.log(`🔍 Fetching detailed airport information for ${icao.toUpperCase()}`);
+      
+      const airportDetails = await airportDetailsService.getAirportDetails(icao);
+      
+      if (airportDetails) {
+        res.json({
+          success: true,
+          airport: airportDetails,
+          data_source: 'On-Demand Airport Details Service',
+          cached: airportDetailsService.getCacheStats(),
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          error: `Airport ${icao.toUpperCase()} not found`,
+          message: 'Airport not found in global database',
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      console.error(`Error fetching airport details for ${req.params.icao}:`, error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch airport details',
+        message: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Virgin Atlantic Network Airports Endpoint
+  app.get('/api/airports/virgin-atlantic/network', async (req, res) => {
+    try {
+      console.log('🔍 Fetching Virgin Atlantic network airport details');
+      
+      const virginAtlanticIcaoCodes = [
+        'EGLL', 'EGCC', 'KJFK', 'KBOS', 'KLAX', 'KLAS', 'KMCO', 'KMIA', 
+        'KATL', 'KIAD', 'KSFO', 'KSEA', 'VABB', 'VIDP', 'OERK', 'FAOR'
+      ];
+      
+      const networkAirports = [];
+      
+      for (const icao of virginAtlanticIcaoCodes) {
+        const airportDetails = await airportDetailsService.getAirportDetails(icao);
+        if (airportDetails) {
+          networkAirports.push(airportDetails);
+        }
+      }
+      
+      res.json({
+        success: true,
+        network_airports: networkAirports,
+        total_destinations: networkAirports.length,
+        vs_lounges: networkAirports.filter(a => a.virgin_atlantic_facilities?.vs_lounge).length,
+        data_source: 'Virgin Atlantic Operations Manual + Global Airport Database',
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error) {
+      console.error('Error fetching Virgin Atlantic network airports:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch Virgin Atlantic network airports',
+        message: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Airport Details Cache Management
+  app.post('/api/airports/cache/clear', (req, res) => {
+    try {
+      airportDetailsService.clearCache();
+      res.json({
+        success: true,
+        message: 'Airport details cache cleared successfully',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to clear cache',
+        message: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Airport Details Cache Statistics
+  app.get('/api/airports/cache/stats', (req, res) => {
+    try {
+      const stats = airportDetailsService.getCacheStats();
+      res.json({
+        success: true,
+        cache_statistics: stats,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get cache statistics',
+        message: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
 
   return server;
 }
