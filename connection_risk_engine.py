@@ -23,52 +23,62 @@ def parse_iso_datetime(iso_string):
         return None
 
 def assess_connection_risk(arrival_eta_str, connection_std_str, mct_minutes, pax_count):
-    """Assess individual connection risk"""
+    """Assess individual connection risk with enhanced logic"""
     
-    arrival_time = parse_iso_datetime(arrival_eta_str)
-    connection_time = parse_iso_datetime(connection_std_str)
-    
-    if not arrival_time or not connection_time:
+    try:
+        # Parse ISO timestamps using improved method
+        eta = datetime.strptime(arrival_eta_str, "%Y-%m-%dT%H:%M:%SZ")
+        std = datetime.strptime(connection_std_str, "%Y-%m-%dT%H:%M:%SZ")
+        
+        gap = (std - eta).total_seconds() / 60  # in minutes
+        risk = "Low"
+        action = "No action needed"
+        passengers_affected = 0
+        
+        if gap < 0:
+            risk = "Missed"
+            action = "Rebook and notify OCC"
+            passengers_affected = pax_count
+        elif gap < mct_minutes:
+            risk = "Missed"
+            action = "Rebook and notify OCC"
+            passengers_affected = pax_count
+        elif gap < mct_minutes + 15:
+            risk = "Tight"
+            action = "Priority transfer or stand coordination"
+            passengers_affected = pax_count
+        else:
+            risk = "Safe"
+            action = "No action needed"
+            passengers_affected = 0
+            
+        logger.info(f"Connection risk: {risk} - {round(gap)}min gap for {pax_count} pax")
+        
+        return {
+            "arrival_eta": eta.strftime("%Y-%m-%d %H:%M"),
+            "connection_std": std.strftime("%Y-%m-%d %H:%M"),
+            "gap_minutes": round(gap),
+            "buffer_minutes": round(gap),  # Legacy compatibility
+            "risk_level": risk,
+            "passengers_affected": passengers_affected,
+            "recommended_action": action,
+            "status": action  # Legacy compatibility
+        }
+        
+    except Exception as e:
+        logger.error(f"Error parsing connection times {arrival_eta_str} / {connection_std_str}: {e}")
         return {
             "connection_flight": "ERROR",
             "risk_level": "Unknown",
             "buffer_minutes": 0,
+            "gap_minutes": 0,
             "passengers_affected": 0,
+            "recommended_action": "Manual review required",
             "status": "Parse Error"
         }
-    
-    # Calculate connection buffer time
-    buffer_minutes = int((connection_time - arrival_time).total_seconds() / 60)
-    
-    # Determine risk level based on buffer vs MCT
-    if buffer_minutes < 0:
-        risk_level = "Missed"
-        status = "Connection impossible - already departed"
-        passengers_affected = pax_count
-    elif buffer_minutes < mct_minutes:
-        risk_level = "Tight"
-        status = f"Below MCT by {mct_minutes - buffer_minutes} minutes"
-        passengers_affected = pax_count
-    elif buffer_minutes < mct_minutes + 15:
-        risk_level = "Caution"
-        status = "Minimal buffer above MCT"
-        passengers_affected = int(pax_count * 0.3)  # Assume 30% may miss
-    else:
-        risk_level = "Safe"
-        status = "Adequate connection time"
-        passengers_affected = 0
-    
-    logger.info(f"Connection risk: {risk_level} - {buffer_minutes}min buffer for {pax_count} pax")
-    
-    return {
-        "buffer_minutes": buffer_minutes,
-        "risk_level": risk_level,
-        "passengers_affected": passengers_affected,
-        "status": status
-    }
 
 def batch_connection_risk(arrival_eta_str, connection_list, mct_minutes):
-    """Assess connection risk for multiple connecting flights"""
+    """Assess connection risk for multiple connecting flights with enhanced processing"""
     
     risk_assessments = []
     
@@ -77,23 +87,25 @@ def batch_connection_risk(arrival_eta_str, connection_list, mct_minutes):
         connection_std = connection.get("connection_std", "")
         pax_count = connection.get("pax_count", 0)
         
-        # Assess individual connection
+        # Assess individual connection using enhanced method
         risk_data = assess_connection_risk(arrival_eta_str, connection_std, mct_minutes, pax_count)
         
-        # Add flight identifier
+        # Add flight identifier and passenger info
         risk_data["connection_flight"] = connection_flight
         risk_data["scheduled_pax"] = pax_count
         
         risk_assessments.append(risk_data)
         
-        logger.info(f"Processed connection {connection_flight}: {risk_data['risk_level']}")
+        logger.info(f"Processed connection {connection_flight}: {risk_data['risk_level']} ({risk_data['gap_minutes']}min gap)")
     
-    # Calculate summary statistics
+    # Calculate enhanced summary statistics
     total_connections = len(risk_assessments)
-    high_risk_connections = len([r for r in risk_assessments if r["risk_level"] in ["Missed", "Tight"]])
+    missed_connections = len([r for r in risk_assessments if r["risk_level"] == "Missed"])
+    tight_connections = len([r for r in risk_assessments if r["risk_level"] == "Tight"])
+    safe_connections = len([r for r in risk_assessments if r["risk_level"] in ["Safe", "Low"]])
     total_pax_at_risk = sum([r["passengers_affected"] for r in risk_assessments])
     
-    logger.info(f"Batch analysis: {high_risk_connections}/{total_connections} high-risk connections, {total_pax_at_risk} pax affected")
+    logger.info(f"Enhanced batch analysis: {missed_connections} missed, {tight_connections} tight, {safe_connections} safe - {total_pax_at_risk} pax affected")
     
     return risk_assessments
 

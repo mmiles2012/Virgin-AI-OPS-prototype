@@ -125,13 +125,15 @@ with col1:
     # Style the dataframe based on risk levels
     def style_risk_level(val):
         if val == "Missed":
-            return "background-color: #fee2e2; color: #dc2626"
+            return "background-color: #fee2e2; color: #dc2626; font-weight: bold"
         elif val == "Tight":
-            return "background-color: #fef3c7; color: #d97706"
+            return "background-color: #fef3c7; color: #d97706; font-weight: bold"
         elif val == "Caution":
             return "background-color: #fef3c7; color: #d97706"
-        else:
+        elif val in ["Safe", "Low"]:
             return "background-color: #d1fae5; color: #059669"
+        else:
+            return "background-color: #f3f4f6; color: #374151"
     
     styled_df = connection_df.style.applymap(style_risk_level, subset=['risk_level'])
     st.dataframe(styled_df, use_container_width=True)
