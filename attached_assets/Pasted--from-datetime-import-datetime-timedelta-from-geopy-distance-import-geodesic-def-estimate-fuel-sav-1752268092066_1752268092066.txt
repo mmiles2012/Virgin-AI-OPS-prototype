@@ -1,0 +1,47 @@
+
+from datetime import datetime, timedelta
+from geopy.distance import geodesic
+
+def estimate_fuel_savings(discretionary_kg, reduction_possible_kg, fuel_price_per_kg=0.85):
+    saved_kg = max(0, min(discretionary_kg, reduction_possible_kg))
+    return round(saved_kg * fuel_price_per_kg, 2)
+
+def assess_passenger_connection_risk(pax_missed, avg_reaccommodation_cost=150):
+    return round(pax_missed * avg_reaccommodation_cost, 2)
+
+def estimate_crew_breach_risk(time_to_duty_end_min, estimated_arrival_delay_min):
+    if estimated_arrival_delay_min > time_to_duty_end_min:
+        return "High", "Swap required or risk cancellation"
+    elif estimated_arrival_delay_min > time_to_duty_end_min - 30:
+        return "Medium", "Recommend controller review"
+    else:
+        return "Low", "No action required"
+
+def estimate_diversion_cost(risk_level, distance_from_dest_km, base_cost=10000):
+    if risk_level == "High":
+        return round(base_cost + (distance_from_dest_km * 2), 2)
+    elif risk_level == "Medium":
+        return round(base_cost * 0.75, 2)
+    else:
+        return 0
+
+def generate_tri_summary(flight_id, discretionary_fuel, fuel_reduction_kg, pax_missed, 
+                          time_to_duty_end_min, delay_min, diversion_risk_level, diversion_distance_km):
+
+    fuel_saving = estimate_fuel_savings(discretionary_fuel, fuel_reduction_kg)
+    pax_impact_cost = assess_passenger_connection_risk(pax_missed)
+    crew_risk, crew_action = estimate_crew_breach_risk(time_to_duty_end_min, delay_min)
+    diversion_cost = estimate_diversion_cost(diversion_risk_level, diversion_distance_km)
+
+    total_impact = fuel_saving + pax_impact_cost + diversion_cost
+
+    return {
+        "flight_id": flight_id,
+        "fuel_cost_saving": fuel_saving,
+        "pax_connection_cost": pax_impact_cost,
+        "crew_risk": crew_risk,
+        "crew_action": crew_action,
+        "diversion_cost": diversion_cost,
+        "total_estimated_impact": round(total_impact, 2),
+        "recommendation": f"Review fuel uplift, connections, and crew legality for {flight_id}"
+    }
