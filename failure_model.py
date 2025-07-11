@@ -82,6 +82,15 @@ class AircraftTwin:
                 "engines": "Trent 700",
                 "hydraulic_systems": 3,
                 "electrical_systems": 3
+            },
+            "A330-900": {
+                "max_fuel": 139090,  # kg
+                "max_range": 7200,   # nautical miles
+                "cruise_speed": 478,  # knots
+                "max_altitude": 42000,  # feet
+                "engines": "Trent 7000",
+                "hydraulic_systems": 3,
+                "electrical_systems": 3
             }
         }
         
@@ -124,6 +133,89 @@ class AircraftTwin:
             
     def _initialize_failure_models(self):
         """Initialize comprehensive failure models for different aircraft systems"""
+        # Load aircraft-specific failure characteristics from digital twin profiles
+        aircraft_profiles = {
+            "B787-9": {
+                "engine_failure": {
+                    "fuel_penalty_factor": 1.2,
+                    "drift_down_altitude_ft": 29000,
+                    "speed_knots": 310,
+                    "systems_lost": ["ELEC GEN 2", "HYD PRI R", "ENG BLEED R"]
+                },
+                "decompression": {
+                    "fuel_penalty_factor": 1.3,
+                    "descent_altitude_ft": 10000,
+                    "emergency_descent_rate_fpm": 4000,
+                    "oxygen_duration_min": 12
+                },
+                "hydraulic_failure": {
+                    "landing_distance_factor": 1.25,
+                    "flap_restriction": "Flaps 20",
+                    "alternate_gear_extension_required": True
+                }
+            },
+            "A350-1000": {
+                "engine_failure": {
+                    "fuel_penalty_factor": 1.18,
+                    "drift_down_altitude_ft": 28000,
+                    "speed_knots": 300,
+                    "systems_lost": ["GEN 2", "HYD 2", "BLEED 2"]
+                },
+                "decompression": {
+                    "fuel_penalty_factor": 1.28,
+                    "descent_altitude_ft": 10000,
+                    "emergency_descent_rate_fpm": 3500,
+                    "oxygen_duration_min": 15
+                },
+                "hydraulic_failure": {
+                    "landing_distance_factor": 1.3,
+                    "flap_restriction": "Flaps 3",
+                    "alternate_gear_extension_required": True
+                }
+            },
+            "A330-300": {
+                "engine_failure": {
+                    "fuel_penalty_factor": 1.22,
+                    "drift_down_altitude_ft": 27000,
+                    "speed_knots": 290,
+                    "systems_lost": ["GEN 2", "HYD 2", "BLEED 2"]
+                },
+                "decompression": {
+                    "fuel_penalty_factor": 1.25,
+                    "descent_altitude_ft": 10000,
+                    "emergency_descent_rate_fpm": 3500,
+                    "oxygen_duration_min": 14
+                },
+                "hydraulic_failure": {
+                    "landing_distance_factor": 1.2,
+                    "flap_restriction": "Flaps 3",
+                    "alternate_gear_extension_required": True
+                }
+            },
+            "A330-900": {
+                "engine_failure": {
+                    "fuel_penalty_factor": 1.22,
+                    "drift_down_altitude_ft": 27000,
+                    "speed_knots": 290,
+                    "systems_lost": ["GEN 2", "HYD 2", "BLEED 2"]
+                },
+                "decompression": {
+                    "fuel_penalty_factor": 1.25,
+                    "descent_altitude_ft": 10000,
+                    "emergency_descent_rate_fpm": 3500,
+                    "oxygen_duration_min": 14
+                },
+                "hydraulic_failure": {
+                    "landing_distance_factor": 1.2,
+                    "flap_restriction": "Flaps 3",
+                    "alternate_gear_extension_required": True
+                }
+            }
+        }
+        
+        # Get aircraft-specific profile, default to B787-9 if not found
+        profile = aircraft_profiles.get(self.aircraft_type, aircraft_profiles["B787-9"])
+        
         self.failure_models = {
             "hydraulic_failure": FailureImpact(
                 fuel_burn_multiplier=1.15,
@@ -135,17 +227,18 @@ class AircraftTwin:
                 diversion_required=True,
                 time_to_stabilize=20,
                 operational_procedures=[
-                    "Execute hydraulic failure checklist",
-                    "Configure flight controls to manual reversion",
-                    "Increase approach speed by 10-15 knots",
-                    "Plan for longer landing distance",
+                    f"Execute hydraulic failure checklist",
+                    f"Configure flight controls to manual reversion",
+                    f"Flap restriction: {profile['hydraulic_failure']['flap_restriction']}",
+                    f"Landing distance factor: {profile['hydraulic_failure']['landing_distance_factor']}x",
+                    f"Alternate gear extension: {'Required' if profile['hydraulic_failure']['alternate_gear_extension_required'] else 'Not required'}",
                     "Coordinate with maintenance for ground inspection"
                 ]
             ),
             "engine_failure": FailureImpact(
-                fuel_burn_multiplier=1.35,
-                speed_reduction=45,
-                altitude_restriction=31000,
+                fuel_burn_multiplier=profile["engine_failure"]["fuel_penalty_factor"],
+                speed_reduction=self.specs["cruise_speed"] - profile["engine_failure"]["speed_knots"],
+                altitude_restriction=profile["engine_failure"]["drift_down_altitude_ft"],
                 range_reduction=25.0,
                 passenger_impact="Moderate - Extended flight time and turbulence",
                 crew_workload="HIGH - Single engine procedures",
@@ -153,7 +246,9 @@ class AircraftTwin:
                 time_to_stabilize=15,
                 operational_procedures=[
                     "Execute engine failure checklist",
-                    "Maintain single engine operating speeds",
+                    f"Drift down to {profile['engine_failure']['drift_down_altitude_ft']:,}ft",
+                    f"Maintain single engine speed: {profile['engine_failure']['speed_knots']} knots",
+                    f"Systems lost: {', '.join(profile['engine_failure']['systems_lost'])}",
                     "Consider weight reduction if necessary",
                     "Plan single engine approach procedures",
                     "Alert ATC for priority handling"
@@ -177,17 +272,19 @@ class AircraftTwin:
                 ]
             ),
             "pressurization_failure": FailureImpact(
-                fuel_burn_multiplier=1.45,
+                fuel_burn_multiplier=profile["decompression"]["fuel_penalty_factor"],
                 speed_reduction=35,
-                altitude_restriction=10000,
+                altitude_restriction=profile["decompression"]["descent_altitude_ft"],
                 range_reduction=35.0,
                 passenger_impact="HIGH - Emergency descent and oxygen masks",
                 crew_workload="CRITICAL - Emergency descent procedures",
                 diversion_required=True,
                 time_to_stabilize=8,
                 operational_procedures=[
-                    "Execute rapid descent to 10,000ft",
+                    f"Execute rapid descent to {profile['decompression']['descent_altitude_ft']:,}ft",
+                    f"Emergency descent rate: {profile['decompression']['emergency_descent_rate_fpm']:,} fpm",
                     "Deploy passenger oxygen masks",
+                    f"Cabin oxygen duration: {profile['decompression']['oxygen_duration_min']} minutes",
                     "Declare emergency with ATC",
                     "Plan immediate diversion to nearest suitable airport",
                     "Monitor cabin altitude and passenger condition"
