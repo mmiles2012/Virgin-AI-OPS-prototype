@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Aircraft Diversion Operations Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+```
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+    }
+
+    .dashboard {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .panel {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .panel h3 {
+        margin-bottom: 15px;
+        color: #ffd700;
+        border-bottom: 2px solid #ffd700;
+        padding-bottom: 5px;
+    }
+
+    .flight-input {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .input-group label {
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #e0e0e0;
+    }
+
+    .input-group input, .input-group select {
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 14px;
+    }
+
+    .input-group input::placeholder {
+        color: #ccc;
+    }
+
+    .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(45deg, #00d2d3, #54a0ff);
+        color: white;
+    }
+
+    .status {
+        padding: 10px;
+        border-radius: 8px;
+        margin: 10px 0;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .status.processing {
+        background: rgba(255, 193, 7, 0.2);
+        border: 1px solid #ffc107;
+        color: #ffc107;
+    }
+
+    .status.success {
+        background: rgba(40, 167, 69, 0.2);
+        border: 1px solid #28a745;
+        color: #28a745;
+    }
+
+    .status.alert {
+        background: rgba(220, 53, 69, 0.2);
+        border: 1px solid #dc3545;
+        color: #dc3545;
+    }
+
+    .results {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 20px;
+        backdrop-filter: blur(10px);
+    }
+
+    .hotel-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
+        border-left: 4px solid #ffd700;
+    }
+
+    .hotel-card h4 {
+        color: #ffd700;
+        margin-bottom: 10px;
+    }
+
+    .hotel-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+
+    .detail-item {
+        text-align: center;
+        padding: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+    }
+
+    .detail-label {
+        font-size: 12px;
+        color: #ccc;
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .progress-bar {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        height: 20px;
+        overflow: hidden;
+        margin: 10px 0;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(45deg, #00d2d3, #54a0ff);
+        transition: width 0.3s ease;
+        border-radius: 10px;
+    }
+
+    .timeline {
+        margin-top: 20px;
+    }
+
+    .timeline-item {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+    }
+
+    .timeline-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    .timeline-icon.completed {
+        background: #28a745;
+        color: white;
+    }
+
+    .timeline-icon.processing {
+        background: #ffc107;
+        color: #333;
+    }
+
+    .timeline-icon.pending {
+        background: #6c757d;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard {
+            grid-template-columns: 1fr;
+        }
+        
+        .flight-input {
+            grid-template-columns: 1fr;
+        }
+        
+        .hotel-details {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✈️ AI Aircraft Diversion Operations Center</h1>
+            <p>Automated Hotel Booking System for Emergency Diversions</p>
+        </div>
+
+```
+    <div class="dashboard">
+        <div class="panel">
+            <h3>Flight Information</h3>
+            <div class="flight-input">
+                <div class="input-group">
+                    <label for="flightNumber">Flight Number</label>
+                    <input type="text" id="flightNumber" placeholder="e.g., AA1234" value="BA456">
+                </div>
+                <div class="input-group">
+                    <label for="aircraft">Aircraft Type</label>
+                    <select id="aircraft">
+                        <option value="A320">Airbus A320 (180 pax)</option>
+                        <option value="B737">Boeing 737 (189 pax)</option>
+                        <option value="B777">Boeing 777 (396 pax)</option>
+                        <option value="A380">Airbus A380 (853 pax)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="diversionAirport">Diversion Airport</label>
+                    <select id="diversionAirport">
+                        <option value="MAN">Manchester (MAN)</option>
+                        <option value="BHX">Birmingham (BHX)</option>
+                        <option value="LTN">Luton (LTN)</option>
+                        <option value="STN">Stansted (STN)</option>
+                        <option value="EDI">Edinburgh (EDI)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="reason">Diversion Reason</label>
+                    <select id="reason">
+                        <option value="weather">Weather</option>
+                        <option value="medical">Medical Emergency</option>
+                        <option value="technical">Technical Issue</option>
+                        <option value="security">Security Alert</option>
+                        <option value="atc">ATC Delays</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="initiateDiversion()">🚨 Initiate Diversion Protocol</button>
+        </div>
+
+        <div class="panel">
+            <h3>System Status</h3>
+            <div id="systemStatus">
+                <div class="status">🟢 AI Systems Online</div>
+                <div class="status">🟢 Hotel Booking API Connected</div>
+                <div class="status">🟢 Ground Transport Available</div>
+                <div class="status">🟢 Crew Scheduling System Active</div>
+            </div>
+            
+            <div class="timeline" id="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon pending">1</div>
+                    <span>Awaiting diversion activation...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="results" id="results" style="display: none;">
+        <h3>🏨 Automated Hotel Booking Results</h3>
+        <div id="bookingResults"></div>
+    </div>
+</div>
+
+<script>
+    const aircraftCapacity = {
+        'A320': { passengers: 180, crew: 6 },
+        'B737': { passengers: 189, crew: 6 },
+        'B777': { passengers: 396, crew: 14 },
+        'A380': { passengers: 853, crew: 20 }
+    };
+
+    const airportHotels = {
+        'MAN': [
+            { name: 'Radisson Blu Manchester', rooms: 250, rate: 89, distance: '0.5 miles', rating: 4.3 },
+            { name: 'Clayton Hotel Manchester', rooms: 365, rate: 95, distance: '1.2 miles', rating: 4.1 },
+            { name: 'Crowne Plaza Manchester', rooms: 228, rate: 105, distance: '2.1 miles', rating: 4.4 }
+        ],
+        'BHX': [
+            { name: 'Novotel Birmingham Airport', rooms: 195, rate: 85, distance: '0.3 miles', rating: 4.2 },
+            { name: 'Holiday Inn Birmingham Airport', rooms: 240, rate: 78, distance: '0.8 miles', rating: 4.0 },
+            { name: 'Premier Inn Birmingham Airport', rooms: 180, rate: 72, distance: '1.1 miles', rating: 4.1 }
+        ],
+        'LTN': [
+            { name: 'Hampton by Hilton Luton Airport', rooms: 169, rate: 92, distance: '0.4 miles', rating: 4.3 },
+            { name: 'Holiday Inn Express Luton Airport', rooms: 162, rate: 88, distance: '0.6 miles', rating: 4.2 }
+        ],
+        'STN': [
+            { name: 'Radisson Blu Stansted Airport', rooms: 500, rate: 98, distance: '0.2 miles', rating: 4.4 },
+            { name: 'Premier Inn Stansted Airport', rooms: 285, rate: 76, distance: '0.7 miles', rating: 4.0 }
+        ],
+        'EDI': [
+            { name: 'DoubleTree by Hilton Edinburgh Airport', rooms: 203, rate: 110, distance: '0.5 miles', rating: 4.5 },
+            { name: 'Premier Inn Edinburgh Airport', rooms: 240, rate: 85, distance: '1.0 miles', rating: 4.2 }
+        ]
+    };
+
+    let currentStep = 0;
+    const steps = [
+        'Diversion declared - AI system activated',
+        'Aircraft and passenger data retrieved',
+        'Searching hotel inventory near diversion airport',
+        'Calculating optimal room allocation',
+        'Securing hotel bookings with partner properties',
+        'Coordinating ground transportation',
+        'Generating passenger and crew assignments',
+        'Sending confirmation to operations team'
+    ];
+
+    function updateTimeline(step, status = 'processing') {
+        const timeline = document.getElementById('timeline');
+        const timelineItems = timeline.querySelectorAll('.timeline-item');
+        
+        // Update existing items
+        timelineItems.forEach((item, index) => {
+            const icon = item.querySelector('.timeline-icon');
+            if (index < step) {
+                icon.className = 'timeline-icon completed';
+                icon.textContent = '✓';
+            } else if (index === step) {
+                icon.className = `timeline-icon ${status}`;
+                icon.textContent = index + 1;
+            } else {
+                icon.className = 'timeline-icon pending';
+                icon.textContent = index + 1;
+            }
+        });
+
+        // Add new step if needed
+        if (step >= timelineItems.length) {
+            const newItem = document.createElement('div');
+            newItem.className = 'timeline-item';
+            newItem.innerHTML = `
+                <div class="timeline-icon ${status}">${step + 1}</div>
+                <span>${steps[step]}</span>
+            `;
+            timeline.appendChild(newItem);
+        }
+    }
+
+    function initiateDiversion() {
+        const flightNumber = document.getElementById('flightNumber').value;
+        const aircraft = document.getElementById('aircraft').value;
+        const diversionAirport = document.getElementById('diversionAirport').value;
+        const reason = document.getElementById('reason').value;
+
+        if (!flightNumber) {
+            alert('Please enter a flight number');
+            return;
+        }
+
+        // Clear previous results
+        document.getElementById('results').style.display = 'none';
+        document.getElementById('timeline').innerHTML = '';
+
+        // Start the automated process
+        processSteps(0, { flightNumber, aircraft, diversionAirport, reason });
+    }
+
+    function processSteps(step, flightData) {
+        if (step >= steps.length) {
+            generateResults(flightData);
+            return;
+        }
+
+        updateTimeline(step, 'processing');
+
+        // Simulate processing time
+        setTimeout(() => {
+            updateTimeline(step, 'completed');
+            processSteps(step + 1, flightData);
+        }, Math.random() * 1000 + 500);
+    }
+
+    function generateResults(flightData) {
+        const { flightNumber, aircraft, diversionAirport, reason } = flightData;
+        const capacity = aircraftCapacity[aircraft];
+        const hotels = airportHotels[diversionAirport];
+
+        // Calculate load factor (70-95% typical)
+        const loadFactor = 0.7 + Math.random() * 0.25;
+        const actualPassengers = Math.floor(capacity.passengers * loadFactor);
+        const totalPeople = actualPassengers + capacity.crew;
+        const roomsNeeded = Math.ceil(totalPeople / 1.8); // Some double occupancy
+
+        // Select hotels and allocate rooms
+        let remainingRooms = roomsNeeded;
+        const selectedHotels = [];
+
+        hotels.forEach(hotel => {
+            if (remainingRooms > 0) {
+                const allocatedRooms = Math.min(remainingRooms, Math.floor(hotel.rooms * 0.6));
+                if (allocatedRooms > 0) {
+                    selectedHotels.push({
+                        ...hotel,
+                        allocatedRooms,
+                        totalCost: allocatedRooms * hotel.rate
+                    });
+                    remainingRooms -= allocatedRooms;
+                }
+            }
+        });
+
+        const totalCost = selectedHotels.reduce((sum, hotel) => sum + hotel.totalCost, 0);
+
+        // Generate results HTML
+        const resultsHTML = `
+            <div class="status success">
+                ✅ Diversion protocol completed successfully for flight ${flightNumber}
+            </div>
+            
+            <div class="hotel-details" style="margin-bottom: 20px;">
+                <div class="detail-item">
+                    <div class="detail-label">Passengers</div>
+                    <div class="detail-value">${actualPassengers}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Crew</div>
+                    <div class="detail-value">${capacity.crew}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Total Rooms</div>
+                    <div class="detail-value">${roomsNeeded}</div>
+                </div>
+            </div>
+
+            <div class="hotel-details" style="margin-bottom: 20px;">
+                <div class="detail-item">
+                    <div class="detail-label">Total Cost</div>
+                    <div class="detail-value">£${totalCost.toLocaleString()}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Avg Rate</div>
+                    <div class="detail-value">£${Math.round(totalCost / roomsNeeded)}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Processing Time</div>
+                    <div class="detail-value">3.2 mins</div>
+                </div>
+            </div>
+
+            ${selectedHotels.map(hotel => `
+                <div class="hotel-card">
+                    <h4>${hotel.name}</h4>
+                    <div class="hotel-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Rooms Booked</div>
+                            <div class="detail-value">${hotel.allocatedRooms}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Rate per Room</div>
+                            <div class="detail-value">£${hotel.rate}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Total Cost</div>
+                            <div class="detail-value">£${hotel.totalCost.toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div class="hotel-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Distance</div>
+                            <div class="detail-value">${hotel.distance}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Rating</div>
+                            <div class="detail-value">${hotel.rating}/5.0</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Status</div>
+                            <div class="detail-value" style="color: #28a745;">✓ Confirmed</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+
+            <div class="status success" style="margin-top: 20px;">
+                🚌 Ground transportation coordinated for ${Math.ceil(totalPeople / 45)} coaches<br>
+                📧 Notifications sent to passengers and crew<br>
+                📋 Manifest generated for ground handling team
+            </div>
+        `;
+
+        document.getElementById('bookingResults').innerHTML = resultsHTML;
+        document.getElementById('results').style.display = 'block';
+    }
+
+    // Initialize with first step
+    updateTimeline(0, 'pending');
+</script>
+```
+
+</body>
+</html>

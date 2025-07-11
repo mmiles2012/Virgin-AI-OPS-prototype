@@ -53,6 +53,7 @@ import VisaRequirementsDashboard from "./components/VisaRequirementsDashboard";
 import HeathrowHoldingDashboard from "./components/HeathrowHoldingDashboard";
 import IntegratedHoldingMLDashboard from "./components/IntegratedHoldingMLDashboard";
 import FlightAwareNotamDashboard from "./components/FlightAwareNotamDashboard";
+import AIOperationsCenter from "./components/AIOperationsCenter";
 // import GlobalAirportDatabase from "./components/GlobalAirportDatabase";
 
 
@@ -273,6 +274,17 @@ function App() {
                     }`}
                   >
                     Emergency Response Testing
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('ai-operations')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'ai-operations' 
+                        ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-500'
+                    }`}
+                  >
+                    AI Operations Center
                   </button>
                   
                   <button
@@ -731,6 +743,12 @@ function App() {
             {viewMode === 'emergency-testing' && (
               <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <EmergencyResponseTesting />
+              </div>
+            )}
+
+            {viewMode === 'ai-operations' && (
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
+                <AIOperationsCenter />
               </div>
             )}
 
