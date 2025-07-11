@@ -57,6 +57,7 @@ import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
 import { globalAirportService } from "./globalAirportService";
 import { AirportDetailsService } from "./airportDetailsService";
 import { scenarioSimulatorService, ScenarioRequest } from './scenarioSimulatorService';
+import intelligentOpsRoutes from './intelligentOpsRoutes.js';
 import heathrowHoldingService from "./heathrowHoldingService";
 import heathrowLiveDataService from "./heathrowLiveDataService";
 import integratedHoldingMLService from "./integratedHoldingMLService.js";
@@ -5414,6 +5415,9 @@ print(json.dumps(weather))
   
   // Visa Requirements Routes
   app.use('/api/visa', visaRoutes);
+
+  // Intelligent Operations Agent routes
+  app.use('/api/intelligent-ops', intelligentOpsRoutes);
 
   // Emergency Communication System Endpoints
   app.post('/api/emergency/declare', async (req, res) => {
