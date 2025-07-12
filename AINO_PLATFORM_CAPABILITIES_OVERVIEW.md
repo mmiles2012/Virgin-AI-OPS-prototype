@@ -111,13 +111,19 @@ The AINO (Augmented Intelligent Network Operations) Aviation Intelligence Platfo
 - **Airport Operational Cost Modeling**: Real-time financial impact assessment for alternate selections
 
 ### **Total Risk Intelligence (TRI) Command Centre**
+- **Enhanced Live Data Integration**: Real-time ADS-B Exchange flight tracking and AVWX weather API connections
+- **Weather-Adjusted Risk Synthesis**: Automatic fuel penalty calculations based on METAR conditions
+- **Destination-Specific MCT Analysis**: JFK (45min), ATL (50min), BOS (40min) with intelligent connection assessment
 - **Risk Synthesis Engine**: Combines fuel optimization with connection risk and crew duty analysis
 - **Multi-Factor Risk Assessment**: Real-time analysis of fuel, passenger connections, crew legality, and diversion scenarios
-- **Connection Risk Engine**: Specialized assessment of passenger connection success with MCT analysis
-- **Batch Connection Analysis**: Multi-flight connection risk evaluation with risk level categorization (Missed/Tight/Caution/Safe)
+- **Connection Risk Engine**: Enhanced timestamp parsing with clearer risk categorization (Missed/Tight/Safe)
+- **Improved Operational Recommendations**: "Rebook and notify OCC", "Priority transfer or stand coordination"
+- **Batch Connection Analysis**: Multi-flight connection risk evaluation with enhanced confidence scoring
 - **TRI Summary Generation**: Comprehensive operational recommendations with priority scoring (HIGH/MEDIUM/LOW)
-- **Interactive Command Centre**: Streamlit-based dashboard for real-time risk intelligence and decision support
+- **Enhanced Interactive Dashboard**: Dual Streamlit interfaces with auto-refresh and professional styling
+- **Live Data Quality Assessment**: Real-time confidence scoring based on authentic vs simulated data sources
 - **Financial Impact Modeling**: Net impact calculation balancing fuel savings vs operational risk costs
+- **Enhanced Export Capabilities**: JSON analysis with data integration status and quality assessment
 - **Executive Risk Reporting**: Export-ready analysis with timestamp tracking and comprehensive action items
 
 ### **Performance Analytics**

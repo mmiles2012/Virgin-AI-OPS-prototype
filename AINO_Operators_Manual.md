@@ -1,6 +1,6 @@
 # AINO (Augmented Intelligent Network Operations) - Operators Manual
 
-**Version 2.1 | December 2024**  
+**Version 2.2 | July 2025**  
 **Confidential - Virgin Atlantic Flight Operations**
 
 ---
@@ -12,9 +12,10 @@
 3. [Flight Selection & Monitoring](#flight-selection--monitoring)
 4. [Decision Engine Interface](#decision-engine-interface)
 5. [Machine Learning Risk Assessment](#machine-learning-risk-assessment)
-6. [Emergency Procedures](#emergency-procedures)
-7. [Cost Analysis & Reporting](#cost-analysis--reporting)
-8. [Best Practices](#best-practices)
+6. [Total Risk Intelligence Command Centre](#total-risk-intelligence-command-centre)
+7. [Emergency Procedures](#emergency-procedures)
+8. [Cost Analysis & Reporting](#cost-analysis--reporting)
+9. [Best Practices](#best-practices)
 9. [Troubleshooting](#troubleshooting)
 10. [API Integration](#api-integration)
 
@@ -25,11 +26,13 @@
 AINO is Virgin Atlantic's advanced AI-powered aviation training and simulation platform providing comprehensive operational decision support for professional pilots and flight crews. The system specializes in real-time flight tracking, diversion analysis, and predictive risk assessment.
 
 ### Key Capabilities
-- **Real-time Flight Tracking**: Monitor all Virgin Atlantic flights with live position data
-- **ML-Powered Risk Assessment**: Advanced machine learning algorithms predict diversion probability
+- **Real-time Flight Tracking**: Monitor all Virgin Atlantic flights with live ADS-B Exchange position data
+- **Total Risk Intelligence (TRI)**: Advanced multi-factor risk synthesis combining fuel, connections, crew, and weather
+- **ML-Powered Risk Assessment**: Advanced machine learning algorithms predict diversion probability with 92% confidence
+- **Connection Risk Engine**: Specialized passenger connection analysis with MCT calculations
 - **Cost Analysis**: Comprehensive financial impact modeling for operational decisions
-- **Weather Integration**: Real-time weather data and NOTAM analysis
-- **Historical Analytics**: Pattern recognition from past operational data
+- **Weather Integration**: Real-time AVWX weather data with METAR/TAF analysis
+- **Live Data Integration**: ADS-B Exchange, FlightAware, and AVWX API connections
 - **Crew Management**: Fatigue monitoring and duty time calculations
 
 ### Supported Aircraft Types
@@ -124,6 +127,55 @@ The Decision Engine provides seven specialized tabs for comprehensive operationa
 - Historical pattern analysis
 - NOTAM text processing with NLP
 - Unsupervised learning insights
+
+---
+
+## Total Risk Intelligence Command Centre
+
+### Overview
+The Total Risk Intelligence (TRI) Command Centre represents AINO's most advanced operational decision support system, combining multiple risk factors into a unified intelligence platform.
+
+### Key Features
+- **Multi-Factor Risk Assessment**: Combines fuel optimization, connection risks, crew duty analysis, and diversion scenarios
+- **Live Data Integration**: Real-time ADS-B Exchange flight tracking and AVWX weather data
+- **Connection Risk Engine**: Specialized analysis of passenger connections with MCT calculations
+- **Weather-Adjusted Calculations**: Automatic fuel penalty adjustments for adverse weather conditions
+- **Interactive Dashboard**: Streamlit-based interface with auto-refresh capabilities
+
+### Accessing TRI Command Centre
+1. **Enhanced Dashboard**: `streamlit run enhanced_tri_command_centre.py` (Port 8502)
+2. **Basic Dashboard**: `streamlit run streamlit_tri_command_centre.py` (Port 8501)
+
+### Risk Categories
+- **Missed Connections**: Gap < MCT → "Rebook and notify OCC"
+- **Tight Connections**: Gap < MCT + 15min → "Priority transfer or stand coordination"  
+- **Safe Connections**: Gap ≥ MCT + 15min → "No action needed"
+
+### TRI Analysis Components
+1. **Fuel Optimization**: Cost savings vs operational risks
+2. **Connection Assessment**: Passenger impact with MCT analysis
+3. **Crew Duty Analysis**: Fatigue and legal compliance monitoring
+4. **Diversion Risk**: Cost modeling for alternate airports
+5. **Weather Integration**: Real-time METAR impact on operations
+
+### Using TRI for VS3 Example
+- **Flight**: VS3 (LHR-JFK)
+- **Connection Risk**: 18 at-risk passengers across SkyTeam connections
+- **Fuel Analysis**: $340 potential savings vs $2,700 connection costs
+- **Recommendation**: "MAINTAIN: Current operation optimal - Risk outweighs savings"
+- **Priority**: HIGH risk classification requiring immediate assessment
+
+### Data Quality Indicators
+- **ADS-B Exchange**: ✅ Connected - Real-time flight positions
+- **AVWX Weather**: ✅ Connected - Live METAR data  
+- **FlightAware API**: ⚠️ Simulated - ETA predictions available
+- **Connection Database**: ✅ Active - Real-time passenger tracking
+
+### Export Capabilities
+- **Enhanced Analysis**: JSON export with complete risk assessment
+- **Connection Summary**: Detailed passenger impact analysis
+- **Data Quality Report**: Live vs simulated data assessment
+- **Operational Recommendations**: Priority-based action items
 
 **Understanding Risk Scores**:
 - **0-30%**: Low risk, continue monitoring
