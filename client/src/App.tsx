@@ -54,6 +54,7 @@ import HeathrowHoldingDashboard from "./components/HeathrowHoldingDashboard";
 import IntegratedHoldingMLDashboard from "./components/IntegratedHoldingMLDashboard";
 import FlightAwareNotamDashboard from "./components/FlightAwareNotamDashboard";
 import AIOperationsCenter from "./components/AIOperationsCenter";
+import DocumentationDownload from "./components/DocumentationDownload";
 // import GlobalAirportDatabase from "./components/GlobalAirportDatabase";
 
 
@@ -563,6 +564,18 @@ function App() {
                     >
                       API Setup
                     </button>
+                    
+                    <button
+                      onClick={() => setViewMode('documentation-download')}
+                      className={`w-full px-4 py-2 rounded transition-colors text-sm mt-1 ${
+                        viewMode === 'documentation-download' 
+                          ? 'bg-orange-600 text-white' 
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                      title="Download AINO Documentation"
+                    >
+                      📋 Documentation
+                    </button>
                   </div>
                 </div>
                 )}
@@ -797,6 +810,12 @@ function App() {
             {viewMode === 'flightaware-notam' && (
               <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <FlightAwareNotamDashboard />
+              </div>
+            )}
+
+            {viewMode === 'documentation-download' && (
+              <div className={`absolute top-4 right-4 bottom-4 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
+                <DocumentationDownload />
               </div>
             )}
 
