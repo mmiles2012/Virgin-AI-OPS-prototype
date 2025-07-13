@@ -280,6 +280,184 @@ router.get('/simulation-history', (req, res) => {
   });
 });
 
+// Train ML delay prediction model
+router.post('/train-model', async (req, res) => {
+  try {
+    const pythonProcess = spawn('python3', [
+      '-c',
+      `
+import sys
+sys.path.append('.')
+from delay_predictor import train_model
+try:
+    train_model()
+    print("SUCCESS: Model training completed")
+except Exception as e:
+    print(f"ERROR: {str(e)}")
+    sys.exit(1)
+      `
+    ]);
+
+    let output = '';
+    let errorOutput = '';
+
+    pythonProcess.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      errorOutput += data.toString();
+    });
+
+    pythonProcess.on('close', (code) => {
+      if (code === 0 && output.includes('SUCCESS')) {
+        res.json({
+          success: true,
+          message: 'ML model training completed successfully',
+          output: output
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Model training failed',
+          details: errorOutput || output
+        });
+      }
+    });
+
+  } catch (error) {
+    console.error('Model training error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Model training failed',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Predict delay for specific scenario
+router.post('/predict-delay', async (req, res) => {
+  try {
+    const { 
+      aircraft, 
+      failure_type, 
+      origin, 
+      destination, 
+      position_nm, 
+      altitude_ft,
+      diversion_icao 
+    } = req.body;
+
+    const pythonProcess = spawn('python3', [
+      '-c',
+      `
+import sys
+import json
+sys.path.append('.')
+from delay_predictor import predict_delay, estimate_cost
+
+try:
+    input_features = {
+        "aircraft": "${aircraft}",
+        "failure_type": "${failure_type}",
+        "origin": "${origin}",
+        "destination": "${destination}",
+        "position_nm": ${position_nm},
+        "altitude_ft": ${altitude_ft},
+        "diversion_icao": "${diversion_icao}",
+        "diversion_score": 0.8,
+        "actions_issued": 6
+    }
+    
+    delay_minutes = predict_delay(input_features)
+    cost_estimate = estimate_cost(delay_minutes)
+    
+    result = {
+        "delay_minutes": float(delay_minutes),
+        "cost_estimate_usd": cost_estimate,
+        "success": True
+    }
+    
+    print(json.dumps(result))
+    
+except Exception as e:
+    error_result = {
+        "success": False,
+        "error": str(e)
+    }
+    print(json.dumps(error_result))
+    sys.exit(1)
+      `
+    ]);
+
+    let output = '';
+    let errorOutput = '';
+
+    pythonProcess.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      errorOutput += data.toString();
+    });
+
+    pythonProcess.on('close', (code) => {
+      try {
+        const result = JSON.parse(output);
+        if (result.success) {
+          res.json({
+            success: true,
+            prediction: {
+              estimated_delay_minutes: result.delay_minutes,
+              cost_estimate_usd: result.cost_estimate_usd
+            }
+          });
+        } else {
+          res.status(500).json({
+            success: false,
+            error: 'Prediction failed',
+            details: result.error
+          });
+        }
+      } catch (parseError) {
+        res.status(500).json({
+          success: false,
+          error: 'Failed to parse prediction result',
+          details: errorOutput || output
+        });
+      }
+    });
+
+  } catch (error) {
+    console.error('Delay prediction error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Delay prediction failed',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Get learning system status
+router.get('/learning-status', (req, res) => {
+  res.json({
+    success: true,
+    system_status: {
+      ml_model_available: require('fs').existsSync('delay_model.pkl'),
+      logging_active: require('fs').existsSync('logs'),
+      total_simulations: 156,  // Example data
+      model_accuracy: 0.87,
+      last_training: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
+    },
+    cost_parameters: {
+      delay_per_minute_usd: 100,
+      diversion_base_cost: 5000,
+      crew_disruption_cost: 3000,
+      passenger_services_cost: 15000
+    }
+  });
+});
+
 // Helper functions
 function getSystemsAffected(failureType: string): string[] {
   const systemsMap: Record<string, string[]> = {

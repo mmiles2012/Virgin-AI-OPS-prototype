@@ -297,12 +297,47 @@ class AINOFullResponseSimulator:
             modified_time = diversion_time
             modified_fuel_flow *= 1.2  # Additional fuel for approach/landing
         
+        # Calculate estimated delay using ML if available
+        estimated_delay_minutes = 90  # Default fallback
+        total_cost_usd = 23000  # Conservative fallback
+        
+        try:
+            from delay_predictor import predict_delay, estimate_cost
+            
+            # Prepare features for ML prediction
+            input_features = {
+                "aircraft": performance.get("aircraft_type", "A350-1000"),
+                "failure_type": performance.get("failure_type", "engine_failure"),
+                "origin": diversion.get("origin", "LHR"),
+                "destination": diversion.get("destination", "JFK"),
+                "position_nm": performance.get("position_nm", 1300),
+                "altitude_ft": performance.get("altitude_ft", 37000),
+                "diversion_icao": diversion.get("recommended_primary", {}).get("icao", "EINN"),
+                "diversion_score": diversion.get("recommended_primary", {}).get("confidence_level", 0.8),
+                "actions_issued": 6  # Typical number of operational actions
+            }
+            
+            # Predict delay using trained ML model
+            estimated_delay_minutes = predict_delay(input_features)
+            total_cost_usd = estimate_cost(estimated_delay_minutes)
+            
+        except Exception as e:
+            print(f"ML prediction unavailable, using fallback: {e}")
+        
         return {
             "original_fuel_requirement": base_fuel_flow * base_time_remaining,
             "modified_fuel_requirement": modified_fuel_flow * modified_time,
             "additional_fuel_needed": (modified_fuel_flow * modified_time) - (base_fuel_flow * base_time_remaining),
             "original_flight_time": base_time_remaining,
             "modified_flight_time": modified_time,
+            "estimated_delay_minutes": int(estimated_delay_minutes),
+            "total_cost_estimate_usd": int(total_cost_usd),
+            "cost_breakdown": {
+                "delay_cost": int(estimated_delay_minutes * 100),
+                "diversion_handling": 5000,
+                "crew_disruption": 3000,
+                "passenger_services": 15000
+            },
             "fuel_remaining_margin": self._calculate_fuel_margin(modified_fuel_flow, modified_time)
         }
     

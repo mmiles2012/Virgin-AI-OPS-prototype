@@ -42,6 +42,9 @@ export default function LearningSystemDashboard() {
   const [simulationHistory, setSimulationHistory] = useState<HistoryItem[]>([]);
   const [aircraftTypes, setAircraftTypes] = useState<any[]>([]);
   const [failureTypes, setFailureTypes] = useState<any[]>([]);
+  const [learningStatus, setLearningStatus] = useState<any>(null);
+  const [isTrainingModel, setIsTrainingModel] = useState(false);
+  const [delayPrediction, setDelayPrediction] = useState<any>(null);
   
   const [simulationForm, setSimulationForm] = useState<SimulationRequest>({
     aircraft_type: 'A350-1000',
@@ -56,6 +59,7 @@ export default function LearningSystemDashboard() {
     fetchAircraftTypes();
     fetchFailureTypes();
     fetchSimulationHistory();
+    fetchLearningStatus();
   }, []);
 
   const fetchAircraftTypes = async () => {
@@ -91,6 +95,67 @@ export default function LearningSystemDashboard() {
       }
     } catch (error) {
       console.error('Failed to fetch simulation history:', error);
+    }
+  };
+
+  const fetchLearningStatus = async () => {
+    try {
+      const response = await fetch('/api/full-response/learning-status');
+      const data = await response.json();
+      if (data.success) {
+        setLearningStatus(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch learning status:', error);
+    }
+  };
+
+  const trainMLModel = async () => {
+    setIsTrainingModel(true);
+    try {
+      const response = await fetch('/api/full-response/train-model', {
+        method: 'POST'
+      });
+      const data = await response.json();
+      if (data.success) {
+        console.log('Model training completed successfully');
+        fetchLearningStatus(); // Refresh status
+      } else {
+        console.error('Model training failed:', data.error);
+      }
+    } catch (error) {
+      console.error('Failed to train model:', error);
+    } finally {
+      setIsTrainingModel(false);
+    }
+  };
+
+  const predictDelay = async () => {
+    try {
+      const response = await fetch('/api/full-response/predict-delay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          aircraft: simulationForm.aircraft_type,
+          failure_type: simulationForm.failure_type,
+          origin: simulationForm.origin,
+          destination: simulationForm.destination,
+          position_nm: simulationForm.position_nm_from_origin,
+          altitude_ft: simulationForm.altitude_ft,
+          diversion_icao: 'EINN'
+        })
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        setDelayPrediction(data.prediction);
+      } else {
+        console.error('Delay prediction failed:', data.error);
+      }
+    } catch (error) {
+      console.error('Failed to predict delay:', error);
     }
   };
 
@@ -465,26 +530,120 @@ export default function LearningSystemDashboard() {
         {/* Insights Tab */}
         {activeTab === 'insights' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* ML System Status */}
             <div className="bg-gray-800 rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-purple-400" />
-                System Performance
+                <Brain className="h-5 w-5 text-purple-400" />
+                ML System Status
+              </h2>
+              
+              {learningStatus ? (
+                <div className="space-y-4">
+                  <div className="bg-gray-700 rounded p-4">
+                    <h4 className="font-medium mb-2">Model Status</h4>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-400">Model Available</p>
+                        <p className={`font-bold ${learningStatus.system_status.ml_model_available ? 'text-green-400' : 'text-red-400'}`}>
+                          {learningStatus.system_status.ml_model_available ? 'Yes' : 'No'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">Model Accuracy</p>
+                        <p className="text-green-400 font-bold">
+                          {(learningStatus.system_status.model_accuracy * 100).toFixed(1)}%
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">Total Simulations</p>
+                        <p className="text-blue-400 font-bold">
+                          {learningStatus.system_status.total_simulations}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">Logging Active</p>
+                        <p className={`font-bold ${learningStatus.system_status.logging_active ? 'text-green-400' : 'text-red-400'}`}>
+                          {learningStatus.system_status.logging_active ? 'Yes' : 'No'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-700 rounded p-4">
+                    <h4 className="font-medium mb-2">Cost Parameters</h4>
+                    <div className="text-sm space-y-1">
+                      <p><span className="text-gray-400">Delay Cost:</span> ${learningStatus.cost_parameters.delay_per_minute_usd}/min</p>
+                      <p><span className="text-gray-400">Diversion Base:</span> ${learningStatus.cost_parameters.diversion_base_cost.toLocaleString()}</p>
+                      <p><span className="text-gray-400">Crew Disruption:</span> ${learningStatus.cost_parameters.crew_disruption_cost.toLocaleString()}</p>
+                      <p><span className="text-gray-400">Passenger Services:</span> ${learningStatus.cost_parameters.passenger_services_cost.toLocaleString()}</p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={trainMLModel}
+                    disabled={isTrainingModel}
+                    className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                  >
+                    {isTrainingModel ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Training Model...
+                      </>
+                    ) : (
+                      <>
+                        <TrendingUp className="h-4 w-4" />
+                        Train ML Model
+                      </>
+                    )}
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center text-gray-400 py-8">
+                  <Brain className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Loading learning system status...</p>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Delay Prediction */}
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                <Target className="h-5 w-5 text-green-400" />
+                Quick Delay Prediction
               </h2>
               
               <div className="space-y-4">
-                <div className="bg-gray-700 rounded p-4">
-                  <h4 className="font-medium mb-2">Success Metrics</h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-400">Response Time</p>
-                      <p className="text-green-400 font-bold">&lt; 5 minutes</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Diversion Accuracy</p>
-                      <p className="text-green-400 font-bold">&gt; 95%</p>
+                <p className="text-sm text-gray-300">
+                  Get ML-powered delay and cost predictions for current scenario configuration.
+                </p>
+
+                <button
+                  onClick={predictDelay}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Target className="h-4 w-4" />
+                  Predict Delay & Cost
+                </button>
+
+                {delayPrediction && (
+                  <div className="bg-gray-700 rounded p-4">
+                    <h4 className="font-medium mb-2">ML Prediction Results</h4>
+                    <div className="grid grid-cols-1 gap-3 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Estimated Delay:</span>
+                        <span className="font-bold text-orange-400">
+                          {Math.round(delayPrediction.estimated_delay_minutes)} minutes
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Total Cost Estimate:</span>
+                        <span className="font-bold text-red-400">
+                          ${delayPrediction.cost_estimate_usd.toLocaleString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 <div className="bg-gray-700 rounded p-4">
                   <h4 className="font-medium mb-2">Learning Patterns</h4>
@@ -495,43 +654,16 @@ export default function LearningSystemDashboard() {
                     <li>• Hydraulic failures: Lower diversion priority (65%)</li>
                   </ul>
                 </div>
-              </div>
-            </div>
 
-            <div className="bg-gray-800 rounded-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Integration Benefits</h2>
-              
-              <div className="space-y-4">
                 <div className="bg-gray-700 rounded p-4">
                   <h4 className="font-medium mb-2 flex items-center gap-2">
                     <AlertTriangle className="h-4 w-4 text-yellow-400" />
-                    Unified Response
+                    Unified Intelligence
                   </h4>
                   <p className="text-sm text-gray-300">
-                    Integrates scenario simulation, diversion planning, and operational actions 
-                    into single comprehensive response framework.
-                  </p>
-                </div>
-
-                <div className="bg-gray-700 rounded p-4">
-                  <h4 className="font-medium mb-2 flex items-center gap-2">
-                    <Brain className="h-4 w-4 text-purple-400" />
-                    Continuous Learning
-                  </h4>
-                  <p className="text-sm text-gray-300">
-                    Every simulation contributes to system knowledge base, improving 
-                    decision accuracy and response optimization over time.
-                  </p>
-                </div>
-
-                <div className="bg-gray-700 rounded p-4">
-                  <h4 className="font-medium mb-2 flex items-center gap-2">
-                    <Target className="h-4 w-4 text-green-400" />
-                    Operational Excellence
-                  </h4>
-                  <p className="text-sm text-gray-300">
-                    Provides standardized emergency response procedures with 
-                    confidence scoring and performance optimization recommendations.
+                    Integrates scenario simulation, diversion planning, ML predictions, 
+                    and operational actions into comprehensive response framework with 
+                    continuous learning capabilities.
                   </p>
                 </div>
               </div>
