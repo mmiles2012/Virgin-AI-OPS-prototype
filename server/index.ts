@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { addIntelligenceRoutes } from "./intelligenceRoutes";
 import envTestRouter from "./envTest";
 import documentationRoutes from "./documentationRoutes";
+import fullResponseRoutes from "./fullResponseRoutes";
 import { setupVite, serveStatic, log } from "./vite";
 import { virginAtlanticConnectionService } from "./virginAtlanticConnectionService";
 import dotenv from "dotenv";
@@ -66,6 +67,9 @@ app.use((req, res, next) => {
   
   // Add documentation download routes
   app.use('/api/documentation', documentationRoutes);
+  
+  // Add full response simulation routes
+  app.use('/api/full-response', fullResponseRoutes);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
