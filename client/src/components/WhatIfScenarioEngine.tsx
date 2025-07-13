@@ -60,6 +60,13 @@ interface ScenarioModifications {
   speedAdjustment: number;
   diversionAirport?: string;
   combinedScenarios: boolean;
+  failureLocation?: {
+    type: 'waypoint' | 'coordinates' | 'current';
+    waypoint?: string;
+    latitude?: number;
+    longitude?: number;
+    description?: string;
+  };
 }
 
 interface ScenarioResults {
@@ -110,7 +117,8 @@ export default function WhatIfScenarioEngine() {
     routeOptimization: 'standard',
     altitudeChange: 0,
     speedAdjustment: 0,
-    combinedScenarios: false
+    combinedScenarios: false,
+    failureLocation: { type: 'current' }
   });
   const [results, setResults] = useState<ScenarioResults | null>(null);
   const [diversionOptions, setDiversionOptions] = useState<DiversionOption[]>([]);
@@ -183,6 +191,20 @@ export default function WhatIfScenarioEngine() {
       regulatory_considerations: ['Manual flight control procedures', 'Extended approach required'],
       passenger_impact: 'Low - minimal passenger awareness'
     }
+  ];
+
+  // Common waypoints for Virgin Atlantic routes
+  const commonWaypoints = [
+    { code: 'EGLL', name: 'London Heathrow', lat: 51.4706, lon: -0.4619 },
+    { code: 'KJFK', name: 'JFK New York', lat: 40.6413, lon: -73.7781 },
+    { code: 'DOGAL', name: 'DOGAL Waypoint', lat: 51.5, lon: -8.5 },
+    { code: 'Shannon', name: 'Shannon VOR', lat: 52.7019, lon: -8.9248 },
+    { code: 'MALOT', name: 'MALOT Waypoint', lat: 50.0, lon: -20.0 },
+    { code: 'TUDEP', name: 'TUDEP Waypoint', lat: 48.0, lon: -30.0 },
+    { code: 'JANJO', name: 'JANJO Waypoint', lat: 45.0, lon: -40.0 },
+    { code: 'OYSTR', name: 'OYSTR Waypoint', lat: 42.0, lon: -50.0 },
+    { code: 'STEAM', name: 'STEAM Waypoint', lat: 40.0, lon: -60.0 },
+    { code: 'KJFK', name: 'JFK Approach', lat: 40.6413, lon: -73.7781 }
   ];
 
   // Weather scenarios
@@ -307,11 +329,40 @@ export default function WhatIfScenarioEngine() {
       if (selectedFailure?.diversion_required) {
         await fetchDiversionOptions();
       }
+
+      // Add location-specific considerations
+      if (modifications.failureLocation?.type !== 'current') {
+        const locationInfo = getLocationInfo(modifications.failureLocation);
+        if (locationInfo) {
+          setResults(prev => prev ? {
+            ...prev,
+            recommendations: [
+              ...prev.recommendations,
+              `Failure location: ${locationInfo}`,
+              'Consider proximity to alternate airports and overwater procedures'
+            ]
+          } : prev);
+        }
+      }
     } catch (error) {
       console.error('Scenario calculation failed:', error);
     } finally {
       setIsCalculating(false);
     }
+  };
+
+  const getLocationInfo = (location: any) => {
+    if (location.type === 'waypoint' && location.waypoint) {
+      const waypoint = commonWaypoints.find(w => w.code === location.waypoint);
+      return `${location.waypoint} (${waypoint?.name || 'Unknown waypoint'})`;
+    }
+    if (location.type === 'coordinates' && location.latitude && location.longitude) {
+      const lat = location.latitude.toFixed(4);
+      const lon = Math.abs(location.longitude).toFixed(4);
+      const lonDir = location.longitude < 0 ? 'W' : 'E';
+      return `${lat}°N, ${lon}°${lonDir}`;
+    }
+    return null;
   };
 
   const fetchDiversionOptions = async () => {
@@ -443,7 +494,142 @@ export default function WhatIfScenarioEngine() {
         </TabsContent>
 
         <TabsContent value="failure-scenarios" className="mt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="space-y-6">
+            {/* Failure Location Selection */}
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <MapPin className="w-5 h-5" />
+                  Failure Location
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-gray-400">Location Type</Label>
+                    <Select
+                      value={modifications.failureLocation?.type || 'current'}
+                      onValueChange={(value: 'waypoint' | 'coordinates' | 'current') =>
+                        setModifications(prev => ({
+                          ...prev,
+                          failureLocation: { type: value }
+                        }))
+                      }
+                    >
+                      <SelectTrigger className="bg-gray-700 border-gray-600">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="current">Current Position</SelectItem>
+                        <SelectItem value="waypoint">Flight Plan Waypoint</SelectItem>
+                        <SelectItem value="coordinates">Custom Coordinates</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {modifications.failureLocation?.type === 'waypoint' && (
+                    <div className="space-y-2">
+                      <Label className="text-gray-400">Waypoint</Label>
+                      <Select
+                        value={modifications.failureLocation?.waypoint || ''}
+                        onValueChange={(waypoint) =>
+                          setModifications(prev => ({
+                            ...prev,
+                            failureLocation: {
+                              ...prev.failureLocation!,
+                              waypoint,
+                              description: commonWaypoints.find(w => w.code === waypoint)?.name
+                            }
+                          }))
+                        }
+                      >
+                        <SelectTrigger className="bg-gray-700 border-gray-600">
+                          <SelectValue placeholder="Select waypoint" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {commonWaypoints.map((wp) => (
+                            <SelectItem key={wp.code} value={wp.code}>
+                              {wp.code} - {wp.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {modifications.failureLocation?.type === 'coordinates' && (
+                    <>
+                      <div className="space-y-2">
+                        <Label className="text-gray-400">Latitude</Label>
+                        <Input
+                          type="number"
+                          step="0.0001"
+                          min="-90"
+                          max="90"
+                          placeholder="51.4706"
+                          className="bg-gray-700 border-gray-600"
+                          value={modifications.failureLocation?.latitude || ''}
+                          onChange={(e) =>
+                            setModifications(prev => ({
+                              ...prev,
+                              failureLocation: {
+                                ...prev.failureLocation!,
+                                latitude: parseFloat(e.target.value) || undefined
+                              }
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-gray-400">Longitude</Label>
+                        <Input
+                          type="number"
+                          step="0.0001"
+                          min="-180"
+                          max="180"
+                          placeholder="-0.4619"
+                          className="bg-gray-700 border-gray-600"
+                          value={modifications.failureLocation?.longitude || ''}
+                          onChange={(e) =>
+                            setModifications(prev => ({
+                              ...prev,
+                              failureLocation: {
+                                ...prev.failureLocation!,
+                                longitude: parseFloat(e.target.value) || undefined
+                              }
+                            }))
+                          }
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {modifications.failureLocation?.type !== 'current' && (
+                  <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded">
+                    <div className="flex items-center gap-2 mb-2">
+                      <MapPin className="w-4 h-4 text-blue-400" />
+                      <span className="text-blue-400 font-medium">Selected Location</span>
+                    </div>
+                    {modifications.failureLocation?.type === 'waypoint' && modifications.failureLocation?.waypoint && (
+                      <p className="text-sm text-gray-300">
+                        {modifications.failureLocation.waypoint} - {modifications.failureLocation.description}
+                      </p>
+                    )}
+                    {modifications.failureLocation?.type === 'coordinates' && 
+                     modifications.failureLocation?.latitude && 
+                     modifications.failureLocation?.longitude && (
+                      <p className="text-sm text-gray-300">
+                        {modifications.failureLocation.latitude.toFixed(4)}°N, {Math.abs(modifications.failureLocation.longitude).toFixed(4)}°{modifications.failureLocation.longitude < 0 ? 'W' : 'E'}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Failure Scenarios */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {failureScenarios.map((scenario) => (
               <Card
                 key={scenario.id}
@@ -502,6 +688,7 @@ export default function WhatIfScenarioEngine() {
                 </CardContent>
               </Card>
             ))}
+            </div>
           </div>
         </TabsContent>
 
@@ -622,7 +809,29 @@ export default function WhatIfScenarioEngine() {
                 <CardHeader>
                   <CardTitle className="text-white">Risk Assessment</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-4">
+                  {/* Location Information */}
+                  {modifications.failureLocation?.type !== 'current' && (
+                    <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded">
+                      <div className="flex items-center gap-2 mb-2">
+                        <MapPin className="w-4 h-4 text-blue-400" />
+                        <span className="text-blue-400 font-medium">Failure Location</span>
+                      </div>
+                      <p className="text-sm text-gray-300">
+                        {getLocationInfo(modifications.failureLocation)}
+                      </p>
+                      {modifications.failureLocation?.type === 'waypoint' && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Flight plan waypoint - consider impact on route and fuel planning
+                        </p>
+                      )}
+                      {modifications.failureLocation?.type === 'coordinates' && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Custom coordinates - verify proximity to alternate airports
+                        </p>
+                      )}
+                    </div>
+                  )}
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-3 bg-gray-700 rounded">
