@@ -108,6 +108,82 @@ interface DiversionOption {
   estimatedCost: number;
 }
 
+// Function to generate weather-specific recommendations
+const getWeatherSpecificRecommendations = (weather: WeatherScenario | null, failure: FailureScenario | null): string[] => {
+  const baseRecommendations = ['Monitor fuel consumption closely', 'Maintain communication with operations center'];
+  
+  if (!weather) {
+    return [...baseRecommendations, 'Consider alternate routing if conditions worsen'];
+  }
+
+  const weatherSpecific: string[] = [];
+  
+  switch (weather.id) {
+    case 'low_visibility':
+      weatherSpecific.push(
+        'Verify CAT II/III approach capability at destination',
+        'Ensure adequate holding fuel for multiple approach attempts',
+        'Brief crew on low visibility procedures and minima',
+        'Consider alternate airport with better visibility conditions'
+      );
+      break;
+    
+    case 'cat_iii_approach':
+      weatherSpecific.push(
+        'Confirm CAT III approach certification for aircraft and crew',
+        'Verify ILS CAT III equipment serviceability',
+        'Plan for autoland approach procedures',
+        'Ensure alternate airport available with higher minima'
+      );
+      break;
+    
+    case 'icing_conditions':
+      weatherSpecific.push(
+        'Activate anti-ice systems as required',
+        'Monitor airframe ice accumulation closely',
+        'Request altitude/route changes to avoid icing layers',
+        'Plan for increased fuel consumption due to anti-ice operation'
+      );
+      break;
+    
+    case 'volcanic_ash':
+      weatherSpecific.push(
+        'Avoid volcanic ash cloud at all costs',
+        'Coordinate with volcanic ash advisory center',
+        'Plan significant route deviation if necessary',
+        'Monitor engine parameters closely for ash ingestion'
+      );
+      break;
+    
+    case 'severe_turbulence':
+      weatherSpecific.push(
+        'Secure cabin and advise passengers of turbulence',
+        'Request altitude change to smoother air',
+        'Reduce speed to turbulence penetration speed',
+        'Monitor structural stress and passenger comfort'
+      );
+      break;
+    
+    case 'thunderstorm':
+      weatherSpecific.push(
+        'Avoid thunderstorm cells by at least 20nm',
+        'Request radar vectors around weather',
+        'Monitor fuel consumption for extended routing',
+        'Brief crew on windshear recovery procedures'
+      );
+      break;
+    
+    default:
+      weatherSpecific.push('Follow standard weather deviation procedures');
+  }
+
+  if (failure) {
+    weatherSpecific.push('Weather conditions compound failure complexity - prioritize safety over schedule');
+  }
+
+  return [...baseRecommendations, ...weatherSpecific];
+};
+
 export default function WhatIfScenarioEngine() {
   const [selectedFlight, setSelectedFlight] = useState<FlightScenario | null>(null);
   const [availableFlights, setAvailableFlights] = useState<FlightScenario[]>([]);
@@ -232,6 +308,54 @@ export default function WhatIfScenarioEngine() {
       fuel_penalty: 22,
       time_penalty: 35,
       diversion_probability: 0.4
+    },
+    {
+      id: 'low_visibility',
+      name: 'Low Visibility Operations',
+      severity: 'MODERATE',
+      wind_speed: 15,
+      visibility: 0.5,
+      precipitation: 'Dense Fog',
+      temperature: 8,
+      fuel_penalty: 12,
+      time_penalty: 20,
+      diversion_probability: 0.25
+    },
+    {
+      id: 'cat_iii_approach',
+      name: 'CAT III Approach Required',
+      severity: 'MODERATE',
+      wind_speed: 8,
+      visibility: 0.15,
+      precipitation: 'Heavy Fog',
+      temperature: 5,
+      fuel_penalty: 15,
+      time_penalty: 30,
+      diversion_probability: 0.35
+    },
+    {
+      id: 'icing_conditions',
+      name: 'Severe Icing Conditions',
+      severity: 'SEVERE',
+      wind_speed: 25,
+      visibility: 2,
+      precipitation: 'Freezing Rain',
+      temperature: -2,
+      fuel_penalty: 20,
+      time_penalty: 40,
+      diversion_probability: 0.45
+    },
+    {
+      id: 'volcanic_ash',
+      name: 'Volcanic Ash',
+      severity: 'EXTREME',
+      wind_speed: 35,
+      visibility: 1,
+      precipitation: 'Ash Cloud',
+      temperature: 10,
+      fuel_penalty: 35,
+      time_penalty: 60,
+      diversion_probability: 0.8
     }
   ];
 
@@ -319,11 +443,7 @@ export default function WhatIfScenarioEngine() {
           time: timeImpact > 40 ? 'high' : 'medium',
           overall: selectedFailure ? selectedFailure.severity.toLowerCase() : 'low'
         },
-        recommendations: [
-          'Monitor fuel consumption closely',
-          'Maintain communication with operations center',
-          'Consider alternate routing if conditions worsen'
-        ]
+        recommendations: getWeatherSpecificRecommendations(selectedWeather, selectedFailure)
       });
 
       if (selectedFailure?.diversion_required) {
