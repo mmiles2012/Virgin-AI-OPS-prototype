@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import DiversionMap from './DiversionMap';
+import ProfessionalSatelliteMap from './ProfessionalSatelliteMap';
 
 interface SimpleDigitalTwinProps {
   aircraftId: string;
@@ -620,12 +620,11 @@ export default function SimpleDigitalTwin({
                         <p className="text-sm text-gray-700">Advanced flight physics calculations with fuel, wind, and performance modeling</p>
                       </div>
                       <div className="p-6">
-                        <DiversionMap
-                          current={scenarioData.analysis.diversion_map_data.current_position}
-                          results={scenarioData.analysis.diversion_map_data.diversion_results}
-                          aircraftType={scenarioData.analysis.diversion_map_data.aircraft_type}
+                        <ProfessionalSatelliteMap
+                          showFlights={true}
+                          showAirports={true}
                           height="600px"
-                          zoom={5}
+                          className="rounded-lg"
                         />
                       </div>
                     </div>
