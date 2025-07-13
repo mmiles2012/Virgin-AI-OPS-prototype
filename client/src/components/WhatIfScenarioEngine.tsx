@@ -266,6 +266,69 @@ export default function WhatIfScenarioEngine() {
       ],
       regulatory_considerations: ['Manual flight control procedures', 'Extended approach required'],
       passenger_impact: 'Low - minimal passenger awareness'
+    },
+    {
+      id: 'electrical_fault',
+      name: 'Major Electrical Fault',
+      category: 'Electrical Systems',
+      severity: 'HIGH',
+      description: 'Multiple electrical system failure affecting avionics and lighting',
+      systems_affected: ['AVIONICS', 'LIGHTING', 'BACKUP POWER', 'NAVIGATION'],
+      diversion_required: true,
+      fuel_burn_penalty: 20,
+      time_penalty: 35,
+      cost_multiplier: 2.2,
+      icon: '⚡',
+      operational_actions: [
+        'Execute electrical emergency checklist',
+        'Switch to backup power systems',
+        'Reduce electrical load to essential systems',
+        'Plan for visual approach if required'
+      ],
+      regulatory_considerations: ['Emergency electrical procedures', 'Visual approach capability'],
+      passenger_impact: 'Moderate - cabin lighting and entertainment systems affected'
+    },
+    {
+      id: 'medical_emergency',
+      name: 'Medical Emergency',
+      category: 'Passenger Emergency',
+      severity: 'CRITICAL',
+      description: 'Serious passenger medical emergency requiring immediate diversion',
+      systems_affected: ['CABIN CREW', 'MEDICAL EQUIPMENT', 'COMMUNICATIONS'],
+      diversion_required: true,
+      fuel_burn_penalty: 30,
+      time_penalty: 50,
+      cost_multiplier: 2.8,
+      icon: '🚑',
+      operational_actions: [
+        'Assess medical situation with crew',
+        'Contact medical advisory service',
+        'Prepare for emergency landing',
+        'Coordinate with ground medical services'
+      ],
+      regulatory_considerations: ['Medical emergency procedures', 'Ground medical facility requirements'],
+      passenger_impact: 'High - emergency diversion affects all passengers'
+    },
+    {
+      id: 'overweight_landing',
+      name: 'Overweight Landing',
+      category: 'Performance',
+      severity: 'MEDIUM',
+      description: 'Landing above maximum structural landing weight',
+      systems_affected: ['LANDING GEAR', 'BRAKES', 'STRUCTURAL'],
+      diversion_required: false,
+      fuel_burn_penalty: 5,
+      time_penalty: 15,
+      cost_multiplier: 1.5,
+      icon: '⚖️',
+      operational_actions: [
+        'Calculate actual landing weight',
+        'Review overweight landing procedures',
+        'Plan for extended approach and inspection',
+        'Coordinate post-landing structural inspection'
+      ],
+      regulatory_considerations: ['Overweight landing limits', 'Post-landing inspection required'],
+      passenger_impact: 'Low - longer approach and post-landing delay'
     }
   ];
 
