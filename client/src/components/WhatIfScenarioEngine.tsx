@@ -506,7 +506,7 @@ export default function WhatIfScenarioEngine() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-gray-400">Location Type</Label>
+                    <Label className="text-white">Location Type</Label>
                     <Select
                       value={modifications.failureLocation?.type || 'current'}
                       onValueChange={(value: 'waypoint' | 'coordinates' | 'current') =>
@@ -516,20 +516,20 @@ export default function WhatIfScenarioEngine() {
                         }))
                       }
                     >
-                      <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="current">Current Position</SelectItem>
-                        <SelectItem value="waypoint">Flight Plan Waypoint</SelectItem>
-                        <SelectItem value="coordinates">Custom Coordinates</SelectItem>
+                      <SelectContent className="bg-gray-700 border-gray-600">
+                        <SelectItem value="current" className="text-white hover:bg-gray-600">Current Position</SelectItem>
+                        <SelectItem value="waypoint" className="text-white hover:bg-gray-600">Flight Plan Waypoint</SelectItem>
+                        <SelectItem value="coordinates" className="text-white hover:bg-gray-600">Custom Coordinates</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   {modifications.failureLocation?.type === 'waypoint' && (
                     <div className="space-y-2">
-                      <Label className="text-gray-400">Waypoint</Label>
+                      <Label className="text-white">Waypoint</Label>
                       <Select
                         value={modifications.failureLocation?.waypoint || ''}
                         onValueChange={(waypoint) =>
@@ -543,12 +543,12 @@ export default function WhatIfScenarioEngine() {
                           }))
                         }
                       >
-                        <SelectTrigger className="bg-gray-700 border-gray-600">
+                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                           <SelectValue placeholder="Select waypoint" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-gray-700 border-gray-600">
                           {commonWaypoints.map((wp) => (
-                            <SelectItem key={wp.code} value={wp.code}>
+                            <SelectItem key={wp.code} value={wp.code} className="text-white hover:bg-gray-600">
                               {wp.code} - {wp.name}
                             </SelectItem>
                           ))}
@@ -560,14 +560,14 @@ export default function WhatIfScenarioEngine() {
                   {modifications.failureLocation?.type === 'coordinates' && (
                     <>
                       <div className="space-y-2">
-                        <Label className="text-gray-400">Latitude</Label>
+                        <Label className="text-white">Latitude</Label>
                         <Input
                           type="number"
                           step="0.0001"
                           min="-90"
                           max="90"
                           placeholder="51.4706"
-                          className="bg-gray-700 border-gray-600"
+                          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                           value={modifications.failureLocation?.latitude || ''}
                           onChange={(e) =>
                             setModifications(prev => ({
@@ -581,14 +581,14 @@ export default function WhatIfScenarioEngine() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-gray-400">Longitude</Label>
+                        <Label className="text-white">Longitude</Label>
                         <Input
                           type="number"
                           step="0.0001"
                           min="-180"
                           max="180"
                           placeholder="-0.4619"
-                          className="bg-gray-700 border-gray-600"
+                          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                           value={modifications.failureLocation?.longitude || ''}
                           onChange={(e) =>
                             setModifications(prev => ({
