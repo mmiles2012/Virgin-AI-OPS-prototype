@@ -301,7 +301,10 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /^(VIR|VS)0?21$/, route: 'LHR-IAD', dep: 'LHR', arr: 'IAD' },
         { pattern: /^(VIR|VS)0?22$/, route: 'IAD-LHR', dep: 'IAD', arr: 'LHR' },
         
-        // Authentic W25 JFK routes from official schedule
+        // Authentic W25 JFK routes from official schedule (specific 3-digit patterns must come before generic single-digit patterns)
+        { pattern: /^(VIR|VS)0?300[A-Z]*$/, route: 'LHR-DEL', dep: 'LHR', arr: 'DEL' }, // VIR300 moved here to avoid conflict with VIR3
+        { pattern: /^(VIR|VS)0?135[A-Z]*$/, route: 'LHR-MCO', dep: 'LHR', arr: 'MCO' }, // VIR135 moved here to avoid conflict with other patterns
+        { pattern: /^(VIR|VS)0?129[A-Z]*$/, route: 'LHR-TPA', dep: 'LHR', arr: 'TPA' }, // VIR129 moved here to avoid conflict with other patterns
         { pattern: /^(VIR|VS)0?3$/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' },
         { pattern: /^(VIR|VS)0?4$/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' },
         { pattern: /^(VIR|VS)0?25$/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' },
@@ -340,7 +343,7 @@ class AuthenticVirginAtlanticTracker {
         // Manchester-JFK route - VIR127 (MAN-JFK as user confirmed)
         { pattern: /^(VIR|VS)0?127[A-Z]*$/, route: 'MAN-JFK', dep: 'MAN', arr: 'JFK' },
         
-        // India routes - MUST come before generic VIR3 pattern
+        // India routes - MUST come before generic VIR3 pattern  
         { pattern: /^(VIR|VS)0?302[A-Z]*$/, route: 'LHR-DEL', dep: 'LHR', arr: 'DEL' },
         
         // Mumbai route - VS355 (BOM-LHR as user confirmed)

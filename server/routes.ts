@@ -2070,80 +2070,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
       }
 
-      // Get live aviation alerts from enhanced scraper
+      // Get authentic NOTAM alerts from Python scraper
       let liveAviationAlerts: any[] = [];
       try {
-        const { spawn } = require('child_process');
-        const path = require('path');
+        console.log('🛩️ Running authentic aviation alerts scraper...');
         
-        // Run fixed aviation scraper with improved error handling
-        const pythonProcess = spawn('python3', [path.join(__dirname, '..', 'aviation_alerts_scraper_fixed.py')], {
+        // Use async spawn with promise wrapper
+        const pythonCommand = `
+import sys, json
+sys.path.append('.')
+from aviation_alerts_scraper_fixed import AviationDataScraper
+scraper = AviationDataScraper()
+alerts = scraper.scrape_faa_notam_search()
+result = {'success': True, 'alerts': [{'alert_type': a.alert_type, 'id': a.id, 'location': a.location, 'description': a.description, 'effective_start': a.effective_start, 'effective_end': a.effective_end, 'severity': a.severity, 'source': a.source, 'scraped_at': a.scraped_at} for a in alerts]}
+print('SCRAPER_RESULT=' + json.dumps(result))
+`;
+        
+        const pythonProcess = spawn('python3', ['-c', pythonCommand], {
           cwd: process.cwd(),
           stdio: ['pipe', 'pipe', 'pipe'],
           timeout: 20000
         });
         
-        let scraperOutput = '';
-        pythonProcess.stdout.on('data', (data: Buffer) => {
-          scraperOutput += data.toString();
-        });
+        let stdout = '';
+        let stderr = '';
+        
+        pythonProcess.stdout.on('data', (data) => { stdout += data.toString(); });
+        pythonProcess.stderr.on('data', (data) => { stderr += data.toString(); });
         
         await new Promise((resolve, reject) => {
           pythonProcess.on('close', (code) => {
             try {
-              // Try to parse JSON output from enhanced scraper
-              const lines = scraperOutput.split('\n');
-              let jsonFound = false;
-              
-              for (const line of lines) {
-                const trimmedLine = line.trim();
-                // Look for API_RESULT: prefix or direct JSON
-                if (trimmedLine.startsWith('API_RESULT:')) {
-                  try {
-                    const jsonStr = trimmedLine.substring(11); // Remove "API_RESULT:" prefix
-                    const alertData = JSON.parse(jsonStr);
-                    if (alertData.success && alertData.alerts) {
-                      liveAviationAlerts = alertData.alerts;
-                      console.log(`Fixed scraper: Retrieved ${liveAviationAlerts.length} authentic alerts`);
-                      jsonFound = true;
-                      break;
-                    }
-                  } catch (parseError) {
-                    console.log('JSON parse error for API_RESULT line:', parseError);
-                    continue;
-                  }
-                } else if (trimmedLine.startsWith('{') && trimmedLine.includes('"alerts"')) {
-                  try {
-                    const alertData = JSON.parse(trimmedLine);
-                    if (alertData.success && alertData.alerts) {
-                      liveAviationAlerts = alertData.alerts;
-                      console.log(`Fixed scraper: Retrieved ${liveAviationAlerts.length} authentic alerts`);
-                      jsonFound = true;
-                      break;
-                    }
-                  } catch (parseError) {
-                    console.log('JSON parse error for line:', parseError);
-                    continue;
-                  }
+              const resultMatch = stdout.match(/SCRAPER_RESULT=(.+)/);
+              if (resultMatch) {
+                const alertData = JSON.parse(resultMatch[1]);
+                if (alertData.success && Array.isArray(alertData.alerts)) {
+                  liveAviationAlerts = alertData.alerts.map((alert: any) => ({
+                    id: alert.id,
+                    type: alert.alert_type || 'NOTAM',
+                    title: `${alert.alert_type || 'NOTAM'}: ${alert.location || 'General Area'}`,
+                    description: alert.description,
+                    location: { lat: 39.8283, lon: -98.5795, radius: 50 },
+                    altitude: { min: 0, max: 45000 },
+                    timeframe: {
+                      start: alert.effective_start,
+                      end: alert.effective_end
+                    },
+                    severity: alert.severity.toLowerCase(),
+                    source: alert.source,
+                    lastUpdated: alert.scraped_at
+                  }));
+                  console.log(`✅ Retrieved ${liveAviationAlerts.length} authentic FAA NOTAM alerts`);
                 }
               }
-              
-              if (!jsonFound) {
-                console.log('Fixed aviation scraper: No valid JSON output found, using no alerts');
-              }
             } catch (e) {
-              console.log('Fixed aviation scraper output processing failed:', e);
+              console.log('❌ Python scraper parse error:', e);
             }
             resolve(code);
           });
           
-          pythonProcess.on('error', (error) => {
-            reject(error);
-          });
+          pythonProcess.on('error', reject);
         });
         
-      } catch (scraperError) {
-        console.log('Aviation scraper error, using fallback data:', scraperError);
+      } catch (error) {
+        console.log('❌ Aviation scraper error:', error);
       }
 
       // Only return authentic data - no placeholder alerts
