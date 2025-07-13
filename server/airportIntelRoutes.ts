@@ -177,6 +177,112 @@ print("AINO_SCORE:", json.dumps(result, indent=2))
   }
 });
 
+// Comprehensive diversion candidate ranking endpoint
+router.post('/airport-intelligence/rank-candidates', async (req, res) => {
+  try {
+    const { aircraft_type, candidate_icaos, scenario_features } = req.body;
+    
+    if (!aircraft_type || !candidate_icaos || !scenario_features) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required parameters: aircraft_type, candidate_icaos, scenario_features'
+      });
+    }
+    
+    // Execute Python script for comprehensive ranking
+    const pythonScript = `
+import sys
+import os
+sys.path.append('${process.cwd()}')
+
+from rank_diversion_candidates import rank_diversion_candidates
+import json
+
+aircraft_type = "${aircraft_type}"
+candidate_icaos = ${JSON.stringify(candidate_icaos)}
+scenario_features = ${JSON.stringify(scenario_features)}
+
+try:
+    ranked_candidates = rank_diversion_candidates(aircraft_type, candidate_icaos, scenario_features)
+    
+    result = {
+        "aircraft_type": aircraft_type,
+        "scenario_features": scenario_features,
+        "ranked_candidates": ranked_candidates,
+        "total_candidates": len(ranked_candidates),
+        "timestamp": "${new Date().toISOString()}"
+    }
+    
+    print("AINO_RANKING:", json.dumps(result, indent=2))
+    
+except Exception as e:
+    print("AINO_ERROR:", str(e))
+    `;
+    
+    const pythonProcess = spawn('python3', ['-c', pythonScript]);
+    let output = '';
+    let error = '';
+    
+    pythonProcess.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        try {
+          if (output.includes('AINO_ERROR:')) {
+            const errorMatch = output.match(/AINO_ERROR: (.+)/);
+            return res.status(500).json({
+              success: false,
+              error: 'Ranking calculation failed',
+              details: errorMatch ? errorMatch[1] : 'Unknown error'
+            });
+          }
+          
+          const resultMatch = output.match(/AINO_RANKING: ({.*})/s);
+          if (resultMatch) {
+            const result = JSON.parse(resultMatch[1]);
+            res.json({
+              success: true,
+              ...result,
+              metadata: {
+                processing_time: new Date().toISOString(),
+                system: 'AINO Comprehensive Diversion Ranking',
+                version: '1.1.0'
+              }
+            });
+          } else {
+            throw new Error('No valid ranking result found');
+          }
+        } catch (parseError) {
+          res.status(500).json({
+            success: false,
+            error: 'Failed to parse ranking result',
+            details: parseError.message
+          });
+        }
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Ranking process failed',
+          details: error
+        });
+      }
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      details: error.message
+    });
+  }
+});
+
 // Get available airports in intelligence database
 router.get('/airport-intelligence/available-airports', async (req, res) => {
   try {
