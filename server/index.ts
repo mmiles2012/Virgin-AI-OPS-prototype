@@ -4,6 +4,7 @@ import { addIntelligenceRoutes } from "./intelligenceRoutes";
 import envTestRouter from "./envTest";
 import documentationRoutes from "./documentationRoutes";
 import fullResponseRoutes from "./fullResponseRoutes";
+import airportIntelRoutes from "./airportIntelRoutes";
 import { setupVite, serveStatic, log } from "./vite";
 import { virginAtlanticConnectionService } from "./virginAtlanticConnectionService";
 import dotenv from "dotenv";
@@ -70,6 +71,9 @@ app.use((req, res, next) => {
   
   // Add full response simulation routes
   app.use('/api/full-response', fullResponseRoutes);
+  
+  // Add airport intelligence routes
+  app.use('/api/aviation', airportIntelRoutes);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
