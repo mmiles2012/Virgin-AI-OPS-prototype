@@ -38,6 +38,42 @@ interface VisaAnalytics {
   };
 }
 
+interface EntryRiskAnalysis {
+  flight_data: {
+    flight_number: string;
+    route: string;
+    passengers: number;
+    aircraft_type: string;
+  };
+  diversion_airport: string;
+  manifest_analysis: {
+    passenger_nationalities: {
+      [key: string]: number;
+    };
+    total_passengers: number;
+    nationality_breakdown: {
+      [key: string]: number;
+    };
+  };
+  risk_analysis: {
+    entry_risk_score: number;
+    risk_level: string;
+    flagged_passengers: number;
+    total_passengers: number;
+    flagged_nationalities: string[];
+    risk_details: {
+      [key: string]: string;
+    };
+  };
+  alert_notification: {
+    alert_id: string;
+    priority: string;
+    requires_action: boolean;
+    operational_recommendation: string;
+    notification_channels: string[];
+  };
+}
+
 const VisaRequirementsDashboard: React.FC = () => {
   const [visaData, setVisaData] = useState<VisaRequirement[]>([]);
   const [analytics, setAnalytics] = useState<VisaAnalytics | null>(null);
@@ -51,6 +87,12 @@ const VisaRequirementsDashboard: React.FC = () => {
   const [selectedFlightNumber, setSelectedFlightNumber] = useState('');
   const [lookupResult, setLookupResult] = useState<any>(null);
 
+  // Entry Risk Analysis states
+  const [entryRiskAnalysis, setEntryRiskAnalysis] = useState<EntryRiskAnalysis | null>(null);
+  const [riskAnalysisLoading, setRiskAnalysisLoading] = useState(false);
+  const [selectedRiskFlight, setSelectedRiskFlight] = useState('');
+  const [selectedDiversionAirport, setSelectedDiversionAirport] = useState('');
+
   const nationalities = ['British', 'Indian', 'U.S.'];
   const popularDestinations = [
     'United States', 'India', 'Jamaica', 'Barbados', 'Nigeria', 'Ghana',
@@ -59,14 +101,22 @@ const VisaRequirementsDashboard: React.FC = () => {
   ];
 
   const virginAtlanticFlights = [
-    { code: 'VS355', route: 'LHR-BOM', destination: 'India' },
-    { code: 'VS103', route: 'LHR-ATL', destination: 'United States' },
-    { code: 'VS11', route: 'LHR-BOS', destination: 'United States' },
-    { code: 'VS21', route: 'LHR-IAD', destination: 'United States' },
-    { code: 'VS401', route: 'LHR-KIN', destination: 'Jamaica' },
-    { code: 'VS411', route: 'LHR-BGI', destination: 'Barbados' },
-    { code: 'VS507', route: 'LHR-LOS', destination: 'Nigeria' },
-    { code: 'VS601', route: 'LHR-CPT', destination: 'South Africa' }
+    { code: 'VIR3N', route: 'LHR-JFK', destination: 'United States', aircraft: 'A350-1000', passengers: 331 },
+    { code: 'VIR42X', route: 'SFO-LHR', destination: 'United Kingdom', aircraft: 'B787-9', passengers: 274 },
+    { code: 'VS355', route: 'LHR-BOM', destination: 'India', aircraft: 'A330-300', passengers: 285 },
+    { code: 'VS103', route: 'LHR-ATL', destination: 'United States', aircraft: 'A350-1000', passengers: 331 },
+    { code: 'VS11', route: 'LHR-BOS', destination: 'United States', aircraft: 'A330-900', passengers: 310 },
+    { code: 'VS21', route: 'LHR-IAD', destination: 'United States', aircraft: 'A330-300', passengers: 285 },
+    { code: 'VS401', route: 'LHR-KIN', destination: 'Jamaica', aircraft: 'A330-300', passengers: 285 },
+    { code: 'VS411', route: 'LHR-BGI', destination: 'Barbados', aircraft: 'A330-300', passengers: 285 }
+  ];
+
+  const diversionAirports = [
+    { code: 'EINN', name: 'Shannon (Ireland)' },
+    { code: 'BIKF', name: 'Keflavik (Iceland)' },
+    { code: 'CYQX', name: 'Gander (Canada)' },
+    { code: 'LPAZ', name: 'Azores (Portugal)' },
+    { code: 'BGTL', name: 'Thule (Greenland)' }
   ];
 
   useEffect(() => {
@@ -195,6 +245,56 @@ const VisaRequirementsDashboard: React.FC = () => {
     }
   };
 
+  const performEntryRiskAnalysis = async () => {
+    if (!selectedRiskFlight || !selectedDiversionAirport) {
+      setError('Please select both a flight and diversion airport');
+      return;
+    }
+
+    setRiskAnalysisLoading(true);
+    setError(null);
+
+    try {
+      const selectedFlightData = virginAtlanticFlights.find(f => f.code === selectedRiskFlight);
+      if (!selectedFlightData) {
+        throw new Error('Selected flight not found');
+      }
+
+      const requestBody = {
+        flight_data: {
+          flight_number: selectedFlightData.code,
+          route: selectedFlightData.route,
+          passengers: selectedFlightData.passengers,
+          aircraft_type: selectedFlightData.aircraft
+        },
+        diversion_airport: selectedDiversionAirport
+      };
+
+      const response = await fetch('/api/aviation/airport-intelligence/entry-risk-analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        setEntryRiskAnalysis(result);
+      } else {
+        throw new Error(result.error || 'Entry risk analysis failed');
+      }
+    } catch (err) {
+      setError(`Entry risk analysis failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setRiskAnalysisLoading(false);
+    }
+  };
+
   const getVisaStatusIcon = (requirement: string) => {
     const req = requirement.toLowerCase();
     if (req.includes('visa not required') || req.includes('visa free')) {
@@ -274,10 +374,11 @@ const VisaRequirementsDashboard: React.FC = () => {
         )}
 
         <Tabs defaultValue="lookup" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-5 bg-gray-800">
             <TabsTrigger value="lookup">Visa Lookup</TabsTrigger>
             <TabsTrigger value="flight">Flight Check</TabsTrigger>
             <TabsTrigger value="nationality">Nationality Analysis</TabsTrigger>
+            <TabsTrigger value="entry-risk">Entry Risk Analysis</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
@@ -569,6 +670,194 @@ const VisaRequirementsDashboard: React.FC = () => {
                         </CardContent>
                       </Card>
                     )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="entry-risk">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5 text-orange-400" />
+                  Entry Risk Analysis for Aircraft Diversions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-white">Virgin Atlantic Flight</label>
+                    <Select value={selectedRiskFlight} onValueChange={setSelectedRiskFlight}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
+                        <SelectValue placeholder="Select flight" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-700 border-gray-600">
+                        {virginAtlanticFlights.map((flight) => (
+                          <SelectItem key={flight.code} value={flight.code} className="text-white hover:bg-gray-600 focus:bg-gray-600">
+                            {flight.code} ({flight.route}) - {flight.aircraft} - {flight.passengers} pax
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-white">Diversion Airport</label>
+                    <Select value={selectedDiversionAirport} onValueChange={setSelectedDiversionAirport}>
+                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
+                        <SelectValue placeholder="Select diversion airport" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-700 border-gray-600">
+                        {diversionAirports.map((airport) => (
+                          <SelectItem key={airport.code} value={airport.code} className="text-white hover:bg-gray-600 focus:bg-gray-600">
+                            {airport.code} - {airport.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <Button 
+                    onClick={performEntryRiskAnalysis} 
+                    disabled={riskAnalysisLoading || !selectedRiskFlight || !selectedDiversionAirport}
+                    className="bg-orange-600 hover:bg-orange-700"
+                  >
+                    {riskAnalysisLoading ? 'Analyzing Entry Risks...' : 'Analyze Entry Risk'}
+                  </Button>
+                </div>
+
+                {entryRiskAnalysis && (
+                  <div className="space-y-6">
+                    {/* Risk Overview */}
+                    <Card className="bg-gray-700 border-gray-600">
+                      <CardHeader>
+                        <CardTitle className="text-white flex items-center gap-2">
+                          <AlertCircle className="h-5 w-5" />
+                          Risk Assessment Summary
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                          <div className="text-center">
+                            <div className={`text-2xl font-bold ${
+                              entryRiskAnalysis.risk_analysis.risk_level === 'LOW' ? 'text-green-400' :
+                              entryRiskAnalysis.risk_analysis.risk_level === 'MEDIUM' ? 'text-yellow-400' :
+                              entryRiskAnalysis.risk_analysis.risk_level === 'HIGH' ? 'text-orange-400' :
+                              'text-red-400'
+                            }`}>
+                              {entryRiskAnalysis.risk_analysis.risk_level}
+                            </div>
+                            <div className="text-sm text-gray-400">Risk Level</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-blue-400">
+                              {(entryRiskAnalysis.risk_analysis.entry_risk_score * 100).toFixed(1)}%
+                            </div>
+                            <div className="text-sm text-gray-400">Risk Score</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-purple-400">
+                              {entryRiskAnalysis.risk_analysis.flagged_passengers}
+                            </div>
+                            <div className="text-sm text-gray-400">Affected Passengers</div>
+                          </div>
+                          <div className="text-center">
+                            <div className={`text-2xl font-bold ${
+                              entryRiskAnalysis.alert_notification.priority === 'INFO' ? 'text-blue-400' :
+                              entryRiskAnalysis.alert_notification.priority === 'WARNING' ? 'text-yellow-400' :
+                              entryRiskAnalysis.alert_notification.priority === 'ALERT' ? 'text-orange-400' :
+                              'text-red-400'
+                            }`}>
+                              {entryRiskAnalysis.alert_notification.priority}
+                            </div>
+                            <div className="text-sm text-gray-400">Alert Priority</div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Passenger Manifest Analysis */}
+                    <Card className="bg-gray-700 border-gray-600">
+                      <CardHeader>
+                        <CardTitle className="text-white flex items-center gap-2">
+                          <Users className="h-5 w-5" />
+                          Passenger Manifest Analysis
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {Object.entries(entryRiskAnalysis.manifest_analysis.nationality_breakdown).map(([nationality, count]) => (
+                            <div key={nationality} className="text-center">
+                              <div className="text-xl font-bold text-blue-400">{count}</div>
+                              <div className="text-sm text-gray-400">{nationality}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {/* Flagged Nationalities */}
+                    {entryRiskAnalysis.risk_analysis.flagged_nationalities.length > 0 && (
+                      <Card className="bg-gray-700 border-gray-600">
+                        <CardHeader>
+                          <CardTitle className="text-white flex items-center gap-2">
+                            <XCircle className="h-5 w-5 text-red-400" />
+                            Visa Issues Detected
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-3">
+                            {entryRiskAnalysis.risk_analysis.flagged_nationalities.map((nationality, index) => (
+                              <div key={index} className="flex items-center justify-between p-3 bg-red-900/20 border border-red-800 rounded">
+                                <div className="flex items-center gap-2">
+                                  <Badge className="bg-red-800 text-red-200">{nationality}</Badge>
+                                  <span className="text-white">nationals require visa for {entryRiskAnalysis.diversion_airport}</span>
+                                </div>
+                                <span className="text-red-400 font-medium">
+                                  {entryRiskAnalysis.risk_analysis.risk_details[nationality] || 'Visa Required'}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Operational Recommendations */}
+                    <Card className="bg-gray-700 border-gray-600">
+                      <CardHeader>
+                        <CardTitle className="text-white flex items-center gap-2">
+                          <FileText className="h-5 w-5 text-green-400" />
+                          Operational Recommendations
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="p-4 bg-blue-900/20 border border-blue-800 rounded">
+                            <div className="font-medium text-blue-400 mb-2">Alert ID: {entryRiskAnalysis.alert_notification.alert_id}</div>
+                            <div className="text-white">{entryRiskAnalysis.alert_notification.operational_recommendation}</div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-400">Action Required:</span>
+                            <Badge className={entryRiskAnalysis.alert_notification.requires_action ? 'bg-orange-800 text-orange-200' : 'bg-green-800 text-green-200'}>
+                              {entryRiskAnalysis.alert_notification.requires_action ? 'YES' : 'NO'}
+                            </Badge>
+                          </div>
+
+                          <div>
+                            <span className="text-gray-400">Notification Channels:</span>
+                            <div className="mt-1 flex gap-2">
+                              {entryRiskAnalysis.alert_notification.notification_channels.map((channel, index) => (
+                                <Badge key={index} className="bg-gray-800 text-gray-200">{channel}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
                 )}
               </CardContent>
