@@ -305,8 +305,9 @@ class AINOFullResponseSimulator:
             from delay_predictor import predict_delay, estimate_cost
             
             # Prepare features for ML prediction
+            aircraft_type = performance.get("aircraft_type", "A350-1000")
             input_features = {
-                "aircraft": performance.get("aircraft_type", "A350-1000"),
+                "aircraft": aircraft_type,
                 "failure_type": performance.get("failure_type", "engine_failure"),
                 "origin": diversion.get("origin", "LHR"),
                 "destination": diversion.get("destination", "JFK"),
@@ -319,7 +320,8 @@ class AINOFullResponseSimulator:
             
             # Predict delay using trained ML model
             estimated_delay_minutes = predict_delay(input_features)
-            total_cost_usd = estimate_cost(estimated_delay_minutes)
+            # Use aircraft-specific cost calculation
+            total_cost_usd = estimate_cost(estimated_delay_minutes, aircraft_type)
             
         except Exception as e:
             print(f"ML prediction unavailable, using fallback: {e}")

@@ -370,7 +370,7 @@ try:
     }
     
     delay_minutes = predict_delay(input_features)
-    cost_estimate = estimate_cost(delay_minutes)
+    cost_estimate = estimate_cost(delay_minutes, "${aircraft}")
     
     result = {
         "delay_minutes": float(delay_minutes),
