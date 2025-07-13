@@ -361,4 +361,125 @@ print("AINO_AIRPORTS:", json.dumps(airports, indent=2))
   }
 });
 
+// Entry Risk Alert System endpoint
+router.post('/airport-intelligence/entry-risk-analysis', async (req, res) => {
+  try {
+    const { flight_data, diversion_airport } = req.body;
+    
+    if (!flight_data || !diversion_airport) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required parameters: flight_data, diversion_airport'
+      });
+    }
+    
+    // Execute Python script for entry risk analysis
+    const pythonScript = `
+import sys
+import os
+sys.path.append('${process.cwd()}')
+
+from entry_risk_alert_system import EntryRiskAlertSystem
+import json
+
+flight_data = ${JSON.stringify(flight_data)}
+diversion_airport = "${diversion_airport}"
+
+try:
+    risk_system = EntryRiskAlertSystem()
+    
+    # Analyze passenger manifest
+    manifest_analysis = risk_system.analyze_passenger_manifest(flight_data)
+    
+    # Check entry risks
+    risk_analysis = risk_system.check_entry_risks(
+        manifest_analysis['passenger_nationalities'], 
+        diversion_airport
+    )
+    
+    # Generate alert notification
+    alert = risk_system.generate_alert_notification(
+        flight_data.get('flight_number', 'UNKNOWN'), 
+        risk_analysis
+    )
+    
+    result = {
+        "flight_data": flight_data,
+        "diversion_airport": diversion_airport,
+        "manifest_analysis": manifest_analysis,
+        "risk_analysis": risk_analysis,
+        "alert_notification": alert,
+        "timestamp": "${new Date().toISOString()}"
+    }
+    
+    print("AINO_ENTRY_RISK:", json.dumps(result, indent=2))
+    
+except Exception as e:
+    print("AINO_ERROR:", str(e))
+    `;
+    
+    const pythonProcess = spawn('python3', ['-c', pythonScript]);
+    let output = '';
+    let error = '';
+    
+    pythonProcess.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      error += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        try {
+          if (output.includes('AINO_ERROR:')) {
+            const errorMatch = output.match(/AINO_ERROR: (.+)/);
+            return res.status(500).json({
+              success: false,
+              error: 'Entry risk analysis failed',
+              details: errorMatch ? errorMatch[1] : 'Unknown error'
+            });
+          }
+          
+          const resultMatch = output.match(/AINO_ENTRY_RISK: ({.*})/s);
+          if (resultMatch) {
+            const result = JSON.parse(resultMatch[1]);
+            res.json({
+              success: true,
+              ...result,
+              metadata: {
+                processing_time: new Date().toISOString(),
+                system: 'AINO Entry Risk Alert System',
+                version: '1.0.0'
+              }
+            });
+          } else {
+            throw new Error('No valid entry risk result found');
+          }
+        } catch (parseError) {
+          res.status(500).json({
+            success: false,
+            error: 'Failed to parse entry risk result',
+            details: parseError.message
+          });
+        }
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Entry risk analysis process failed',
+          details: error
+        });
+      }
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      details: error.message
+    });
+  }
+});
+
 export default router;
