@@ -398,14 +398,14 @@ function ProfessionalSatelliteMapCore() {
     console.log('🗂️ Weather radar image available:', !!weatherRadarImage);
   }, [showSigmets, showWeatherOverlay, weatherRadarImage]);
   
-  // Enhanced weather radar functionality with smart geographic selection
+  // Enhanced weather radar functionality with smart geographic selection and persistence
   const fetchWeatherRadar = async (mapInstance?: any) => {
-    if (radarLoading) return;
+    if (radarLoading || weatherRadarImage) return; // Don't fetch if already have image or loading
     
     setRadarLoading(true);
     try {
       // Get current map bounds to determine which region to fetch radar for
-      const mapCenter = mapInstance ? mapInstance.getCenter() : { lat: 39.0, lng: -98.0 };
+      const mapCenter = mapInstance ? mapInstance.getCenter() : { lat: 51.4706, lng: -0.4619 }; // Default to London
       
       const params = new URLSearchParams({
         source: 'smart',
@@ -413,14 +413,14 @@ function ProfessionalSatelliteMapCore() {
         lng: mapCenter.lng.toString()
       });
       
-      console.log(`🌦️ Requesting weather radar for current map view: ${mapCenter.lat}, ${mapCenter.lng}`);
+      console.log(`🌦️ Requesting persistent weather radar for: ${mapCenter.lat}, ${mapCenter.lng}`);
       
       const response = await fetch(`/api/weather/radar?${params.toString()}`);
       const data = await response.json();
       
       if (data.success && data.imageUrl) {
         setWeatherRadarImage(data.imageUrl);
-        console.log('✅ Weather radar loaded successfully for current map region');
+        console.log('✅ Weather radar loaded and cached successfully');
       } else {
         console.error('❌ Primary weather radar failed:', data.error);
         // Try RainViewer as global fallback
@@ -433,7 +433,7 @@ function ProfessionalSatelliteMapCore() {
         const fallbackData = await fallbackResponse.json();
         if (fallbackData.success && fallbackData.imageUrl) {
           setWeatherRadarImage(fallbackData.imageUrl);
-          console.log('✅ Fallback weather radar loaded successfully');
+          console.log('✅ Fallback weather radar loaded and cached successfully');
         }
       }
     } catch (error) {
@@ -445,14 +445,23 @@ function ProfessionalSatelliteMapCore() {
 
   // Load weather radar when overlay is enabled (now enabled by default)
   useEffect(() => {
-    if (showWeatherOverlay && mapRef) {
+    if (showWeatherOverlay && mapRef && !weatherRadarImage) {
+      // Only fetch if we don't already have radar data
       fetchWeatherRadar(mapRef);
-      if (autoRefresh) {
-        const interval = setInterval(() => {
-          fetchWeatherRadar(mapRef); // Use current map center for smart selection
-        }, refreshInterval * 60 * 1000);
-        return () => clearInterval(interval);
-      }
+    }
+  }, [showWeatherOverlay, mapRef]);
+
+  // Auto-refresh radar data independently with proper persistence
+  useEffect(() => {
+    if (showWeatherOverlay && autoRefresh) {
+      const interval = setInterval(() => {
+        if (mapRef) {
+          // Clear current image before fetching new one to prevent flashing
+          console.log('🔄 Refreshing weather radar data...');
+          fetchWeatherRadar(mapRef);
+        }
+      }, refreshInterval * 60 * 1000);
+      return () => clearInterval(interval);
     }
   }, [showWeatherOverlay, autoRefresh, refreshInterval, mapRef]);
 
