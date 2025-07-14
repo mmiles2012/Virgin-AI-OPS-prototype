@@ -6,6 +6,7 @@ import { X, AlertTriangle, Cloud, Fuel, Wrench, Phone, Building, Zap } from 'luc
 import { Switch } from '@/components/ui/switch';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import SigmetOverlay from './SigmetOverlay';
+import NATTracksOverlay from './NATTracksOverlay';
 import Papa from 'papaparse';
 
 // Fix Leaflet default markers
@@ -378,6 +379,7 @@ function ProfessionalSatelliteMapCore() {
   const [showFlights, setShowFlights] = useState(true);
   const [showWeatherOverlay, setShowWeatherOverlay] = useState(true);
   const [showSigmets, setShowSigmets] = useState(true);
+  const [showNATTracks, setShowNATTracks] = useState(true);
   const [weatherRadarImage, setWeatherRadarImage] = useState<string | null>(null);
   const [radarLoading, setRadarLoading] = useState(false);
   const [radarOpacity, setRadarOpacity] = useState(1.0);
@@ -885,6 +887,9 @@ function ProfessionalSatelliteMapCore() {
               console.log('SIGMET selected:', sigmet?.title);
             }}
           />
+
+          {/* NAT Tracks Overlay */}
+          <NATTracksOverlay showNATTracks={showNATTracks} />
 
           {/* Coordinate Display */}
           <CoordinateDisplay />

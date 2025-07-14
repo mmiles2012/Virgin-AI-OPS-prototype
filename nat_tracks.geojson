@@ -1,0 +1,175 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "generated_at": "2025-07-14T12:52:27.339242",
+    "source": "FAA NOTAM",
+    "total_tracks": 5
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "A",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-14T12:52:27.338703",
+        "source": "FAA NOTAM",
+        "waypoint_count": 4,
+        "raw_text": "PIKIL 57/20 57/30 55/40 52/50 TUDEP\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N526A N528A N532A-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -20.0,
+            57.0
+          ],
+          [
+            -30.0,
+            57.0
+          ],
+          [
+            -40.0,
+            55.0
+          ],
+          [
+            -50.0,
+            52.0
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "B",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-14T12:52:27.338997",
+        "source": "FAA NOTAM",
+        "waypoint_count": 4,
+        "raw_text": "ETARI 5630/20 5630/30 5430/40 5130/50 UMESI\nEAST LVLS NIL\nWEST LVLS 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N502G N508A-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -20.0,
+            56.5
+          ],
+          [
+            -30.0,
+            56.5
+          ],
+          [
+            -40.0,
+            54.5
+          ],
+          [
+            -50.0,
+            51.5
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "C",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-14T12:52:27.339070",
+        "source": "FAA NOTAM",
+        "waypoint_count": 4,
+        "raw_text": "RESNO 56/20 56/30 54/40 51/50 ALLRY\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N468A N484E-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -20.0,
+            56.0
+          ],
+          [
+            -30.0,
+            56.0
+          ],
+          [
+            -40.0,
+            54.0
+          ],
+          [
+            -50.0,
+            51.0
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "D",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-14T12:52:27.339162",
+        "source": "FAA NOTAM",
+        "waypoint_count": 4,
+        "raw_text": "VENER 5530/20 5530/30 5330/40 5030/50 BUDAR\nEAST LVLS NIL\nWEST LVLS 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N434A N448A-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -20.0,
+            55.5
+          ],
+          [
+            -30.0,
+            55.5
+          ],
+          [
+            -40.0,
+            53.5
+          ],
+          [
+            -50.0,
+            50.5
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "E",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-14T12:52:27.339220",
+        "source": "FAA NOTAM",
+        "waypoint_count": 4,
+        "raw_text": "DOGAL 55/20 55/30 53/40 50/50 ELSIR\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N396B N412A-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -20.0,
+            55.0
+          ],
+          [
+            -30.0,
+            55.0
+          ],
+          [
+            -40.0,
+            53.0
+          ],
+          [
+            -50.0,
+            50.0
+          ]
+        ]
+      }
+    }
+  ]
+}

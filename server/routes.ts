@@ -53,6 +53,7 @@ import { virginAtlanticFlightTracker } from "./routeMatcher";
 import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
 import mlOtpRoutes from "./mlOtpRoutes";
 import visaRoutes from "./visaRoutes";
+import { natTrackRoutes } from "./natTrackRoutes";
 import { addIntelligenceRoutes } from "./intelligenceRoutes";
 import aiOperationsCenterRoutes from "./aiOperationsCenterRoutes";
 import { ukCaaProcessor } from "./ukCaaPunctualityProcessor";
@@ -5407,6 +5408,9 @@ print(json.dumps(weather))
   
   // Visa Requirements Routes
   app.use('/api/visa', visaRoutes);
+
+  // NAT Track routes
+  app.use('/api/nat-tracks', natTrackRoutes);
   app.use('/api/ai-operations', aiOperationsCenterRoutes);
 
   // Intelligence Routes
