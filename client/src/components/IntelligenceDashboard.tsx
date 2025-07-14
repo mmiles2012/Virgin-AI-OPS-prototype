@@ -119,19 +119,23 @@ export default function IntelligenceDashboard() {
           // Use fallback data if API fails
           console.warn('Intelligence API failed, using fallback data');
           setIntelligenceData({
-            success: true,
             articles: [],
             analytics: {
-              total_articles: 0,
-              high_relevance: 0,
-              categories: {},
-              sentiment_breakdown: { positive: 0, negative: 0, neutral: 0 },
-              sources: {}
+              total_articles_today: 0,
+              high_relevance_articles: 0,
+              average_relevance_score: 0,
+              primary_categories: [],
+              trend_analysis: "System initializing"
             }
           });
           setAlertsData({
-            success: true,
-            alerts: []
+            alerts: [],
+            summary: {
+              total_alerts: 0,
+              high_priority: 0,
+              medium_priority: 0,
+              action_required_count: 0
+            }
           });
           setSummaryData({
             executive_summary: "Intelligence system initializing. Real-time aviation news and alerts monitoring is active.",
@@ -156,19 +160,23 @@ export default function IntelligenceDashboard() {
         console.error('Failed to fetch intelligence data:', error);
         // Use fallback data instead of error state
         setIntelligenceData({
-          success: true,
           articles: [],
           analytics: {
-            total_articles: 0,
-            high_relevance: 0,
-            categories: {},
-            sentiment_breakdown: { positive: 0, negative: 0, neutral: 0 },
-            sources: {}
+            total_articles_today: 0,
+            high_relevance_articles: 0,
+            average_relevance_score: 0,
+            primary_categories: [],
+            trend_analysis: "System initializing"
           }
         });
         setAlertsData({
-          success: true,
-          alerts: []
+          alerts: [],
+          summary: {
+            total_alerts: 0,
+            high_priority: 0,
+            medium_priority: 0,
+            action_required_count: 0
+          }
         });
         setSummaryData({
           executive_summary: "Intelligence system initializing. Real-time aviation news and alerts monitoring is active.",
