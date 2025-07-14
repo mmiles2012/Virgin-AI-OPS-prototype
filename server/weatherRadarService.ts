@@ -13,9 +13,9 @@ class WeatherRadarService {
   private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache
   private lastKnownGoodImage: string | null = null;
 
-  // Determine if coordinates are in NOAA coverage area (Continental US)
+  // Determine if coordinates are in NOAA coverage area (Continental US + Extended)
   private isNoaaCoverage(lat: number, lng: number): boolean {
-    return lat >= 20 && lat <= 60 && lng >= -170 && lng <= -50;
+    return lat >= 15 && lat <= 65 && lng >= -175 && lng <= -45;
   }
 
   // Check cache first

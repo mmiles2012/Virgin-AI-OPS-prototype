@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Circle, Popup, useMap } from 'react-leaflet';
+import { Circle, Popup, Polygon, useMap } from 'react-leaflet';
 import { AlertTriangle, Cloud, Wind, Zap, Info } from 'lucide-react';
 
 interface SigmetAlert {
@@ -17,6 +17,7 @@ interface SigmetAlert {
     lon: number;
     radius?: number;
   };
+  coordinates?: Array<[number, number]>; // For boundary polygon display
   altitude: {
     min: number;
     max: number;
@@ -58,23 +59,111 @@ export default function SigmetOverlay({ showSigmets, onSigmetSelect }: SigmetOve
     }
   }, [showSigmets]);
 
+  // Extract coordinates from alert text or raw data
+  const extractCoordinatesFromAlert = (alert: any): Array<[number, number]> | undefined => {
+    // If coordinates are provided directly
+    if (alert.coordinates && Array.isArray(alert.coordinates)) {
+      return alert.coordinates;
+    }
+    
+    // Parse coordinates from raw text if available
+    const rawText = alert.raw_data || alert.description || '';
+    const coordPattern = /(\d{1,2}\.\d{1,2}[NS])\s*(\d{1,3}\.\d{1,2}[EW])/g;
+    const matches = [...rawText.matchAll(coordPattern)];
+    
+    if (matches.length >= 3) {
+      // Convert to lat/lng pairs
+      return matches.map(match => {
+        const latStr = match[1];
+        const lngStr = match[2];
+        
+        const lat = parseFloat(latStr.slice(0, -1)) * (latStr.endsWith('S') ? -1 : 1);
+        const lng = parseFloat(lngStr.slice(0, -1)) * (lngStr.endsWith('W') ? -1 : 1);
+        
+        return [lat, lng] as [number, number];
+      });
+    }
+    
+    // If no specific coordinates, create a default boundary area
+    if (alert.coordinates?.lat && alert.coordinates?.lon) {
+      const centerLat = alert.coordinates.lat;
+      const centerLon = alert.coordinates.lon;
+      const radius = 0.5; // 0.5 degree radius (~55km)
+      
+      return [
+        [centerLat + radius, centerLon - radius],
+        [centerLat + radius, centerLon + radius],
+        [centerLat - radius, centerLon + radius],
+        [centerLat - radius, centerLon - radius],
+        [centerLat + radius, centerLon - radius] // Close the polygon
+      ];
+    }
+    
+    return undefined;
+  };
+
+  // Map severity levels to display categories
+  const mapSeverityLevel = (severity: string): 'low' | 'medium' | 'high' | 'critical' => {
+    const severityStr = severity?.toLowerCase() || '';
+    if (severityStr.includes('critical') || severityStr.includes('severe')) return 'critical';
+    if (severityStr.includes('high') || severityStr.includes('significant')) return 'high';
+    if (severityStr.includes('medium') || severityStr.includes('moderate')) return 'medium';
+    return 'low';
+  };
+
   const fetchSigmets = async () => {
     if (!showSigmets) return;
     
     setLoading(true);
     try {
-      const response = await fetch('/api/aviation/airspace-alerts');
+      const response = await fetch('/api/aviation/sigmet-alerts');
       const data = await response.json();
       
       if (data.success) {
-        // Filter for SIGMET and G-AIRMET alerts only
+        // Filter for authentic SIGMET and G-AIRMET alerts only
         const sigmetAlerts = data.alerts.filter((alert: any) => 
-          alert.title.includes('SIGMET') || alert.title.includes('G-AIRMET')
+          alert.alert_type === 'SIGMET' || alert.alert_type === 'G-AIRMET'
         );
         
-        // Only show real SIGMET alerts - no demo data
-        setSigmets(sigmetAlerts);
-        console.log(`🌩️ SIGMET Display: Loaded ${sigmetAlerts.length} authentic SIGMET alerts from Aviation Weather Center`);
+        // Convert alerts to proper SIGMET format with boundary coordinates
+        const convertedSigmets = sigmetAlerts.map((alert: any) => {
+          // Extract coordinates from alert data if available
+          const coordinates = extractCoordinatesFromAlert(alert);
+          
+          return {
+            id: alert.id,
+            type: alert.alert_type || 'SIGMET',
+            title: `${alert.alert_type}: ${alert.description}`,
+            description: alert.description,
+            location: {
+              lat: alert.coordinates?.lat || 40.0,
+              lon: alert.coordinates?.lon || -100.0,
+              radius: alert.radius || 50 // Default 50km radius
+            },
+            coordinates, // Boundary polygon coordinates
+            altitude: {
+              min: alert.altitude_range?.min || 0,
+              max: alert.altitude_range?.max || 60000
+            },
+            timeframe: {
+              start: alert.effective_start,
+              end: alert.effective_end
+            },
+            severity: mapSeverityLevel(alert.severity),
+            source: alert.source,
+            lastUpdated: alert.scraped_at,
+            weather_features: {
+              phenomenon: alert.phenomenon || 'Unknown',
+              movement: alert.movement ? {
+                direction: alert.movement.direction || 0,
+                speed: alert.movement.speed || 0
+              } : undefined
+            }
+          };
+        });
+        
+        setSigmets(convertedSigmets);
+        console.log(`🌩️ SIGMET Display: Loaded ${convertedSigmets.length} authentic SIGMET alerts from Aviation Weather Center`);
         
         if (sigmetAlerts.length === 0) {
           console.log('🌩️ No active SIGMET alerts currently - this is normal when weather conditions are good');
