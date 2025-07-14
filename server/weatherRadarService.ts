@@ -114,12 +114,12 @@ class WeatherRadarService {
       const radarOverlay = await this.getNoaaRadarOverlay(useBbox, width, height);
       
       if (radarOverlay) {
-        // Prioritize showing the actual weather radar
-        console.log('✓ NOAA weather radar retrieved successfully');
+        // Prioritize showing the actual weather radar with enhanced precipitation detection
+        console.log('✅ Enhanced NOAA precipitation radar retrieved successfully');
         return radarOverlay;
       } else {
+        console.log('⚠️ No NOAA precipitation data available - may indicate clear conditions');
         // If no radar available, create enhanced geographic background for context
-        console.log('No NOAA radar available, creating enhanced geographic background');
         return this.createEnhancedBackground(width, height, useBbox);
       }
     } catch (error) {
@@ -409,56 +409,68 @@ class WeatherRadarService {
     return Math.floor((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2 * Math.pow(2, zoom));
   }
 
-  // Get NOAA radar overlay (transparent)
+  // Get NOAA radar overlay with multiple sources for better precipitation coverage
   async getNoaaRadarOverlay(bbox: number[], width: number, height: number): Promise<string | null> {
-    const url = "https://mapservices.weather.noaa.gov/eventdriven/rest/services/radar/radar_base_reflectivity_time/ImageServer/exportImage";
+    const baseUrl = "https://mapservices.weather.noaa.gov/eventdriven/rest/services/radar";
     
-    const params = new URLSearchParams({
-      bbox: `${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}`,
-      bboxSR: '4326',
-      size: `${width},${height}`,
-      imageSR: '4326',
-      format: 'png',
-      f: 'image',
-      transparent: 'true',
-      interpolation: 'RSP_BilinearInterpolation'
-    });
+    // Try multiple radar sources for comprehensive precipitation coverage
+    const radarSources = [
+      // Current base reflectivity time - shows latest precipitation
+      `${baseUrl}/radar_base_reflectivity_time/ImageServer/exportImage`,
+      // Composite reflectivity time - all elevation angles combined
+      `${baseUrl}/radar_composite_reflectivity_time/ImageServer/exportImage`,
+      // Base reflectivity operational - live operational radar
+      `${baseUrl}/radar_base_reflectivity/ImageServer/exportImage`
+    ];
 
-    try {
-      console.log('Fetching NOAA radar overlay...');
-      console.log('URL:', `${url}?${params}`);
+    for (let i = 0; i < radarSources.length; i++) {
+      const url = radarSources[i];
+      const sourceName = url.split('/').slice(-2, -1)[0];
       
-      const response = await fetch(`${url}?${params}`, {
-        method: 'GET',
-        headers: {
-          'User-Agent': this.userAgent,
-          'Accept': 'image/png,image/*,*/*'
-        },
-        timeout: 15000
-      });
+      try {
+        const params = new URLSearchParams({
+          bbox: `${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]}`,
+          bboxSR: '4326',
+          size: `${width},${height}`,
+          imageSR: '4326',
+          format: 'png',
+          f: 'image',
+          transparent: 'true',
+          interpolation: 'RSP_BilinearInterpolation',
+          time: Date.now().toString() // Force fresh data
+        });
 
-      console.log('NOAA radar response status:', response.status);
-      
-      if (!response.ok) {
-        console.log('NOAA radar failed with status:', response.status);
-        return null;
+        console.log(`🌧️ Trying NOAA ${sourceName} for live precipitation data...`);
+        
+        const response = await fetch(`${url}?${params}`, {
+          method: 'GET',
+          headers: {
+            'User-Agent': this.userAgent,
+            'Accept': 'image/png',
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
+          },
+          timeout: 15000
+        });
+
+        console.log(`${sourceName} response: ${response.status} - ${response.headers.get('content-type')}`);
+        
+        if (response.ok && response.headers.get('content-type')?.includes('image')) {
+          const buffer = await response.buffer();
+          
+          if (buffer.length > 3000) { // Ensure meaningful radar data
+            console.log(`✅ Live precipitation radar from ${sourceName}: ${buffer.length} bytes`);
+            return `data:image/png;base64,${buffer.toString('base64')}`;
+          } else {
+            console.log(`⚠️ ${sourceName} returned minimal data (${buffer.length} bytes) - trying next source`);
+          }
+        }
+      } catch (error) {
+        console.log(`❌ ${sourceName} failed: ${error.message}`);
       }
-
-      const contentType = response.headers.get('content-type');
-      console.log('NOAA radar content type:', contentType);
-      
-      if (contentType && contentType.startsWith('image')) {
-        const buffer = await response.buffer();
-        console.log('NOAA radar data received, size:', buffer.length);
-        return `data:${contentType};base64,${buffer.toString('base64')}`;
-      }
-      
-      console.log('NOAA radar response was not an image');
-      return null;
-    } catch (error) {
-      console.error('NOAA radar overlay error:', error.message);
-      return null;
     }
+    
+    console.warn('🌦️ All NOAA radar sources failed or returned minimal precipitation data');
+    return null;
   }
 
   // Create enhanced geographic background when map tiles fail
