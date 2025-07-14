@@ -261,7 +261,7 @@ const FlightAwareNotamDashboard: React.FC = () => {
     switch (impact) {
       case 'CRITICAL': return 'bg-red-600 text-white';
       case 'HIGH': return 'bg-orange-500 text-white';
-      case 'MEDIUM': return 'bg-yellow-500 text-black';
+      case 'MEDIUM': return 'bg-yellow-500 text-white';
       case 'LOW': return 'bg-green-500 text-white';
       default: return 'bg-gray-500 text-white';
     }
