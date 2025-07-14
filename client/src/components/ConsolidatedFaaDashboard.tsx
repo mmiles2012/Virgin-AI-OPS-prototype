@@ -361,7 +361,7 @@ export default function ConsolidatedFaaDashboard() {
                         <div className="flex justify-between">
                           <span>Accuracy:</span>
                           <Badge className={delayAccuracy < 10 ? "bg-green-100 text-green-800" : 
-                                           delayAccuracy < 20 ? "bg-yellow-100 text-yellow-800" : 
+                                           delayAccuracy < 20 ? "bg-yellow-500 text-white" : 
                                            "bg-red-100 text-red-800"}>
                             ±{formatDelay(delayAccuracy)}
                           </Badge>
@@ -401,7 +401,7 @@ export default function ConsolidatedFaaDashboard() {
                           {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </div>
                         <Badge className={Math.abs(value) > 0.7 ? "bg-blue-100 text-blue-800" : 
-                                         Math.abs(value) > 0.4 ? "bg-yellow-100 text-yellow-800" : 
+                                         Math.abs(value) > 0.4 ? "bg-yellow-500 text-white" : 
                                          "bg-gray-100 text-gray-800"}>
                           {value > 0 ? '+' : ''}{value.toFixed(4)}
                         </Badge>
@@ -428,7 +428,7 @@ export default function ConsolidatedFaaDashboard() {
                           </div>
                         </div>
                         <Badge className={Math.abs(month.correlation_strength) > 0.7 ? "bg-blue-100 text-blue-800" : 
-                                         Math.abs(month.correlation_strength) > 0.4 ? "bg-yellow-100 text-yellow-800" : 
+                                         Math.abs(month.correlation_strength) > 0.4 ? "bg-yellow-500 text-white" : 
                                          "bg-gray-100 text-gray-800"}>
                           {month.correlation_strength.toFixed(3)}
                         </Badge>
@@ -461,7 +461,7 @@ export default function ConsolidatedFaaDashboard() {
                       <CardContent className="space-y-2">
                         <div className="flex justify-between">
                           <span className="text-sm">Storm Days:</span>
-                          <Badge className={airport.storm_days > 5 ? "bg-red-100 text-red-800" : "bg-yellow-100 text-yellow-800"}>
+                          <Badge className={airport.storm_days > 5 ? "bg-red-500 text-white" : "bg-yellow-500 text-white"}>
                             {airport.storm_days}
                           </Badge>
                         </div>

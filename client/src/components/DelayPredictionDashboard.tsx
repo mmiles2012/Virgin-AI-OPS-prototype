@@ -864,7 +864,7 @@ const DelayPredictionDashboard: React.FC = () => {
                             <div className="flex items-center justify-between mb-2">
                               <h5 className="font-medium capitalize">{riskType.replace('Risk', ' Risk')}</h5>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                riskData.level === 'HIGH' ? 'bg-red-100 text-red-800' :
+                                riskData.level === 'HIGH' ? 'bg-red-500 text-white' :
                                 riskData.level === 'MEDIUM' ? 'bg-yellow-500 text-white' :
                                 'bg-green-100 text-green-800'
                               }`}>
@@ -1575,8 +1575,8 @@ const DelayPredictionDashboard: React.FC = () => {
                               airline.performanceGrade === 'A' ? 'bg-green-100 text-green-800' :
                               airline.performanceGrade === 'B' ? 'bg-blue-100 text-blue-800' :
                               airline.performanceGrade === 'C' ? 'bg-yellow-500 text-white' :
-                              airline.performanceGrade === 'D' ? 'bg-orange-100 text-orange-800' :
-                              'bg-red-100 text-red-800'
+                              airline.performanceGrade === 'D' ? 'bg-orange-500 text-white' :
+                              'bg-red-500 text-white'
                             }`}>
                               {airline.performanceGrade}
                             </span>

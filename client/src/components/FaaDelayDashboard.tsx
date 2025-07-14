@@ -105,14 +105,14 @@ export default function FaaDelayDashboard() {
   const getDelayColor = (delayMinutes: number) => {
     if (delayMinutes < 2) return "bg-green-100 text-green-800";
     if (delayMinutes < 5) return "bg-yellow-500 text-white";
-    return "bg-red-100 text-red-800";
+    return "bg-red-500 text-white";
   };
 
   const getCorrelationColor = (correlation: number) => {
     const abs = Math.abs(correlation);
     if (abs > 0.8) return "bg-purple-100 text-purple-800";
     if (abs > 0.6) return "bg-blue-100 text-blue-800";
-    if (abs > 0.4) return "bg-orange-100 text-orange-800";
+    if (abs > 0.4) return "bg-orange-500 text-white";
     return "bg-gray-100 text-gray-800";
   };
 
@@ -568,7 +568,7 @@ export default function FaaDelayDashboard() {
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <Badge className="bg-red-100 text-red-800">Red Risk</Badge>
+                          <Badge className="bg-red-500 text-white">Red Risk</Badge>
                           <span className="text-sm">High delay risk (&gt; 25%)</span>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -600,7 +600,7 @@ export default function FaaDelayDashboard() {
                           <Badge className={
                             record.delay_risk_category === 'Green' ? 'bg-green-100 text-green-800' :
                             record.delay_risk_category === 'Amber' ? 'bg-yellow-500 text-white' :
-                            'bg-red-100 text-red-800'
+                            'bg-red-500 text-white'
                           }>
                             {record.delay_risk_category}
                           </Badge>

@@ -310,13 +310,13 @@ const VisaRequirementsDashboard: React.FC = () => {
   const getVisaStatusBadge = (requirement: string) => {
     const req = requirement.toLowerCase();
     if (req.includes('visa not required') || req.includes('visa free')) {
-      return <Badge variant="secondary" className="bg-green-100 text-green-800">Visa Free</Badge>;
+      return <Badge variant="secondary" className="bg-green-500 text-white">Visa Free</Badge>;
     } else if (req.includes('visa on arrival')) {
       return <Badge variant="secondary" className="bg-yellow-500 text-white">Visa on Arrival</Badge>;
     } else if (req.includes('visa required')) {
-      return <Badge variant="secondary" className="bg-red-100 text-red-800">Visa Required</Badge>;
+      return <Badge variant="secondary" className="bg-red-500 text-white">Visa Required</Badge>;
     }
-    return <Badge variant="secondary" className="bg-gray-100 text-gray-800">Unknown</Badge>;
+    return <Badge variant="secondary" className="bg-gray-500 text-white">Unknown</Badge>;
   };
 
   return (
