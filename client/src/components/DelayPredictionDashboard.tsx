@@ -865,7 +865,7 @@ const DelayPredictionDashboard: React.FC = () => {
                               <h5 className="font-medium capitalize">{riskType.replace('Risk', ' Risk')}</h5>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 riskData.level === 'HIGH' ? 'bg-red-100 text-red-800' :
-                                riskData.level === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
+                                riskData.level === 'MEDIUM' ? 'bg-yellow-500 text-white' :
                                 'bg-green-100 text-green-800'
                               }`}>
                                 {riskData.level} RISK
@@ -1574,7 +1574,7 @@ const DelayPredictionDashboard: React.FC = () => {
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                               airline.performanceGrade === 'A' ? 'bg-green-100 text-green-800' :
                               airline.performanceGrade === 'B' ? 'bg-blue-100 text-blue-800' :
-                              airline.performanceGrade === 'C' ? 'bg-yellow-100 text-yellow-800' :
+                              airline.performanceGrade === 'C' ? 'bg-yellow-500 text-white' :
                               airline.performanceGrade === 'D' ? 'bg-orange-100 text-orange-800' :
                               'bg-red-100 text-red-800'
                             }`}>
@@ -1878,12 +1878,12 @@ const DelayPredictionDashboard: React.FC = () => {
                         </p>
                         <p className="text-xs text-orange-700">Neural network output</p>
                       </div>
-                      <div className="bg-yellow-50 p-3 rounded-lg">
-                        <h4 className="font-semibold text-yellow-900 text-sm">Holding Risk</h4>
-                        <p className="text-2xl font-bold text-yellow-600">
+                      <div className="bg-yellow-500 p-3 rounded-lg">
+                        <h4 className="font-semibold text-white text-sm">Holding Risk</h4>
+                        <p className="text-2xl font-bold text-white">
                           {(tensorflowPrediction.predictions?.holdingProbability * 100)?.toFixed(1)}%
                         </p>
-                        <p className="text-xs text-yellow-700">AI calculated</p>
+                        <p className="text-xs text-yellow-100">AI calculated</p>
                       </div>
                       <div className="bg-blue-50 p-3 rounded-lg">
                         <h4 className="font-semibold text-blue-900 text-sm">Holding Time</h4>

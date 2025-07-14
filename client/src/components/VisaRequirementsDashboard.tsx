@@ -312,7 +312,7 @@ const VisaRequirementsDashboard: React.FC = () => {
     if (req.includes('visa not required') || req.includes('visa free')) {
       return <Badge variant="secondary" className="bg-green-100 text-green-800">Visa Free</Badge>;
     } else if (req.includes('visa on arrival')) {
-      return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Visa on Arrival</Badge>;
+      return <Badge variant="secondary" className="bg-yellow-500 text-white">Visa on Arrival</Badge>;
     } else if (req.includes('visa required')) {
       return <Badge variant="secondary" className="bg-red-100 text-red-800">Visa Required</Badge>;
     }
