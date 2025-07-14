@@ -453,6 +453,9 @@ export default function WhatIfScenarioEngine() {
     if (!selectedFlight) return;
     
     setIsCalculating(true);
+    // Switch to analysis tab when calculation starts
+    setActiveTab('analysis');
+    
     try {
       const baseScenario = {
         fuel: selectedFlight.originalFuel,
@@ -590,6 +593,53 @@ export default function WhatIfScenarioEngine() {
           </Badge>
         </div>
       </div>
+
+      {/* Analysis Control Panel */}
+      {selectedFlight && (
+        <Card className="mb-6 bg-gray-800 border-gray-700">
+          <CardContent className="pt-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="text-left">
+                  <h3 className="text-white font-medium">Selected: {selectedFlight.flightNumber}</h3>
+                  <p className="text-gray-400 text-sm">{selectedFlight.route} • {selectedFlight.aircraft}</p>
+                </div>
+                {selectedFailure && (
+                  <div className="text-left">
+                    <Badge variant="outline" className="text-red-400 border-red-400">
+                      {selectedFailure.name}
+                    </Badge>
+                  </div>
+                )}
+                {selectedWeather && (
+                  <div className="text-left">
+                    <Badge variant="outline" className="text-blue-400 border-blue-400">
+                      {selectedWeather.name}
+                    </Badge>
+                  </div>
+                )}
+              </div>
+              <Button
+                onClick={calculateScenario}
+                disabled={isCalculating || !selectedFlight}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2"
+              >
+                {isCalculating ? (
+                  <>
+                    <Activity className="w-4 h-4 mr-2 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    Run Scenario Analysis
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-5 bg-gray-800">
@@ -1077,13 +1127,38 @@ export default function WhatIfScenarioEngine() {
             <div className="text-center py-12">
               <Activity className="w-12 h-12 text-gray-600 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-white mb-2">No Analysis Available</h3>
-              <p className="text-gray-400 mb-4">Select a flight and run scenario analysis to see results</p>
-              <Button
-                onClick={() => setActiveTab('flight-selection')}
-                className="bg-yellow-600 hover:bg-yellow-700 text-white"
-              >
-                Select Flight
-              </Button>
+              <p className="text-gray-400 mb-4">
+                {!selectedFlight 
+                  ? 'Select a flight and run scenario analysis to see results'
+                  : 'Configure scenarios and run analysis to see results'
+                }
+              </p>
+              {!selectedFlight ? (
+                <Button
+                  onClick={() => setActiveTab('flight-selection')}
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                >
+                  Select Flight
+                </Button>
+              ) : (
+                <Button
+                  onClick={calculateScenario}
+                  disabled={isCalculating}
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                >
+                  {isCalculating ? (
+                    <>
+                      <Activity className="w-4 h-4 mr-2 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      Run Scenario Analysis
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           )}
         </TabsContent>
