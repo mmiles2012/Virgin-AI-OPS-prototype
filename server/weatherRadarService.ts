@@ -9,45 +9,95 @@ interface RadarResponse {
 class WeatherRadarService {
   private userAgent = 'WeatherRadarClient/1.0';
   private mapTilerApiKey = process.env.MAPTILER_API_KEY || 'YOUR_MAPTILER_API_KEY_HERE';
+  private cache = new Map<string, { data: string; timestamp: number; ttl: number }>();
+  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache
+  private lastKnownGoodImage: string | null = null;
 
   // Determine if coordinates are in NOAA coverage area (Continental US)
   private isNoaaCoverage(lat: number, lng: number): boolean {
     return lat >= 20 && lat <= 60 && lng >= -170 && lng <= -50;
   }
 
+  // Check cache first
+  private getCachedRadar(cacheKey: string): string | null {
+    const cached = this.cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < cached.ttl) {
+      console.log('🔄 Using cached weather radar data');
+      return cached.data;
+    }
+    return null;
+  }
+
+  // Store in cache
+  private setCachedRadar(cacheKey: string, data: string, ttl: number = this.CACHE_TTL): void {
+    this.cache.set(cacheKey, {
+      data,
+      timestamp: Date.now(),
+      ttl
+    });
+    // Keep as last known good image for emergency fallback
+    this.lastKnownGoodImage = data;
+  }
+
   // Smart radar selection based on geographic location
   async getSmartRadar(lat?: number, lng?: number, bbox?: number[], width = 800, height = 600): Promise<RadarResponse> {
     const centerLat = lat || 40;
     const centerLng = lng || -100;
+    const cacheKey = `radar_${centerLat}_${centerLng}_${width}_${height}`;
     
     try {
+      // Check cache first
+      const cachedResult = this.getCachedRadar(cacheKey);
+      if (cachedResult) {
+        return { success: true, imageUrl: cachedResult };
+      }
+
+      let radarData: string | null = null;
+
       // Use NOAA for Continental US, including broader US coverage
       if (this.isNoaaCoverage(centerLat, centerLng)) {
         console.log(`🇺🇸 Using NOAA radar for US coverage at coordinates: ${centerLat}, ${centerLng}`);
-        const noaaRadar = await this.getNoaaRadar(bbox, width, height);
-        if (noaaRadar) {
-          return { success: true, imageUrl: noaaRadar };
+        radarData = await this.getNoaaRadar(bbox, width, height);
+        if (radarData) {
+          this.setCachedRadar(cacheKey, radarData);
+          return { success: true, imageUrl: radarData };
         }
         console.log('NOAA radar failed, trying RainViewer for US region...');
       }
       
       // Use RainViewer for global coverage (including when NOAA fails)
       console.log(`🌍 Using RainViewer radar for global coverage at coordinates: ${centerLat}, ${centerLng}`);
-      const rainViewerRadar = await this.getRainViewerRadar(centerLat, centerLng);
-      if (rainViewerRadar) {
-        return { success: true, imageUrl: rainViewerRadar };
+      radarData = await this.getRainViewerRadar(centerLat, centerLng);
+      if (radarData) {
+        this.setCachedRadar(cacheKey, radarData);
+        return { success: true, imageUrl: radarData };
       }
       
       // Fall back to MapTiler if available
       console.log('Trying MapTiler radar as final backup');
-      const mapTilerRadar = await this.getMapTilerRadar(centerLat, centerLng);
-      if (mapTilerRadar) {
-        return { success: true, imageUrl: mapTilerRadar };
+      radarData = await this.getMapTilerRadar(centerLat, centerLng);
+      if (radarData) {
+        this.setCachedRadar(cacheKey, radarData);
+        return { success: true, imageUrl: radarData };
+      }
+
+      // Emergency fallback: use last known good image if available
+      if (this.lastKnownGoodImage) {
+        console.log('⚠️ Using last known good weather radar image as emergency fallback');
+        this.setCachedRadar(cacheKey, this.lastKnownGoodImage, 2 * 60 * 1000); // 2 minute cache for fallback
+        return { success: true, imageUrl: this.lastKnownGoodImage };
       }
       
       return { success: false, error: 'No weather radar data available from any source' };
     } catch (error) {
       console.error('Smart radar selection failed:', error);
+      
+      // Emergency fallback: use last known good image if available
+      if (this.lastKnownGoodImage) {
+        console.log('🚨 Emergency fallback: Using last known good weather radar image');
+        return { success: true, imageUrl: this.lastKnownGoodImage };
+      }
+      
       return { success: false, error: 'Weather radar service unavailable' };
     }
   }

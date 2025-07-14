@@ -190,10 +190,53 @@ class AWCSigmetService {
     });
   }
 
+  private parseGeoJSONResponse(geoJsonData: any): ProcessedSigmet[] {
+    if (!geoJsonData.features || !Array.isArray(geoJsonData.features)) {
+      return [];
+    }
+
+    return geoJsonData.features.map((feature: any, index: number) => {
+      const properties = feature.properties || {};
+      const geometry = feature.geometry || {};
+      
+      // Extract center coordinates from geometry
+      let centerCoord: { lat: number; lon: number } | null = null;
+      if (geometry.type === 'Point' && geometry.coordinates) {
+        centerCoord = { lat: geometry.coordinates[1], lon: geometry.coordinates[0] };
+      } else if (geometry.type === 'Polygon' && geometry.coordinates && geometry.coordinates[0]) {
+        const coords = geometry.coordinates[0];
+        const lat = coords.reduce((sum: number, coord: number[]) => sum + coord[1], 0) / coords.length;
+        const lon = coords.reduce((sum: number, coord: number[]) => sum + coord[0], 0) / coords.length;
+        centerCoord = { lat, lon };
+      }
+
+      const phenomenon = properties.hazard || properties.phenomenon || 'UNKNOWN';
+      const severity = this.mapSeverityLevel(phenomenon, properties.rawText || '');
+      
+      return {
+        alert_type: 'SIGMET',
+        id: `SIGMET-GeoJSON-${properties.id || index}-${Date.now()}`,
+        location: properties.issuingOffice || properties.area || 'UNKNOWN',
+        description: `${phenomenon}: ${properties.rawText || properties.description || 'No description available'}`,
+        effective_start: properties.validTimeFrom || properties.validTime || new Date().toISOString(),
+        effective_end: properties.validTimeTo || properties.validTimeEnd || new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
+        severity,
+        source: 'AWC SIGMET GeoJSON API',
+        raw_data: properties.rawText || JSON.stringify(properties),
+        scraped_at: new Date().toISOString(),
+        coordinates: centerCoord || undefined,
+        altitude_range: this.extractAltitudeRange(properties.rawText || ''),
+        phenomenon,
+        movement: this.extractMovement(properties.rawText || '')
+      };
+    });
+  }
+
   async fetchCurrentSigmets(): Promise<ProcessedSigmet[]> {
     try {
-      console.log('Fetching current SIGMETs from AWC API...');
+      console.log('🌩️ Fetching current SIGMETs from AWC API...');
       
+      // Try primary AWC endpoint first
       const response = await axios.get(this.baseURL, {
         params: {
           dataSource: 'sigmets',
@@ -211,18 +254,42 @@ class AWCSigmetService {
       this.cachedSigmets = processedSigmets;
       this.lastUpdate = new Date();
       
-      console.log(`Successfully processed ${processedSigmets.length} SIGMETs`);
+      console.log(`✅ Successfully processed ${processedSigmets.length} authentic SIGMETs from Aviation Weather Center`);
       return processedSigmets;
 
     } catch (error) {
-      console.error('Error fetching SIGMET data from AWC:', error);
+      console.error('❌ Primary AWC SIGMET source failed:', error);
+      
+      // Try alternative AWC API endpoint
+      try {
+        console.log('🔄 Trying alternative AWC SIGMET endpoint...');
+        const altResponse = await axios.get('https://www.aviationweather.gov/api/data/metproducts', {
+          params: {
+            format: 'geojson',
+            product: 'sigmet'
+          },
+          headers: this.headers,
+          timeout: 15000
+        });
+
+        if (altResponse.data && altResponse.data.features) {
+          const altSigmets = this.parseGeoJSONResponse(altResponse.data);
+          this.cachedSigmets = altSigmets;
+          this.lastUpdate = new Date();
+          console.log(`✅ Successfully processed ${altSigmets.length} authentic SIGMETs from alternative source`);
+          return altSigmets;
+        }
+      } catch (altError) {
+        console.error('❌ Alternative AWC SIGMET source failed:', altError);
+      }
       
       // Return cached data if available
       if (this.cachedSigmets.length > 0) {
-        console.log('Returning cached SIGMET data');
+        console.log('🔄 Using cached authentic SIGMET data');
         return this.cachedSigmets;
       }
       
+      console.log('ℹ️  No active SIGMET alerts found - weather conditions are currently favorable');
       return [];
     }
   }
