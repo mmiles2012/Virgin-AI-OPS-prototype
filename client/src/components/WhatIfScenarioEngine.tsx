@@ -201,6 +201,8 @@ export default function WhatIfScenarioEngine() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [realTimeComparison, setRealTimeComparison] = useState(false);
   const [activeTab, setActiveTab] = useState('flight-selection');
+  const [learningStats, setLearningStats] = useState<any>(null);
+  const [learningActive, setLearningActive] = useState(false);
 
   // Comprehensive failure scenarios from digital twin profiles
   const failureScenarios: FailureScenario[] = [
@@ -424,6 +426,7 @@ export default function WhatIfScenarioEngine() {
 
   useEffect(() => {
     fetchAvailableFlights();
+    fetchLearningStats();
   }, []);
 
   const fetchAvailableFlights = async () => {
@@ -446,6 +449,40 @@ export default function WhatIfScenarioEngine() {
       }
     } catch (error) {
       console.error('Failed to fetch flights:', error);
+    }
+  };
+
+  const fetchLearningStats = async () => {
+    try {
+      const response = await fetch('/api/scenario/learning-stats');
+      const data = await response.json();
+      if (data.success) {
+        setLearningStats(data.learning_statistics);
+      }
+    } catch (error) {
+      console.error('Failed to fetch learning stats:', error);
+    }
+  };
+
+  const triggerSelfLearningCycle = async () => {
+    try {
+      setLearningActive(true);
+      const response = await fetch('/api/scenario/self-learning-cycle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        // Refresh learning stats after cycle
+        await fetchLearningStats();
+        return data;
+      }
+    } catch (error) {
+      console.error('Failed to trigger self-learning cycle:', error);
+    } finally {
+      setLearningActive(false);
     }
   };
 
@@ -642,12 +679,13 @@ export default function WhatIfScenarioEngine() {
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-gray-800">
+        <TabsList className="grid w-full grid-cols-6 bg-gray-800">
           <TabsTrigger value="flight-selection">Flight Selection</TabsTrigger>
           <TabsTrigger value="failure-scenarios">Failure Scenarios</TabsTrigger>
           <TabsTrigger value="weather-scenarios">Weather Scenarios</TabsTrigger>
           <TabsTrigger value="analysis">Analysis</TabsTrigger>
           <TabsTrigger value="diversions">Diversion Options</TabsTrigger>
+          <TabsTrigger value="learning">Learning</TabsTrigger>
         </TabsList>
 
         <TabsContent value="flight-selection" className="mt-6">
@@ -1230,6 +1268,154 @@ export default function WhatIfScenarioEngine() {
               </Button>
             </div>
           )}
+        </TabsContent>
+
+        <TabsContent value="learning" className="mt-6">
+          <div className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Activity className="w-5 h-5" />
+                  Machine Learning System Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {learningStats ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="p-4 bg-gray-700 rounded-lg">
+                      <Label className="text-gray-400">Total Scenarios Learned</Label>
+                      <p className="text-2xl font-bold text-white">{learningStats.total_scenarios_learned}</p>
+                    </div>
+                    <div className="p-4 bg-gray-700 rounded-lg">
+                      <Label className="text-gray-400">Models Trained</Label>
+                      <p className="text-2xl font-bold text-white">{learningStats.models_trained}</p>
+                    </div>
+                    <div className="p-4 bg-gray-700 rounded-lg">
+                      <Label className="text-gray-400">Average Accuracy</Label>
+                      <p className="text-2xl font-bold text-white">{(learningStats.average_accuracy * 100).toFixed(1)}%</p>
+                    </div>
+                    <div className="p-4 bg-gray-700 rounded-lg">
+                      <Label className="text-gray-400">Learning Status</Label>
+                      <Badge variant={learningStats.learning_enabled ? "default" : "secondary"}>
+                        {learningStats.learning_enabled ? 'ACTIVE' : 'DISABLED'}
+                      </Badge>
+                    </div>
+                    <div className="p-4 bg-gray-700 rounded-lg">
+                      <Label className="text-gray-400">Improvement Trend</Label>
+                      <p className="text-lg font-semibold text-green-400">{learningStats.improvement_trend}</p>
+                    </div>
+                    <div className="p-4 bg-gray-700 rounded-lg">
+                      <Label className="text-gray-400">Last Update</Label>
+                      <p className="text-sm text-gray-300">{new Date(learningStats.last_learning_update).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Activity className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                    <p className="text-gray-400">Loading learning statistics...</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" />
+                  Active Learning Features
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {learningStats?.active_features ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {learningStats.active_features.map((feature: string, index: number) => (
+                      <div key={index} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
+                        <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                        <span className="text-gray-300 capitalize">{feature.replace(/_/g, ' ')}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-400">No active learning features loaded</p>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Zap className="w-5 h-5" />
+                  Self-Learning Cycle
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-gray-400">
+                  Trigger an automated learning cycle to improve scenario predictions based on historical data and outcomes.
+                </p>
+                <div className="flex items-center gap-4">
+                  <Button
+                    onClick={triggerSelfLearningCycle}
+                    disabled={learningActive}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    {learningActive ? (
+                      <>
+                        <Activity className="w-4 h-4 mr-2 animate-spin" />
+                        Learning in Progress...
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-4 h-4 mr-2" />
+                        Start Learning Cycle
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={fetchLearningStats}
+                    variant="outline"
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    <Activity className="w-4 h-4 mr-2" />
+                    Refresh Stats
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Eye className="w-5 h-5" />
+                  Learning Insights
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-4 bg-gray-700 rounded-lg">
+                    <h4 className="font-semibold text-white mb-2">Prediction Accuracy</h4>
+                    <p className="text-gray-300 text-sm">
+                      The system continuously learns from actual flight outcomes to improve future scenario predictions.
+                      Current accuracy shows strong performance in fuel burn and cost estimation.
+                    </p>
+                  </div>
+                  <div className="p-4 bg-gray-700 rounded-lg">
+                    <h4 className="font-semibold text-white mb-2">Pattern Recognition</h4>
+                    <p className="text-gray-300 text-sm">
+                      Machine learning models identify patterns in aircraft performance, weather impacts, and operational costs
+                      to provide more accurate what-if scenario analyses.
+                    </p>
+                  </div>
+                  <div className="p-4 bg-gray-700 rounded-lg">
+                    <h4 className="font-semibold text-white mb-2">Continuous Improvement</h4>
+                    <p className="text-gray-300 text-sm">
+                      The self-learning system automatically archives historical data, retrains models, and updates
+                      prediction algorithms to ensure optimal performance over time.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
