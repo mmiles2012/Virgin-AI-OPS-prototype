@@ -10,7 +10,7 @@ class WeatherRadarService {
   private userAgent = 'WeatherRadarClient/1.0';
   private mapTilerApiKey = process.env.MAPTILER_API_KEY || 'YOUR_MAPTILER_API_KEY_HERE';
   private cache = new Map<string, { data: string; timestamp: number; ttl: number }>();
-  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache
+  private readonly CACHE_TTL = 2 * 60 * 1000; // 2 minutes cache for live weather
   private lastKnownGoodImage: string | null = null;
 
   // Determine if coordinates are in NOAA coverage area (Continental US + Extended)
@@ -22,7 +22,7 @@ class WeatherRadarService {
   private getCachedRadar(cacheKey: string): string | null {
     const cached = this.cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < cached.ttl) {
-      console.log('🔄 Using cached weather radar data');
+      console.log('🔄 Using cached weather radar data (live data preferred for precipitation)');
       return cached.data;
     }
     return null;
@@ -46,11 +46,8 @@ class WeatherRadarService {
     const cacheKey = `radar_${centerLat}_${centerLng}_${width}_${height}`;
     
     try {
-      // Check cache first
-      const cachedResult = this.getCachedRadar(cacheKey);
-      if (cachedResult) {
-        return { success: true, imageUrl: cachedResult };
-      }
+      // Skip cache for live precipitation data in summer
+      console.log('🌧️ Forcing fresh radar data to show current summer precipitation returns');
 
       let radarData: string | null = null;
 
@@ -59,7 +56,8 @@ class WeatherRadarService {
         console.log(`🇺🇸 Using NOAA radar for US coverage at coordinates: ${centerLat}, ${centerLng}`);
         radarData = await this.getNoaaRadar(bbox, width, height);
         if (radarData) {
-          this.setCachedRadar(cacheKey, radarData);
+          // Cache for minimal time to allow live updates
+          this.setCachedRadar(cacheKey, radarData, 30 * 1000); // 30 second cache for live data
           return { success: true, imageUrl: radarData };
         }
         console.log('NOAA radar failed, trying RainViewer for US region...');
@@ -69,7 +67,8 @@ class WeatherRadarService {
       console.log(`🌍 Using RainViewer radar for global coverage at coordinates: ${centerLat}, ${centerLng}`);
       radarData = await this.getRainViewerRadar(centerLat, centerLng);
       if (radarData) {
-        this.setCachedRadar(cacheKey, radarData);
+        // Cache for minimal time to allow live updates  
+        this.setCachedRadar(cacheKey, radarData, 30 * 1000); // 30 second cache for live data
         return { success: true, imageUrl: radarData };
       }
       
