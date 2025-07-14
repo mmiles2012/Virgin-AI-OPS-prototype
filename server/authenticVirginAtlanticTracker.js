@@ -305,6 +305,7 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /^(VIR|VS)0?300[A-Z]*$/, route: 'LHR-DEL', dep: 'LHR', arr: 'DEL' }, // VIR300 moved here to avoid conflict with VIR3
         { pattern: /^(VIR|VS)0?135[A-Z]*$/, route: 'LHR-MCO', dep: 'LHR', arr: 'MCO' }, // VIR135 moved here to avoid conflict with other patterns
         { pattern: /^(VIR|VS)0?129[A-Z]*$/, route: 'LHR-TPA', dep: 'LHR', arr: 'TPA' }, // VIR129 moved here to avoid conflict with other patterns
+        { pattern: /^(VIR|VS)0?106[A-Z]*$/, route: 'SEA-LHR', dep: 'SEA', arr: 'LHR' }, // VIR106 SEA-LHR route
         { pattern: /^(VIR|VS)0?3$/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' },
         { pattern: /^(VIR|VS)0?4$/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' },
         { pattern: /^(VIR|VS)0?25$/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' },
@@ -329,6 +330,7 @@ class AuthenticVirginAtlanticTracker {
         // Authentic W25 Orlando routes from official schedule
         { pattern: /^(VIR|VS)0?91$/, route: 'LHR-MCO', dep: 'LHR', arr: 'MCO' },
         { pattern: /^(VIR|VS)0?92$/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' },
+        { pattern: /^(VIR|VS)0?74[A-Z]*$/, route: 'MCO-MAN', dep: 'MCO', arr: 'MAN' }, // VIR74 Orlando-Manchester route
         
         // Authentic W25 Miami routes from official schedule
         { pattern: /^(VIR|VS)0?117$/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' },
@@ -376,7 +378,7 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?23[A-Z]*|VS23[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR23X likely LHR-JFK
         { pattern: /VIR?8[A-Z]*|VS8[A-Z]*/, route: 'LHR-LAX', dep: 'LHR', arr: 'LAX' },   // VIR8Y likely LHR-LAX  
         { pattern: /VIR?86[A-Z]*|VS86[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR86 likely LHR-MIA
-        { pattern: /VIR?110[A-Z]*|VS110[A-Z]*/, route: 'LHR-BOS', dep: 'LHR', arr: 'BOS' }, // VIR110 
+        { pattern: /VIR?110[A-Z]*|VS110[A-Z]*/, route: 'ATL-LHR', dep: 'ATL', arr: 'LHR' }, // VIR110 
         { pattern: /VIR?104[A-Z]*|VS104[A-Z]*/, route: 'ATL-LHR', dep: 'ATL', arr: 'LHR' }, // VIR104L
         { pattern: /^VIR?118[A-Z]*$|^VS118[A-Z]*$/, route: 'MIA-LHR', dep: 'MIA', arr: 'LHR' }, // VIR118 MIA-LHR (different timing than VS6)
 
@@ -385,16 +387,17 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?41[A-Z]*|VS41[A-Z]*/, route: 'LHR-SFO', dep: 'LHR', arr: 'SFO' }, // VIR41R
         // VIR42 pattern moved up to avoid conflict with VIR4 pattern
         { pattern: /VIR?6[A-Z]*|VS6[A-Z]*/, route: 'MIA-LHR', dep: 'MIA', arr: 'LHR' }, // VIR6J
-        { pattern: /VIR?10[A-Z]*|VS10[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR10H
+        { pattern: /^VIR?10[A-Z]$|^VS10[A-Z]$/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR10H (should not match VIR106)
         { pattern: /VIR?20[A-Z]*|VS20[A-Z]*/, route: 'SFO-LHR', dep: 'SFO', arr: 'LHR' }, // VIR20V
         { pattern: /VIR?137[A-Z]*|VS137[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR137Y
         { pattern: /VIR?138[A-Z]*|VS138[A-Z]*/, route: 'JFK-LHR', dep: 'JFK', arr: 'LHR' }, // VIR138M
-        { pattern: /VIR?106[A-Z]*|VS106[A-Z]*/, route: 'SEA-LHR', dep: 'SEA', arr: 'LHR' }, // VIR106F
+        { pattern: /VIR?106[A-Z]*|VS106[A-Z]*/, route: 'SEA-LHR', dep: 'SEA', arr: 'LHR' }, // VIR106F SEA-LHR
         { pattern: /VIR?91[A-Z]*|VS91[A-Z]*/, route: 'LHR-MCO', dep: 'LHR', arr: 'MCO' }, // VIR91U
         // VIR142 pattern moved up to MAN-ATL section
         { pattern: /VIR?166[A-Z]*|VS166[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR166G
         { pattern: /VIR?19[A-Z]*|VS19[A-Z]*/, route: 'LHR-SFO', dep: 'LHR', arr: 'SFO' }, // VIR19Z
         { pattern: /VIR?73[A-Z]*|VS73[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR73Q
+        { pattern: /VIR?74[A-Z]*|VS74[A-Z]*/, route: 'MCO-MAN', dep: 'MCO', arr: 'MAN' }, // VIR74Y MCO-MAN
         { pattern: /VIR?5[A-Z]*|VS5[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR5C - corrected to westbound Miami route
         { pattern: /VIR?3[A-Z]*|VS3[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR3N but NOT VIR302 (see India routes)
       ];
