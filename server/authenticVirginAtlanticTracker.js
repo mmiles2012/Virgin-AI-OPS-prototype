@@ -372,6 +372,10 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?449[A-Z]*|VS449[A-Z]*/, route: 'LHR-JNB', dep: 'LHR', arr: 'JNB' },
         { pattern: /VIR?92[A-Z]*|VS92[A-Z]*/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' },
         { pattern: /VIR?136[A-Z]*|VS136[A-Z]*/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' },
+        { pattern: /VIR?50[A-Z]*|VS50[A-Z]*/, route: 'MCO-LHR', dep: 'MCO', arr: 'LHR' }, // VIR50 MCO-LHR
+        { pattern: /VIR?130[A-Z]*|VS130[A-Z]*/, route: 'TPA-LHR', dep: 'TPA', arr: 'LHR' }, // VIR130 TPA-LHR
+        { pattern: /VIR?197[A-Z]*|VS197[A-Z]*/, route: 'LHR-BGI', dep: 'LHR', arr: 'BGI' }, // VIR197 LHR-BGI
+        { pattern: /VIR?317[A-Z]*|VS317[A-Z]*/, route: 'BLR-LHR', dep: 'BLR', arr: 'LHR' }, // VIR317 BLR-LHR
         
         // Additional Virgin Atlantic routes based on observed patterns
         // NOTE: VIR302 pattern moved above to India routes section to avoid conflict with VIR3 pattern
@@ -399,8 +403,8 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?73[A-Z]*|VS73[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR73Q
         { pattern: /VIR?74[A-Z]*|VS74[A-Z]*/, route: 'MCO-MAN', dep: 'MCO', arr: 'MAN' }, // VIR74Y MCO-MAN
         { pattern: /VIR?76[A-Z]*|VS76[A-Z]*/, route: 'MCO-MAN', dep: 'MCO', arr: 'MAN' }, // VIR76X MCO-MAN
-        { pattern: /VIR?5[A-Z]*|VS5[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR5C - corrected to westbound Miami route
-        { pattern: /VIR?3[A-Z]*|VS3[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR3N but NOT VIR302 (see India routes)
+        { pattern: /VIR?5[A-Z]*|VS5[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR5C - corrected to westbound Miami route (but NOT VIR50 - see above)
+        { pattern: /VIR?3[A-Z]*|VS3[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR3N but NOT VIR302 or VIR317 (see above)
       ];
       
       // Find matching route pattern using normalized callsign
@@ -519,6 +523,22 @@ class AuthenticVirginAtlanticTracker {
         } else if (flightNumber === '92') {
           route = 'MCO-LHR';
           depAirport = 'MCO';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '50') {
+          route = 'MCO-LHR';
+          depAirport = 'MCO';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '130') {
+          route = 'TPA-LHR';
+          depAirport = 'TPA';
+          arrAirport = 'LHR';
+        } else if (flightNumber === '197') {
+          route = 'LHR-BGI';
+          depAirport = 'LHR';
+          arrAirport = 'BGI';
+        } else if (flightNumber === '317') {
+          route = 'BLR-LHR';
+          depAirport = 'BLR';
           arrAirport = 'LHR';
         } else if (flightNumber === '23') {
           route = 'LHR-LAX';
