@@ -376,8 +376,8 @@ class AuthenticVirginAtlanticTracker {
         // Additional Virgin Atlantic routes based on observed patterns
         // NOTE: VIR302 pattern moved above to India routes section to avoid conflict with VIR3 pattern
         { pattern: /VIR?23[A-Z]*|VS23[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR23X likely LHR-JFK
-        { pattern: /VIR?8[A-Z]*|VS8[A-Z]*/, route: 'LHR-LAX', dep: 'LHR', arr: 'LAX' },   // VIR8Y likely LHR-LAX  
-        { pattern: /VIR?86[A-Z]*|VS86[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR86 likely LHR-MIA
+        { pattern: /VIR?8[A-Z]$|VS8[A-Z]$/, route: 'LAX-LHR', dep: 'LAX', arr: 'LHR' },   // VIR8Y LAX-LHR (exact match to avoid VIR86 conflict)  
+        { pattern: /VIR?86[A-Z]*|VS86[A-Z]*/, route: 'LAS-LHR', dep: 'LAS', arr: 'LHR' }, // VIR86 LAS-LHR
         { pattern: /VIR?110[A-Z]*|VS110[A-Z]*/, route: 'ATL-LHR', dep: 'ATL', arr: 'LHR' }, // VIR110 
         { pattern: /VIR?104[A-Z]*|VS104[A-Z]*/, route: 'ATL-LHR', dep: 'ATL', arr: 'LHR' }, // VIR104L
         { pattern: /^VIR?118[A-Z]*$|^VS118[A-Z]*$/, route: 'MIA-LHR', dep: 'MIA', arr: 'LHR' }, // VIR118 MIA-LHR (different timing than VS6)
@@ -398,6 +398,7 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?19[A-Z]*|VS19[A-Z]*/, route: 'LHR-SFO', dep: 'LHR', arr: 'SFO' }, // VIR19Z
         { pattern: /VIR?73[A-Z]*|VS73[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR73Q
         { pattern: /VIR?74[A-Z]*|VS74[A-Z]*/, route: 'MCO-MAN', dep: 'MCO', arr: 'MAN' }, // VIR74Y MCO-MAN
+        { pattern: /VIR?76[A-Z]*|VS76[A-Z]*/, route: 'MCO-MAN', dep: 'MCO', arr: 'MAN' }, // VIR76X MCO-MAN
         { pattern: /VIR?5[A-Z]*|VS5[A-Z]*/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR5C - corrected to westbound Miami route
         { pattern: /VIR?3[A-Z]*|VS3[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR3N but NOT VIR302 (see India routes)
       ];
