@@ -133,14 +133,37 @@ class NATTrackParser:
             return []
     
     def determine_direction(self, track_text):
-        """Determine if track is eastbound or westbound"""
-        if "EAST LVLS" in track_text.upper() or "EASTBOUND" in track_text.upper():
+        """Determine if track is eastbound or westbound based on NAT bulletin patterns"""
+        text_upper = track_text.upper()
+        
+        # Check for explicit direction indicators
+        if "EAST LVLS" in text_upper and "WEST LVLS NIL" in text_upper:
             return "Eastbound"
-        elif "WEST LVLS" in track_text.upper() or "WESTBOUND" in track_text.upper():
+        elif "WEST LVLS" in text_upper and "EAST LVLS NIL" in text_upper:
             return "Westbound"
-        else:
-            # Default logic based on common NAT patterns
-            return "Eastbound" if any(keyword in track_text.upper() for keyword in ["FL350", "FL370", "FL390"]) else "Westbound"
+        elif "EASTBOUND" in text_upper:
+            return "Eastbound"
+        elif "WESTBOUND" in text_upper:
+            return "Westbound"
+        
+        # Analyze time periods for day/night track cycles
+        # Day tracks (1130Z-1900Z): Typically Eastbound (Europe to North America morning departures)
+        # Night tracks (0100Z-0800Z): Typically Westbound (North America to Europe evening departures)
+        if any(time_pattern in text_upper for time_pattern in ["1130Z", "1200Z", "1300Z", "1400Z", "1500Z", "1600Z", "1700Z", "1800Z", "1900Z"]):
+            # Day tracks - usually eastbound for morning Europe to NA traffic
+            return "Eastbound"
+        elif any(time_pattern in text_upper for time_pattern in ["0100Z", "0200Z", "0300Z", "0400Z", "0500Z", "0600Z", "0700Z", "0800Z"]):
+            # Night tracks - usually westbound for evening NA to Europe traffic  
+            return "Westbound"
+        
+        # Check flight level patterns - NAT tracks often use different FLs for different directions
+        if "WEST LVLS NIL" in text_upper:
+            return "Eastbound"
+        elif "EAST LVLS NIL" in text_upper:
+            return "Westbound"
+        
+        # Default to Eastbound if no clear indicators (current tracks are daytime eastbound)
+        return "Eastbound"
     
     def build_geojson(self, track_blocks):
         """Build GeoJSON FeatureCollection from parsed track blocks"""
@@ -152,8 +175,8 @@ class NATTrackParser:
             if coords and len(coords) >= 2:  # Need at least 2 points for a line
                 direction = self.determine_direction(block_text)
                 
-                # Color coding: Orange for Eastbound, Purple for Westbound
-                color = "#FFA500" if direction == "Eastbound" else "#800080"
+                # Color coding: Orange for Eastbound (day), Purple for Westbound (night)
+                color = "#FFA500" if direction == "Eastbound" else "#9333EA"
                 
                 feature = {
                     "type": "Feature",
