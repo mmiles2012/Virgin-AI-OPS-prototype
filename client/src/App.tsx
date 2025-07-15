@@ -650,7 +650,7 @@ function App() {
             )}
             
             {viewMode === 'geopolitical' && (
-              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto bg-black/40 backdrop-blur-sm overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto bg-gray-900 overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <GeopoliticalRiskCenter />
               </div>
             )}
