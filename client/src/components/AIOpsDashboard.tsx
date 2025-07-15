@@ -7,6 +7,7 @@ import HeathrowHoldingMonitor from "./HeathrowHoldingMonitor";
 import SigmetOperationalMonitor from "./SigmetOperationalMonitor";
 import MLOperationalPlanningDashboard from "./MLOperationalPlanningDashboard";
 import StandConflictMonitor from "./StandConflictMonitor";
+import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 
 
 
@@ -47,6 +48,9 @@ interface FlightStats {
 }
 
 export default function AIOpsDashboard() {
+  // Cross-dashboard flight selection integration
+  const { selectedFlight, selectFlight, clearSelection } = useSelectedFlight();
+
   // Real-time network health calculated from authentic Virgin Atlantic flight data
   const [networkHealth, setNetworkHealth] = useState<NetworkHealthData>({
     onTimePerformance: 95, // Default - will be calculated from real data
@@ -405,10 +409,25 @@ export default function AIOpsDashboard() {
         {/* Live Flight Data */}
         <Card className="bg-slate-800 border-slate-700">
           <CardContent className="p-4">
-            <h2 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
-              <Plane className="w-4 h-4" />
-              Live Virgin Atlantic Fleet
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <Plane className="w-4 h-4" />
+                Live Virgin Atlantic Fleet
+              </h2>
+              {selectedFlight && (
+                <div className="flex items-center gap-2">
+                  <div className="text-xs text-blue-300">
+                    Selected: {selectedFlight.callsign || selectedFlight.flight_number}
+                  </div>
+                  <button
+                    onClick={clearSelection}
+                    className="text-gray-400 hover:text-white transition-colors text-xs underline"
+                  >
+                    Clear
+                  </button>
+                </div>
+              )}
+            </div>
             {adsbFlightData.length === 0 && !isLoadingFlights && (
               <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3 mb-3">
                 <div className="flex items-center gap-2 text-blue-300 text-sm">
@@ -428,7 +447,36 @@ export default function AIOpsDashboard() {
             )}
             <div className="space-y-2 max-h-40 overflow-y-auto">
               {adsbFlightData.slice(0, 3).map(flight => (
-                <div key={flight.icao24 || flight.flight_number} className="bg-slate-700 rounded-lg p-2">
+                <div 
+                  key={flight.icao24 || flight.flight_number} 
+                  className={`bg-slate-700 rounded-lg p-2 cursor-pointer transition-colors hover:bg-slate-600 ${
+                    selectedFlight?.callsign === flight.flight_number || selectedFlight?.flight_number === flight.flight_number
+                      ? 'ring-2 ring-blue-500 bg-blue-900/30' 
+                      : ''
+                  }`}
+                  onClick={() => {
+                    // Select flight for cross-dashboard synchronization
+                    selectFlight({
+                      callsign: flight.flight_number,
+                      flight_number: flight.flight_number,
+                      registration: flight.registration,
+                      aircraft_type: flight.aircraft_type,
+                      latitude: flight.latitude,
+                      longitude: flight.longitude,
+                      altitude: flight.altitude,
+                      velocity: flight.velocity,
+                      heading: flight.heading,
+                      aircraft: flight.aircraft_type,
+                      fuel: 15000,
+                      engineStatus: 'normal',
+                      systemsStatus: 'normal',
+                      authentic_tracking: flight.authentic_tracking,
+                      data_source: flight.data_source,
+                      status: flight.status || 'En Route'
+                    });
+                    console.log('🎯 AI Ops: Selected flight for cross-dashboard tracking:', flight.flight_number);
+                  }}
+                >
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="text-white font-medium text-sm">{flight.flight_number}</p>

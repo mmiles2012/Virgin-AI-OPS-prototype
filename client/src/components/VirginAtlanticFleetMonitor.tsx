@@ -15,6 +15,7 @@ import {
   MapPin,
   Activity
 } from 'lucide-react';
+import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 
 interface FleetData {
   registration: string;
@@ -48,10 +49,12 @@ interface FleetData {
 
 export default function VirginAtlanticFleetMonitor() {
   const [fleetData, setFleetData] = useState<FleetData[]>([]);
-  const [selectedAircraft, setSelectedAircraft] = useState<string>('');
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
+  
+  // Use centralized flight selection for cross-dashboard synchronization
+  const { selectedFlight, selectedFlightRegistration, selectFlightByRegistration, selectFlightByCallsign, clearSelection } = useSelectedFlight();
 
   // Fetch authentic ADS-B Exchange Virgin Atlantic fleet data
   useEffect(() => {
@@ -131,7 +134,7 @@ export default function VirginAtlanticFleetMonitor() {
     return () => clearInterval(interval);
   }, []);
 
-  const selectedAircraftData = fleetData.find(a => a.registration === selectedAircraft);
+  const selectedAircraftData = fleetData.find(a => a.registration === selectedFlightRegistration);
 
   const getHealthColor = (score: number) => {
     if (score >= 90) return 'text-green-400';
@@ -239,14 +242,52 @@ export default function VirginAtlanticFleetMonitor() {
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-white font-medium">Fleet Status</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-white font-medium">Fleet Status</h3>
+                  {selectedFlightRegistration && (
+                    <div className="flex items-center gap-2">
+                      <div className="text-xs text-blue-300">
+                        Selected: {selectedFlightRegistration}
+                      </div>
+                      <button
+                        onClick={clearSelection}
+                        className="text-gray-400 hover:text-white transition-colors text-xs underline"
+                      >
+                        Clear Selection
+                      </button>
+                    </div>
+                  )}
+                </div>
                 {fleetData.map(aircraft => (
                   <div 
                     key={aircraft.registration}
                     className={`bg-gray-800/30 rounded p-3 cursor-pointer transition-colors ${
-                      selectedAircraft === aircraft.registration ? 'bg-blue-900/50 border border-blue-600' : 'hover:bg-gray-800/50'
+                      selectedFlightRegistration === aircraft.registration ? 'bg-blue-900/50 border border-blue-600' : 'hover:bg-gray-800/50'
                     }`}
-                    onClick={() => setSelectedAircraft(aircraft.registration)}
+                    onClick={() => {
+                      // Use centralized flight selection for cross-dashboard synchronization
+                      const flightData = {
+                        callsign: aircraft.current_flight,
+                        flight_number: aircraft.current_flight,
+                        registration: aircraft.registration,
+                        aircraft_type: aircraft.aircraft_type,
+                        route: aircraft.route,
+                        latitude: aircraft.real_time_data?.position?.latitude || 0,
+                        longitude: aircraft.real_time_data?.position?.longitude || 0,
+                        altitude: aircraft.real_time_data?.position?.altitude || 40000,
+                        velocity: aircraft.real_time_data?.position?.speed || 450,
+                        heading: 270,
+                        aircraft: aircraft.aircraft_type,
+                        fuel: 15000,
+                        engineStatus: 'normal',
+                        systemsStatus: 'normal',
+                        status: aircraft.status,
+                        authentic_tracking: true,
+                        data_source: 'Fleet Monitor'
+                      };
+                      selectFlightByRegistration(aircraft.registration);
+                      console.log('🎯 Fleet Monitor: Selected aircraft for cross-dashboard tracking:', aircraft.registration);
+                    }}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">

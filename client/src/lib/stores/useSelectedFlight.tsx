@@ -13,70 +13,139 @@ interface FlightPosition {
   fuel: number;
   engineStatus: string;
   systemsStatus: string;
+  // Additional authentic flight data properties
+  flight_number?: string;
+  aircraft_type?: string;
+  route?: string;
+  departure_airport?: string;
+  arrival_airport?: string;
+  registration?: string;
+  icao24?: string;
+  authentic_tracking?: boolean;
+  data_source?: string;
+  status?: string;
+  squawk?: string;
+  velocity_estimated?: boolean;
+  last_contact?: number;
 }
 
 interface SelectedFlightState {
   selectedFlight: FlightPosition | null;
   isTrackingFlight: boolean;
+  selectedFlightRegistration: string | null;
+  selectedFlightCallsign: string | null;
   
   // Actions
   selectFlight: (flight: FlightPosition) => void;
-  setSelectedFlight: (callsign: string) => void;
+  selectFlightByCallsign: (callsign: string) => void;
+  selectFlightByRegistration: (registration: string) => void;
   clearSelection: () => void;
   setTrackingMode: (tracking: boolean) => void;
+  // Enhanced selection with authentic data fetching
+  selectFlightWithData: (flightData: any) => void;
 }
 
-export const useSelectedFlight = create<SelectedFlightState>((set) => ({
+export const useSelectedFlight = create<SelectedFlightState>((set, get) => ({
   selectedFlight: null,
   isTrackingFlight: false,
+  selectedFlightRegistration: null,
+  selectedFlightCallsign: null,
   
   selectFlight: (flight) => {
+    const enhancedFlight: FlightPosition = {
+      callsign: flight.callsign,
+      latitude: flight.latitude,
+      longitude: flight.longitude,
+      altitude: flight.altitude || 40000,
+      velocity: flight.velocity || 450,
+      heading: flight.heading || 270,
+      aircraft: flight.aircraft || flight.aircraft_type || 'UNKNOWN',
+      origin: flight.origin || flight.departure_airport,
+      destination: flight.destination || flight.arrival_airport,
+      fuel: flight.fuel || 15000,
+      engineStatus: flight.engineStatus || 'normal',
+      systemsStatus: flight.systemsStatus || 'normal',
+      // Include authentic data
+      flight_number: flight.flight_number || flight.callsign,
+      aircraft_type: flight.aircraft_type || flight.aircraft,
+      route: flight.route,
+      departure_airport: flight.departure_airport,
+      arrival_airport: flight.arrival_airport,
+      registration: flight.registration,
+      icao24: flight.icao24,
+      authentic_tracking: flight.authentic_tracking,
+      data_source: flight.data_source,
+      status: flight.status,
+      squawk: flight.squawk,
+      velocity_estimated: flight.velocity_estimated,
+      last_contact: flight.last_contact
+    };
+    
     set({ 
-      selectedFlight: flight,
-      isTrackingFlight: true
+      selectedFlight: enhancedFlight,
+      isTrackingFlight: true,
+      selectedFlightRegistration: flight.registration || null,
+      selectedFlightCallsign: flight.callsign || flight.flight_number || null
     });
-    console.log('Flight selected for tracking:', flight.callsign);
+    console.log('🎯 Flight selected for cross-dashboard tracking:', flight.callsign || flight.flight_number);
   },
   
-  setSelectedFlight: (callsign) => {
-    // Create a basic FlightPosition object from callsign
-    const flightConfigs = {
-      'VIR127C': { lat: 45.18, lon: -69.17, aircraft: 'A350-1000', origin: 'LHR', destination: 'JFK', fuel: 18500, engines: 'normal', systems: 'normal' },
-      'VIR43': { lat: 40.2, lon: -45.8, aircraft: 'A330-300', origin: 'LGW', destination: 'MCO', fuel: 16200, engines: 'normal', systems: 'normal' },
-      'VIR25F': { lat: 51.4, lon: -12.2, aircraft: '787-9', origin: 'LHR', destination: 'LAX', fuel: 22800, engines: 'normal', systems: 'normal' },
-      'VIR155': { lat: 49.8, lon: -25.1, aircraft: 'A350-900', origin: 'MAN', destination: 'ATL', fuel: 17600, engines: 'normal', systems: 'normal' },
-      'VIR9': { lat: 52.1, lon: -18.7, aircraft: '787-9', origin: 'LHR', destination: 'BOS', fuel: 15400, engines: 'normal', systems: 'normal' }
-    };
-    
-    const config = flightConfigs[callsign as keyof typeof flightConfigs] || flightConfigs['VIR127C'];
-    
-    const flightData: FlightPosition = {
-      callsign,
-      latitude: config.lat,
-      longitude: config.lon,
-      altitude: 40000,
-      velocity: 457,
-      heading: 270,
-      aircraft: config.aircraft,
-      origin: config.origin,
-      destination: config.destination,
-      fuel: config.fuel,
-      engineStatus: config.engines,
-      systemsStatus: config.systems
-    };
-    
-    set({ 
-      selectedFlight: flightData,
-      isTrackingFlight: true
-    });
-    console.log('Flight selected:', callsign);
+  selectFlightByCallsign: async (callsign) => {
+    try {
+      // Fetch authentic flight data by callsign
+      const response = await fetch('/api/aviation/virgin-atlantic-flights');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.flights) {
+          const flight = data.flights.find((f: any) => 
+            f.callsign === callsign || f.flight_number === callsign
+          );
+          if (flight) {
+            get().selectFlightWithData(flight);
+          } else {
+            console.warn('Flight not found:', callsign);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch flight data:', error);
+    }
+  },
+  
+  selectFlightByRegistration: async (registration) => {
+    try {
+      // Fetch authentic flight data by registration
+      const response = await fetch('/api/aviation/virgin-atlantic-flights');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.flights) {
+          const flight = data.flights.find((f: any) => 
+            f.registration === registration
+          );
+          if (flight) {
+            get().selectFlightWithData(flight);
+          } else {
+            console.warn('Flight not found with registration:', registration);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch flight data:', error);
+    }
+  },
+  
+  selectFlightWithData: (flightData) => {
+    get().selectFlight(flightData);
   },
   
   clearSelection: () => {
     set({ 
       selectedFlight: null,
-      isTrackingFlight: false
+      isTrackingFlight: false,
+      selectedFlightRegistration: null,
+      selectedFlightCallsign: null
     });
+    console.log('🎯 Flight selection cleared across all dashboards');
   },
   
   setTrackingMode: (tracking) => {
