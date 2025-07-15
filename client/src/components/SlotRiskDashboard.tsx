@@ -166,11 +166,11 @@ const SlotRiskDashboard: React.FC = () => {
             <p className="text-gray-400 mt-1">Real-time slot management and compliance monitoring</p>
           </div>
           <button
-            onClick={startAdvancedAnalytics}
+            onClick={() => setSelectedTab('analytics')}
             className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors"
           >
             <BarChart3 className="h-4 w-4 mr-2" />
-            Launch Advanced Analytics
+            View Analytics
           </button>
         </div>
 
