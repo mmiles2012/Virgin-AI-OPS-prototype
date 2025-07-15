@@ -4,7 +4,8 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Alert, AlertDescription } from './ui/alert';
-import { Plane, MapPin, Clock, Fuel, Shield, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Input } from './ui/input';
+import { Plane, MapPin, Clock, Fuel, Shield, AlertTriangle, CheckCircle, XCircle, Search } from 'lucide-react';
 
 interface AirportData {
   id: number;
@@ -68,6 +69,9 @@ const SkyGateAirportDashboard: React.FC = () => {
   const [selectedPosition, setSelectedPosition] = useState({ lat: 51.4700, lon: -0.4543 }); // Heathrow default
   const [selectedAircraft, setSelectedAircraft] = useState('Boeing 787-9');
   const [selectedEmergency, setSelectedEmergency] = useState('medical');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   useEffect(() => {
     // Load initial data when component mounts
@@ -114,6 +118,26 @@ const SkyGateAirportDashboard: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to load airport data:', error);
+    }
+  };
+
+  const searchAirports = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    
+    setSearchLoading(true);
+    try {
+      const response = await fetch(`/api/airports/search/search?q=${encodeURIComponent(query)}&limit=20`);
+      const data = await response.json();
+      if (data.success) {
+        setSearchResults(data.results);
+      }
+    } catch (error) {
+      console.error('Airport search failed:', error);
+    } finally {
+      setSearchLoading(false);
     }
   };
 
@@ -335,6 +359,95 @@ const SkyGateAirportDashboard: React.FC = () => {
 
 
         <TabsContent value="airports" className="space-y-4">
+          {/* Airport Search Interface */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Search className="h-5 w-5" />
+                Airport Search (83,000+ Global Airports)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Search by airport name, ICAO code (e.g., EGLL), IATA code (e.g., LHR), or city..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      searchAirports(e.target.value);
+                    }}
+                    className="flex-1"
+                  />
+                  <Button 
+                    onClick={() => searchAirports(searchQuery)}
+                    disabled={searchLoading}
+                    className="px-4"
+                  >
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                {searchLoading && (
+                  <div className="text-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-2 text-sm text-gray-600">Searching airports...</p>
+                  </div>
+                )}
+
+                {searchResults.length > 0 && (
+                  <div className="max-h-[400px] overflow-y-auto space-y-2">
+                    <p className="text-sm text-gray-600 mb-2">Found {searchResults.length} airports:</p>
+                    {searchResults.map((airport, index) => (
+                      <div key={index} className="border rounded-lg p-3 hover:bg-gray-50">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-medium">{airport.name}</h3>
+                              {airport.iata && (
+                                <Badge variant="outline" className="text-xs">
+                                  {airport.iata}
+                                </Badge>
+                              )}
+                              <Badge variant="outline" className="text-xs">
+                                {airport.icao}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {airport.city}, {airport.country}
+                            </p>
+                            {airport.continent && (
+                              <p className="text-xs text-gray-500">
+                                {airport.continent} • {airport.type}
+                              </p>
+                            )}
+                          </div>
+                          <div className="text-right text-sm">
+                            <p className="text-gray-600">
+                              {airport.latitude?.toFixed(4)}, {airport.longitude?.toFixed(4)}
+                            </p>
+                            {airport.elevation && (
+                              <p className="text-xs text-gray-500">
+                                {airport.elevation}m elevation
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {searchQuery && !searchLoading && searchResults.length === 0 && (
+                  <div className="text-center py-4 text-gray-500">
+                    <p>No airports found matching "{searchQuery}"</p>
+                    <p className="text-sm mt-1">Try searching by airport name, ICAO code, IATA code, or city</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
