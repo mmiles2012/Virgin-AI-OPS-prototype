@@ -73,6 +73,7 @@ import heathrowHoldingService from "./heathrowHoldingService";
 import heathrowLiveDataService from "./heathrowLiveDataService";
 import integratedHoldingMLService from "./integratedHoldingMLService.js";
 import { flightAwareService } from "./flightAwareService";
+import eurocontrolFlowService from "./eurocontrolFlowService.js";
 import { faaNotamService } from "./faaNotamService";
 import searchableAirportRoutes from "./searchableAirportRoutes";
 import faaRiskIntelligenceRoutes from "./faaRiskIntelligenceRoutes";
@@ -10794,6 +10795,149 @@ except Exception as e:
         success: false,
         error: 'Failed to generate operational summary',
         summary: { status: 'UNKNOWN' },
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // EUROCONTROL Flow Management Data API Endpoints
+  app.get('/api/eurocontrol/flow-data', async (req, res) => {
+    try {
+      console.log('📊 Fetching comprehensive EUROCONTROL flow data...');
+      const flowData = await eurocontrolFlowService.getFlowData();
+      
+      res.json({
+        success: true,
+        data: flowData,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('❌ EUROCONTROL flow data error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch EUROCONTROL flow data',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/eurocontrol/network-situation', async (req, res) => {
+    try {
+      console.log('🌐 Fetching EUROCONTROL network situation...');
+      const networkSituation = await eurocontrolFlowService.getNetworkSituation();
+      
+      res.json({
+        success: true,
+        network_situation: networkSituation,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('❌ EUROCONTROL network situation error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch network situation',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/eurocontrol/flow-measures', async (req, res) => {
+    try {
+      console.log('📋 Fetching EUROCONTROL flow measures...');
+      const flowMeasures = await eurocontrolFlowService.getFlowMeasures();
+      
+      res.json({
+        success: true,
+        flow_measures: flowMeasures,
+        count: flowMeasures.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('❌ EUROCONTROL flow measures error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch flow measures',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/eurocontrol/traffic-counts', async (req, res) => {
+    try {
+      console.log('✈️ Fetching EUROCONTROL traffic counts...');
+      const trafficCounts = await eurocontrolFlowService.getTrafficCounts();
+      
+      res.json({
+        success: true,
+        traffic_counts: trafficCounts,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('❌ EUROCONTROL traffic counts error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch traffic counts',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/eurocontrol/airport-delays', async (req, res) => {
+    try {
+      console.log('🏭 Fetching EUROCONTROL airport delays...');
+      const airportDelays = await eurocontrolFlowService.getAirportDelays();
+      
+      res.json({
+        success: true,
+        airport_delays: airportDelays,
+        count: airportDelays.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('❌ EUROCONTROL airport delays error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch airport delays',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/eurocontrol/sector-regulations', async (req, res) => {
+    try {
+      console.log('🏢 Fetching EUROCONTROL sector regulations...');
+      const sectorRegulations = await eurocontrolFlowService.getSectorRegulations();
+      
+      res.json({
+        success: true,
+        sector_regulations: sectorRegulations,
+        count: sectorRegulations.length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('❌ EUROCONTROL sector regulations error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch sector regulations',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  app.get('/api/eurocontrol/health', async (req, res) => {
+    try {
+      const healthStatus = eurocontrolFlowService.getHealthStatus();
+      
+      res.json({
+        success: true,
+        health: healthStatus,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('❌ EUROCONTROL health check error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to get health status',
         timestamp: new Date().toISOString()
       });
     }

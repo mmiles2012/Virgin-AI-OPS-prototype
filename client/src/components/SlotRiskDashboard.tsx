@@ -66,20 +66,66 @@ interface SlotMetrics {
   };
 }
 
+interface EurocontrolFlowData {
+  success: boolean;
+  data: {
+    collection_timestamp: string;
+    data_source: string;
+    network_situation: {
+      network_status: string;
+      total_delays: number;
+      atfm_delays: number;
+      weather_delays: number;
+      capacity_delays: number;
+      regulations_active: number;
+      traffic_count: number;
+    };
+    flow_measures: Array<{
+      measure_id: string;
+      location: string;
+      reason: string;
+      delay_value: number;
+      status: string;
+      start_time: string;
+      end_time: string;
+    }>;
+    airport_delays: Array<{
+      airport_icao: string;
+      airport_name: string;
+      departure_delay: number;
+      arrival_delay: number;
+      atfm_delay: number;
+      delay_cause: string;
+      status: string;
+    }>;
+    sector_regulations: Array<{
+      sector: string;
+      regulation_id: string;
+      reason: string;
+      delay_value: number;
+      impact_level: string;
+      affected_flights: number;
+      status: string;
+    }>;
+  };
+}
+
 const SlotRiskDashboard: React.FC = () => {
   const [slotData, setSlotData] = useState<SlotRiskData | null>(null);
   const [metrics, setMetrics] = useState<SlotMetrics | null>(null);
   const [enhancedData, setEnhancedData] = useState<any>(null);
   const [swapRecommendations, setSwapRecommendations] = useState<any[]>([]);
+  const [eurocontrolData, setEurocontrolData] = useState<EurocontrolFlowData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTab, setSelectedTab] = useState<'overview' | 'flights' | 'analytics' | 'enhanced'>('overview');
+  const [selectedTab, setSelectedTab] = useState<'overview' | 'flights' | 'analytics' | 'enhanced' | 'eurocontrol'>('overview');
   const [flightAwareHealthy, setFlightAwareHealthy] = useState(false);
 
   useEffect(() => {
     fetchSlotData();
     fetchMetrics();
     fetchEnhancedData();
+    fetchEurocontrolData();
     checkFlightAwareHealth();
     
     // Refresh data every 30 seconds
@@ -87,6 +133,7 @@ const SlotRiskDashboard: React.FC = () => {
       fetchSlotData();
       fetchMetrics();
       fetchEnhancedData();
+      fetchEurocontrolData();
       checkFlightAwareHealth();
     }, 30000);
 
@@ -124,6 +171,16 @@ const SlotRiskDashboard: React.FC = () => {
       setEnhancedData(data);
     } catch (err) {
       console.error('Enhanced data error:', err);
+    }
+  };
+
+  const fetchEurocontrolData = async () => {
+    try {
+      const response = await fetch('/api/eurocontrol/flow-data');
+      const data = await response.json();
+      setEurocontrolData(data);
+    } catch (err) {
+      console.error('EUROCONTROL data error:', err);
     }
   };
 
@@ -213,7 +270,7 @@ const SlotRiskDashboard: React.FC = () => {
 
         {/* Tab Navigation */}
         <div className="flex space-x-1 mb-6">
-          {['overview', 'flights', 'analytics', 'enhanced'].map((tab) => (
+          {['overview', 'flights', 'analytics', 'enhanced', 'eurocontrol'].map((tab) => (
             <button
               key={tab}
               onClick={() => setSelectedTab(tab as any)}
@@ -223,7 +280,9 @@ const SlotRiskDashboard: React.FC = () => {
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
               }`}
             >
-              {tab === 'enhanced' ? 'FlightAware' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {tab === 'enhanced' ? 'FlightAware' : 
+               tab === 'eurocontrol' ? 'EUROCONTROL' : 
+               tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
@@ -686,6 +745,249 @@ const SlotRiskDashboard: React.FC = () => {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* EUROCONTROL Tab */}
+        {selectedTab === 'eurocontrol' && (
+          <div className="space-y-6">
+            {/* Network Status Overview */}
+            {eurocontrolData?.success && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-gray-800 rounded-lg p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-400 text-sm">Network Status</p>
+                      <p className="text-2xl font-bold text-white">
+                        {eurocontrolData.data.network_situation.network_status}
+                      </p>
+                    </div>
+                    <Activity className="h-8 w-8 text-green-500" />
+                  </div>
+                </div>
+
+                <div className="bg-gray-800 rounded-lg p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-400 text-sm">Total Delays</p>
+                      <p className="text-2xl font-bold text-white">
+                        {eurocontrolData.data.network_situation.total_delays} min
+                      </p>
+                    </div>
+                    <Timer className="h-8 w-8 text-yellow-500" />
+                  </div>
+                </div>
+
+                <div className="bg-gray-800 rounded-lg p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-400 text-sm">Active Regulations</p>
+                      <p className="text-2xl font-bold text-white">
+                        {eurocontrolData.data.network_situation.regulations_active}
+                      </p>
+                    </div>
+                    <AlertTriangle className="h-8 w-8 text-orange-500" />
+                  </div>
+                </div>
+
+                <div className="bg-gray-800 rounded-lg p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-400 text-sm">Traffic Count</p>
+                      <p className="text-2xl font-bold text-white">
+                        {eurocontrolData.data.network_situation.traffic_count.toLocaleString()}
+                      </p>
+                    </div>
+                    <Plane className="h-8 w-8 text-blue-500" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Delay Breakdown */}
+            {eurocontrolData?.success && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gray-800 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">ATFM Delays</h3>
+                  <div className="text-3xl font-bold text-purple-500">
+                    {eurocontrolData.data.network_situation.atfm_delays} min
+                  </div>
+                  <p className="text-gray-400 text-sm mt-2">Air Traffic Flow Management</p>
+                </div>
+
+                <div className="bg-gray-800 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">Weather Delays</h3>
+                  <div className="text-3xl font-bold text-yellow-500">
+                    {eurocontrolData.data.network_situation.weather_delays} min
+                  </div>
+                  <p className="text-gray-400 text-sm mt-2">Meteorological Conditions</p>
+                </div>
+
+                <div className="bg-gray-800 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">Capacity Delays</h3>
+                  <div className="text-3xl font-bold text-orange-500">
+                    {eurocontrolData.data.network_situation.capacity_delays} min
+                  </div>
+                  <p className="text-gray-400 text-sm mt-2">Airspace Capacity Limitations</p>
+                </div>
+              </div>
+            )}
+
+            {/* Active Flow Measures */}
+            {eurocontrolData?.success && eurocontrolData.data.flow_measures && (
+              <div className="bg-gray-800 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                  <Target className="h-5 w-5 text-purple-500 mr-2" />
+                  Active Flow Measures
+                </h3>
+                <div className="space-y-4">
+                  {eurocontrolData.data.flow_measures.map((measure, index) => (
+                    <div key={index} className="bg-gray-700 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="text-md font-semibold text-white">{measure.measure_id}</h4>
+                          <p className="text-sm text-gray-400">{measure.location}</p>
+                        </div>
+                        <div className={`px-2 py-1 rounded text-xs ${
+                          measure.status === 'ACTIVE' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {measure.status}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-400">Reason:</span>
+                          <span className="text-white ml-2">{measure.reason}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Delay:</span>
+                          <span className="text-white ml-2">{measure.delay_value} min</span>
+                        </div>
+                      </div>
+                      <div className="mt-2 text-xs text-gray-400">
+                        {new Date(measure.start_time).toLocaleString()} - {new Date(measure.end_time).toLocaleString()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Airport Delays */}
+            {eurocontrolData?.success && eurocontrolData.data.airport_delays && (
+              <div className="bg-gray-800 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                  <Plane className="h-5 w-5 text-purple-500 mr-2" />
+                  Airport Delays
+                </h3>
+                <div className="space-y-4">
+                  {eurocontrolData.data.airport_delays.map((airport, index) => (
+                    <div key={index} className="bg-gray-700 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="text-md font-semibold text-white">{airport.airport_icao}</h4>
+                          <p className="text-sm text-gray-400">{airport.airport_name}</p>
+                        </div>
+                        <div className={`px-2 py-1 rounded text-xs ${
+                          airport.status === 'OPERATIONAL' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {airport.status}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-400">Departure:</span>
+                          <span className="text-white ml-2">{airport.departure_delay} min</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Arrival:</span>
+                          <span className="text-white ml-2">{airport.arrival_delay} min</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">ATFM:</span>
+                          <span className="text-white ml-2">{airport.atfm_delay} min</span>
+                        </div>
+                      </div>
+                      <div className="mt-2 text-xs text-gray-400">
+                        Primary cause: {airport.delay_cause}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sector Regulations */}
+            {eurocontrolData?.success && eurocontrolData.data.sector_regulations && (
+              <div className="bg-gray-800 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                  <AlertTriangle className="h-5 w-5 text-purple-500 mr-2" />
+                  Sector Regulations
+                </h3>
+                <div className="space-y-4">
+                  {eurocontrolData.data.sector_regulations.map((regulation, index) => (
+                    <div key={index} className="bg-gray-700 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="text-md font-semibold text-white">{regulation.regulation_id}</h4>
+                          <p className="text-sm text-gray-400">{regulation.sector}</p>
+                        </div>
+                        <div className={`px-2 py-1 rounded text-xs ${
+                          regulation.impact_level === 'HIGH' ? 'bg-red-100 text-red-800' :
+                          regulation.impact_level === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-green-100 text-green-800'
+                        }`}>
+                          {regulation.impact_level}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-400">Reason:</span>
+                          <span className="text-white ml-2">{regulation.reason}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Delay:</span>
+                          <span className="text-white ml-2">{regulation.delay_value} min</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Affected:</span>
+                          <span className="text-white ml-2">{regulation.affected_flights} flights</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Data Status */}
+            {eurocontrolData?.success && (
+              <div className="bg-gray-800 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Data Source Information</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-400">Source:</span>
+                    <span className="text-white ml-2">{eurocontrolData.data.data_source}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Collection Time:</span>
+                    <span className="text-white ml-2">
+                      {new Date(eurocontrolData.data.collection_timestamp).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Loading State */}
+            {!eurocontrolData && (
+              <div className="bg-gray-800 rounded-lg p-6">
+                <div className="flex items-center justify-center h-32">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+                  <span className="ml-4 text-gray-400">Loading EUROCONTROL flow data...</span>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
