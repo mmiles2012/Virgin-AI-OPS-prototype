@@ -571,6 +571,106 @@ const SkyGateAirportDashboard: React.FC = () => {
                               </div>
                             </div>
                           )}
+
+                          {/* Additional Database Information */}
+                          {(airport.home_link || airport.wikipedia_link || airport.keywords || airport.faa_airport_name || airport.identifier_codes) && (
+                            <div className="pt-3 border-t">
+                              <h4 className="font-medium text-sm text-gray-700 mb-2">Additional Information</h4>
+                              <div className="space-y-2 text-xs">
+                                {airport.identifier_codes && (
+                                  <div>
+                                    <span className="font-medium">Identifiers:</span>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                      {airport.identifier_codes.icao && (
+                                        <Badge variant="outline" className="text-xs">
+                                          ICAO: {airport.identifier_codes.icao}
+                                        </Badge>
+                                      )}
+                                      {airport.identifier_codes.iata && (
+                                        <Badge variant="outline" className="text-xs">
+                                          IATA: {airport.identifier_codes.iata}
+                                        </Badge>
+                                      )}
+                                      {airport.identifier_codes.faa && (
+                                        <Badge variant="outline" className="text-xs">
+                                          FAA: {airport.identifier_codes.faa}
+                                        </Badge>
+                                      )}
+                                      {airport.identifier_codes.gps && (
+                                        <Badge variant="outline" className="text-xs">
+                                          GPS: {airport.identifier_codes.gps}
+                                        </Badge>
+                                      )}
+                                      {airport.identifier_codes.local && (
+                                        <Badge variant="outline" className="text-xs">
+                                          Local: {airport.identifier_codes.local}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                                {airport.faa_airport_name && (
+                                  <div>
+                                    <span className="font-medium">FAA Name:</span> {airport.faa_airport_name}
+                                  </div>
+                                )}
+                                {airport.faa_class && (
+                                  <div>
+                                    <span className="font-medium">FAA Class:</span> {airport.faa_class}
+                                  </div>
+                                )}
+                                {airport.arff_index && (
+                                  <div>
+                                    <span className="font-medium">ARFF Index:</span> {airport.arff_index}
+                                  </div>
+                                )}
+                                {airport.iso_region && (
+                                  <div>
+                                    <span className="font-medium">ISO Region:</span> {airport.iso_region}
+                                  </div>
+                                )}
+                                {airport.runway_lighted && (
+                                  <Badge variant="outline" className="bg-yellow-100 text-yellow-800 text-xs">
+                                    Runway Lighted
+                                  </Badge>
+                                )}
+                                {airport.keywords && (
+                                  <div>
+                                    <span className="font-medium">Keywords:</span> {airport.keywords}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Links */}
+                          {(airport.home_link || airport.wikipedia_link) && (
+                            <div className="pt-3 border-t">
+                              <h4 className="font-medium text-sm text-gray-700 mb-2">External Links</h4>
+                              <div className="flex flex-wrap gap-2">
+                                {airport.home_link && (
+                                  <a 
+                                    href={airport.home_link} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="text-xs text-blue-600 hover:text-blue-800 underline"
+                                  >
+                                    Official Website
+                                  </a>
+                                )}
+                                {airport.wikipedia_link && (
+                                  <a 
+                                    href={airport.wikipedia_link} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="text-xs text-blue-600 hover:text-blue-800 underline"
+                                  >
+                                    Wikipedia
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
