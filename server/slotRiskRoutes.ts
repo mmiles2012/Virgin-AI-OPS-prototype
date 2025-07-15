@@ -1,69 +1,56 @@
 import express from 'express';
 import { spawn } from 'child_process';
 import path from 'path';
+import axios from 'axios';
 
 const router = express.Router();
 
-// Slot Risk Dashboard endpoint
+// Import the FAA Data Service
+import FAADataService from './faaDataService.js';
+const faaDataService = new FAADataService();
+
+// Slot Risk Dashboard endpoint with authentic FAA NAS Status integration
 router.get('/dashboard', async (req, res) => {
   try {
-    // Generate slot risk analysis data
+    console.log('🔍 Fetching authentic FAA NAS Status data for slot risk analysis...');
+    
+    // Fetch authentic FAA NAS Status data
+    const faaData = await faaDataService.fetchFAANASData();
+    
+    // Get Virgin Atlantic flights for slot risk analysis
+    const virginAtlanticResponse = await axios.get('http://localhost:5000/api/aviation/virgin-atlantic-flights');
+    let virginAtlanticFlights = [];
+    
+    if (virginAtlanticResponse.data && virginAtlanticResponse.data.success) {
+      virginAtlanticFlights = virginAtlanticResponse.data.flights || [];
+    }
+    
+    // Calculate slot risk using authentic FAA data
+    const slotRiskFlights = faaDataService.calculateSlotRisk(virginAtlanticFlights, faaData);
+    
+    // Generate analysis summary
+    const highRiskCount = slotRiskFlights.filter(f => f.at_risk).length;
+    const averageDelay = slotRiskFlights.length > 0 ? 
+      slotRiskFlights.reduce((sum, f) => sum + f.atfm_delay_min, 0) / slotRiskFlights.length : 0;
+    const averageRiskScore = slotRiskFlights.length > 0 ? 
+      slotRiskFlights.reduce((sum, f) => sum + f.slot_risk_score, 0) / slotRiskFlights.length : 0;
+    
     const slotAnalysis = {
       success: true,
       timestamp: new Date().toISOString(),
+      data_source: faaData.source,
+      faa_delays_detected: faaData.total_delays,
       slot_analysis: {
-        total_flights: 10,
-        high_risk_count: 3,
-        average_delay: 25.4,
-        average_risk_score: 58.2,
+        total_flights: slotRiskFlights.length,
+        high_risk_count: highRiskCount,
+        average_delay: Math.round(averageDelay * 10) / 10,
+        average_risk_score: Math.round(averageRiskScore * 10) / 10,
         risk_threshold: 60
       },
-      flights: [
-        {
-          flight_number: "VS3",
-          origin: "LHR",
-          destination: "JFK",
-          scheduled_slot: "2025-07-15T14:30:00Z",
-          atfm_delay_min: 45,
-          slot_risk_score: 72.5,
-          at_risk: true,
-          risk_factors: {
-            time_risk: 35.2,
-            delay_risk: 30.1,
-            weather_risk: 7.2
-          }
-        },
-        {
-          flight_number: "VS9",
-          origin: "LHR", 
-          destination: "BOS",
-          scheduled_slot: "2025-07-15T16:15:00Z",
-          atfm_delay_min: 20,
-          slot_risk_score: 45.8,
-          at_risk: false,
-          risk_factors: {
-            time_risk: 22.1,
-            delay_risk: 18.3,
-            weather_risk: 5.4
-          }
-        },
-        {
-          flight_number: "VS15",
-          origin: "LHR",
-          destination: "ATL", 
-          scheduled_slot: "2025-07-15T18:45:00Z",
-          atfm_delay_min: 35,
-          slot_risk_score: 68.9,
-          at_risk: true,
-          risk_factors: {
-            time_risk: 28.7,
-            delay_risk: 32.4,
-            weather_risk: 7.8
-          }
-        }
-      ]
+      flights: slotRiskFlights.slice(0, 10) // Show top 10 flights
     };
 
+    console.log(`✅ Generated slot risk analysis: ${slotRiskFlights.length} flights, ${highRiskCount} high risk, data source: ${faaData.source}`);
     res.json(slotAnalysis);
   } catch (error) {
     console.error('Slot risk analysis error:', error);
@@ -99,33 +86,77 @@ router.post('/start-dashboard', async (req, res) => {
   }
 });
 
-// Slot risk metrics endpoint
+// Slot risk metrics endpoint with FAA data integration
 router.get('/metrics', async (req, res) => {
   try {
+    // Get FAA health data
+    const faaHealth = faaDataService.getServiceHealth();
+    
+    // Get Virgin Atlantic flights for metrics calculation
+    const virginAtlanticResponse = await axios.get('http://localhost:5000/api/aviation/virgin-atlantic-flights');
+    let virginAtlanticFlights = [];
+    
+    if (virginAtlanticResponse.data && virginAtlanticResponse.data.success) {
+      virginAtlanticFlights = virginAtlanticResponse.data.flights || [];
+    }
+    
+    // Get FAA data for destination analysis
+    const faaData = await faaDataService.fetchFAANASData();
+    const slotRiskFlights = faaDataService.calculateSlotRisk(virginAtlanticFlights, faaData);
+    
+    // Calculate destination-specific metrics
+    const destinationMetrics = {};
+    slotRiskFlights.forEach(flight => {
+      const dest = flight.destination;
+      if (!destinationMetrics[dest]) {
+        destinationMetrics[dest] = { risk_scores: [], delays: [] };
+      }
+      destinationMetrics[dest].risk_scores.push(flight.slot_risk_score);
+      destinationMetrics[dest].delays.push(flight.atfm_delay_min);
+    });
+    
+    // Convert to final format
+    const destination_analysis = {};
+    Object.keys(destinationMetrics).forEach(dest => {
+      const scores = destinationMetrics[dest].risk_scores;
+      const delays = destinationMetrics[dest].delays;
+      destination_analysis[dest] = {
+        avg_risk: scores.length > 0 ? 
+          Math.round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 10) / 10 : 0,
+        avg_delay: delays.length > 0 ? 
+          Math.round((delays.reduce((sum, delay) => sum + delay, 0) / delays.length) * 10) / 10 : 0
+      };
+    });
+
+    const highRiskFlights = slotRiskFlights.filter(f => f.at_risk).length;
+    const mediumRiskFlights = slotRiskFlights.filter(f => f.slot_risk_score > 40 && f.slot_risk_score <= 60).length;
+    const lowRiskFlights = slotRiskFlights.filter(f => f.slot_risk_score <= 40).length;
+    const avgDelay = slotRiskFlights.length > 0 ? 
+      slotRiskFlights.reduce((sum, f) => sum + f.atfm_delay_min, 0) / slotRiskFlights.length : 0;
+    const complianceRate = slotRiskFlights.length > 0 ? 
+      ((slotRiskFlights.length - highRiskFlights) / slotRiskFlights.length) * 100 : 100;
+
     const metrics = {
       success: true,
       timestamp: new Date().toISOString(),
+      data_source: faaData.source,
+      faa_service_health: faaHealth,
       operational_metrics: {
-        slot_compliance_rate: 87.5,
-        average_atfm_delay: 22.3,
+        slot_compliance_rate: Math.round(complianceRate * 10) / 10,
+        average_atfm_delay: Math.round(avgDelay * 10) / 10,
         high_risk_threshold: 60,
-        total_slots_monitored: 45,
-        slots_at_risk: 8,
-        compliance_target: 95.0
+        total_slots_monitored: slotRiskFlights.length,
+        slots_at_risk: highRiskFlights,
+        compliance_target: 95.0,
+        faa_delays_detected: faaData.total_delays
       },
       risk_distribution: {
-        low_risk: 32,
-        medium_risk: 5, 
-        high_risk: 8,
+        low_risk: lowRiskFlights,
+        medium_risk: mediumRiskFlights,
+        high_risk: highRiskFlights,
         critical_risk: 0
       },
-      destination_analysis: {
-        "JFK": { avg_risk: 65.2, avg_delay: 35.1 },
-        "ATL": { avg_risk: 58.9, avg_delay: 28.4 },
-        "BOS": { avg_risk: 42.1, avg_delay: 18.7 },
-        "MIA": { avg_risk: 38.5, avg_delay: 15.2 },
-        "LAX": { avg_risk: 61.8, avg_delay: 32.6 }
-      }
+      destination_analysis: destination_analysis
     };
 
     res.json(metrics);
@@ -134,6 +165,34 @@ router.get('/metrics', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to fetch slot metrics',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// FAA NAS Status health endpoint
+router.get('/faa-status', async (req, res) => {
+  try {
+    const faaData = await faaDataService.fetchFAANASData();
+    const healthStatus = faaDataService.getServiceHealth();
+    
+    res.json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      faa_nas_status: {
+        api_accessible: faaData.source !== 'AINO Fallback Data (FAA API Unavailable)',
+        data_source: faaData.source,
+        delays_detected: faaData.total_delays,
+        airports_monitored: faaData.airports ? faaData.airports.length : 0,
+        last_update: faaData.timestamp
+      },
+      service_health: healthStatus
+    });
+  } catch (error) {
+    console.error('FAA status error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch FAA status',
       timestamp: new Date().toISOString()
     });
   }
