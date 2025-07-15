@@ -16,6 +16,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
+import { calculateRouteProgress } from '../utils/routeProgressCalculator';
 
 interface FlightData {
   callsign: string;
@@ -77,6 +78,8 @@ export default function EnhancedLiveFlightTracker() {
   const enhanceFlightData = (baseFlights: FlightData[]): EnhancedFlightData[] => {
     return baseFlights.map(flight => ({
       ...flight,
+      // Use real route progress calculation instead of placeholder
+      flight_progress: calculateRouteProgress(flight),
       passengers: Math.floor(180 + Math.random() * 120), // 180-300 passengers
       cargo_weight: Math.floor(8000 + Math.random() * 12000), // 8-20 tons cargo
       departure_gate: flight.origin === 'LHR' ? `T3-${Math.floor(Math.random() * 20) + 1}` : 
@@ -296,8 +299,8 @@ export default function EnhancedLiveFlightTracker() {
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-gray-400">Progress</div>
-                      <div className="text-white font-mono">{flight.flight_progress}%</div>
+                      <div className="text-gray-400">Route Progress</div>
+                      <div className="text-blue-400 font-mono font-bold">{flight.flight_progress}%</div>
                     </div>
                     <div className="text-center">
                       <div className="text-gray-400">Fuel</div>
