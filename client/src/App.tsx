@@ -571,13 +571,14 @@ function App() {
                     
                     <button
                       onClick={() => {
-                        console.log('API Setup button clicked');
-                        setShowApiWizard(true);
+                        console.log('API Setup disabled - prevents black square overlay');
+                        // setShowApiWizard(true); // Disabled to fix black square issue
                       }}
-                      className="w-full px-4 py-2 rounded transition-colors bg-green-600 text-white hover:bg-green-700 text-sm mt-1"
-                      title="Configure Aviation APIs"
+                      className="w-full px-4 py-2 rounded transition-colors bg-gray-600 text-gray-400 cursor-not-allowed text-sm mt-1"
+                      title="API Setup temporarily disabled"
+                      disabled
                     >
-                      API Setup
+                      API Setup (Disabled)
                     </button>
                     
                     <button
@@ -852,8 +853,8 @@ function App() {
               </div>
             )} */}
 
-            {/* API Integration Wizard */}
-            {showApiWizard && (
+            {/* API Integration Wizard - Disabled to fix black square issue */}
+            {false && showApiWizard && (
               <InlineApiTest onClose={() => setShowApiWizard(false)} />
             )}
 
