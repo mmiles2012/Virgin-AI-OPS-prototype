@@ -72,7 +72,7 @@ const SlotRiskDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<'overview' | 'flights' | 'analytics'>('overview');
-  const [showAdvancedAnalytics, setShowAdvancedAnalytics] = useState(false);
+  // Removed showAdvancedAnalytics state - now embedded directly
 
   useEffect(() => {
     fetchSlotData();
@@ -111,9 +111,7 @@ const SlotRiskDashboard: React.FC = () => {
     }
   };
 
-  const startAdvancedAnalytics = () => {
-    setShowAdvancedAnalytics(true);
-  };
+  // Advanced Analytics now embedded directly in Analytics tab
 
   const getRiskColor = (score: number): string => {
     if (score >= 80) return 'text-red-600 bg-red-100';
@@ -153,10 +151,7 @@ const SlotRiskDashboard: React.FC = () => {
     );
   }
 
-  // Show Advanced Analytics Dashboard
-  if (showAdvancedAnalytics) {
-    return <AdvancedAnalyticsDashboard onBack={() => setShowAdvancedAnalytics(false)} />;
-  }
+  // Advanced Analytics now embedded in Analytics tab below
 
   return (
     <div className="min-h-screen bg-gray-900 text-white overflow-y-auto">
