@@ -52,32 +52,32 @@ import DocumentationDownload from "./components/DocumentationDownload";
 
 
 
-// Flight control mappings
-enum FlightControls {
-  pitchUp = 'pitchUp',
-  pitchDown = 'pitchDown',
-  rollLeft = 'rollLeft',
-  rollRight = 'rollRight',
-  yawLeft = 'yawLeft',
-  yawRight = 'yawRight',
-  throttleUp = 'throttleUp',
-  throttleDown = 'throttleDown',
-  autopilot = 'autopilot',
-  emergency = 'emergency'
-}
+// Flight control mappings - Disabled to prevent game interface overlays
+// enum FlightControls {
+//   pitchUp = 'pitchUp',
+//   pitchDown = 'pitchDown',
+//   rollLeft = 'rollLeft',
+//   rollRight = 'rollRight',
+//   yawLeft = 'yawLeft',
+//   yawRight = 'yawRight',
+//   throttleUp = 'throttleUp',
+//   throttleDown = 'throttleDown',
+//   autopilot = 'autopilot',
+//   emergency = 'emergency'
+// }
 
-const controlMap = [
-  { name: FlightControls.pitchUp, keys: ['KeyS', 'ArrowDown'] },
-  { name: FlightControls.pitchDown, keys: ['KeyW', 'ArrowUp'] },
-  { name: FlightControls.rollLeft, keys: ['KeyA', 'ArrowLeft'] },
-  { name: FlightControls.rollRight, keys: ['KeyD', 'ArrowRight'] },
-  { name: FlightControls.yawLeft, keys: ['KeyQ'] },
-  { name: FlightControls.yawRight, keys: ['KeyE'] },
-  { name: FlightControls.throttleUp, keys: ['KeyR'] },
-  { name: FlightControls.throttleDown, keys: ['KeyF'] },
-  { name: FlightControls.autopilot, keys: ['KeyT'] },
-  { name: FlightControls.emergency, keys: ['Space'] }
-];
+// const controlMap = [
+//   { name: FlightControls.pitchUp, keys: ['KeyS', 'ArrowDown'] },
+//   { name: FlightControls.pitchDown, keys: ['KeyW', 'ArrowUp'] },
+//   { name: FlightControls.rollLeft, keys: ['KeyA', 'ArrowLeft'] },
+//   { name: FlightControls.rollRight, keys: ['KeyD', 'ArrowRight'] },
+//   { name: FlightControls.yawLeft, keys: ['KeyQ'] },
+//   { name: FlightControls.yawRight, keys: ['KeyE'] },
+//   { name: FlightControls.throttleUp, keys: ['KeyR'] },
+//   { name: FlightControls.throttleDown, keys: ['KeyF'] },
+//   { name: FlightControls.autopilot, keys: ['KeyT'] },
+//   { name: FlightControls.emergency, keys: ['Space'] }
+// ];
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -161,7 +161,7 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <div className="w-full min-h-screen relative bg-gradient-to-b from-blue-900 to-blue-950" style={{ touchAction: 'manipulation' }}>
-        {/* UI Overlay */}
+        {/* UI Overlay - Game interface components disabled to prevent black overlays */}
         <div className="absolute inset-0 pointer-events-none">
           {/* Left Sidebar Navigation */}
           <div className="absolute top-2 left-2 md:top-4 md:left-4 z-50 pointer-events-auto max-h-[calc(100vh-1rem)] md:max-h-[calc(100vh-2rem)] overflow-y-auto aviation-scrollable">
