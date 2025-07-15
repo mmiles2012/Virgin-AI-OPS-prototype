@@ -355,6 +355,9 @@ class AuthenticVirginAtlanticTracker {
         // Mumbai route - VS355 (BOM-LHR as user confirmed)
         { pattern: /^(VIR|VS)0?355[A-Z]*$/, route: 'BOM-LHR', dep: 'BOM', arr: 'LHR' },
         
+        // Mumbai route - VIR354 (LHR-BOM as user confirmed)
+        { pattern: /^(VIR|VS)0?354[A-Z]*$/, route: 'LHR-BOM', dep: 'LHR', arr: 'BOM' },
+        
         // Riyadh route - VS243 (RUH-LHR as user confirmed)
         { pattern: /^(VIR|VS)0?243[A-Z]*$/, route: 'RUH-LHR', dep: 'RUH', arr: 'LHR' },
         
@@ -421,7 +424,7 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?74[A-Z]*|VS74[A-Z]*/, route: 'MCO-MAN', dep: 'MCO', arr: 'MAN' }, // VIR74Y MCO-MAN
         { pattern: /VIR?76[A-Z]*|VS76[A-Z]*/, route: 'MCO-MAN', dep: 'MCO', arr: 'MAN' }, // VIR76X MCO-MAN
         { pattern: /^VIR?5[A-Z]*$|^VS5[A-Z]*$/, route: 'LHR-MIA', dep: 'LHR', arr: 'MIA' }, // VIR5C - corrected to westbound Miami route (but NOT VIR50 - see above)
-        { pattern: /VIR?3[A-Z]*|VS3[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR3N but NOT VIR302 or VIR317 (see above)
+        { pattern: /^VIR?3(?!02|17|54)[A-Z]*$|^VS3(?!02|17|54)[A-Z]*$/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR3N but NOT VIR302, VIR317, or VIR354 (see above)
       ];
       
       // Find matching route pattern using normalized callsign
@@ -685,6 +688,19 @@ class AuthenticVirginAtlanticTracker {
       
       const currentTime = new Date();
       
+      // Calculate flight progress and distance remaining
+      let flightProgress = null;
+      let distanceRemaining = null;
+      
+      if (depAirport !== 'UNKNOWN' && arrAirport !== 'UNKNOWN' && depAirport !== arrAirport) {
+        try {
+          flightProgress = this.calculateFlightProgress(latitude, longitude, depAirport, arrAirport);
+          distanceRemaining = this.calculateDistanceRemaining(latitude, longitude, arrAirport);
+        } catch (error) {
+          console.log(`Flight progress calculation error for ${callsign}:`, error.message);
+        }
+      }
+      
       return {
         flight_number: callsign,
         airline: 'Virgin Atlantic',
@@ -711,8 +727,8 @@ class AuthenticVirginAtlanticTracker {
         scheduled_departure: 'UNKNOWN',
         scheduled_arrival: 'UNKNOWN',
         current_status: flight.alt_baro > 1000 ? 'EN_ROUTE_ADS_B' : 'ON_GROUND_ADS_B',
-        flight_progress: null,
-        distance_remaining: null,
+        flight_progress: flightProgress,
+        distance_remaining: distanceRemaining,
         delay_minutes: null,
         fuel_remaining: null,
         warnings: [],
@@ -755,6 +771,98 @@ class AuthenticVirginAtlanticTracker {
         note: 'Failed to retrieve authentic Virgin Atlantic flights'
       };
     }
+  }
+
+  // Calculate flight progress as percentage between departure and arrival airports
+  calculateFlightProgress(lat, lng, depAirport, arrAirport) {
+    const airports = {
+      'LHR': { lat: 51.4700, lng: -0.4543 },
+      'JFK': { lat: 40.6413, lng: -73.7781 },
+      'BOS': { lat: 42.3656, lng: -71.0096 },
+      'LAX': { lat: 33.9425, lng: -118.4081 },
+      'MIA': { lat: 25.7943, lng: -80.2906 },
+      'MCO': { lat: 28.4311, lng: -81.3081 },
+      'ATL': { lat: 33.6407, lng: -84.4277 },
+      'IAD': { lat: 38.9531, lng: -77.4565 },
+      'SFO': { lat: 37.6213, lng: -122.3790 },
+      'SEA': { lat: 47.4502, lng: -122.3088 },
+      'LAS': { lat: 36.0840, lng: -115.1537 },
+      'TPA': { lat: 27.9755, lng: -82.5332 },
+      'DEL': { lat: 28.5562, lng: 77.1000 },
+      'BOM': { lat: 19.0896, lng: 72.8656 },
+      'RUH': { lat: 24.9570, lng: 46.6983 },
+      'BGI': { lat: 13.0749, lng: -59.4925 },
+      'MBJ': { lat: 18.5037, lng: -77.9134 },
+      'MAN': { lat: 53.3537, lng: -2.2750 },
+      'EDI': { lat: 55.9500, lng: -3.3725 },
+      'JNB': { lat: -26.1367, lng: 28.2411 },
+      'CPT': { lat: -33.9700, lng: 18.6010 },
+      'LOS': { lat: 6.5774, lng: 3.3212 }
+    };
+
+    const dep = airports[depAirport] || airports.LHR;
+    const arr = airports[arrAirport] || airports.JFK;
+    
+    // Calculate great circle distances
+    const totalDist = this.calculateDistance(dep.lat, dep.lng, arr.lat, arr.lng);
+    const currentDist = this.calculateDistance(dep.lat, dep.lng, lat, lng);
+    
+    // Calculate progress as percentage
+    const progress = Math.min(100, Math.max(0, (currentDist / totalDist) * 100));
+    
+    return Math.round(progress * 10) / 10; // Round to 1 decimal place
+  }
+
+  // Calculate distance remaining from current position to arrival airport
+  calculateDistanceRemaining(lat, lng, arrAirport) {
+    const airports = {
+      'LHR': { lat: 51.4700, lng: -0.4543 },
+      'JFK': { lat: 40.6413, lng: -73.7781 },
+      'BOS': { lat: 42.3656, lng: -71.0096 },
+      'LAX': { lat: 33.9425, lng: -118.4081 },
+      'MIA': { lat: 25.7943, lng: -80.2906 },
+      'MCO': { lat: 28.4311, lng: -81.3081 },
+      'ATL': { lat: 33.6407, lng: -84.4277 },
+      'IAD': { lat: 38.9531, lng: -77.4565 },
+      'SFO': { lat: 37.6213, lng: -122.3790 },
+      'SEA': { lat: 47.4502, lng: -122.3088 },
+      'LAS': { lat: 36.0840, lng: -115.1537 },
+      'TPA': { lat: 27.9755, lng: -82.5332 },
+      'DEL': { lat: 28.5562, lng: 77.1000 },
+      'BOM': { lat: 19.0896, lng: 72.8656 },
+      'RUH': { lat: 24.9570, lng: 46.6983 },
+      'BGI': { lat: 13.0749, lng: -59.4925 },
+      'MBJ': { lat: 18.5037, lng: -77.9134 },
+      'MAN': { lat: 53.3537, lng: -2.2750 },
+      'EDI': { lat: 55.9500, lng: -3.3725 },
+      'JNB': { lat: -26.1367, lng: 28.2411 },
+      'CPT': { lat: -33.9700, lng: 18.6010 },
+      'LOS': { lat: 6.5774, lng: 3.3212 }
+    };
+
+    const arr = airports[arrAirport] || airports.LHR;
+    
+    // Calculate great circle distance in nautical miles
+    const distanceNM = this.calculateDistance(lat, lng, arr.lat, arr.lng);
+    
+    return Math.round(distanceNM);
+  }
+
+  // Calculate great circle distance between two points in nautical miles
+  calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 3440.065; // Earth's radius in nautical miles
+    const dLat = this.toRad(lat2 - lat1);
+    const dLon = this.toRad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  // Convert degrees to radians
+  toRad(degrees) {
+    return degrees * (Math.PI / 180);
   }
 
   // Save flight data to JSON file for analysis
