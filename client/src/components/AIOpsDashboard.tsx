@@ -74,17 +74,22 @@ export default function AIOpsDashboard() {
     
     try {
       // Fetch real LHR weather data to inform predictions
-      const weatherResponse = await fetch('/api/weather/avwx/EGLL');
       let weatherImpacting = false;
       
-      if (weatherResponse.ok) {
-        const weatherData = await weatherResponse.json();
-        // Only flag weather impact if visibility < 5km, wind > 30kt, or severe conditions
-        const visibility = weatherData.visibility_statute_mi || 10;
-        const windSpeed = weatherData.wind_speed_kt || 0;
-        const conditions = weatherData.flight_rules || 'VFR';
-        
-        weatherImpacting = visibility < 3 || windSpeed > 30 || conditions === 'LIFR' || conditions === 'IFR';
+      try {
+        const weatherResponse = await fetch('/api/weather/avwx/EGLL');
+        if (weatherResponse.ok) {
+          const weatherData = await weatherResponse.json();
+          // Only flag weather impact if visibility < 5km, wind > 30kt, or severe conditions
+          const visibility = weatherData.visibility_statute_mi || 10;
+          const windSpeed = weatherData.wind_speed_kt || 0;
+          const conditions = weatherData.flight_rules || 'VFR';
+          
+          weatherImpacting = visibility < 3 || windSpeed > 30 || conditions === 'LIFR' || conditions === 'IFR';
+        }
+      } catch (weatherError) {
+        console.log('Weather data temporarily unavailable, using default conditions');
+        weatherImpacting = false;
       }
       
       flights.forEach((flight: any) => {
