@@ -638,7 +638,8 @@ function ProfessionalSatelliteMapCore() {
 
       {/* Map Container - Full Width */}
       <div className="w-full h-full relative" style={{ minHeight: '500px' }}>
-        {!mapLoaded && (
+        {/* Loading overlay disabled to fix black square issue */}
+        {false && !mapLoaded && (
           <div className="absolute inset-0 bg-gray-900 flex items-center justify-center z-50">
             <div className="text-center text-white">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
@@ -685,8 +686,8 @@ function ProfessionalSatelliteMapCore() {
             opacity={0.7}
           />
 
-          {/* Weather Radar Overlay */}
-          {showWeatherOverlay && weatherRadarImage && (
+          {/* Weather Radar Overlay - Disabled to fix black square issue */}
+          {false && showWeatherOverlay && weatherRadarImage && (
             <WeatherRadarOverlay 
               weatherRadarImage={weatherRadarImage} 
               radarOpacity={radarOpacity}
@@ -869,8 +870,8 @@ function ProfessionalSatelliteMapCore() {
             </Marker>
           ))}
 
-          {/* Weather Radar Overlay */}
-          {showWeatherOverlay && weatherRadarImage && (
+          {/* Weather Radar Overlay - Disabled to fix black square issue */}
+          {false && showWeatherOverlay && weatherRadarImage && (
             <WeatherRadarOverlay
               weatherRadarImage={weatherRadarImage}
               radarOpacity={radarOpacity}
