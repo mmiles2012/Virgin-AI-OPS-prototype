@@ -11,6 +11,7 @@ import {
   Timer,
   Gauge
 } from 'lucide-react';
+import AdvancedAnalyticsDashboard from './AdvancedAnalyticsDashboard';
 
 interface SlotRiskFlight {
   flight_number: string;
@@ -71,6 +72,7 @@ const SlotRiskDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<'overview' | 'flights' | 'analytics'>('overview');
+  const [showAdvancedAnalytics, setShowAdvancedAnalytics] = useState(false);
 
   useEffect(() => {
     fetchSlotData();
@@ -109,16 +111,8 @@ const SlotRiskDashboard: React.FC = () => {
     }
   };
 
-  const startStreamlitDashboard = async () => {
-    try {
-      const response = await fetch('/api/slot-risk/start-dashboard', { method: 'POST' });
-      const data = await response.json();
-      if (data.success) {
-        window.open('http://localhost:8501', '_blank');
-      }
-    } catch (err) {
-      console.error('Failed to start Streamlit dashboard:', err);
-    }
+  const startAdvancedAnalytics = () => {
+    setShowAdvancedAnalytics(true);
   };
 
   const getRiskColor = (score: number): string => {
@@ -159,6 +153,11 @@ const SlotRiskDashboard: React.FC = () => {
     );
   }
 
+  // Show Advanced Analytics Dashboard
+  if (showAdvancedAnalytics) {
+    return <AdvancedAnalyticsDashboard onBack={() => setShowAdvancedAnalytics(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 text-white overflow-y-auto">
       <div className="p-6">
@@ -172,7 +171,7 @@ const SlotRiskDashboard: React.FC = () => {
             <p className="text-gray-400 mt-1">Real-time slot management and compliance monitoring</p>
           </div>
           <button
-            onClick={startStreamlitDashboard}
+            onClick={startAdvancedAnalytics}
             className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors"
           >
             <BarChart3 className="h-4 w-4 mr-2" />
