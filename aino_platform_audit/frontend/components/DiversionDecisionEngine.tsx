@@ -1,0 +1,632 @@
+import React, { useState, useEffect } from 'react';
+import { AlertTriangle, Plane, Target, Brain, Clock, Fuel, Users, MapPin } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
+interface DiversionScenario {
+  flightId: string;
+  aircraft: string;
+  currentPosition: { lat: number; lon: number };
+  destination: string;
+  remainingFuel: number;
+  passengers: number;
+  flightDuration: number;
+  diversionReason: 'medical_emergency' | 'weather' | 'technical' | 'fuel' | 'security' | 'atc_delay';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+}
+
+interface AirportRecommendation {
+  icao: string;
+  name: string;
+  distance: number;
+  suitabilityScore: number;
+  factors: {
+    weatherScore: number;
+    runwayLength: number;
+    medicalFacilities: number;
+    vaMaintenance: number;
+    fuelAvailability: number;
+  };
+  estimatedArrival: string;
+  costImpact: number;
+  riskLevel: 'low' | 'medium' | 'high';
+}
+
+interface MLPrediction {
+  confidence: number;
+  primaryFactors: string[];
+  alternateOptions: string[];
+  timeToDecision: number;
+}
+
+const DiversionDecisionEngine = () => {
+  const [scenarios, setScenarios] = useState<DiversionScenario[]>([]);
+  const [selectedScenario, setSelectedScenario] = useState<DiversionScenario | null>(null);
+  const [recommendations, setRecommendations] = useState<AirportRecommendation[]>([]);
+  const [mlPrediction, setMlPrediction] = useState<MLPrediction | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [selectedAirports, setSelectedAirports] = useState<string[]>([]);
+  const [comparisonMode, setComparisonMode] = useState(false);
+
+  const handleAirportSelection = (icao: string) => {
+    if (selectedAirports.includes(icao)) {
+      setSelectedAirports(selectedAirports.filter(a => a !== icao));
+    } else if (selectedAirports.length < 3) {
+      setSelectedAirports([...selectedAirports, icao]);
+    }
+  };
+
+  const toggleComparisonMode = () => {
+    setComparisonMode(!comparisonMode);
+    if (!comparisonMode) {
+      setSelectedAirports([]);
+    }
+  };
+
+  useEffect(() => {
+    generateLiveScenarios();
+    const interval = setInterval(generateLiveScenarios, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  const generateLiveScenarios = () => {
+    // Simulate live Virgin Atlantic diversion scenarios
+    const sampleScenarios: DiversionScenario[] = [
+      {
+        flightId: 'VS107',
+        aircraft: 'B789',
+        currentPosition: { lat: 51.2, lon: -15.6 },
+        destination: 'JFK',
+        remainingFuel: 18500,
+        passengers: 245,
+        flightDuration: 3.2,
+        diversionReason: 'medical_emergency',
+        severity: 'critical'
+      },
+      {
+        flightId: 'VS45',
+        aircraft: 'A351',
+        currentPosition: { lat: 45.8, lon: -55.3 },
+        destination: 'JFK',
+        remainingFuel: 22000,
+        passengers: 298,
+        flightDuration: 4.8,
+        diversionReason: 'weather',
+        severity: 'high'
+      },
+      {
+        flightId: 'VS9',
+        aircraft: 'A339',
+        currentPosition: { lat: 52.1, lon: -8.9 },
+        destination: 'LAX',
+        remainingFuel: 16800,
+        passengers: 276,
+        flightDuration: 1.5,
+        diversionReason: 'technical',
+        severity: 'medium'
+      }
+    ];
+    
+    setScenarios(sampleScenarios);
+    if (!selectedScenario && sampleScenarios.length > 0) {
+      setSelectedScenario(sampleScenarios[0]);
+    }
+  };
+
+  const analyzeScenario = async (scenario: DiversionScenario) => {
+    setLoading(true);
+    setSelectedScenario(scenario);
+    
+    // Simulate Random Forest ML analysis
+    const airportDatabase = {
+      'EGLL': { name: 'London Heathrow', medicalFacilities: 10, vaMaintenance: 10, runwayLength: 12800 },
+      'KJFK': { name: 'New York JFK', medicalFacilities: 10, vaMaintenance: 8, runwayLength: 14511 },
+      'KBOS': { name: 'Boston Logan', medicalFacilities: 9, vaMaintenance: 6, runwayLength: 10081 },
+      'CYYZ': { name: 'Toronto Pearson', medicalFacilities: 9, vaMaintenance: 5, runwayLength: 11120 },
+      'BIKF': { name: 'Reykjavik Keflavik', medicalFacilities: 6, vaMaintenance: 2, runwayLength: 10019 },
+      'CYQX': { name: 'Gander International', medicalFacilities: 4, vaMaintenance: 2, runwayLength: 10500 },
+      'LFPG': { name: 'Paris Charles de Gaulle', medicalFacilities: 10, vaMaintenance: 4, runwayLength: 13780 },
+      'EHAM': { name: 'Amsterdam Schiphol', medicalFacilities: 9, vaMaintenance: 3, runwayLength: 12467 }
+    };
+
+    const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+      // Simplified distance calculation
+      const airportCoords: { [key: string]: { lat: number; lon: number } } = {
+        'EGLL': { lat: 51.4700, lon: -0.4543 },
+        'KJFK': { lat: 40.6413, lon: -73.7781 },
+        'KBOS': { lat: 42.3656, lon: -71.0096 },
+        'CYYZ': { lat: 43.6777, lon: -79.6248 },
+        'BIKF': { lat: 63.9850, lon: -22.6056 },
+        'CYQX': { lat: 48.9369, lon: -54.5681 },
+        'LFPG': { lat: 49.0097, lon: 2.5479 },
+        'EHAM': { lat: 52.3105, lon: 4.7683 }
+      };
+
+      return Object.entries(airportCoords).map(([icao, coords]) => ({
+        icao,
+        distance: Math.sqrt(Math.pow(lat1 - coords.lat, 2) + Math.pow(lon1 - coords.lon, 2)) * 60 // Rough nm conversion
+      }));
+    };
+
+    const distances = calculateDistance(scenario.currentPosition.lat, scenario.currentPosition.lon, 0, 0);
+    
+    const recs: AirportRecommendation[] = Object.entries(airportDatabase).map(([icao, data]) => {
+      const distance = distances.find(d => d.icao === icao)?.distance || 500;
+      
+      // Random Forest-style scoring based on scenario factors
+      let suitabilityScore = 0;
+      
+      if (scenario.diversionReason === 'medical_emergency') {
+        suitabilityScore = data.medicalFacilities * 0.4 + (1000 / distance) * 0.6;
+      } else if (scenario.diversionReason === 'technical') {
+        suitabilityScore = data.vaMaintenance * 0.5 + (data.runwayLength / 1000) * 0.3 + (1000 / distance) * 0.2;
+      } else if (scenario.diversionReason === 'fuel') {
+        suitabilityScore = (1000 / distance) * 0.8 + (data.runwayLength / 1000) * 0.2;
+      } else {
+        suitabilityScore = (data.medicalFacilities + data.vaMaintenance) * 0.3 + (1000 / distance) * 0.4;
+      }
+
+      const weatherScore = Math.random() * 4 + 6; // Simulate weather API
+      suitabilityScore += weatherScore * 0.2;
+
+      return {
+        icao,
+        name: data.name,
+        distance: Math.round(distance),
+        suitabilityScore: Math.round(suitabilityScore * 10) / 10,
+        factors: {
+          weatherScore: Math.round(weatherScore * 10) / 10,
+          runwayLength: data.runwayLength,
+          medicalFacilities: data.medicalFacilities,
+          vaMaintenance: data.vaMaintenance,
+          fuelAvailability: Math.random() * 3 + 7
+        },
+        estimatedArrival: new Date(Date.now() + distance * 60000).toLocaleTimeString(),
+        costImpact: Math.round(distance * 5.2 + (scenario.passengers * 150)),
+        riskLevel: (suitabilityScore > 8 ? 'low' : suitabilityScore > 6 ? 'medium' : 'high') as 'low' | 'medium' | 'high'
+      };
+    }).sort((a, b) => b.suitabilityScore - a.suitabilityScore);
+
+    setRecommendations(recs);
+    
+    // Simulate ML confidence and factors
+    const prediction: MLPrediction = {
+      confidence: Math.random() * 0.2 + 0.8, // 80-100% confidence
+      primaryFactors: scenario.diversionReason === 'medical_emergency' 
+        ? ['Medical facilities quality', 'Distance to airport', 'Runway suitability']
+        : scenario.diversionReason === 'technical'
+        ? ['VA maintenance capability', 'Runway length', 'Weather conditions']
+        : ['Distance optimization', 'Fuel availability', 'Airport capacity'],
+      alternateOptions: recs.slice(1, 4).map(r => r.icao),
+      timeToDecision: scenario.severity === 'critical' ? 5 : scenario.severity === 'high' ? 10 : 15
+    };
+    
+    setMlPrediction(prediction);
+    setLoading(false);
+  };
+
+  const getSeverityColor = (severity: string) => {
+    switch(severity) {
+      case 'critical': return 'text-red-400 bg-red-900/20 border-red-600';
+      case 'high': return 'text-orange-400 bg-orange-900/20 border-orange-600';
+      case 'medium': return 'text-yellow-400 bg-yellow-900/20 border-yellow-600';
+      case 'low': return 'text-green-400 bg-green-900/20 border-green-600';
+      default: return 'text-gray-400 bg-gray-900/20 border-gray-600';
+    }
+  };
+
+  const getReasonIcon = (reason: string) => {
+    switch(reason) {
+      case 'medical_emergency': return '🏥';
+      case 'weather': return '⛈️';
+      case 'technical': return '🔧';
+      case 'fuel': return '⛽';
+      case 'security': return '🛡️';
+      case 'atc_delay': return '📡';
+      default: return '⚠️';
+    }
+  };
+
+  return (
+    <div className="p-6 space-y-6 max-h-full overflow-y-auto">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+            <Brain className="h-6 w-6 text-blue-400" />
+            AI Diversion Decision Engine
+          </h1>
+          <p className="text-gray-300">Machine Learning-powered diversion recommendations for Virgin Atlantic</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={toggleComparisonMode}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              comparisonMode 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
+          >
+            {comparisonMode ? `Compare Mode (${selectedAirports.length}/3)` : 'Enable Comparison'}
+          </button>
+          <div className="text-sm text-gray-400">
+            {scenarios.length} active scenarios
+          </div>
+        </div>
+      </div>
+
+      {/* Active Scenarios */}
+      <Card className="bg-gray-800 border-gray-700">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-yellow-500" />
+            Active Diversion Scenarios
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-3">
+            {scenarios.map((scenario) => (
+              <div
+                key={scenario.flightId}
+                onClick={() => analyzeScenario(scenario)}
+                className={`p-4 rounded-lg border cursor-pointer transition-all hover:bg-gray-700/50 ${
+                  selectedScenario?.flightId === scenario.flightId ? 'bg-blue-900/20 border-blue-600' : 'bg-gray-700/30 border-gray-600'
+                }`}
+              >
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-3">
+                    <Plane className="h-5 w-5 text-blue-400" />
+                    <div>
+                      <div className="text-white font-medium">{scenario.flightId}</div>
+                      <div className="text-sm text-gray-400">{scenario.aircraft} • {scenario.passengers} passengers</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">{getReasonIcon(scenario.diversionReason)}</span>
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${getSeverityColor(scenario.severity)}`}>
+                      {scenario.severity.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-2 text-sm text-gray-300">
+                  {scenario.diversionReason.replace('_', ' ').toUpperCase()} • Destination: {scenario.destination}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ML Analysis Results */}
+      {selectedScenario && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Recommended Airports */}
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Target className="h-5 w-5 text-green-500" />
+                ML Recommendations for {selectedScenario.flightId}
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Random Forest model analysis based on operational factors
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recommendations.slice(0, 5).map((rec, index) => {
+                    const isSelected = selectedAirports.includes(rec.icao);
+                    const canSelect = comparisonMode && (isSelected || selectedAirports.length < 3);
+                    
+                    return (
+                      <div 
+                        key={rec.icao} 
+                        className={`p-4 rounded-lg border transition-all cursor-pointer ${
+                          isSelected 
+                            ? 'bg-blue-900/30 border-blue-500 ring-2 ring-blue-500/50' 
+                            : index === 0 
+                              ? 'bg-green-900/20 border-green-600' 
+                              : 'bg-gray-700/30 border-gray-600 hover:border-gray-500'
+                        } ${comparisonMode ? 'hover:scale-[1.02]' : ''}`}
+                        onClick={() => comparisonMode && canSelect && handleAirportSelection(rec.icao)}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex items-center gap-3">
+                            {comparisonMode && (
+                              <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                                isSelected 
+                                  ? 'bg-blue-600 border-blue-600' 
+                                  : canSelect 
+                                    ? 'border-gray-400 hover:border-blue-400' 
+                                    : 'border-gray-600 opacity-50'
+                              }`}>
+                                {isSelected && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                              </div>
+                            )}
+                            <div>
+                              <div className="text-white font-medium">{rec.name}</div>
+                              <div className="text-sm text-gray-400">{rec.icao}</div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-white font-bold">{rec.suitabilityScore}/10</div>
+                            <div className={`text-xs px-2 py-1 rounded ${
+                              rec.riskLevel === 'low' ? 'bg-green-900/30 text-green-400' :
+                              rec.riskLevel === 'medium' ? 'bg-yellow-900/30 text-yellow-400' :
+                              'bg-red-900/30 text-red-400'
+                            }`}>
+                              {rec.riskLevel} risk
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2 text-xs text-gray-300">
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3" />
+                            {rec.distance} nm
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            ETA {rec.estimatedArrival}
+                          </div>
+                          <div>Medical: {rec.factors.medicalFacilities}/10</div>
+                          <div>Maintenance: {rec.factors.vaMaintenance}/10</div>
+                        </div>
+                        
+                        {!comparisonMode && index === 0 && (
+                          <div className="mt-2 text-sm text-green-400 font-medium">
+                            ✓ Primary Recommendation
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Comparison View */}
+          {comparisonMode && selectedAirports.length > 1 && (
+            <Card className="bg-gray-800 border-gray-700 mt-6">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Target className="h-5 w-5 text-blue-500" />
+                  Airport Comparison ({selectedAirports.length} selected)
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Side-by-side comparison of selected diversion options
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-gray-600">
+                        <th className="text-left text-gray-300 py-2 px-3">Metric</th>
+                        {selectedAirports.map(icao => {
+                          const airport = recommendations.find(r => r.icao === icao);
+                          return (
+                            <th key={icao} className="text-center text-white py-2 px-3 min-w-[120px]">
+                              <div className="font-medium">{airport?.name}</div>
+                              <div className="text-xs text-gray-400">{icao}</div>
+                            </th>
+                          );
+                        })}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-600">
+                      <tr>
+                        <td className="text-gray-300 py-2 px-3 font-medium">Suitability Score</td>
+                        {selectedAirports.map(icao => {
+                          const airport = recommendations.find(r => r.icao === icao);
+                          return (
+                            <td key={icao} className="text-center py-2 px-3">
+                              <span className="text-white font-bold">{airport?.suitabilityScore}/10</span>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                      <tr>
+                        <td className="text-gray-300 py-2 px-3 font-medium">Distance</td>
+                        {selectedAirports.map(icao => {
+                          const airport = recommendations.find(r => r.icao === icao);
+                          return (
+                            <td key={icao} className="text-center py-2 px-3">
+                              <span className="text-blue-400">{airport?.distance} nm</span>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                      <tr>
+                        <td className="text-gray-300 py-2 px-3 font-medium">Risk Level</td>
+                        {selectedAirports.map(icao => {
+                          const airport = recommendations.find(r => r.icao === icao);
+                          return (
+                            <td key={icao} className="text-center py-2 px-3">
+                              <span className={`px-2 py-1 rounded text-xs ${
+                                airport?.riskLevel === 'low' ? 'bg-green-900/30 text-green-400' :
+                                airport?.riskLevel === 'medium' ? 'bg-yellow-900/30 text-yellow-400' :
+                                'bg-red-900/30 text-red-400'
+                              }`}>
+                                {airport?.riskLevel}
+                              </span>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                      <tr>
+                        <td className="text-gray-300 py-2 px-3 font-medium">Medical Facilities</td>
+                        {selectedAirports.map(icao => {
+                          const airport = recommendations.find(r => r.icao === icao);
+                          return (
+                            <td key={icao} className="text-center py-2 px-3">
+                              <div className="flex items-center justify-center">
+                                <div className="w-16 bg-gray-700 rounded-full h-2">
+                                  <div 
+                                    className="bg-green-500 h-2 rounded-full"
+                                    style={{ width: `${(airport?.factors.medicalFacilities || 0) * 10}%` }}
+                                  ></div>
+                                </div>
+                                <span className="ml-2 text-white text-xs">{airport?.factors.medicalFacilities}/10</span>
+                              </div>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                      <tr>
+                        <td className="text-gray-300 py-2 px-3 font-medium">VA Maintenance</td>
+                        {selectedAirports.map(icao => {
+                          const airport = recommendations.find(r => r.icao === icao);
+                          return (
+                            <td key={icao} className="text-center py-2 px-3">
+                              <div className="flex items-center justify-center">
+                                <div className="w-16 bg-gray-700 rounded-full h-2">
+                                  <div 
+                                    className="bg-blue-500 h-2 rounded-full"
+                                    style={{ width: `${(airport?.factors.vaMaintenance || 0) * 10}%` }}
+                                  ></div>
+                                </div>
+                                <span className="ml-2 text-white text-xs">{airport?.factors.vaMaintenance}/10</span>
+                              </div>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                      <tr>
+                        <td className="text-gray-300 py-2 px-3 font-medium">Weather Score</td>
+                        {selectedAirports.map(icao => {
+                          const airport = recommendations.find(r => r.icao === icao);
+                          return (
+                            <td key={icao} className="text-center py-2 px-3">
+                              <span className="text-yellow-400">{airport?.factors.weatherScore}/10</span>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                      <tr>
+                        <td className="text-gray-300 py-2 px-3 font-medium">Estimated Arrival</td>
+                        {selectedAirports.map(icao => {
+                          const airport = recommendations.find(r => r.icao === icao);
+                          return (
+                            <td key={icao} className="text-center py-2 px-3">
+                              <span className="text-gray-300">{airport?.estimatedArrival}</span>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                      <tr>
+                        <td className="text-gray-300 py-2 px-3 font-medium">Cost Impact</td>
+                        {selectedAirports.map(icao => {
+                          const airport = recommendations.find(r => r.icao === icao);
+                          return (
+                            <td key={icao} className="text-center py-2 px-3">
+                              <span className="text-orange-400">${airport?.costImpact?.toLocaleString()}</span>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                
+                {selectedAirports.length > 0 && (
+                  <div className="mt-4 p-3 bg-blue-900/20 rounded-lg border border-blue-600">
+                    <div className="text-blue-300 font-medium mb-2">Comparison Summary</div>
+                    <div className="text-sm text-blue-200">
+                      {(() => {
+                        const bestScore = Math.max(...selectedAirports.map(icao => 
+                          recommendations.find(r => r.icao === icao)?.suitabilityScore || 0
+                        ));
+                        const bestAirport = recommendations.find(r => 
+                          selectedAirports.includes(r.icao) && r.suitabilityScore === bestScore
+                        );
+                        const shortestDistance = Math.min(...selectedAirports.map(icao => 
+                          recommendations.find(r => r.icao === icao)?.distance || Infinity
+                        ));
+                        const closestAirport = recommendations.find(r => 
+                          selectedAirports.includes(r.icao) && r.distance === shortestDistance
+                        );
+                        
+                        return (
+                          <>
+                            <strong>{bestAirport?.icao}</strong> has the highest suitability score ({bestScore}/10). 
+                            <strong> {closestAirport?.icao}</strong> is closest at {shortestDistance} nm.
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* ML Prediction Details */}
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Brain className="h-5 w-5 text-purple-500" />
+                ML Analysis Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {mlPrediction && (
+                <div className="space-y-4">
+                  <div className="p-4 bg-blue-900/20 rounded-lg border border-blue-600">
+                    <div className="text-white font-medium mb-2">Model Confidence</div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 bg-gray-700 rounded-full h-2">
+                        <div 
+                          className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${mlPrediction.confidence * 100}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-white font-bold">{Math.round(mlPrediction.confidence * 100)}%</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-white font-medium mb-2">Primary Decision Factors</div>
+                    <div className="space-y-2">
+                      {mlPrediction.primaryFactors.map((factor, index) => (
+                        <div key={index} className="flex items-center gap-2 text-sm text-gray-300">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          {factor}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-white font-medium mb-2">Alternative Options</div>
+                    <div className="flex gap-2">
+                      {mlPrediction.alternateOptions.map((option) => (
+                        <span key={option} className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-sm">
+                          {option}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Alert className={`${selectedScenario.severity === 'critical' ? 'bg-red-900/20 border-red-600' : 'bg-yellow-900/20 border-yellow-600'}`}>
+                    <Clock className="h-4 w-4" />
+                    <AlertDescription className={selectedScenario.severity === 'critical' ? 'text-red-300' : 'text-yellow-300'}>
+                      Time to decision: {mlPrediction.timeToDecision} minutes
+                      {selectedScenario.severity === 'critical' && ' (URGENT)'}
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default DiversionDecisionEngine;

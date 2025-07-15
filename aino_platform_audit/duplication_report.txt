@@ -1,0 +1,83 @@
+AINO Platform Duplication Analysis
+==================================
+
+## Component Name Analysis (Potential Duplicates)
+Finding files with similar names...
+
+### React Components with similar patterns:
+      1 WhatIfScenarioEngine.tsx
+      1 WeatherSystem.tsx
+      1 WeatherRadarComponent.tsx
+      1 VisaRequirementsDashboard.tsx
+      1 VirginAtlanticFleetMonitor.tsx
+      1 tooltip.tsx
+      1 toggle.tsx
+      1 toggle-group.tsx
+      1 textarea.tsx
+      1 temp_fixed_component.tsx
+      1 temp_component.tsx
+      1 tabs.tsx
+      1 table.tsx
+      1 switch.tsx
+      1 StandardizedDigitalTwin.tsx
+      1 sonner.tsx
+      1 SmartHubTileGrid.tsx
+      1 SlotRiskDashboard.tsx
+      1 slider.tsx
+      1 SkyGateAirportDashboard.tsx
+
+### Backend services with similar patterns:
+      1 routes.ts
+      1 routePositionService.ts
+      1 routeMatcher.ts
+      1 adsbRapidApiService.ts
+      1 adsbRapidApiRoutes.ts
+
+### Python scripts with similar patterns:
+      1 what_if_scenario_learner.py
+      1 weather_enhanced_model_integration.py
+      1 weather_data_collector.py
+      1 weather_batch_scraper.py
+      1 visa_requirements_system.py
+      1 virgin_atlantic_flight_analyzer.py
+      1 virgin_atlantic_fleet_substitution.py
+      1 virgin_atlantic_delay_analyzer.py
+      1 virgin_atlantic_airport_enhancer.py
+      1 validate_opensky_integration.py
+      1 tri_risk_engine.py
+      1 train_model.py
+      1 train_faa_model_weather_enhanced.py
+      1 train_faa_model.py
+      1 train_delay_model_enhanced.py
+
+## File Size Analysis (Large files for review)
+### Frontend components over 20KB:
+
+### Backend files over 10KB:
+81814 total
+33777 backend/authenticVirginAtlanticTracker.js
+18376 backend/integratedHoldingMLService.js
+12777 backend/heathrowHoldingService.js
+ 6633 backend/sigmetEnhancedService.js
+ 5597 backend/heathrowLiveDataService.js
+ 4654 backend/sigmetRoutes.js
+
+### Python scripts over 15KB:
+1283010 total
+  29467 python_scripts/what_if_scenario_learner.py
+  28612 python_scripts/enhanced_scenario_simulator.py
+  28539 python_scripts/simulate_full_response.py
+  27800 python_scripts/diversion_planner.py
+  27334 python_scripts/virgin_atlantic_flight_analyzer.py
+  26763 python_scripts/intelligent_decision_ml.py
+  24805 python_scripts/ml_enhanced_diversion_engine.py
+  23366 python_scripts/weather_data_collector.py
+  23161 python_scripts/airport_weather_delay_predictor.py
+
+## Line Count Analysis
+### Total lines by category:
+Frontend: 
+Backend: 2274
+Python: 30660
+
+Analysis complete. Review the above for potential duplicate functionality.
