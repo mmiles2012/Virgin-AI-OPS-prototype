@@ -592,8 +592,8 @@ function ProfessionalSatelliteMapCore() {
 
 
 
-      {/* Selected Airport Weather Panel - Reduced z-index to prevent overlay issues */}
-      {selectedAirport && (
+      {/* Selected Airport Weather Panel - DISABLED to fix black square overlay issue */}
+      {false && selectedAirport && (
         <div className="absolute top-4 right-4 z-40 bg-black/90 border border-gray-600 rounded-lg p-4 backdrop-blur-sm max-w-xs">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-white font-semibold">{selectedAirport.icao}</h3>
