@@ -439,19 +439,19 @@ const SlotRiskDashboard: React.FC = () => {
               </div>
             </div>
 
-            {/* Launch Streamlit Analytics */}
+            {/* Embedded European Network Manager ML Analytics */}
             <div className="bg-gray-800 rounded-lg p-6">
-              <h4 className="text-md font-semibold text-white mb-2">Advanced Analytics Platform</h4>
+              <h4 className="text-md font-semibold text-white mb-2 flex items-center">
+                <BarChart3 className="h-5 w-5 text-purple-500 mr-2" />
+                European Network Manager ML Analytics
+              </h4>
               <p className="text-gray-400 mb-4">
-                Launch the comprehensive Streamlit dashboard for detailed slot risk analysis and interactive visualizations.
+                Real-time European airspace analytics with predictive modeling, seasonal patterns, 
+                and network health assessment from EUROCONTROL data.
               </p>
-              <button
-                onClick={startStreamlitDashboard}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg flex items-center transition-colors"
-              >
-                <Activity className="h-5 w-5 mr-2" />
-                Launch Advanced Analytics Dashboard
-              </button>
+              
+              {/* Embedded Advanced Analytics Dashboard */}
+              <AdvancedAnalyticsDashboard />
             </div>
           </div>
         )}

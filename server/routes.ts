@@ -71,6 +71,7 @@ import { faaNotamService } from "./faaNotamService";
 import { aviationIntelligenceService } from "./aviationIntelligenceService.js";
 import { hybridFlightService } from "./hybridFlightService";
 import sigmetRoutes from "./sigmetRoutes.js";
+import { europeanPunctualityMLService } from "./europeanPunctualityMLService.js";
 // Enhanced Weather Intelligence Service
 
 import { spawn } from "child_process";
@@ -7659,7 +7660,7 @@ else:
     }
   });
 
-  // Enhanced NM Analytics with European airspace insights
+  // Enhanced European Network Manager ML Analytics with real-time insights
   app.get('/api/nm-punctuality/analytics', (req, res) => {
     try {
       const fs = require('fs');
@@ -7743,18 +7744,101 @@ else:
           monthly_trends: monthlyTrends,
           european_airspace_insights: {
             data_source: 'European Network Manager (NM)',
-            coverage: 'Pan-European airspace network',
-            punctuality_standard: '15-minute tolerance for scheduled operations',
-            regulatory_authority: 'EUROCONTROL Network Manager'
+            punctuality_standard: '15-minute tolerance',
+            geographical_coverage: 'Pan-European airspace network',
+            analysis_period: `${data[0]?.date || 'N/A'} to ${data[data.length - 1]?.date || 'N/A'}`,
+            key_metrics: {
+              best_month: monthlyTrends.reduce((best, month) => 
+                month.avgArrivalPunctuality > best.avgArrivalPunctuality ? month : best, 
+                monthlyTrends[0] || {}
+              ),
+              worst_month: monthlyTrends.reduce((worst, month) => 
+                month.avgArrivalPunctuality < worst.avgArrivalPunctuality ? month : worst, 
+                monthlyTrends[0] || {}
+              )
+            }
           }
         },
-        timestamp: new Date().toISOString()
+        data_quality: {
+          completeness: Math.round((data.length / lines.length) * 100),
+          temporal_coverage: `${data.length} daily records`,
+          last_updated: new Date().toISOString()
+        },
+        source: 'European Network Manager (EUROCONTROL)'
       });
     } catch (error) {
       console.error('Error generating NM analytics:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to generate Network Manager analytics'
+        error: 'Failed to generate European Network Manager analytics'
+      });
+    }
+  });
+
+  // Real-time European Punctuality ML Intelligence
+  app.get('/api/nm-punctuality/ml-insights', (req, res) => {
+    try {
+      const realTimeAnalytics = europeanPunctualityMLService.getRealTimeStatus();
+      res.json(realTimeAnalytics);
+    } catch (error) {
+      console.error('Error generating European ML insights:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate European ML insights'
+      });
+    }
+  });
+
+  // European Network Health Assessment
+  app.get('/api/nm-punctuality/network-health', (req, res) => {
+    try {
+      const analytics = europeanPunctualityMLService.generateEuropeanAnalytics();
+      if (!analytics) {
+        return res.status(500).json({
+          success: false,
+          error: 'Unable to generate network health assessment'
+        });
+      }
+
+      res.json({
+        success: true,
+        networkHealth: analytics.networkHealth,
+        timestamp: new Date().toISOString(),
+        source: 'European Network Manager ML Service'
+      });
+    } catch (error) {
+      console.error('Error generating network health:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate network health assessment'
+      });
+    }
+  });
+
+  // European Punctuality Predictions
+  app.get('/api/nm-punctuality/predictions', (req, res) => {
+    try {
+      const analytics = europeanPunctualityMLService.generateEuropeanAnalytics();
+      if (!analytics) {
+        return res.status(500).json({
+          success: false,
+          error: 'Unable to generate predictions'
+        });
+      }
+
+      res.json({
+        success: true,
+        predictions: analytics.mlPredictions,
+        methodology: 'Moving average with seasonal/weekly adjustments',
+        confidence: 'High for next 3 days, medium for 4-7 days',
+        timestamp: new Date().toISOString(),
+        source: 'European Network Manager ML Service'
+      });
+    } catch (error) {
+      console.error('Error generating predictions:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate punctuality predictions'
       });
     }
   });
