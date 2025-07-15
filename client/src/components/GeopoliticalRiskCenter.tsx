@@ -365,7 +365,7 @@ const GeopoliticalRiskCenter = () => {
   }
 
   return (
-    <div className="p-8 space-y-8 max-h-full overflow-y-auto">
+    <div className="p-8 space-y-8 min-h-full">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Geopolitical Risk Center</h1>
