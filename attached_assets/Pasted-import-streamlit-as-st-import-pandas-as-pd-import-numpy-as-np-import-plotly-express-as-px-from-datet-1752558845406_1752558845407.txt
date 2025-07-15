@@ -1,0 +1,63 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.express as px
+from datetime import datetime, timedelta
+
+st.set_page_config(layout="wide")
+st.title("✈️ Virgin Atlantic Slot Risk Dashboard")
+
+# Simulated slot risk data
+np.random.seed(42)
+dates = pd.date_range(start=datetime.utcnow(), periods=10, freq='D')
+
+data = {
+    "Flight Number": [f"VS{400+i}" for i in range(10)],
+    "Origin": ["LHR"] * 10,
+    "Destination": ["JFK", "ATL", "BOS", "MIA", "LAX", "SFO", "TPA", "LAS", "IAD", "SEA"],
+    "Scheduled Slot (UTC)": dates + pd.to_timedelta(np.random.randint(360, 480, 10), unit='m'),
+    "ATFM Delay (min)": np.random.choice([0, 10, 15, 20, 30, 45, 60, 90], size=10),
+    "Aircraft Ready (UTC)": dates + pd.to_timedelta(np.random.randint(360, 600, 10), unit='m'),
+    "Slot Risk Score": np.random.rand(10) * 100  # 0–100 scale
+}
+
+df = pd.DataFrame(data)
+df["Slot At Risk"] = df["Slot Risk Score"] > 60
+df = df.sort_values("Scheduled Slot (UTC)")
+
+# Highlight high-risk flights
+high_risk = df[df["Slot At Risk"]]
+low_risk = df[~df["Slot At Risk"]]
+
+# Plotly visual
+fig = px.scatter(
+    df,
+    x="Scheduled Slot (UTC)",
+    y="ATFM Delay (min)",
+    color="Slot At Risk",
+    size="Slot Risk Score",
+    hover_data=["Flight Number", "Destination", "Aircraft Ready (UTC)", "Slot Risk Score"],
+    title="Slot Performance vs Delay Risk",
+    labels={"Scheduled Slot (UTC)": "Slot Time (UTC)", "ATFM Delay (min)": "ATFM Delay (min)"},
+)
+
+fig.update_layout(
+    height=500,
+    legend_title_text='Slot At Risk',
+    xaxis=dict(showgrid=True),
+    yaxis=dict(showgrid=True, range=[0, df["ATFM Delay (min)"].max() + 10])
+)
+
+# Display dashboard
+st.plotly_chart(fig, use_container_width=True)
+
+# Optional: Data preview toggle
+with st.expander("🔍 View Slot Data Table"):
+    st.dataframe(df, use_container_width=True)
+
+# Optional: Ops Control alerts
+if not high_risk.empty:
+    st.warning(f"⚠️ {len(high_risk)} flight(s) are at high risk of slot non-compliance.")
+    st.dataframe(high_risk[["Flight Number", "Destination", "Scheduled Slot (UTC)", "Slot Risk Score"]])
+else:
+    st.success("✅ No high-risk slot exposures at this time.")

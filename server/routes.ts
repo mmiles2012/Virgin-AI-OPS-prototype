@@ -54,6 +54,7 @@ import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
 import mlOtpRoutes from "./mlOtpRoutes";
 import visaRoutes from "./visaRoutes";
 import intelligentDecisionRoutes from "./intelligentDecisionRoutes";
+import slotRiskRoutes from "./slotRiskRoutes";
 import { natTrackRoutes } from "./natTrackRoutes";
 import { addIntelligenceRoutes } from "./intelligenceRoutes";
 import aiOperationsCenterRoutes from "./aiOperationsCenterRoutes";
@@ -5412,6 +5413,9 @@ print(json.dumps(weather))
 
   // Intelligent Decision Support Routes
   app.use('/api/intelligent-decisions', intelligentDecisionRoutes);
+
+  // Slot Risk Management Routes
+  app.use('/api/slot-risk', slotRiskRoutes);
 
   // NAT Track routes
   app.use('/api/nat-tracks', natTrackRoutes);

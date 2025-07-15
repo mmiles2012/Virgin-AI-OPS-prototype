@@ -42,6 +42,7 @@ import DataAuthenticityDashboard from "./components/DataAuthenticityDashboard";
 import EnhancedNetworkOTPDashboard from "./components/EnhancedNetworkOTPDashboard";
 import VisaRequirementsDashboard from "./components/VisaRequirementsDashboard";
 import IntelligentDecisionDashboard from "./components/IntelligentDecisionDashboard";
+import SlotRiskDashboard from "./components/SlotRiskDashboard";
 import HeathrowHoldingDashboard from "./components/HeathrowHoldingDashboard";
 import IntegratedHoldingMLDashboard from "./components/IntegratedHoldingMLDashboard";
 
@@ -87,7 +88,7 @@ const queryClient = new QueryClient({
   },
 });
 
-type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'disruption-response' | 'what-if-scenarios' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'emergency-testing' | 'airport-contacts' | 'enhanced-facilities' | 'data-authenticity' | 'visa-requirements' | 'heathrow-holding' | 'integrated-holding-ml' | 'flightaware-notam' | 'intelligent-decisions';
+type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'disruption-response' | 'what-if-scenarios' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'emergency-testing' | 'airport-contacts' | 'enhanced-facilities' | 'data-authenticity' | 'visa-requirements' | 'heathrow-holding' | 'integrated-holding-ml' | 'flightaware-notam' | 'intelligent-decisions' | 'slot-risk';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('overview');
@@ -421,6 +422,17 @@ function App() {
                     }`}
                   >
                     Intelligent Decisions
+                  </button>
+                  
+                  <button
+                    onClick={() => setViewMode('slot-risk')}
+                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
+                      viewMode === 'slot-risk' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    Slot Risk Management
                   </button>
                   
                   <button
@@ -819,6 +831,12 @@ function App() {
             {viewMode === 'intelligent-decisions' && (
               <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <IntelligentDecisionDashboard />
+              </div>
+            )}
+
+            {viewMode === 'slot-risk' && (
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
+                <SlotRiskDashboard />
               </div>
             )}
 
