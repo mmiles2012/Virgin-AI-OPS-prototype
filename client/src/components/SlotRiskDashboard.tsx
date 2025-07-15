@@ -69,19 +69,25 @@ interface SlotMetrics {
 const SlotRiskDashboard: React.FC = () => {
   const [slotData, setSlotData] = useState<SlotRiskData | null>(null);
   const [metrics, setMetrics] = useState<SlotMetrics | null>(null);
+  const [enhancedData, setEnhancedData] = useState<any>(null);
+  const [swapRecommendations, setSwapRecommendations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTab, setSelectedTab] = useState<'overview' | 'flights' | 'analytics'>('overview');
-  // Removed showAdvancedAnalytics state - now embedded directly
+  const [selectedTab, setSelectedTab] = useState<'overview' | 'flights' | 'analytics' | 'enhanced'>('overview');
+  const [flightAwareHealthy, setFlightAwareHealthy] = useState(false);
 
   useEffect(() => {
     fetchSlotData();
     fetchMetrics();
+    fetchEnhancedData();
+    checkFlightAwareHealth();
     
     // Refresh data every 30 seconds
     const interval = setInterval(() => {
       fetchSlotData();
       fetchMetrics();
+      fetchEnhancedData();
+      checkFlightAwareHealth();
     }, 30000);
 
     return () => clearInterval(interval);
@@ -108,6 +114,37 @@ const SlotRiskDashboard: React.FC = () => {
       setError('Failed to fetch slot metrics');
       console.error('Metrics error:', err);
       setLoading(false);
+    }
+  };
+
+  const fetchEnhancedData = async () => {
+    try {
+      const response = await fetch('/api/slot-risk/enhanced/enhanced-dashboard');
+      const data = await response.json();
+      setEnhancedData(data);
+    } catch (err) {
+      console.error('Enhanced data error:', err);
+    }
+  };
+
+  const checkFlightAwareHealth = async () => {
+    try {
+      const response = await fetch('/api/slot-risk/enhanced/health');
+      const data = await response.json();
+      setFlightAwareHealthy(data.flightaware_configured && data.success);
+    } catch (err) {
+      console.error('FlightAware health check error:', err);
+      setFlightAwareHealthy(false);
+    }
+  };
+
+  const fetchSwapRecommendations = async () => {
+    try {
+      const response = await fetch('/api/slot-risk/enhanced/swap-recommendations');
+      const data = await response.json();
+      setSwapRecommendations(data.recommendations || []);
+    } catch (err) {
+      console.error('Swap recommendations error:', err);
     }
   };
 
@@ -176,7 +213,7 @@ const SlotRiskDashboard: React.FC = () => {
 
         {/* Tab Navigation */}
         <div className="flex space-x-1 mb-6">
-          {['overview', 'flights', 'analytics'].map((tab) => (
+          {['overview', 'flights', 'analytics', 'enhanced'].map((tab) => (
             <button
               key={tab}
               onClick={() => setSelectedTab(tab as any)}
@@ -186,7 +223,7 @@ const SlotRiskDashboard: React.FC = () => {
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
               }`}
             >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {tab === 'enhanced' ? 'FlightAware' : tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
@@ -447,6 +484,207 @@ const SlotRiskDashboard: React.FC = () => {
               
               {/* Embedded Advanced Analytics Dashboard */}
               <AdvancedAnalyticsDashboard />
+            </div>
+          </div>
+        )}
+
+        {/* Enhanced FlightAware Integration Tab */}
+        {selectedTab === 'enhanced' && (
+          <div className="space-y-6">
+            {/* FlightAware System Status */}
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <Activity className="h-5 w-5 text-purple-500 mr-2" />
+                FlightAware Integration Status
+              </h3>
+              <div className="flex items-center mb-4">
+                <div className={`w-3 h-3 rounded-full mr-3 ${flightAwareHealthy ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className={`text-sm font-medium ${flightAwareHealthy ? 'text-green-400' : 'text-red-400'}`}>
+                  {flightAwareHealthy ? 'FlightAware API Connected' : 'FlightAware API Disconnected'}
+                </span>
+              </div>
+              <div className="text-sm text-gray-400">
+                {flightAwareHealthy ? 
+                  'Real-time flight data integration active with authentic FlightAware AeroAPI' : 
+                  'Using fallback AINO platform data with ADS-B Exchange integration'
+                }
+              </div>
+            </div>
+
+            {/* Enhanced Analytics Summary */}
+            {enhancedData && (
+              <div className="bg-gray-800 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                  <BarChart3 className="h-5 w-5 text-purple-500 mr-2" />
+                  Enhanced Slot Risk Analysis
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="bg-gray-700 rounded-lg p-4">
+                    <h4 className="text-md font-semibold text-white mb-2">Total Flights</h4>
+                    <p className="text-2xl font-bold text-white">{enhancedData.summary?.total_flights || 0}</p>
+                    <p className="text-sm text-gray-400">Virgin Atlantic flights analyzed</p>
+                  </div>
+                  <div className="bg-gray-700 rounded-lg p-4">
+                    <h4 className="text-md font-semibold text-white mb-2">High Risk Count</h4>
+                    <p className="text-2xl font-bold text-red-400">{enhancedData.summary?.high_risk_count || 0}</p>
+                    <p className="text-sm text-gray-400">Flights requiring attention</p>
+                  </div>
+                  <div className="bg-gray-700 rounded-lg p-4">
+                    <h4 className="text-md font-semibold text-white mb-2">Average Delay</h4>
+                    <p className="text-2xl font-bold text-white">{enhancedData.summary?.average_delay?.toFixed(1) || 0} min</p>
+                    <p className="text-sm text-gray-400">Average departure delay</p>
+                  </div>
+                  <div className="bg-gray-700 rounded-lg p-4">
+                    <h4 className="text-md font-semibold text-white mb-2">Average Risk Score</h4>
+                    <p className="text-2xl font-bold text-white">{enhancedData.summary?.average_risk_score?.toFixed(1) || 0}</p>
+                    <p className="text-sm text-gray-400">Enhanced risk calculation</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Slot Swap Recommendations */}
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <Timer className="h-5 w-5 text-purple-500 mr-2" />
+                Slot Swap Recommendations
+              </h3>
+              <button 
+                onClick={fetchSwapRecommendations}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg mb-4"
+              >
+                Generate Recommendations
+              </button>
+              
+              {swapRecommendations.length > 0 ? (
+                <div className="space-y-4">
+                  {swapRecommendations.map((rec, index) => (
+                    <div key={index} className="bg-gray-700 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="text-md font-semibold text-white">{rec.flight_number}</h4>
+                          <p className="text-sm text-gray-400">{rec.route}</p>
+                        </div>
+                        <div className={`px-2 py-1 rounded text-xs ${getRiskColor(rec.risk_score)}`}>
+                          {rec.risk_level}
+                        </div>
+                      </div>
+                      <div className="text-sm text-gray-300">{rec.recommendation}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-400 text-center py-8">
+                  No swap recommendations available. Click "Generate Recommendations" to analyze current slot assignments.
+                </div>
+              )}
+            </div>
+
+            {/* Enhanced Flight Details */}
+            {enhancedData && enhancedData.flights && (
+              <div className="bg-gray-800 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                  <Plane className="h-5 w-5 text-purple-500 mr-2" />
+                  Enhanced Flight Analysis
+                </h3>
+                <div className="space-y-4">
+                  {enhancedData.flights.map((flight: any, index: number) => (
+                    <div key={index} className="bg-gray-700 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="text-md font-semibold text-white">{flight.flight_number}</h4>
+                          <p className="text-sm text-gray-400">{flight.origin} → {flight.destination}</p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className={`px-2 py-1 rounded text-xs ${getRiskColor(flight.slot_risk_score)}`}>
+                            {getRiskLevel(flight.slot_risk_score)}
+                          </div>
+                          <span className="text-sm text-gray-400">
+                            {flight.slot_risk_score.toFixed(1)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                        <div className="bg-gray-600 rounded p-2">
+                          <p className="text-xs text-gray-400">Delay Risk</p>
+                          <p className="text-sm font-medium text-white">{flight.risk_factors.delay_risk.toFixed(1)}</p>
+                        </div>
+                        <div className="bg-gray-600 rounded p-2">
+                          <p className="text-xs text-gray-400">Time Risk</p>
+                          <p className="text-sm font-medium text-white">{flight.risk_factors.time_risk.toFixed(1)}</p>
+                        </div>
+                        <div className="bg-gray-600 rounded p-2">
+                          <p className="text-xs text-gray-400">Route Risk</p>
+                          <p className="text-sm font-medium text-white">{flight.risk_factors.route_risk.toFixed(1)}</p>
+                        </div>
+                        <div className="bg-gray-600 rounded p-2">
+                          <p className="text-xs text-gray-400">Weather Risk</p>
+                          <p className="text-sm font-medium text-white">{flight.risk_factors.weather_risk.toFixed(1)}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-400">Delay: {flight.departure_delay.toFixed(1)} min</span>
+                        <span className="text-gray-400">Status: {flight.status}</span>
+                        <span className="text-gray-400">Source: {flight.data_source}</span>
+                      </div>
+                      {flight.recommendations && flight.recommendations.length > 0 && (
+                        <div className="mt-3 p-2 bg-gray-600 rounded">
+                          <p className="text-xs text-gray-400 mb-1">Recommendations:</p>
+                          <ul className="text-sm text-gray-300">
+                            {flight.recommendations.map((rec: string, recIndex: number) => (
+                              <li key={recIndex} className="mb-1">• {rec}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Original Enhanced Flight Details Section */}
+            <div className="bg-gray-800 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <Plane className="h-5 w-5 text-purple-500 mr-2" />
+                Enhanced Flight Analysis
+              </h3>
+              <div className="text-sm text-gray-400 mb-4">
+                Comprehensive flight analysis using FlightAware AeroAPI integration with real-time slot monitoring, 
+                delay predictions, and operational recommendations.
+              </div>
+              
+              {enhancedData?.flights ? (
+                <div className="space-y-4">
+                  {enhancedData.flights.slice(0, 5).map((flight: any, index: number) => (
+                    <div key={index} className="bg-gray-700 rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="text-md font-semibold text-white">{flight.flight_number}</h4>
+                          <p className="text-sm text-gray-400">{flight.origin} → {flight.destination}</p>
+                        </div>
+                        <div className={`px-2 py-1 rounded text-xs ${getRiskColor(flight.slot_risk_score)}`}>
+                          {getRiskLevel(flight.slot_risk_score)}
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-400">Delay:</span>
+                          <span className="text-white ml-2">{flight.departure_delay}m</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Status:</span>
+                          <span className="text-white ml-2">{flight.status}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-400 text-center py-8">
+                  Enhanced flight data loading... FlightAware integration in progress.
+                </div>
+              )}
             </div>
           </div>
         )}

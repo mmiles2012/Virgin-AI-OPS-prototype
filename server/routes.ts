@@ -60,6 +60,7 @@ const faaStatusService = new FAAStatusService();
 import standConflictRoutes from "./standConflictRoutes.js";
 import intelligentDecisionRoutes from "./intelligentDecisionRoutes";
 import slotRiskRoutes from "./slotRiskRoutes";
+import enhancedSlotRiskRoutes from "./enhancedSlotRiskRoutes";
 import { natTrackRoutes } from "./natTrackRoutes";
 import { addIntelligenceRoutes } from "./intelligenceRoutes";
 import aiOperationsCenterRoutes from "./aiOperationsCenterRoutes";
@@ -5515,6 +5516,7 @@ print(json.dumps(weather))
 
   // Slot Risk Management Routes
   app.use('/api/slot-risk', slotRiskRoutes);
+  app.use('/api/slot-risk/enhanced', enhancedSlotRiskRoutes);
 
   // NAT Track routes
   app.use('/api/nat-tracks', natTrackRoutes);
