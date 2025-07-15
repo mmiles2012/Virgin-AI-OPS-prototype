@@ -97,6 +97,14 @@ function App() {
   const [showApiWizard, setShowApiWizard] = useState(false);
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showHoldingDropdown, setShowHoldingDropdown] = useState(false);
+
+  // Close dropdown when navigation collapses
+  useEffect(() => {
+    if (isNavigationCollapsed) {
+      setShowHoldingDropdown(false);
+    }
+  }, [isNavigationCollapsed]);
 
   // Mobile detection and auto-collapse - iPads and desktops get full interface
   useEffect(() => {
@@ -348,27 +356,51 @@ function App() {
                     Visa Requirements
                   </button>
                   
-                  <button
-                    onClick={() => setViewMode('heathrow-holding')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'heathrow-holding' 
-                        ? 'bg-purple-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Heathrow Holding
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('integrated-holding-ml')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'integrated-holding-ml' 
-                        ? 'bg-purple-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Integrated Holding ML
-                  </button>
+                  {/* Master Holding Button with Dropdown */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowHoldingDropdown(!showHoldingDropdown)}
+                      className={`w-full px-4 py-2 rounded transition-colors text-sm flex items-center justify-between ${
+                        (viewMode === 'heathrow-holding' || viewMode === 'integrated-holding-ml') 
+                          ? 'bg-purple-600 text-white' 
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      <span>Holding</span>
+                      <span className={`transition-transform ${showHoldingDropdown ? 'rotate-180' : ''}`}>▼</span>
+                    </button>
+                    
+                    {showHoldingDropdown && (
+                      <div className="absolute left-0 top-full mt-1 w-full bg-gray-800 border border-gray-600 rounded shadow-lg z-10">
+                        <button
+                          onClick={() => {
+                            setViewMode('heathrow-holding');
+                            setShowHoldingDropdown(false);
+                          }}
+                          className={`w-full px-4 py-2 text-left text-sm transition-colors ${
+                            viewMode === 'heathrow-holding' 
+                              ? 'bg-purple-600 text-white' 
+                              : 'text-gray-300 hover:bg-gray-700'
+                          }`}
+                        >
+                          Heathrow Holding
+                        </button>
+                        <button
+                          onClick={() => {
+                            setViewMode('integrated-holding-ml');
+                            setShowHoldingDropdown(false);
+                          }}
+                          className={`w-full px-4 py-2 text-left text-sm transition-colors ${
+                            viewMode === 'integrated-holding-ml' 
+                              ? 'bg-purple-600 text-white' 
+                              : 'text-gray-300 hover:bg-gray-700'
+                          }`}
+                        >
+                          Integrated Holding ML
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   
                   <button
                     onClick={() => setViewMode('flightaware-notam')}
