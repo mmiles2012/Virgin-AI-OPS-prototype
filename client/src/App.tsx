@@ -361,7 +361,7 @@ function App() {
                     <button
                       onClick={() => setShowHoldingDropdown(!showHoldingDropdown)}
                       className={`w-full px-4 py-2 rounded transition-colors text-sm flex items-center justify-between ${
-                        (viewMode === 'heathrow-holding' || viewMode === 'integrated-holding-ml') 
+                        (viewMode === 'heathrow-holding' || viewMode === 'integrated-holding-ml' || viewMode === 'delay-prediction') 
                           ? 'bg-purple-600 text-white' 
                           : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                       }`}
@@ -398,6 +398,19 @@ function App() {
                         >
                           Integrated Holding ML
                         </button>
+                        <button
+                          onClick={() => {
+                            setViewMode('delay-prediction');
+                            setShowHoldingDropdown(false);
+                          }}
+                          className={`w-full px-4 py-2 text-left text-sm transition-colors ${
+                            viewMode === 'delay-prediction' 
+                              ? 'bg-purple-600 text-white' 
+                              : 'text-gray-300 hover:bg-gray-700'
+                          }`}
+                        >
+                          Delay Prediction
+                        </button>
                       </div>
                     )}
                   </div>
@@ -424,16 +437,6 @@ function App() {
                     News Intelligence
                   </button>
                   
-                  <button
-                    onClick={() => setViewMode('delay-prediction')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'delay-prediction' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Delay Prediction
-                  </button>
                   
                   <button
                     onClick={() => setViewMode('disruption-response')}
