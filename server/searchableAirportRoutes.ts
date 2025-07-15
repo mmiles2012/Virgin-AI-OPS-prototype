@@ -1,9 +1,142 @@
 import { Router } from 'express';
 import { globalAirportService } from './globalAirportService';
+import { AirportDataEnhancer } from './airportDataEnhancer';
 import * as fs from 'fs';
 import * as path from 'path';
 
 const router = Router();
+
+// Helper functions for data enrichment
+function getCountryName(countryCode: string): string {
+  const countryMap: { [key: string]: string } = {
+    'US': 'United States',
+    'GB': 'United Kingdom',
+    'CA': 'Canada',
+    'DE': 'Germany',
+    'FR': 'France',
+    'IT': 'Italy',
+    'ES': 'Spain',
+    'NL': 'Netherlands',
+    'BE': 'Belgium',
+    'CH': 'Switzerland',
+    'AT': 'Austria',
+    'SE': 'Sweden',
+    'NO': 'Norway',
+    'DK': 'Denmark',
+    'FI': 'Finland',
+    'IE': 'Ireland',
+    'PT': 'Portugal',
+    'GR': 'Greece',
+    'PL': 'Poland',
+    'CZ': 'Czech Republic',
+    'HU': 'Hungary',
+    'RO': 'Romania',
+    'BG': 'Bulgaria',
+    'HR': 'Croatia',
+    'SI': 'Slovenia',
+    'SK': 'Slovakia',
+    'EE': 'Estonia',
+    'LV': 'Latvia',
+    'LT': 'Lithuania',
+    'LU': 'Luxembourg',
+    'MT': 'Malta',
+    'CY': 'Cyprus',
+    'AU': 'Australia',
+    'NZ': 'New Zealand',
+    'JP': 'Japan',
+    'KR': 'South Korea',
+    'CN': 'China',
+    'IN': 'India',
+    'TH': 'Thailand',
+    'SG': 'Singapore',
+    'MY': 'Malaysia',
+    'ID': 'Indonesia',
+    'PH': 'Philippines',
+    'VN': 'Vietnam',
+    'TW': 'Taiwan',
+    'HK': 'Hong Kong',
+    'MO': 'Macao',
+    'BR': 'Brazil',
+    'AR': 'Argentina',
+    'MX': 'Mexico',
+    'CL': 'Chile',
+    'CO': 'Colombia',
+    'PE': 'Peru',
+    'VE': 'Venezuela',
+    'UY': 'Uruguay',
+    'PY': 'Paraguay',
+    'BO': 'Bolivia',
+    'EC': 'Ecuador',
+    'GY': 'Guyana',
+    'SR': 'Suriname',
+    'GF': 'French Guiana',
+    'ZA': 'South Africa',
+    'EG': 'Egypt',
+    'MA': 'Morocco',
+    'TN': 'Tunisia',
+    'DZ': 'Algeria',
+    'LY': 'Libya',
+    'ET': 'Ethiopia',
+    'KE': 'Kenya',
+    'TZ': 'Tanzania',
+    'UG': 'Uganda',
+    'RW': 'Rwanda',
+    'GH': 'Ghana',
+    'NG': 'Nigeria',
+    'AE': 'United Arab Emirates',
+    'SA': 'Saudi Arabia',
+    'QA': 'Qatar',
+    'KW': 'Kuwait',
+    'BH': 'Bahrain',
+    'OM': 'Oman',
+    'JO': 'Jordan',
+    'LB': 'Lebanon',
+    'SY': 'Syria',
+    'IQ': 'Iraq',
+    'IR': 'Iran',
+    'IL': 'Israel',
+    'PS': 'Palestine',
+    'TR': 'Turkey',
+    'RU': 'Russia',
+    'UA': 'Ukraine',
+    'BY': 'Belarus',
+    'MD': 'Moldova',
+    'GE': 'Georgia',
+    'AM': 'Armenia',
+    'AZ': 'Azerbaijan',
+    'KZ': 'Kazakhstan',
+    'UZ': 'Uzbekistan',
+    'TM': 'Turkmenistan',
+    'KG': 'Kyrgyzstan',
+    'TJ': 'Tajikistan',
+    'AF': 'Afghanistan',
+    'PK': 'Pakistan',
+    'BD': 'Bangladesh',
+    'LK': 'Sri Lanka',
+    'MV': 'Maldives',
+    'BT': 'Bhutan',
+    'NP': 'Nepal',
+    'MM': 'Myanmar',
+    'KH': 'Cambodia',
+    'LA': 'Laos',
+    'MN': 'Mongolia',
+    'KP': 'North Korea'
+  };
+  return countryMap[countryCode] || countryCode;
+}
+
+function getContinentName(continentCode: string): string {
+  const continentMap: { [key: string]: string } = {
+    'AF': 'Africa',
+    'AN': 'Antarctica',
+    'AS': 'Asia',
+    'EU': 'Europe',
+    'NA': 'North America',
+    'OC': 'Oceania',
+    'SA': 'South America'
+  };
+  return continentMap[continentCode] || continentCode;
+}
 
 // Fallback search function using raw CSV data
 function searchAirportsFromCSV(query: string, limit: number = 50): any[] {
@@ -89,8 +222,39 @@ router.get('/search', (req, res) => {
         latitude: airport.latitude_deg || 0,
         longitude: airport.longitude_deg || 0,
         elevation: airport.elevation_ft || 0,
-        scheduled_service: airport.scheduled_service === 'yes'
-      }));
+        scheduled_service: airport.scheduled_service === 'yes',
+        // Enhanced data fields
+        iso_region: airport.iso_region || '',
+        gps_code: airport.gps_code || '',
+        local_code: airport.local_code || '',
+        home_link: airport.home_link || '',
+        wikipedia_link: airport.wikipedia_link || '',
+        keywords: airport.keywords || '',
+        runway_lighted: airport.runway_lighted || false,
+        faa_locid: airport.faa_locid || '',
+        faa_airport_name: airport.faa_airport_name || '',
+        faa_class: airport.faa_class || '',
+        arff_index: airport.arff_index || '',
+        // Additional calculated fields
+        coordinates: `${airport.latitude_deg?.toFixed(4) || 0}, ${airport.longitude_deg?.toFixed(4) || 0}`,
+        elevation_m: airport.elevation_ft ? Math.round(airport.elevation_ft * 0.3048) : 0,
+        airport_size: airport.type === 'large_airport' ? 'Large' : 
+                      airport.type === 'medium_airport' ? 'Medium' : 
+                      airport.type === 'small_airport' ? 'Small' : 
+                      airport.type === 'heliport' ? 'Heliport' : 
+                      airport.type === 'seaplane_base' ? 'Seaplane Base' : 
+                      airport.type === 'balloonport' ? 'Balloonport' : 'Other',
+        commercial_service: airport.scheduled_service === 'yes' ? 'Yes' : 'No',
+        country_name: getCountryName(airport.iso_country || ''),
+        continent_name: getContinentName(airport.continent || ''),
+        identifier_codes: {
+          icao: airport.icao_code || '',
+          iata: airport.iata_code || '',
+          faa: airport.faa_locid || '',
+          gps: airport.gps_code || '',
+          local: airport.local_code || ''
+        }
+      })).map(airport => AirportDataEnhancer.enhanceAirportData(airport));
       searchSource = 'service';
     } else {
       // Fallback to direct CSV search

@@ -396,42 +396,181 @@ const SkyGateAirportDashboard: React.FC = () => {
                 )}
 
                 {searchResults.length > 0 && (
-                  <div className="max-h-[400px] overflow-y-auto space-y-2">
+                  <div className="max-h-[600px] overflow-y-auto space-y-3">
                     <p className="text-sm text-gray-600 mb-2">Found {searchResults.length} airports:</p>
                     {searchResults.map((airport, index) => (
-                      <div key={index} className="border rounded-lg p-3 hover:bg-gray-50">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-medium">{airport.name}</h3>
-                              {airport.iata && (
-                                <Badge variant="outline" className="text-xs">
-                                  {airport.iata}
+                      <div key={index} className="border rounded-lg p-4 hover:bg-gray-50">
+                        <div className="space-y-3">
+                          {/* Header */}
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h3 className="font-medium text-lg">{airport.name}</h3>
+                                {airport.enhancement_level === 'authentic' && (
+                                  <Badge variant="outline" className="bg-green-100 text-green-800 text-xs">
+                                    Enhanced Data
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 mb-2">
+                                {airport.iata && (
+                                  <Badge variant="outline" className="text-xs font-mono">
+                                    {airport.iata}
+                                  </Badge>
+                                )}
+                                <Badge variant="outline" className="text-xs font-mono">
+                                  {airport.icao}
                                 </Badge>
-                              )}
-                              <Badge variant="outline" className="text-xs">
-                                {airport.icao}
-                              </Badge>
+                                <Badge variant="outline" className="text-xs">
+                                  {airport.airport_size}
+                                </Badge>
+                                {airport.commercial_service === 'Yes' && (
+                                  <Badge variant="outline" className="bg-blue-100 text-blue-800 text-xs">
+                                    Commercial
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                {airport.city}, {airport.country_name || airport.country}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {airport.continent_name || airport.continent}
+                              </p>
                             </div>
-                            <p className="text-sm text-gray-600 mt-1">
-                              {airport.city}, {airport.country}
-                            </p>
-                            {airport.continent && (
-                              <p className="text-xs text-gray-500">
-                                {airport.continent} • {airport.type}
+                            <div className="text-right text-sm">
+                              <p className="text-gray-600 font-mono">
+                                {airport.coordinates}
                               </p>
-                            )}
-                          </div>
-                          <div className="text-right text-sm">
-                            <p className="text-gray-600">
-                              {airport.latitude?.toFixed(4)}, {airport.longitude?.toFixed(4)}
-                            </p>
-                            {airport.elevation && (
                               <p className="text-xs text-gray-500">
-                                {airport.elevation}m elevation
+                                {airport.elevation_m}m / {airport.elevation}ft
                               </p>
-                            )}
+                            </div>
                           </div>
+
+                          {/* Enhanced Data Section */}
+                          {airport.operational && (
+                            <div className="grid grid-cols-2 gap-4 pt-3 border-t">
+                              {/* Operational Info */}
+                              <div className="space-y-2">
+                                <h4 className="font-medium text-sm text-gray-700">Operations</h4>
+                                <div className="space-y-1 text-xs">
+                                  <p><span className="font-medium">Hours:</span> {airport.operational.operating_hours}</p>
+                                  <p><span className="font-medium">Passengers/Year:</span> {airport.operational.annual_passengers.toLocaleString()}</p>
+                                  <p><span className="font-medium">Movements/Year:</span> {airport.operational.annual_movements.toLocaleString()}</p>
+                                  <p><span className="font-medium">Peak Capacity:</span> {airport.operational.peak_hour_capacity}/hr</p>
+                                  {airport.operational.slot_restrictions && (
+                                    <Badge variant="outline" className="bg-yellow-100 text-yellow-800 text-xs">
+                                      Slot Restricted
+                                    </Badge>
+                                  )}
+                                  {airport.operational.international_gateway && (
+                                    <Badge variant="outline" className="bg-purple-100 text-purple-800 text-xs">
+                                      International Gateway
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Facilities */}
+                              <div className="space-y-2">
+                                <h4 className="font-medium text-sm text-gray-700">Facilities</h4>
+                                <div className="space-y-1 text-xs">
+                                  <p><span className="font-medium">Fire Category:</span> {airport.facilities.fire_rescue_category}</p>
+                                  <p><span className="font-medium">Fuel:</span> {airport.facilities.fuel_types.join(', ')}</p>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {airport.facilities.maintenance_available && (
+                                      <Badge variant="outline" className="bg-green-100 text-green-800 text-xs">
+                                        Maintenance
+                                      </Badge>
+                                    )}
+                                    {airport.facilities.customs_available && (
+                                      <Badge variant="outline" className="bg-blue-100 text-blue-800 text-xs">
+                                        Customs
+                                      </Badge>
+                                    )}
+                                    {airport.facilities.medical_facilities && (
+                                      <Badge variant="outline" className="bg-red-100 text-red-800 text-xs">
+                                        Medical
+                                      </Badge>
+                                    )}
+                                    {airport.facilities.cargo_facilities && (
+                                      <Badge variant="outline" className="bg-orange-100 text-orange-800 text-xs">
+                                        Cargo
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Runway Information */}
+                          {airport.runway_info && airport.runway_info.length > 0 && (
+                            <div className="pt-3 border-t">
+                              <h4 className="font-medium text-sm text-gray-700 mb-2">Runways ({airport.runway_info.length})</h4>
+                              <div className="grid grid-cols-1 gap-2">
+                                {airport.runway_info.slice(0, 3).map((runway, idx) => (
+                                  <div key={idx} className="text-xs bg-gray-50 p-2 rounded">
+                                    <div className="flex justify-between items-center">
+                                      <span className="font-medium">{runway.length_ft}ft × {runway.width_ft}ft</span>
+                                      <div className="flex gap-1">
+                                        <Badge variant="outline" className="text-xs">
+                                          {runway.surface}
+                                        </Badge>
+                                        {runway.lighted && (
+                                          <Badge variant="outline" className="bg-yellow-100 text-yellow-800 text-xs">
+                                            Lighted
+                                          </Badge>
+                                        )}
+                                        {runway.ils_approaches && (
+                                          <Badge variant="outline" className="bg-blue-100 text-blue-800 text-xs">
+                                            ILS
+                                          </Badge>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Airlines */}
+                          {airport.airlines && airport.airlines.major_airlines && airport.airlines.major_airlines.length > 0 && (
+                            <div className="pt-3 border-t">
+                              <h4 className="font-medium text-sm text-gray-700 mb-2">Airlines</h4>
+                              <div className="flex flex-wrap gap-1">
+                                {airport.airlines.major_airlines.slice(0, 6).map((airline, idx) => (
+                                  <Badge key={idx} variant="outline" className="text-xs">
+                                    {airline}
+                                  </Badge>
+                                ))}
+                                {airport.airlines.major_airlines.length > 6 && (
+                                  <Badge variant="outline" className="text-xs">
+                                    +{airport.airlines.major_airlines.length - 6} more
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Radio Frequencies */}
+                          {airport.operational && (
+                            <div className="pt-3 border-t">
+                              <h4 className="font-medium text-sm text-gray-700 mb-2">Radio Frequencies</h4>
+                              <div className="grid grid-cols-3 gap-2 text-xs">
+                                <div>
+                                  <span className="font-medium">Tower:</span> {airport.operational.tower_frequency}
+                                </div>
+                                <div>
+                                  <span className="font-medium">Ground:</span> {airport.operational.ground_frequency}
+                                </div>
+                                <div>
+                                  <span className="font-medium">ATIS:</span> {airport.operational.atis_frequency}
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
