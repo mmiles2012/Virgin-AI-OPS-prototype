@@ -18,14 +18,41 @@ router.get('/search', (req, res) => {
       });
     }
     
+    // Check if service is loaded
+    if (!globalAirportService.isLoaded()) {
+      return res.json({
+        success: false,
+        error: 'Airport database not loaded yet',
+        results: [],
+        total: 0
+      });
+    }
+    
     const results = globalAirportService.textSearch(query, limit);
+    console.log(`Airport search for "${query}" returned ${results.length} results`);
+    
+    // Format results for frontend compatibility
+    const formattedResults = results.map(airport => ({
+      name: airport.name,
+      icao: airport.icao_code || '',
+      iata: airport.iata_code || '',
+      city: airport.municipality || '',
+      country: airport.iso_country || '',
+      continent: airport.continent || '',
+      type: airport.type || '',
+      latitude: airport.latitude_deg || 0,
+      longitude: airport.longitude_deg || 0,
+      elevation: airport.elevation_ft || 0,
+      scheduled_service: airport.scheduled_service === 'yes'
+    }));
     
     res.json({
       success: true,
-      results,
-      total: results.length,
+      results: formattedResults,
+      total: formattedResults.length,
       query: query.trim(),
-      limit
+      limit,
+      searchTerm: query.trim()
     });
   } catch (error) {
     console.error('Airport search error:', error);
