@@ -54,7 +54,7 @@ export default function VirginAtlanticFleetMonitor() {
   const [error, setError] = useState<string>('');
   
   // Use centralized flight selection for cross-dashboard synchronization
-  const { selectedFlight, selectedFlightRegistration, selectFlightByRegistration, selectFlightByCallsign, clearSelection } = useSelectedFlight();
+  const { selectedFlight, selectedFlightRegistration, selectFlight, selectFlightByRegistration, selectFlightByCallsign, clearSelection } = useSelectedFlight();
 
   // Fetch authentic ADS-B Exchange Virgin Atlantic fleet data
   useEffect(() => {
@@ -285,7 +285,8 @@ export default function VirginAtlanticFleetMonitor() {
                         authentic_tracking: true,
                         data_source: 'Fleet Monitor'
                       };
-                      selectFlightByRegistration(aircraft.registration);
+                      // Use direct selectFlight instead of async selectFlightByRegistration
+                      selectFlight(flightData);
                       console.log('🎯 Fleet Monitor: Selected aircraft for cross-dashboard tracking:', aircraft.registration);
                     }}
                   >
