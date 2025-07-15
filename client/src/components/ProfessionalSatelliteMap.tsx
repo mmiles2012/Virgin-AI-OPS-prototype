@@ -358,11 +358,8 @@ function CoordinateDisplay() {
     },
   });
 
-  return (
-    <div className="absolute bottom-4 left-4 z-[1000] bg-black/80 backdrop-blur-sm border border-gray-600 px-3 py-2 rounded-lg text-white text-sm font-mono">
-      Lat: {coordinates.lat.toFixed(6)}, Lng: {coordinates.lng.toFixed(6)}
-    </div>
-  );
+  // Disabled to prevent black overlay issue
+  return null;
 }
 
 
@@ -595,9 +592,9 @@ function ProfessionalSatelliteMapCore() {
 
 
 
-      {/* Selected Airport Weather Panel */}
+      {/* Selected Airport Weather Panel - Reduced z-index to prevent overlay issues */}
       {selectedAirport && (
-        <div className="absolute top-4 right-4 z-[1000] bg-black/90 border border-gray-600 rounded-lg p-4 backdrop-blur-sm max-w-xs">
+        <div className="absolute top-4 right-4 z-40 bg-black/90 border border-gray-600 rounded-lg p-4 backdrop-blur-sm max-w-xs">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-white font-semibold">{selectedAirport.icao}</h3>
             <button
@@ -891,8 +888,8 @@ function ProfessionalSatelliteMapCore() {
           {/* NAT Tracks Overlay */}
           <NATTracksOverlay showNATTracks={showNATTracks} />
 
-          {/* Coordinate Display */}
-          <CoordinateDisplay />
+          {/* Coordinate Display - Disabled to prevent black overlay */}
+          {false && <CoordinateDisplay />}
         </MapContainer>
       </div>
     </div>
