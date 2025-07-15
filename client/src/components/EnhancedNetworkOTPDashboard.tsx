@@ -369,6 +369,7 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
   useEffect(() => {
     if (virginAtlanticFlights.length > 0) {
       fetchDualTrackOTPData();
+      fetchFAAData();
       
       // Generate historical delay patterns
       const delayPatterns: FlightDelay[] = Object.entries(delayCodes).map(([code, reason]) => ({
