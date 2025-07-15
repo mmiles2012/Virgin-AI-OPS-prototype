@@ -647,7 +647,7 @@ function App() {
             )}
             
             {viewMode === 'api-testing' && (
-              <div className={`absolute top-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
+              <div className={`absolute top-4 right-4 bottom-32 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-gray-600/50 p-4 overflow-hidden ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <ApiTestingCenter />
               </div>
             )}
@@ -673,7 +673,7 @@ function App() {
             )}
             
             {viewMode === 'operations' && (
-              <div className={`absolute top-4 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
+              <div className={`absolute top-4 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto overflow-hidden ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <VirginAtlanticFleetMonitor />
               </div>
             )}
@@ -787,7 +787,7 @@ function App() {
             )}
             
             {viewMode === 'enhanced-facilities' && (
-              <div className={`absolute top-4 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
+              <div className={`absolute top-4 right-4 bottom-16 pointer-events-auto bg-black/40 backdrop-blur-sm rounded-lg border border-blue-600/50 overflow-y-auto overflow-hidden ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
                 <EnhancedAirportFacilities />
               </div>
             )}
