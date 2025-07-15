@@ -603,6 +603,27 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* FAA Risk Intelligence Summary */}
+          {faaData && (
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-400">FAA Events</p>
+                  <p className="text-2xl font-bold text-red-400">{faaData.summary.totalEvents}</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {faaData.summary.virginAtlanticAffected} Virgin Atlantic affected
+                  </p>
+                </div>
+                <div className="p-3 bg-red-500/20 rounded-lg">
+                  <AlertCircle className="w-6 h-6 text-red-400" />
+                </div>
+              </div>
+              <div className="mt-2 text-xs text-gray-400">
+                ML Accuracy: {faaData.summary.modelAccuracy}%
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Navigation Tabs */}
@@ -686,6 +707,57 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                       <span className="text-xs capitalize text-gray-400">{hub.trend}</span>
                     </div>
                   </div>
+
+                  {/* FAA Risk Intelligence for US Airports */}
+                  {faaData && ['JFK', 'LAX', 'BOS', 'ATL', 'MCO', 'ORD', 'IAD', 'SFO', 'MIA', 'TPA', 'LAS'].includes(hub.iata) && (
+                    <div className="mt-3 pt-3 border-t border-gray-700">
+                      {(() => {
+                        const faaEvent = faaData.events.find(event => event.airport === hub.iata);
+                        if (faaEvent) {
+                          return (
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-gray-400">FAA Status:</span>
+                                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                  faaEvent.severity === 'HIGH' ? 'bg-red-500/20 text-red-400' :
+                                  faaEvent.severity === 'MEDIUM' ? 'bg-yellow-500/20 text-yellow-400' :
+                                  'bg-green-500/20 text-green-400'
+                                }`}>
+                                  {faaEvent.eventType}
+                                </span>
+                              </div>
+                              {faaEvent.mlPrediction && (
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs text-gray-400">Ground Stop Risk:</span>
+                                  <span className={`text-xs font-medium ${
+                                    faaEvent.mlPrediction.groundStopProbability > 0.7 ? 'text-red-400' :
+                                    faaEvent.mlPrediction.groundStopProbability > 0.4 ? 'text-yellow-400' :
+                                    'text-green-400'
+                                  }`}>
+                                    {(faaEvent.mlPrediction.groundStopProbability * 100).toFixed(0)}%
+                                  </span>
+                                </div>
+                              )}
+                              {faaEvent.isVirginAtlanticDestination && (
+                                <div className="text-xs text-blue-400 font-medium">
+                                  ✈️ Virgin Atlantic Hub
+                                </div>
+                              )}
+                            </div>
+                          );
+                        } else {
+                          return (
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-gray-400">FAA Status:</span>
+                              <span className="text-xs px-2 py-1 rounded-full font-medium bg-green-500/20 text-green-400">
+                                Normal Ops
+                              </span>
+                            </div>
+                          );
+                        }
+                      })()}
+                    </div>
+                  )}
                 </div>
 
                 {/* Progress Bar */}
@@ -806,6 +878,92 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                               </div>
                             </div>
                           );
+                        })()}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* FAA Risk Intelligence Details for US Airports */}
+                  {faaData && ['JFK', 'LAX', 'BOS', 'ATL', 'MCO', 'ORD', 'IAD', 'SFO', 'MIA', 'TPA', 'LAS'].includes(hub.iata) && (
+                    <div>
+                      <h3 className="text-lg font-bold text-white mb-4">FAA Risk Intelligence</h3>
+                      <div className="bg-gray-700 rounded-lg p-4">
+                        {(() => {
+                          const faaEvent = faaData.events.find(event => event.airport === hub.iata);
+                          if (faaEvent) {
+                            return (
+                              <div className="space-y-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <div className="text-sm text-gray-400 mb-1">Event Type</div>
+                                    <div className="text-white font-medium">{faaEvent.eventType}</div>
+                                  </div>
+                                  <div>
+                                    <div className="text-sm text-gray-400 mb-1">Severity</div>
+                                    <div className={`font-medium ${
+                                      faaEvent.severity === 'HIGH' ? 'text-red-400' :
+                                      faaEvent.severity === 'MEDIUM' ? 'text-yellow-400' :
+                                      'text-green-400'
+                                    }`}>
+                                      {faaEvent.severity}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className="text-sm text-gray-400 mb-1">Reason</div>
+                                  <div className="text-gray-300">{faaEvent.reason}</div>
+                                </div>
+                                {faaEvent.mlPrediction && (
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                      <div className="text-sm text-gray-400 mb-1">Ground Stop Risk</div>
+                                      <div className={`font-bold ${
+                                        faaEvent.mlPrediction.groundStopProbability > 0.7 ? 'text-red-400' :
+                                        faaEvent.mlPrediction.groundStopProbability > 0.4 ? 'text-yellow-400' :
+                                        'text-green-400'
+                                      }`}>
+                                        {(faaEvent.mlPrediction.groundStopProbability * 100).toFixed(1)}%
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="text-sm text-gray-400 mb-1">Delay Risk</div>
+                                      <div className={`font-medium ${
+                                        faaEvent.mlPrediction.delayRisk === 'HIGH' ? 'text-red-400' :
+                                        faaEvent.mlPrediction.delayRisk === 'MEDIUM' ? 'text-yellow-400' :
+                                        'text-green-400'
+                                      }`}>
+                                        {faaEvent.mlPrediction.delayRisk}
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <div className="text-sm text-gray-400 mb-1">ML Confidence</div>
+                                      <div className="text-blue-400 font-medium">{faaEvent.mlPrediction.confidence}%</div>
+                                    </div>
+                                  </div>
+                                )}
+                                <div>
+                                  <div className="text-sm text-gray-400 mb-1">Impact Assessment</div>
+                                  <div className="text-gray-300">{faaEvent.impact.description}</div>
+                                </div>
+                                {faaEvent.isVirginAtlanticDestination && (
+                                  <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3">
+                                    <div className="text-blue-400 font-medium">✈️ Virgin Atlantic Hub Airport</div>
+                                    <div className="text-sm text-blue-300 mt-1">This event directly impacts Virgin Atlantic operations</div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          } else {
+                            return (
+                              <div className="text-center py-4">
+                                <div className="text-green-400 font-medium mb-2">✅ Normal Operations</div>
+                                <div className="text-sm text-gray-400">No FAA events or restrictions detected</div>
+                                <div className="text-sm text-gray-400 mt-1">
+                                  Data source: FAA NAS Status (https://nasstatus.faa.gov/)
+                                </div>
+                              </div>
+                            );
+                          }
                         })()}
                       </div>
                     </div>
