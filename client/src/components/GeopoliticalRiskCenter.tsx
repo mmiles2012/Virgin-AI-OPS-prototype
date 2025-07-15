@@ -365,11 +365,11 @@ const GeopoliticalRiskCenter = () => {
   }
 
   return (
-    <div className="p-6 space-y-6 max-h-full overflow-y-auto">
+    <div className="p-8 space-y-8 max-h-full overflow-y-auto">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-white">Geopolitical Risk Center</h1>
-          <p className="text-gray-300">Real-time global risk assessment for Virgin Atlantic operations</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Geopolitical Risk Center</h1>
+          <p className="text-gray-300 text-lg">Real-time global risk assessment for Virgin Atlantic operations</p>
         </div>
         <div className="text-sm text-gray-400">
           Last updated: {currentTime.toLocaleTimeString()}
@@ -377,10 +377,10 @@ const GeopoliticalRiskCenter = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex space-x-1 bg-gray-800 p-1 rounded-lg">
+      <div className="flex space-x-2 bg-gray-800 p-2 rounded-lg">
         <button
           onClick={() => setActiveTab('dashboard')}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          className={`px-6 py-3 rounded-md text-base font-medium transition-colors ${
             activeTab === 'dashboard' 
               ? 'bg-blue-600 text-white' 
               : 'text-gray-300 hover:text-white hover:bg-gray-700'
@@ -390,7 +390,7 @@ const GeopoliticalRiskCenter = () => {
         </button>
         <button
           onClick={() => setActiveTab('analysis')}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          className={`px-6 py-3 rounded-md text-base font-medium transition-colors ${
             activeTab === 'analysis' 
               ? 'bg-blue-600 text-white' 
               : 'text-gray-300 hover:text-white hover:bg-gray-700'
@@ -403,53 +403,53 @@ const GeopoliticalRiskCenter = () => {
       {activeTab === 'dashboard' && (
         <div className="space-y-6">
           {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Card className="bg-gray-800 border-gray-700">
-              <CardContent className="p-4">
+              <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-400">Active Alerts</p>
-                    <p className="text-2xl font-bold text-red-400">{alerts.length}</p>
+                    <p className="text-base text-gray-400 mb-1">Active Alerts</p>
+                    <p className="text-4xl font-bold text-red-400">{alerts.length}</p>
                   </div>
-                  <AlertTriangle className="h-8 w-8 text-red-500" />
+                  <AlertTriangle className="h-12 w-12 text-red-500" />
                 </div>
               </CardContent>
             </Card>
             
             <Card className="bg-gray-800 border-gray-700">
-              <CardContent className="p-4">
+              <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-400">Affected Routes</p>
-                    <p className="text-2xl font-bold text-orange-400">
+                    <p className="text-base text-gray-400 mb-1">Affected Routes</p>
+                    <p className="text-4xl font-bold text-orange-400">
                       {routes.filter(r => r.status !== 'normal').length}
                     </p>
                   </div>
-                  <Navigation className="h-8 w-8 text-orange-500" />
+                  <Navigation className="h-12 w-12 text-orange-500" />
                 </div>
               </CardContent>
             </Card>
             
             <Card className="bg-gray-800 border-gray-700">
-              <CardContent className="p-4">
+              <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-400">Passengers Impacted</p>
-                    <p className="text-2xl font-bold text-blue-400">530</p>
+                    <p className="text-base text-gray-400 mb-1">Passengers Impacted</p>
+                    <p className="text-4xl font-bold text-blue-400">530</p>
                   </div>
-                  <Users className="h-8 w-8 text-blue-500" />
+                  <Users className="h-12 w-12 text-blue-500" />
                 </div>
               </CardContent>
             </Card>
             
             <Card className="bg-gray-800 border-gray-700">
-              <CardContent className="p-4">
+              <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-400">Cost Impact</p>
-                    <p className="text-2xl font-bold text-purple-400">$75K</p>
+                    <p className="text-base text-gray-400 mb-1">Cost Impact</p>
+                    <p className="text-4xl font-bold text-purple-400">$75K</p>
                   </div>
-                  <DollarSign className="h-8 w-8 text-purple-500" />
+                  <DollarSign className="h-12 w-12 text-purple-500" />
                 </div>
               </CardContent>
             </Card>
@@ -457,20 +457,20 @@ const GeopoliticalRiskCenter = () => {
 
           {/* Critical Alerts */}
           <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center">
-                <AlertTriangle className="h-5 w-5 mr-2 text-red-500" />
+            <CardHeader className="pb-4">
+              <CardTitle className="text-white flex items-center text-xl">
+                <AlertTriangle className="h-6 w-6 mr-3 text-red-500" />
                 Critical Alerts Requiring Immediate Action
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
               {alerts.filter(alert => alert.severity === 'critical').map(alert => (
-                <div key={alert.id} className={`p-4 rounded-lg border-l-4 ${getSeverityColor(alert.severity)}`}>
+                <div key={alert.id} className={`p-6 rounded-lg border-l-4 ${getSeverityColor(alert.severity)}`}>
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h4 className="font-semibold text-white">{alert.title}</h4>
-                      <p className="text-sm mt-1 text-gray-300">{alert.description}</p>
-                      <div className="mt-2 flex items-center space-x-4 text-sm text-gray-400">
+                      <h4 className="font-semibold text-white text-lg mb-2">{alert.title}</h4>
+                      <p className="text-base mt-1 text-gray-300 mb-3">{alert.description}</p>
+                      <div className="mt-3 flex items-center space-x-4 text-sm text-gray-400">
                         <span className="flex items-center">
                           <Globe className="h-4 w-4 mr-1" />
                           {alert.region}
