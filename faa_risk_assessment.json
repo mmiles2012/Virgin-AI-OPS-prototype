@@ -3,108 +3,108 @@
     {
       "airport": "KATL",
       "eventType": "Ground Stop",
-      "eventTime": "2025-07-15T16:21:08.268094",
+      "eventTime": "2025-07-15T16:21:08.477939",
       "reason": "Weather / Thunderstorms",
       "severity": "HIGH",
       "isVirginAtlanticDestination": true,
       "mlPrediction": {
-        "groundStopProbability": 0.5757619047619048,
+        "groundStopProbability": 0.5401543162719633,
         "delayRisk": "CRITICAL",
         "confidence": 0.77
       },
       "impact": {
         "level": "HIGH",
-        "description": "Ground Stop at KATL - Weather / Thunderstorms (ML Risk: 58%)"
+        "description": "Ground Stop at KATL - Weather / Thunderstorms (ML Risk: 54%)"
       }
     },
     {
       "airport": "KMIA",
       "eventType": "Arrival Rate Reduction",
-      "eventTime": "2025-07-15T16:21:08.268094",
+      "eventTime": "2025-07-15T16:21:08.477939",
       "reason": "Weather / Convective Activity",
       "severity": "HIGH",
       "isVirginAtlanticDestination": true,
       "mlPrediction": {
-        "groundStopProbability": 0.6002801796157058,
+        "groundStopProbability": 0.5854197900053163,
         "delayRisk": "CRITICAL",
         "confidence": 0.77
       },
       "impact": {
         "level": "HIGH",
-        "description": "Arrival Rate Reduction at KMIA - Weather / Convective Activity (ML Risk: 60%)"
+        "description": "Arrival Rate Reduction at KMIA - Weather / Convective Activity (ML Risk: 59%)"
       }
     },
     {
       "airport": "KIAD",
       "eventType": "Ground Delay Program",
-      "eventTime": "2025-07-15T16:21:08.268094",
+      "eventTime": "2025-07-15T16:21:08.477939",
       "reason": "Equipment / Runway Construction",
       "severity": "LOW",
       "isVirginAtlanticDestination": true,
       "mlPrediction": {
-        "groundStopProbability": 0.2024445188835082,
+        "groundStopProbability": 0.22531034048208842,
         "delayRisk": "LOW",
         "confidence": 0.77
       },
       "impact": {
         "level": "LOW",
-        "description": "Ground Delay Program at KIAD - Equipment / Runway Construction (ML Risk: 20%)"
+        "description": "Ground Delay Program at KIAD - Equipment / Runway Construction (ML Risk: 23%)"
       }
     },
     {
       "airport": "KSEA",
       "eventType": "Normal Operations",
-      "eventTime": "2025-07-15T16:21:08.268094",
+      "eventTime": "2025-07-15T16:21:08.477939",
       "reason": "No Delays Reported",
       "severity": "MEDIUM",
       "isVirginAtlanticDestination": true,
       "mlPrediction": {
-        "groundStopProbability": 0.11131007117822975,
+        "groundStopProbability": 0.10181155059725039,
         "delayRisk": "MEDIUM",
         "confidence": 0.77
       },
       "impact": {
         "level": "MEDIUM",
-        "description": "Normal Operations at KSEA - No Delays Reported (ML Risk: 11%)"
+        "description": "Normal Operations at KSEA - No Delays Reported (ML Risk: 10%)"
       }
     },
     {
       "airport": "KLAX",
       "eventType": "Normal Operations",
-      "eventTime": "2025-07-15T16:21:08.268094",
+      "eventTime": "2025-07-15T16:21:08.477939",
       "reason": "No Delays Reported",
       "severity": "LOW",
       "isVirginAtlanticDestination": true,
       "mlPrediction": {
-        "groundStopProbability": 0.021694179894179894,
+        "groundStopProbability": 0.04547857142857144,
         "delayRisk": "LOW",
         "confidence": 0.77
       },
       "impact": {
         "level": "LOW",
-        "description": "Normal Operations at KLAX - No Delays Reported (ML Risk: 2%)"
+        "description": "Normal Operations at KLAX - No Delays Reported (ML Risk: 5%)"
       }
     },
     {
       "airport": "KSFO",
       "eventType": "Normal Operations",
-      "eventTime": "2025-07-15T16:21:08.268094",
+      "eventTime": "2025-07-15T16:21:08.477939",
       "reason": "No Delays Reported",
       "severity": "LOW",
       "isVirginAtlanticDestination": true,
       "mlPrediction": {
-        "groundStopProbability": 0.03347989417989418,
+        "groundStopProbability": 0.05726428571428571,
         "delayRisk": "LOW",
         "confidence": 0.77
       },
       "impact": {
         "level": "LOW",
-        "description": "Normal Operations at KSFO - No Delays Reported (ML Risk: 3%)"
+        "description": "Normal Operations at KSFO - No Delays Reported (ML Risk: 6%)"
       }
     }
   ],
   "summary": {
-    "timestamp": "2025-07-15T16:21:08.301360",
+    "timestamp": "2025-07-15T16:21:08.501695",
     "total_events": 6,
     "ground_stops": 1,
     "predicted_ground_stops": 2,
@@ -124,6 +124,6 @@
     "algorithm": "Random Forest",
     "accuracy": 0.77,
     "features": 6,
-    "last_trained": "2025-07-15T16:21:08.316256"
+    "last_trained": "2025-07-15T16:21:08.512746"
   }
 }
