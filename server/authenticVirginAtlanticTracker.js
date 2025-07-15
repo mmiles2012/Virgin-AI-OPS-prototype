@@ -303,6 +303,7 @@ class AuthenticVirginAtlanticTracker {
         
         // Authentic W25 JFK routes from official schedule (specific 3-digit patterns must come before generic single-digit patterns)
         { pattern: /^(VIR|VS)0?300[A-Z]*$/, route: 'LHR-DEL', dep: 'LHR', arr: 'DEL' }, // VIR300 moved here to avoid conflict with VIR3
+        { pattern: /^(VIR|VS)0?301[A-Z]*$/, route: 'DEL-LHR', dep: 'DEL', arr: 'LHR' }, // VIR301 moved here to avoid conflict with VIR3
         { pattern: /^(VIR|VS)0?135[A-Z]*$/, route: 'LHR-MCO', dep: 'LHR', arr: 'MCO' }, // VIR135 moved here to avoid conflict with other patterns
         { pattern: /^(VIR|VS)0?129[A-Z]*$/, route: 'LHR-TPA', dep: 'LHR', arr: 'TPA' }, // VIR129 moved here to avoid conflict with other patterns
         { pattern: /^(VIR|VS)0?106[A-Z]*$/, route: 'SEA-LHR', dep: 'SEA', arr: 'LHR' }, // VIR106 SEA-LHR route
@@ -366,6 +367,15 @@ class AuthenticVirginAtlanticTracker {
         // Manchester-Atlanta route - VS109 (MAN-ATL as user confirmed)
         { pattern: /^(VIR|VS)0?109[A-Z]*$/, route: 'MAN-ATL', dep: 'MAN', arr: 'ATL' },
         
+        // Manchester-London route - VIR85 (MAN-LHR as user confirmed)
+        { pattern: /^(VIR|VS)0?85[A-Z]*$/, route: 'MAN-LHR', dep: 'MAN', arr: 'LHR' },
+        
+        // London-Barbados route - VIR187 (LHR-BGI as user confirmed)
+        { pattern: /^(VIR|VS)0?187[A-Z]*$/, route: 'LHR-BGI', dep: 'LHR', arr: 'BGI' },
+        
+        // Manchester-Orlando route - VIR75 (MAN-MCO as user confirmed)
+        { pattern: /^(VIR|VS)0?75[A-Z]*$/, route: 'MAN-MCO', dep: 'MAN', arr: 'MCO' },
+        
         // Specific known Virgin Atlantic routes that we can verify (numeric part only)
         { pattern: /VIR?242[A-Z]*|VS242[A-Z]*/, route: 'LHR-RUH', dep: 'LHR', arr: 'RUH' },
         { pattern: /VIR?411[A-Z]*|VS411[A-Z]*/, route: 'LHR-LOS', dep: 'LHR', arr: 'LOS' },
@@ -378,7 +388,7 @@ class AuthenticVirginAtlanticTracker {
         { pattern: /VIR?317[A-Z]*|VS317[A-Z]*/, route: 'BLR-LHR', dep: 'BLR', arr: 'LHR' }, // VIR317 BLR-LHR
         
         // Additional Virgin Atlantic routes based on observed patterns
-        // NOTE: VIR302 pattern moved above to India routes section to avoid conflict with VIR3 pattern
+        // NOTE: VIR302 and VIR301 patterns moved above to India routes section to avoid conflict with VIR3 pattern
         { pattern: /VIR?23[A-Z]*|VS23[A-Z]*/, route: 'LHR-JFK', dep: 'LHR', arr: 'JFK' }, // VIR23X likely LHR-JFK
         { pattern: /VIR?8[A-Z]$|VS8[A-Z]$/, route: 'LAX-LHR', dep: 'LAX', arr: 'LHR' },   // VIR8Y LAX-LHR (exact match to avoid VIR86 conflict)  
         { pattern: /VIR?86[A-Z]*|VS86[A-Z]*/, route: 'LAS-LHR', dep: 'LAS', arr: 'LHR' }, // VIR86 LAS-LHR
