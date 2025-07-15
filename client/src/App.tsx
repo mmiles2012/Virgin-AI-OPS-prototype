@@ -867,6 +867,12 @@ function App() {
               </div>
             )}
 
+            {viewMode === 'faa-status' && (
+              <div className={`absolute top-0 right-0 bottom-0 pointer-events-auto overflow-y-auto ${isNavigationCollapsed ? 'left-16' : 'left-60'}`}>
+                <FAAStatusDashboard />
+              </div>
+            )}
+
             {/* {viewMode === 'global-airports' && (
               <div className="absolute top-0 left-56 right-0 bottom-0 pointer-events-auto bg-white">
                 <GlobalAirportDatabase />
