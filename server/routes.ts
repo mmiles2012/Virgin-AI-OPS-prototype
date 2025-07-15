@@ -73,6 +73,7 @@ import heathrowLiveDataService from "./heathrowLiveDataService";
 import integratedHoldingMLService from "./integratedHoldingMLService.js";
 import { flightAwareService } from "./flightAwareService";
 import { faaNotamService } from "./faaNotamService";
+import searchableAirportRoutes from "./searchableAirportRoutes";
 import faaRiskIntelligenceRoutes from "./faaRiskIntelligenceRoutes";
 import { aviationIntelligenceService } from "./aviationIntelligenceService.js";
 import { hybridFlightService } from "./hybridFlightService";
@@ -5585,6 +5586,7 @@ print(json.dumps(weather))
 
   // SkyGate Airport Service Integration for Enhanced Diversion Support
   app.use('/api/skygate', skyGateRouter);
+  app.use('/api/airports/search', searchableAirportRoutes);
 
   // ML OTP Training and Analytics Endpoints
   app.use('/api/ml-otp', mlOtpRoutes);

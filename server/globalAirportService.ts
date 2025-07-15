@@ -312,6 +312,184 @@ class GlobalAirportService {
   public isLoaded(): boolean {
     return this.loaded;
   }
+
+  // Enhanced text search with relevance scoring
+  public textSearch(query: string, limit: number = 50): GlobalAirport[] {
+    if (!this.loaded || !query.trim()) return [];
+    
+    const searchTerm = query.toLowerCase().trim();
+    const results: Array<GlobalAirport & { score: number }> = [];
+    
+    for (const airport of this.airports) {
+      let score = 0;
+      let matches = false;
+      
+      // ICAO code exact match (highest priority)
+      if (airport.icao_code && airport.icao_code.toLowerCase() === searchTerm) {
+        score += 1000;
+        matches = true;
+      }
+      
+      // IATA code exact match (high priority)
+      if (airport.iata_code && airport.iata_code.toLowerCase() === searchTerm) {
+        score += 900;
+        matches = true;
+      }
+      
+      // Name exact match
+      if (airport.name && airport.name.toLowerCase() === searchTerm) {
+        score += 800;
+        matches = true;
+      }
+      
+      // ICAO code starts with
+      if (airport.icao_code && airport.icao_code.toLowerCase().startsWith(searchTerm)) {
+        score += 700;
+        matches = true;
+      }
+      
+      // IATA code starts with
+      if (airport.iata_code && airport.iata_code.toLowerCase().startsWith(searchTerm)) {
+        score += 600;
+        matches = true;
+      }
+      
+      // Name starts with
+      if (airport.name && airport.name.toLowerCase().startsWith(searchTerm)) {
+        score += 500;
+        matches = true;
+      }
+      
+      // City/Municipality exact match
+      if (airport.municipality && airport.municipality.toLowerCase() === searchTerm) {
+        score += 400;
+        matches = true;
+      }
+      
+      // City/Municipality starts with
+      if (airport.municipality && airport.municipality.toLowerCase().startsWith(searchTerm)) {
+        score += 300;
+        matches = true;
+      }
+      
+      // Country name matches
+      if (airport.iso_country && airport.iso_country.toLowerCase().includes(searchTerm)) {
+        score += 200;
+        matches = true;
+      }
+      
+      // Name contains
+      if (airport.name && airport.name.toLowerCase().includes(searchTerm)) {
+        score += 100;
+        matches = true;
+      }
+      
+      // City/Municipality contains
+      if (airport.municipality && airport.municipality.toLowerCase().includes(searchTerm)) {
+        score += 50;
+        matches = true;
+      }
+      
+      // Keywords contains
+      if (airport.keywords && airport.keywords.toLowerCase().includes(searchTerm)) {
+        score += 25;
+        matches = true;
+      }
+      
+      // Add type-based scoring
+      if (matches) {
+        switch (airport.type) {
+          case 'large_airport':
+            score += 10;
+            break;
+          case 'medium_airport':
+            score += 5;
+            break;
+          case 'small_airport':
+            score += 2;
+            break;
+          default:
+            score += 1;
+        }
+        
+        // Boost for scheduled service
+        if (airport.scheduled_service === 'yes') {
+          score += 5;
+        }
+        
+        // Boost for having ICAO code
+        if (airport.icao_code) {
+          score += 3;
+        }
+        
+        // Boost for having IATA code
+        if (airport.iata_code) {
+          score += 2;
+        }
+        
+        results.push({ ...airport, score });
+      }
+    }
+    
+    // Sort by score (highest first) and return limited results
+    return results
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
+      .map(({ score, ...airport }) => airport);
+  }
+
+  // Get airport suggestions for autocomplete
+  public getAirportSuggestions(query: string, limit: number = 10): Array<{
+    icao: string;
+    iata: string;
+    name: string;
+    city: string;
+    country: string;
+    type: string;
+    scheduled_service: boolean;
+  }> {
+    if (!this.loaded || !query.trim()) return [];
+    
+    const results = this.textSearch(query, limit);
+    return results.map(airport => ({
+      icao: airport.icao_code || '',
+      iata: airport.iata_code || '',
+      name: airport.name,
+      city: airport.municipality || '',
+      country: airport.iso_country,
+      type: airport.type,
+      scheduled_service: airport.scheduled_service === 'yes'
+    }));
+  }
+
+  // Get filter options
+  public getCountries(): string[] {
+    if (!this.loaded) return [];
+    return Array.from(new Set(this.airports.map(a => a.iso_country)))
+      .filter(country => country && country.trim())
+      .sort();
+  }
+
+  public getContinents(): string[] {
+    if (!this.loaded) return [];
+    return Array.from(new Set(this.airports.map(a => a.continent)))
+      .filter(continent => continent && continent.trim())
+      .sort();
+  }
+
+  public getAirportTypes(): string[] {
+    if (!this.loaded) return [];
+    return Array.from(new Set(this.airports.map(a => a.type)))
+      .filter(type => type && type.trim())
+      .sort();
+  }
+
+  public getRegions(): string[] {
+    if (!this.loaded) return [];
+    return Array.from(new Set(this.airports.map(a => a.iso_region)))
+      .filter(region => region && region.trim())
+      .sort();
+  }
 }
 
 export const globalAirportService = new GlobalAirportService();
