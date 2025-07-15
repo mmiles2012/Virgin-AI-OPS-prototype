@@ -589,6 +589,10 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between">
+                          <span className="text-xs text-gray-400">Route Progress:</span>
+                          <span className="text-xs text-blue-400 font-medium">{result.routeProgress}%</span>
+                        </div>
+                        <div className="flex justify-between">
                           <span className="text-xs text-gray-400">Predicted Delay:</span>
                           <span className="text-xs text-white">{Math.round(result.predictedDelay)}min</span>
                         </div>
@@ -602,6 +606,11 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
                           <span className="text-xs text-gray-400">Cost Impact:</span>
                           <span className="text-xs text-white">£{Math.round(result.costImpact).toLocaleString()}</span>
                         </div>
+                        {result.routeInfo && (
+                          <div className="mt-2 text-xs text-gray-400">
+                            {result.routeInfo.origin} → {result.routeInfo.destination}
+                          </div>
+                        )}
                         {result.visaFlag && (
                           <div className="mt-2 p-2 bg-orange-900/30 border border-orange-500/20 rounded">
                             <p className="text-xs text-orange-300">⚠️ Visa Alert</p>
