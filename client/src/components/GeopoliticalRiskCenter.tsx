@@ -440,7 +440,7 @@ const GeopoliticalRiskCenter = () => {
   };
 
   return (
-    <div className="p-8 space-y-8 min-h-full bg-gray-900 text-white">
+    <div className="p-4 space-y-6 min-h-screen bg-gray-900 text-white overflow-y-auto">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Geopolitical Risk Center</h1>
@@ -483,24 +483,48 @@ const GeopoliticalRiskCenter = () => {
 
       {activeTab === 'dashboard' && (
         <div className="space-y-8">
-          {/* Executive Summary Card */}
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-white mb-4">Executive Risk Summary</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-red-900/30 border border-red-600 rounded-lg p-4">
-                <div className="text-red-400 text-sm font-medium mb-2">CRITICAL ALERTS</div>
-                <div className="text-3xl font-bold text-red-300">3</div>
-                <div className="text-red-300 text-sm">Immediate Action Required</div>
+          {/* Executive Summary Card - Expanded */}
+          <div className="bg-gray-800 rounded-lg p-8 mb-8">
+            <h2 className="text-4xl font-bold text-white mb-6">Executive Risk Summary</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="bg-red-900/30 border border-red-600 rounded-lg p-6">
+                <div className="text-red-400 text-lg font-medium mb-3">CRITICAL ALERTS</div>
+                <div className="text-5xl font-bold text-red-300 mb-2">{alerts.filter(a => a.severity === 'critical').length}</div>
+                <div className="text-red-300 text-base">Immediate Action Required</div>
               </div>
-              <div className="bg-yellow-900/30 border border-yellow-600 rounded-lg p-4">
-                <div className="text-yellow-400 text-sm font-medium mb-2">ROUTES MONITORED</div>
-                <div className="text-3xl font-bold text-yellow-300">18</div>
-                <div className="text-yellow-300 text-sm">Active Virgin Atlantic Routes</div>
+              <div className="bg-orange-900/30 border border-orange-600 rounded-lg p-6">
+                <div className="text-orange-400 text-lg font-medium mb-3">HIGH RISK</div>
+                <div className="text-5xl font-bold text-orange-300 mb-2">{alerts.filter(a => a.severity === 'high').length}</div>
+                <div className="text-orange-300 text-base">Enhanced Monitoring</div>
               </div>
-              <div className="bg-blue-900/30 border border-blue-600 rounded-lg p-4">
-                <div className="text-blue-400 text-sm font-medium mb-2">REGIONS ASSESSED</div>
-                <div className="text-3xl font-bold text-blue-300">7</div>
-                <div className="text-blue-300 text-sm">Global Risk Coverage</div>
+              <div className="bg-yellow-900/30 border border-yellow-600 rounded-lg p-6">
+                <div className="text-yellow-400 text-lg font-medium mb-3">ROUTES MONITORED</div>
+                <div className="text-5xl font-bold text-yellow-300 mb-2">{routes.length}</div>
+                <div className="text-yellow-300 text-base">Active Virgin Atlantic Routes</div>
+              </div>
+              <div className="bg-blue-900/30 border border-blue-600 rounded-lg p-6">
+                <div className="text-blue-400 text-lg font-medium mb-3">REGIONS ASSESSED</div>
+                <div className="text-5xl font-bold text-blue-300 mb-2">{regionalAssessments.length}</div>
+                <div className="text-blue-300 text-base">Global Risk Coverage</div>
+              </div>
+            </div>
+            
+            {/* Risk Status Bar */}
+            <div className="bg-gray-700 rounded-lg p-6">
+              <h3 className="text-2xl font-semibold text-white mb-4">Global Risk Status</h3>
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                  <span className="text-lg text-gray-300">Normal Operations: {routes.filter(r => r.status === 'normal').length} routes</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+                  <span className="text-lg text-gray-300">Monitoring: {routes.filter(r => r.status === 'monitoring').length} routes</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+                  <span className="text-lg text-gray-300">Disrupted: {routes.filter(r => r.status === 'disrupted').length} routes</span>
+                </div>
               </div>
             </div>
           </div>
@@ -558,100 +582,230 @@ const GeopoliticalRiskCenter = () => {
             </Card>
           </div>
 
-          {/* Critical Alerts */}
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-white flex items-center text-xl">
-                <AlertTriangle className="h-6 w-6 mr-3 text-red-500" />
-                Critical Alerts Requiring Immediate Action
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {alerts.filter(alert => alert.severity === 'critical').map(alert => (
-                <div key={alert.id} className={`p-6 rounded-lg border-l-4 ${getSeverityColor(alert.severity)}`}>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-white text-lg mb-2">{alert.title}</h4>
-                      <p className="text-base mt-1 text-gray-300 mb-3">{alert.description}</p>
-                      <div className="mt-3 flex items-center space-x-4 text-sm text-gray-400">
-                        <span className="flex items-center">
-                          <Globe className="h-4 w-4 mr-1" />
-                          {alert.region}
-                        </span>
-                        <span className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1" />
-                          {alert.timeRemaining}
-                        </span>
+          {/* All Alerts - Expanded */}
+          <div className="bg-gray-800 rounded-lg p-8 mb-8">
+            <h2 className="text-4xl font-bold text-white mb-6 flex items-center">
+              <AlertTriangle className="h-10 w-10 mr-4 text-red-500" />
+              Global Alert Management Center
+            </h2>
+            
+            <div className="grid grid-cols-1 gap-6">
+              {alerts.map((alert) => (
+                <div
+                  key={alert.id}
+                  className={`p-8 rounded-xl border-2 ${getSeverityColor(alert.severity)} transition-all hover:shadow-lg`}
+                >
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Alert Header */}
+                    <div className="lg:col-span-2">
+                      <div className="flex items-start space-x-4 mb-4">
+                        <div className={`w-3 h-3 rounded-full mt-2 ${
+                          alert.severity === 'critical' ? 'bg-red-500' :
+                          alert.severity === 'high' ? 'bg-orange-500' :
+                          alert.severity === 'medium' ? 'bg-yellow-500' :
+                          'bg-green-500'
+                        }`}></div>
+                        <div className="flex-1">
+                          <h3 className="text-3xl font-bold mb-3">{alert.title}</h3>
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            <span className={`px-4 py-2 rounded-full text-sm font-bold ${
+                              alert.severity === 'critical' ? 'bg-red-600 text-white' :
+                              alert.severity === 'high' ? 'bg-orange-600 text-white' :
+                              alert.severity === 'medium' ? 'bg-yellow-600 text-black' :
+                              'bg-green-600 text-white'
+                            }`}>
+                              {alert.severity.toUpperCase()} PRIORITY
+                            </span>
+                            <span className="px-4 py-2 rounded-full text-sm font-medium bg-gray-700 text-gray-300">
+                              {alert.type.replace('_', ' ').toUpperCase()}
+                            </span>
+                            <span className="px-4 py-2 rounded-full text-sm font-medium bg-blue-700 text-blue-300">
+                              {alert.region}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <Alert className="mt-2 bg-blue-900/20 border-blue-600">
-                        <AlertDescription className="text-blue-300">
-                          <strong>Recommendation:</strong> {alert.recommendation}
-                        </AlertDescription>
-                      </Alert>
+                      
+                      <p className="text-xl mb-6 text-gray-300 leading-relaxed">{alert.description}</p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <div className="text-sm font-medium text-gray-400 mb-2">Impact Assessment</div>
+                          <div className="text-lg font-semibold text-white">{alert.impact}</div>
+                        </div>
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <div className="text-sm font-medium text-gray-400 mb-2">Time Frame</div>
+                          <div className="text-lg font-semibold text-white">{alert.timeRemaining}</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Alert Details */}
+                    <div className="space-y-4">
+                      <div className="bg-gray-700/30 rounded-lg p-4">
+                        <div className="text-sm font-medium text-gray-400 mb-3">Affected Routes</div>
+                        <div className="space-y-2">
+                          {alert.affectedRoutes.map((route, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-2 bg-blue-900/30 rounded">
+                              <span className="text-blue-300 font-medium">{route}</span>
+                              <span className="text-xs text-gray-400">Active</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gray-700/30 rounded-lg p-4">
+                        <div className="text-sm font-medium text-gray-400 mb-3">Risk Metrics</div>
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span className="text-gray-300">Routes Affected:</span>
+                            <span className="text-white font-bold">{alert.affectedRoutes.length}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-300">Alert Duration:</span>
+                            <span className="text-white font-bold">{alert.timeRemaining}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-300">Priority Level:</span>
+                            <span className={`font-bold ${
+                              alert.severity === 'critical' ? 'text-red-400' :
+                              alert.severity === 'high' ? 'text-orange-400' :
+                              alert.severity === 'medium' ? 'text-yellow-400' :
+                              'text-green-400'
+                            }`}>
+                              {alert.severity.toUpperCase()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Recommendation Section */}
+                  <div className="mt-6 bg-blue-900/20 border border-blue-600 rounded-lg p-6">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mt-1">
+                        <span className="text-white text-xs font-bold">!</span>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-lg font-bold text-blue-300 mb-2">Operational Recommendation</div>
+                        <div className="text-base text-blue-200">{alert.recommendation}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
               ))}
-            </CardContent>
-          </Card>
+              
+              {alerts.length === 0 && (
+                <div className="text-center py-16">
+                  <div className="text-8xl text-gray-600 mb-6">🌍</div>
+                  <div className="text-3xl text-gray-400 mb-4">No Active Alerts</div>
+                  <div className="text-xl text-gray-500">All regions showing normal operational status</div>
+                  <div className="mt-6 text-lg text-gray-500">System monitoring {routes.length} active Virgin Atlantic routes</div>
+                </div>
+              )}
+            </div>
+          </div>
 
-          {/* Route Status Overview */}
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center">
-                <Plane className="h-5 w-5 mr-2 text-blue-500" />
-                Virgin Atlantic Route Risk Assessment
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-700">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Flight</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Route</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Risk Level</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Passengers</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Revenue Impact</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-600">
-                    {routes.map(route => (
-                      <tr key={route.id}>
-                        <td className="px-4 py-3 text-sm font-medium text-white">{route.id}</td>
-                        <td className="px-4 py-3 text-sm text-gray-300">{route.origin} → {route.destination}</td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(route.status)}`}>
-                            {route.status}
+          {/* Route Status Overview - Expanded */}
+          <div className="bg-gray-800 rounded-lg p-8 mb-8">
+            <h2 className="text-4xl font-bold text-white mb-6 flex items-center">
+              <Plane className="h-10 w-10 mr-4 text-blue-500" />
+              Virgin Atlantic Route Risk Assessment Center
+            </h2>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full border-separate border-spacing-0">
+                <thead>
+                  <tr className="bg-gray-700">
+                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Flight Number</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Route</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Operational Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Risk Level</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Passenger Count</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Revenue Impact</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Delay Status</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {routes.map((route, index) => (
+                    <tr key={route.id} className={`${index % 2 === 0 ? 'bg-gray-750' : 'bg-gray-800'} hover:bg-gray-700 transition-colors`}>
+                      <td className="px-6 py-5 text-lg font-bold text-white border-r border-gray-600">
+                        {route.id}
+                      </td>
+                      <td className="px-6 py-5 border-r border-gray-600">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-lg font-semibold text-gray-300">{route.origin}</span>
+                          <span className="text-blue-400">→</span>
+                          <span className="text-lg font-semibold text-gray-300">{route.destination}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 border-r border-gray-600">
+                        <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase ${getStatusColor(route.status)}`}>
+                          {route.status === 'normal' ? '✓ Normal' : 
+                           route.status === 'monitoring' ? '⚠ Monitoring' : 
+                           '🚨 Disrupted'}
+                        </span>
+                      </td>
+                      <td className={`px-6 py-5 text-lg font-bold border-r border-gray-600 ${getRiskLevelColor(route.riskLevel)}`}>
+                        <div className="flex items-center space-x-2">
+                          <div className={`w-3 h-3 rounded-full ${
+                            route.riskLevel === 'critical' ? 'bg-red-500' :
+                            route.riskLevel === 'high' ? 'bg-orange-500' :
+                            route.riskLevel === 'medium' ? 'bg-yellow-500' :
+                            'bg-green-500'
+                          }`}></div>
+                          <span className="uppercase">{route.riskLevel}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 text-lg font-semibold text-gray-300 border-r border-gray-600">
+                        {route.passengers.toLocaleString()} PAX
+                      </td>
+                      <td className="px-6 py-5 text-lg font-semibold text-green-400 border-r border-gray-600">
+                        {route.revenue}
+                      </td>
+                      <td className="px-6 py-5 border-r border-gray-600">
+                        {route.delayMinutes > 0 ? (
+                          <span className="text-orange-400 font-semibold">
+                            +{route.delayMinutes} min
                           </span>
-                        </td>
-                        <td className={`px-4 py-3 text-sm font-medium ${getRiskLevelColor(route.riskLevel)}`}>
-                          {route.riskLevel}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-300">{route.passengers}</td>
-                        <td className="px-4 py-3 text-sm text-gray-300">{route.revenue}</td>
-                        <td className="px-4 py-3 text-sm">
+                        ) : (
+                          <span className="text-green-400 font-semibold">On Time</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-5">
+                        <div className="flex space-x-2">
                           {route.status !== 'normal' && (
                             <button 
                               onClick={() => {
                                 setSelectedRoute(route);
                                 setShowRouteOptions(true);
                               }}
-                              className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                             >
                               View Options
                             </button>
                           )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                          <button className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            Details
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            {routes.length === 0 && (
+              <div className="text-center py-12">
+                <div className="text-6xl text-gray-600 mb-4">✈️</div>
+                <div className="text-2xl text-gray-400 mb-2">No Route Data Available</div>
+                <div className="text-lg text-gray-500">Fetching live Virgin Atlantic flight data...</div>
               </div>
-            </CardContent>
-          </Card>
+            )}
+          </div>
         </div>
       )}
 
