@@ -27,103 +27,53 @@ export const StandConflictMonitor: React.FC<StandConflictMonitorProps> = ({ flig
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [isLoading, setIsLoading] = useState(false);
 
-  // Heathrow Terminal 3 Virgin Atlantic gates
-  const terminal3Gates = [
-    'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10',
-    'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10',
-    'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10'
-  ];
-
-  // Calculate stand conflicts based on authentic flight data
-  const calculateStandConflicts = (flightData: any[]): StandConflictData[] => {
-    const conflicts: StandConflictData[] = [];
-    
-    // Filter arriving flights to LHR
-    const arrivingFlights = flightData.filter(flight => 
-      flight.route?.includes('LHR') && flight.route?.endsWith('LHR')
-    );
-
-    arrivingFlights.forEach((flight, index) => {
-      const gate = terminal3Gates[index % terminal3Gates.length];
-      const currentTime = new Date();
-      const estimatedArrival = new Date(currentTime.getTime() + Math.random() * 6 * 60 * 60 * 1000); // Random ETA within 6 hours
+  // Fetch authentic stand conflicts from backend API
+  const fetchStandConflicts = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
       
-      // Simulate stand conflict scenarios based on flight density
-      let conflictType: 'NONE' | 'MINOR' | 'MAJOR' | 'CRITICAL' = 'NONE';
-      let waitTime = 0;
-      let previousFlightId: string | undefined;
-      let affectedConnections = 0;
-      let recommendations: string[] = [];
-
-      // Create realistic conflict scenarios based on flight timing
-      if (arrivingFlights.length > 8) { // High traffic scenario
-        const conflictProbability = Math.random();
-        if (conflictProbability < 0.3) {
-          conflictType = 'CRITICAL';
-          waitTime = 25 + Math.floor(Math.random() * 15);
-          previousFlightId = `VS${Math.floor(Math.random() * 900) + 100}`;
-          affectedConnections = 2 + Math.floor(Math.random() * 3);
-          recommendations = [
-            'Immediate gate reassignment required',
-            'Notify ground services of extended hold',
-            'Alert connection passengers of potential delays',
-            'Prepare priority passenger transfer'
-          ];
-        } else if (conflictProbability < 0.6) {
-          conflictType = 'MAJOR';
-          waitTime = 12 + Math.floor(Math.random() * 8);
-          previousFlightId = `VS${Math.floor(Math.random() * 900) + 100}`;
-          affectedConnections = 1 + Math.floor(Math.random() * 2);
-          recommendations = [
-            'Monitor gate clearance closely',
-            'Prepare alternative gate assignment',
-            'Notify crew of potential delay'
-          ];
-        } else if (conflictProbability < 0.8) {
-          conflictType = 'MINOR';
-          waitTime = 5 + Math.floor(Math.random() * 5);
-          recommendations = [
-            'Standard monitoring procedures',
-            'Standby for gate clearance'
-          ];
-        }
+      const response = await fetch('/api/stand-conflict/conflicts');
+      if (!response.ok) {
+        throw new Error('Failed to fetch stand conflicts');
       }
-
-      conflicts.push({
-        flightNumber: flight.flight_number,
-        gate,
-        aircraft: flight.aircraft_type,
-        route: flight.route,
-        scheduledArrival: estimatedArrival.toISOString(),
-        estimatedArrival: estimatedArrival.toISOString(),
-        conflictType,
-        waitTime,
-        previousFlightId,
-        affectedConnections,
-        recommendations
-      });
-    });
-
-    return conflicts.sort((a, b) => {
-      const severityOrder = { 'CRITICAL': 4, 'MAJOR': 3, 'MINOR': 2, 'NONE': 1 };
-      return severityOrder[b.conflictType] - severityOrder[a.conflictType];
-    });
+      
+      const data = await response.json();
+      if (data.success && data.conflicts) {
+        // Map backend response to frontend interface
+        const mappedConflicts: StandConflictData[] = data.conflicts.map((conflict: any) => ({
+          flightNumber: conflict.flightNumber,
+          gate: conflict.gate,
+          aircraft: conflict.aircraft,
+          route: conflict.route,
+          scheduledArrival: conflict.scheduledArrival,
+          estimatedArrival: conflict.estimatedArrival,
+          conflictType: conflict.conflictType,
+          waitTime: conflict.waitTime,
+          previousFlightId: conflict.previousFlightId,
+          affectedConnections: conflict.affectedConnections,
+          recommendations: conflict.recommendations || []
+        }));
+        
+        setStandConflicts(mappedConflicts);
+        setLastUpdate(new Date());
+        console.log(`✅ Stand conflicts loaded: ${mappedConflicts.length} flights with authentic gate assignments`);
+      }
+    } catch (error) {
+      console.error('Error fetching stand conflicts:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
-    const updateStandConflicts = () => {
-      setIsLoading(true);
-      const conflicts = calculateStandConflicts(flights);
-      setStandConflicts(conflicts);
-      setLastUpdate(new Date());
-      setIsLoading(false);
-    };
-
-    updateStandConflicts();
-    const interval = setInterval(updateStandConflicts, 45000); // Update every 45 seconds
+    // Fetch authentic stand conflicts on component mount and when flights change
+    fetchStandConflicts();
+    
+    // Set up periodic refresh to get latest authentic gate assignments
+    const interval = setInterval(fetchStandConflicts, 45000); // Update every 45 seconds
 
     return () => clearInterval(interval);
-  }, [flights]);
+  }, []); // Empty dependency array since we want to fetch regardless of flights prop
 
   const getConflictColor = (type: string) => {
     switch (type) {
@@ -151,15 +101,27 @@ export const StandConflictMonitor: React.FC<StandConflictMonitorProps> = ({ flig
   return (
     <Card className="bg-gray-900 border-gray-700">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-white">
-          <MapPin className="h-5 w-5 text-blue-400" />
-          Stand Conflict Monitor - LHR Terminal 3
-          <Badge className="ml-2 bg-blue-600 text-white">
-            {standConflicts.length} Flights
-          </Badge>
-        </CardTitle>
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-blue-400" />
+            <span className="text-white">Stand Conflict Monitor - LHR Terminal 3</span>
+            <Badge className="ml-2 bg-blue-600 text-white">
+              {standConflicts.length} Flights
+            </Badge>
+          </div>
+          <Button 
+            onClick={fetchStandConflicts}
+            disabled={isLoading}
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Settings className="h-4 w-4 mr-1" />
+            Refresh Gates
+          </Button>
+        </div>
         <div className="flex items-center gap-4 text-sm text-gray-400">
           <span>Last Updated: {lastUpdate.toLocaleTimeString()}</span>
+          <span>Authentic Heathrow T3 Gate Assignments</span>
           {isLoading && <span className="flex items-center gap-1">
             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
             Updating...
