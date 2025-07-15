@@ -50,8 +50,8 @@ export function Interface() {
         </Button>
       </div>
       
-      {/* Game completion overlay */}
-      {phase === "ended" && (
+      {/* Game completion overlay - Disabled to prevent black overlay */}
+      {false && phase === "ended" && (
         <div className="fixed inset-0 flex items-center justify-center z-20 bg-black/30">
           <Card className="w-full max-w-md mx-4 shadow-lg">
             <CardHeader>
