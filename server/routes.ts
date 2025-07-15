@@ -53,6 +53,7 @@ import { virginAtlanticFlightTracker } from "./routeMatcher";
 import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
 import mlOtpRoutes from "./mlOtpRoutes";
 import visaRoutes from "./visaRoutes";
+import standConflictRoutes from "./standConflictRoutes.js";
 import intelligentDecisionRoutes from "./intelligentDecisionRoutes";
 import slotRiskRoutes from "./slotRiskRoutes";
 import { natTrackRoutes } from "./natTrackRoutes";
@@ -5411,6 +5412,9 @@ print(json.dumps(weather))
   
   // Visa Requirements Routes
   app.use('/api/visa', visaRoutes);
+
+  // Stand Conflict Detection Routes
+  app.use('/api/stand-conflict', standConflictRoutes);
 
   // Intelligent Decision Support Routes
   app.use('/api/intelligent-decisions', intelligentDecisionRoutes);

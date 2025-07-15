@@ -6,6 +6,7 @@ import PassengerImpactModelingComponent from "./PassengerImpactModelingComponent
 import HeathrowHoldingMonitor from "./HeathrowHoldingMonitor";
 import SigmetOperationalMonitor from "./SigmetOperationalMonitor";
 import MLOperationalPlanningDashboard from "./MLOperationalPlanningDashboard";
+import StandConflictMonitor from "./StandConflictMonitor";
 
 
 
@@ -468,6 +469,11 @@ export default function AIOpsDashboard() {
       {/* ML-Enhanced Operational Planning - Full Width Section */}
       <div className="p-4 pt-0">
         <MLOperationalPlanningDashboard flights={adsbFlightData} />
+      </div>
+      
+      {/* Stand Conflict Monitor - Full Width Section */}
+      <div className="p-4 pt-0">
+        <StandConflictMonitor flights={adsbFlightData} />
       </div>
       
       {/* Passenger Impact Modeling - Full Width Bottom Section */}
