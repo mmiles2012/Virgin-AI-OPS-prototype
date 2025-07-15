@@ -611,6 +611,14 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
                             {result.routeInfo.origin} → {result.routeInfo.destination}
                           </div>
                         )}
+                        {result.operationalRecommendations && result.operationalRecommendations.length > 0 && (
+                          <div className="mt-2 p-2 bg-blue-900/30 border border-blue-500/20 rounded">
+                            <p className="text-xs text-blue-300 font-medium mb-1">🎯 ML Recommendations:</p>
+                            {result.operationalRecommendations.map((rec, idx) => (
+                              <p key={idx} className="text-xs text-blue-200">• {rec}</p>
+                            ))}
+                          </div>
+                        )}
                         {result.visaFlag && (
                           <div className="mt-2 p-2 bg-orange-900/30 border border-orange-500/20 rounded">
                             <p className="text-xs text-orange-300">⚠️ Visa Alert</p>

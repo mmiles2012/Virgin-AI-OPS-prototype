@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertTriangle, Plane, Activity, Cloud, Radio, Radar, MapPin } from "lucide-react";
+import { AlertTriangle, Plane, Activity, Cloud, Radio, Radar, MapPin, Brain } from "lucide-react";
 import ProfessionalSatelliteMap from "./ProfessionalSatelliteMap";
 import PassengerImpactModelingComponent from "./PassengerImpactModelingComponent";
 import HeathrowHoldingMonitor from "./HeathrowHoldingMonitor";
 import SigmetOperationalMonitor from "./SigmetOperationalMonitor";
+import MLOperationalPlanningDashboard from "./MLOperationalPlanningDashboard";
 
 
 
@@ -462,6 +463,11 @@ export default function AIOpsDashboard() {
       {/* Heathrow Holding Areas - Full Width Section */}
       <div className="p-4 pt-0">
         <HeathrowHoldingMonitor />
+      </div>
+      
+      {/* ML-Enhanced Operational Planning - Full Width Section */}
+      <div className="p-4 pt-0">
+        <MLOperationalPlanningDashboard flights={adsbFlightData} />
       </div>
       
       {/* Passenger Impact Modeling - Full Width Bottom Section */}
