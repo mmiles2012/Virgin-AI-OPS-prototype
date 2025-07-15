@@ -392,30 +392,30 @@ export default function FAAStatusDashboard() {
   if (!faaData) return null;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white">FAA NAS Status</h2>
-        <div className="flex items-center space-x-4">
-          {faaData.fallback && (
-            <Badge className="bg-yellow-600 text-white">
-              <AlertTriangle className="w-3 h-3 mr-1" />
-              Fallback Mode
-            </Badge>
-          )}
-          <div className="flex items-center text-green-400">
-            <Wifi className="w-4 h-4 mr-2" />
-            <span className="text-sm">
-              {lastUpdate ? `Updated ${lastUpdate.toLocaleTimeString()}` : 'Connected'}
-            </span>
+    <div className="h-full bg-gray-900 text-white p-6 overflow-y-auto">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-white">FAA NAS Status</h2>
+          <div className="flex items-center space-x-4">
+            {faaData.fallback && (
+              <Badge className="bg-yellow-600 text-white">
+                <AlertTriangle className="w-3 h-3 mr-1" />
+                Fallback Mode
+              </Badge>
+            )}
+            <div className="flex items-center text-green-400">
+              <Wifi className="w-4 h-4 mr-2" />
+              <span className="text-sm">
+                {lastUpdate ? `Updated ${lastUpdate.toLocaleTimeString()}` : 'Connected'}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ML Model Information */}
-      <Card className="bg-blue-900/20 border-blue-700">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+        {/* ML Model Information */}
+        <Card className="bg-blue-900/20 border-blue-700">
+          <CardContent className="p-4">
             <div className="flex items-center space-x-4">
               <div className="bg-blue-600 p-2 rounded">
                 <TrendingUp className="w-5 h-5 text-white" />
@@ -426,15 +426,8 @@ export default function FAAStatusDashboard() {
                 <p className="text-blue-300 text-xs mt-1">Source: {faaData.dataSource}</p>
               </div>
             </div>
-            <button
-              onClick={() => window.open('http://localhost:8501', '_blank')}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-            >
-              Launch ML Dashboard
-            </button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -640,16 +633,17 @@ export default function FAAStatusDashboard() {
         </TabsContent>
       </Tabs>
 
-      {/* Data Source Info */}
-      <Card className="bg-gray-800 border-gray-700">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between text-sm text-gray-400">
-            <span>Data Source: {faaData.dataSource}</span>
-            <span>Monitoring {faaData.monitoredAirports} Virgin Atlantic destinations</span>
-            <span>Last Updated: {new Date(faaData.timestamp).toLocaleString()}</span>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Data Source Info */}
+        <Card className="bg-gray-800 border-gray-700">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between text-sm text-gray-400">
+              <span>Data Source: {faaData.dataSource}</span>
+              <span>Monitoring {faaData.monitoredAirports} Virgin Atlantic destinations</span>
+              <span>Last Updated: {new Date(faaData.timestamp).toLocaleString()}</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
