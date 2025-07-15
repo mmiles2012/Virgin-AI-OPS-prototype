@@ -46,6 +46,17 @@ interface FAAIntelligenceResponse {
 
 // Main endpoint for enhanced FAA intelligence
 router.get('/faa-risk-intelligence', async (req, res) => {
+  let responseHandled = false;
+  let timeoutId: NodeJS.Timeout;
+  
+  const sendResponse = (response: FAAIntelligenceResponse) => {
+    if (!responseHandled) {
+      responseHandled = true;
+      if (timeoutId) clearTimeout(timeoutId);
+      res.json(response);
+    }
+  };
+
   try {
     console.log('🛩️ Generating FAA risk intelligence...');
     
@@ -66,9 +77,11 @@ router.get('/faa-risk-intelligence', async (req, res) => {
     });
 
     pythonProcess.on('close', async (code) => {
+      if (responseHandled) return;
+      
       if (code !== 0) {
         console.error('❌ FAA intelligence generation failed:', errorData);
-        return res.json(generateFallbackIntelligence());
+        return sendResponse(generateFallbackIntelligence());
       }
 
       try {
@@ -99,24 +112,26 @@ router.get('/faa-risk-intelligence', async (req, res) => {
         };
 
         console.log(`✅ FAA intelligence generated: ${response.data?.summary.totalEvents} events`);
-        res.json(response);
+        sendResponse(response);
 
       } catch (parseError) {
         console.error('❌ Failed to parse risk assessment:', parseError);
-        res.json(generateFallbackIntelligence());
+        sendResponse(generateFallbackIntelligence());
       }
     });
 
-    // Timeout after 30 seconds
-    setTimeout(() => {
-      pythonProcess.kill();
-      console.log('⏰ FAA intelligence generation timed out');
-      res.json(generateFallbackIntelligence());
-    }, 30000);
+    // Timeout after 8 seconds to prevent hanging
+    timeoutId = setTimeout(() => {
+      if (!responseHandled) {
+        pythonProcess.kill();
+        console.log('⏰ FAA intelligence generation timed out');
+        sendResponse(generateFallbackIntelligence());
+      }
+    }, 8000);
 
   } catch (error) {
     console.error('❌ FAA risk intelligence error:', error);
-    res.json(generateFallbackIntelligence());
+    sendResponse(generateFallbackIntelligence());
   }
 });
 

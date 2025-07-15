@@ -3,80 +3,80 @@
     {
       "airport": "KATL",
       "eventType": "Ground Stop",
-      "eventTime": "2025-07-15T16:09:11.868832",
+      "eventTime": "2025-07-15T16:17:27.491082",
       "reason": "Weather / Thunderstorms",
       "severity": "HIGH",
       "isVirginAtlanticDestination": true,
       "mlPrediction": {
-        "groundStopProbability": 0.503481684981685,
-        "delayRisk": "CRITICAL",
+        "groundStopProbability": 0.4783095238095239,
+        "delayRisk": "HIGH",
         "confidence": 0.77
       },
       "impact": {
         "level": "HIGH",
-        "description": "Ground Stop at KATL - Weather / Thunderstorms (ML Risk: 50%)"
+        "description": "Ground Stop at KATL - Weather / Thunderstorms (ML Risk: 48%)"
       }
     },
     {
       "airport": "KMIA",
       "eventType": "Arrival Rate Reduction",
-      "eventTime": "2025-07-15T16:09:11.868832",
+      "eventTime": "2025-07-15T16:17:27.491082",
       "reason": "Weather / Convective Activity",
       "severity": "HIGH",
       "isVirginAtlanticDestination": true,
       "mlPrediction": {
-        "groundStopProbability": 0.5044900793650795,
-        "delayRisk": "CRITICAL",
+        "groundStopProbability": 0.47845436507936506,
+        "delayRisk": "HIGH",
         "confidence": 0.77
       },
       "impact": {
         "level": "HIGH",
-        "description": "Arrival Rate Reduction at KMIA - Weather / Convective Activity (ML Risk: 50%)"
+        "description": "Arrival Rate Reduction at KMIA - Weather / Convective Activity (ML Risk: 48%)"
       }
     },
     {
       "airport": "KIAD",
       "eventType": "Ground Delay Program",
-      "eventTime": "2025-07-15T16:09:11.868832",
+      "eventTime": "2025-07-15T16:17:27.491082",
       "reason": "Equipment / Runway Construction",
       "severity": "LOW",
       "isVirginAtlanticDestination": true,
       "mlPrediction": {
-        "groundStopProbability": 0.20167884028210514,
+        "groundStopProbability": 0.18702561683039562,
         "delayRisk": "LOW",
         "confidence": 0.77
       },
       "impact": {
         "level": "LOW",
-        "description": "Ground Delay Program at KIAD - Equipment / Runway Construction (ML Risk: 20%)"
+        "description": "Ground Delay Program at KIAD - Equipment / Runway Construction (ML Risk: 19%)"
       }
     },
     {
       "airport": "KSEA",
       "eventType": "Normal Operations",
-      "eventTime": "2025-07-15T16:09:11.868832",
+      "eventTime": "2025-07-15T16:17:27.491082",
       "reason": "No Delays Reported",
       "severity": "MEDIUM",
       "isVirginAtlanticDestination": true,
       "mlPrediction": {
-        "groundStopProbability": 0.10879784548786475,
+        "groundStopProbability": 0.10279108580630318,
         "delayRisk": "MEDIUM",
         "confidence": 0.77
       },
       "impact": {
         "level": "MEDIUM",
-        "description": "Normal Operations at KSEA - No Delays Reported (ML Risk: 11%)"
+        "description": "Normal Operations at KSEA - No Delays Reported (ML Risk: 10%)"
       }
     },
     {
       "airport": "KLAX",
       "eventType": "Normal Operations",
-      "eventTime": "2025-07-15T16:09:11.868832",
+      "eventTime": "2025-07-15T16:17:27.491082",
       "reason": "No Delays Reported",
       "severity": "LOW",
       "isVirginAtlanticDestination": true,
       "mlPrediction": {
-        "groundStopProbability": 0.016895238095238095,
+        "groundStopProbability": 0.022845238095238096,
         "delayRisk": "LOW",
         "confidence": 0.77
       },
@@ -88,12 +88,12 @@
     {
       "airport": "KSFO",
       "eventType": "Normal Operations",
-      "eventTime": "2025-07-15T16:09:11.868832",
+      "eventTime": "2025-07-15T16:17:27.491082",
       "reason": "No Delays Reported",
       "severity": "LOW",
       "isVirginAtlanticDestination": true,
       "mlPrediction": {
-        "groundStopProbability": 0.027847619047619045,
+        "groundStopProbability": 0.03463095238095238,
         "delayRisk": "LOW",
         "confidence": 0.77
       },
@@ -104,14 +104,14 @@
     }
   ],
   "summary": {
-    "timestamp": "2025-07-15T16:09:11.886664",
+    "timestamp": "2025-07-15T16:17:27.513699",
     "total_events": 6,
     "ground_stops": 1,
-    "predicted_ground_stops": 2,
+    "predicted_ground_stops": 0,
     "virgin_atlantic_affected": 6,
     "risk_levels": {
       "LOW": 3,
-      "CRITICAL": 2,
+      "HIGH": 2,
       "MEDIUM": 1
     },
     "high_risk_airports": [
@@ -124,6 +124,6 @@
     "algorithm": "Random Forest",
     "accuracy": 0.77,
     "features": 6,
-    "last_trained": "2025-07-15T16:09:11.894481"
+    "last_trained": "2025-07-15T16:17:27.523713"
   }
 }
