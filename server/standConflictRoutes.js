@@ -1,5 +1,6 @@
 import express from 'express';
 import standConflictService from './standConflictService.js';
+import heathrowGateService from './heathrowGateService.js';
 
 const router = express.Router();
 
@@ -166,12 +167,53 @@ router.post('/clear-cache', (req, res) => {
   }
 });
 
+// Get authentic gate assignments for all Virgin Atlantic gates
+router.get('/gates', (req, res) => {
+  try {
+    const gateAssignments = heathrowGateService.getAllGateAssignments();
+    
+    res.json({
+      success: true,
+      gate_assignments: gateAssignments,
+      terminal: 'T3',
+      airline: 'Virgin Atlantic',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error fetching gate assignments:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      gate_assignments: null
+    });
+  }
+});
+
+// Clear gate assignment cache
+router.post('/clear-gate-cache', (req, res) => {
+  try {
+    heathrowGateService.clearCache();
+    res.json({
+      success: true,
+      message: 'Gate assignment cache cleared',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error clearing gate cache:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Health check
 router.get('/health', (req, res) => {
   res.json({
     success: true,
     service: 'Stand Conflict Detection Service',
     status: 'operational',
+    gate_service: 'Heathrow Authentic Gate Service',
     timestamp: new Date().toISOString()
   });
 });
