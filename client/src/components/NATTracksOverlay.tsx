@@ -136,8 +136,8 @@ const NATTracksOverlay: React.FC<NATTracksOverlayProps> = ({ showNATTracks }) =>
         );
       })}
       
-      {/* NAT Tracks Status Indicator */}
-      {showNATTracks && (
+      {/* NAT Tracks Status Indicator - Disabled to prevent black overlay issue */}
+      {false && showNATTracks && (
         <div className="absolute top-20 left-4 bg-gray-900/90 text-white p-2 rounded-lg border border-gray-600 z-[1000] text-xs">
           <div className="flex items-center space-x-2">
             <div className="flex space-x-1">
