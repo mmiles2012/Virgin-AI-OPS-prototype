@@ -61,14 +61,18 @@ export default function VirginAtlanticFleetMonitor() {
     const fetchFleetData = async (): Promise<FleetData[]> => {
       try {
         setError('');
+        console.log('🔍 Fleet Monitor: Fetching authentic Virgin Atlantic fleet data...');
+        
         // Use primary Virgin Atlantic flights endpoint with authentic ADS-B Exchange data
         const response = await fetch('/api/aviation/virgin-atlantic-flights');
         if (response.ok) {
           const data = await response.json();
-          if (data.success && data.flights) {
+          console.log('🔍 Fleet Monitor: API response received:', data.success, data.flights?.length || 0, 'flights');
+          
+          if (data.success && data.flights && Array.isArray(data.flights)) {
             // Transform authentic ADS-B flight data to FleetData format
             const transformedFleetData: FleetData[] = data.flights.map((flight: any) => ({
-              registration: flight.registration || flight.icao24 || 'UNKNOWN',
+              registration: flight.registration || flight.icao24 || `REG-${flight.flight_number}`,
               aircraft_type: flight.aircraft_type || 'UNKNOWN',
               current_flight: flight.flight_number || flight.callsign || 'UNKNOWN',
               route: flight.route && flight.route !== 'UNKNOWN' ? flight.route : 'UNKNOWN',
@@ -96,12 +100,14 @@ export default function VirginAtlanticFleetMonitor() {
                 }
               }
             }));
+            
+            console.log('✅ Fleet Monitor: Successfully transformed', transformedFleetData.length, 'aircraft');
             return transformedFleetData;
           }
         }
-        throw new Error('Failed to fetch authentic fleet data');
+        throw new Error(`Failed to fetch authentic fleet data: ${response.status}`);
       } catch (error) {
-        console.error('Failed to fetch authentic ADS-B fleet data:', error);
+        console.error('❌ Fleet Monitor: Failed to fetch authentic ADS-B fleet data:', error);
         setError('Unable to connect to ADS-B Exchange fleet monitoring system');
         return [];
       }
@@ -111,7 +117,6 @@ export default function VirginAtlanticFleetMonitor() {
       try {
         const data = await fetchFleetData();
         setFleetData(data);
-        setSelectedAircraft(data[0]?.registration || '');
         setLoading(false);
       } catch (err) {
         setError('Failed to load fleet data');
