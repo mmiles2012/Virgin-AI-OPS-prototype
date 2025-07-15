@@ -7665,7 +7665,7 @@ else:
       const fs = require('fs');
       const path = require('path');
       
-      const csvPath = path.join(process.cwd(), 'data', 'nm_network_punctuality.csv');
+      const csvPath = path.join('attached_assets', 'Download nm_network_punctuality_1751725331403.csv');
       
       if (!fs.existsSync(csvPath)) {
         return res.status(404).json({
