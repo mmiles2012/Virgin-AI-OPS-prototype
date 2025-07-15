@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Activity, Brain, Gauge, Zap } from 'lucide-react';
+import useModelInference from '@/hooks/useModelInference';
+import { enrichAircraftFeatures } from '@/utils/enrichAircraftFeatures';
 
 interface EuropeanAnalytics {
   currentMetrics: {
@@ -59,30 +61,37 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
   const [mlInsights, setMLInsights] = useState<MLInsights | null>(null);
   const [networkHealth, setNetworkHealth] = useState<any>(null);
   const [predictions, setPredictions] = useState<any>(null);
+  const [virginAtlanticFlights, setVirginAtlanticFlights] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Enhanced ML inference using uploaded AI ops modules
+  const mlInferenceResults = useModelInference(virginAtlanticFlights);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
         setLoading(true);
         
-        // Fetch all ML analytics simultaneously
-        const [insightsResponse, healthResponse, predictionsResponse] = await Promise.all([
+        // Fetch all ML analytics and Virgin Atlantic flights simultaneously
+        const [insightsResponse, healthResponse, predictionsResponse, flightsResponse] = await Promise.all([
           fetch('/api/nm-punctuality/ml-insights'),
           fetch('/api/nm-punctuality/network-health'),
-          fetch('/api/nm-punctuality/predictions')
+          fetch('/api/nm-punctuality/predictions'),
+          fetch('/api/aviation/virgin-atlantic-flights')
         ]);
 
-        const [insights, health, preds] = await Promise.all([
+        const [insights, health, preds, flights] = await Promise.all([
           insightsResponse.json(),
           healthResponse.json(),
-          predictionsResponse.json()
+          predictionsResponse.json(),
+          flightsResponse.json()
         ]);
 
         if (insights.success) setMLInsights(insights);
         if (health.success) setNetworkHealth(health);
         if (preds.success) setPredictions(preds);
+        if (flights.success) setVirginAtlanticFlights(flights.flights || []);
 
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch analytics');
@@ -189,7 +198,7 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
       </Card>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-gray-800 border-gray-700">
+        <TabsList className="grid w-full grid-cols-4 bg-gray-800 border-gray-700">
           <TabsTrigger value="overview" className="data-[state=active]:bg-purple-700">
             <Gauge className="h-4 w-4 mr-2" />
             Overview
@@ -201,6 +210,10 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
           <TabsTrigger value="insights" className="data-[state=active]:bg-purple-700">
             <Brain className="h-4 w-4 mr-2" />
             ML Insights
+          </TabsTrigger>
+          <TabsTrigger value="ai-ops" className="data-[state=active]:bg-purple-700">
+            <Zap className="h-4 w-4 mr-2" />
+            AI Ops
           </TabsTrigger>
         </TabsList>
 
@@ -480,6 +493,123 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
                 <div className="text-center">
                   <p className="text-2xl font-bold text-yellow-400">Live</p>
                   <p className="text-xs text-gray-400">ML Status</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* AI Ops Tab - Enhanced ML Features */}
+        <TabsContent value="ai-ops" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Enhanced ML Model Status */}
+            <Card className="bg-gradient-to-br from-purple-900/30 to-blue-900/30 border-purple-500/20">
+              <CardHeader>
+                <CardTitle className="text-purple-300 flex items-center">
+                  <Zap className="h-5 w-5 mr-2" />
+                  Enhanced AI Operations Status
+                </CardTitle>
+                <CardDescription>Real-time ML inference from uploaded AI ops modules</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-gray-900/50 rounded-lg">
+                    <p className="text-2xl font-bold text-green-400">{virginAtlanticFlights.length}</p>
+                    <p className="text-xs text-gray-400">Live Aircraft</p>
+                  </div>
+                  <div className="text-center p-4 bg-gray-900/50 rounded-lg">
+                    <p className="text-2xl font-bold text-blue-400">{mlInferenceResults.length}</p>
+                    <p className="text-xs text-gray-400">ML Predictions</p>
+                  </div>
+                  <div className="text-center p-4 bg-gray-900/50 rounded-lg">
+                    <p className="text-2xl font-bold text-purple-400">3</p>
+                    <p className="text-xs text-gray-400">Active Models</p>
+                  </div>
+                  <div className="text-center p-4 bg-gray-900/50 rounded-lg">
+                    <p className="text-2xl font-bold text-yellow-400">LIVE</p>
+                    <p className="text-xs text-gray-400">Status</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* AI Model Configuration */}
+            <Card className="bg-gray-800/50 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-purple-300">Active ML Models</CardTitle>
+                <CardDescription>Enhanced models from uploaded AI ops modules</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-3 bg-gray-900/50 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-white">XGBoost Delay Risk</p>
+                      <p className="text-xs text-gray-400">xgb-delay-v2</p>
+                    </div>
+                    <Badge className="bg-green-500 text-white">ACTIVE</Badge>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-gray-900/50 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-white">Random Forest Diversion</p>
+                      <p className="text-xs text-gray-400">rf-divert-v1</p>
+                    </div>
+                    <Badge className="bg-green-500 text-white">ACTIVE</Badge>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-gray-900/50 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-white">KNN Stack Predictor</p>
+                      <p className="text-xs text-gray-400">knn-stack-v1</p>
+                    </div>
+                    <Badge className="bg-green-500 text-white">ACTIVE</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Live Flight Analysis */}
+          <Card className="bg-gray-800/50 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-purple-300">Live Virgin Atlantic Flight Analysis</CardTitle>
+              <CardDescription>Enhanced ML predictions from authentic ADS-B data</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+                  {mlInferenceResults.slice(0, 12).map((result, index) => (
+                    <div key={result.flightId} className="p-4 bg-gray-900/50 rounded-lg border border-gray-600">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <p className="font-medium text-white">{result.callsign}</p>
+                          <p className="text-xs text-gray-400">{result.holdingStack} Stack</p>
+                        </div>
+                        <Badge className={result.diversionRisk ? "bg-red-500 text-white" : "bg-green-500 text-white"}>
+                          {result.diversionRisk ? "HIGH RISK" : "NORMAL"}
+                        </Badge>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-xs text-gray-400">Predicted Delay:</span>
+                          <span className="text-xs text-white">{Math.round(result.predictedDelay)}min</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-xs text-gray-400">Connection Risk:</span>
+                          <span className={`text-xs ${result.missedConnectionRisk > 0.7 ? 'text-red-400' : result.missedConnectionRisk > 0.4 ? 'text-yellow-400' : 'text-green-400'}`}>
+                            {Math.round(result.missedConnectionRisk * 100)}%
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-xs text-gray-400">Cost Impact:</span>
+                          <span className="text-xs text-white">£{Math.round(result.costImpact).toLocaleString()}</span>
+                        </div>
+                        {result.visaFlag && (
+                          <div className="mt-2 p-2 bg-orange-900/30 border border-orange-500/20 rounded">
+                            <p className="text-xs text-orange-300">⚠️ Visa Alert</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </CardContent>
