@@ -39,6 +39,35 @@ interface HubPerformance {
   dataSource?: string;
 }
 
+interface FAAEvent {
+  airport: string;
+  eventType: string;
+  severity: string;
+  reason: string;
+  isVirginAtlanticDestination: boolean;
+  mlPrediction?: {
+    groundStopProbability: number;
+    delayRisk: string;
+    confidence: number;
+  };
+  impact: {
+    level: string;
+    description: string;
+  };
+}
+
+interface FAAData {
+  timestamp: string;
+  dataSource: string;
+  events: FAAEvent[];
+  summary: {
+    totalEvents: number;
+    groundStops: number;
+    virginAtlanticAffected: number;
+    modelAccuracy: number;
+  };
+}
+
 interface DualTrackOTPData {
   realTimeOperational: {
     generalAirportOTP: HubPerformance[];
@@ -53,6 +82,7 @@ interface DualTrackOTPData {
     recordCount: string;
     coverage: string;
   };
+  faaRiskIntelligence?: FAAData;
 }
 
 interface AirportContact {
@@ -72,9 +102,10 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
   const [virginAtlanticFlights, setVirginAtlanticFlights] = useState<any[]>([]);
   const [historicalDelayData, setHistoricalDelayData] = useState<FlightDelay[]>([]);
   const [airportContacts, setAirportContacts] = useState<AirportContact[]>([]);
-  const [networkView, setNetworkView] = useState<'overview' | 'detailed' | 'delay-analysis' | 'ml-training'>('overview');
+  const [networkView, setNetworkView] = useState<'overview' | 'detailed' | 'delay-analysis' | 'ml-training' | 'faa-risk'>('overview');
   const [mlTrainingData, setMlTrainingData] = useState<any>(null);
   const [trainingInProgress, setTrainingInProgress] = useState(false);
+  const [faaData, setFaaData] = useState<FAAData | null>(null);
 
   // Virgin Atlantic primary hub airports
   const primaryHubs = ['LHR', 'JFK', 'LAX', 'MCO', 'MAN'];
@@ -141,6 +172,28 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
         { icao: 'KJFK', name: 'JFK Operations Center', phone: '+1-718-244-4444', email: 'ops@jfk.com', type: 'primary' },
         { icao: 'KLAX', name: 'LAX Operations Center', phone: '+1-310-646-5252', email: 'ops@lax.com', type: 'primary' }
       ]);
+    }
+  };
+
+  const fetchFAAData = async () => {
+    try {
+      const response = await fetch('/api/faa-intelligence/faa-risk-intelligence');
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        setFaaData(data.data);
+        console.log(`[Network OTP] Loaded FAA risk intelligence: ${data.data.events.length} events`);
+        
+        // Update dual-track data with FAA intelligence
+        if (dualTrackOTPData) {
+          setDualTrackOTPData({
+            ...dualTrackOTPData,
+            faaRiskIntelligence: data.data
+          });
+        }
+      }
+    } catch (error) {
+      console.error('[Network OTP] Error fetching FAA data:', error);
     }
   };
 
