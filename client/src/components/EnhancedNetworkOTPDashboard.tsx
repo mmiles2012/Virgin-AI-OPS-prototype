@@ -36,6 +36,23 @@ interface HubPerformance {
   trend: 'improving' | 'declining' | 'stable';
   recentFlights: FlightPerformance[];
   lastUpdated: string;
+  dataSource?: string;
+}
+
+interface DualTrackOTPData {
+  realTimeOperational: {
+    generalAirportOTP: HubPerformance[];
+    virginAtlanticSpecific: HubPerformance[];
+    dataSource: string;
+    lastUpdated: string;
+  };
+  historicalMLTraining: {
+    europeanNetworkData: any;
+    networkAnalytics: any;
+    dataSource: string;
+    recordCount: string;
+    coverage: string;
+  };
 }
 
 interface AirportContact {
@@ -48,6 +65,8 @@ interface AirportContact {
 
 const EnhancedNetworkOTPDashboard: React.FC = () => {
   const [hubData, setHubData] = useState<HubPerformance[]>([]);
+  const [virginAtlanticSpecificData, setVirginAtlanticSpecificData] = useState<HubPerformance[]>([]);
+  const [dualTrackOTPData, setDualTrackOTPData] = useState<DualTrackOTPData | null>(null);
   const [selectedAirport, setSelectedAirport] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [virginAtlanticFlights, setVirginAtlanticFlights] = useState<any[]>([]);
@@ -125,8 +144,40 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
     }
   };
 
-  const generateHubPerformanceData = () => {
-    // Generate realistic hub performance based on Virgin Atlantic flight data
+  const fetchDualTrackOTPData = async () => {
+    try {
+      // Fetch comprehensive dual-track OTP analytics
+      const response = await fetch('/api/otp/dual-track-analytics');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.dualTrackOTP) {
+          console.log('[Network OTP] Loaded dual-track OTP analytics with historical ML data');
+          setDualTrackOTPData(data.dualTrackOTP);
+          setHubData(data.dualTrackOTP.realTimeOperational.generalAirportOTP);
+          setVirginAtlanticSpecificData(data.dualTrackOTP.realTimeOperational.virginAtlanticSpecific);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('[Network OTP] Error fetching dual-track OTP data:', error);
+    }
+
+    // Fallback to basic real-time hub data if dual-track unavailable
+    try {
+      const response = await fetch('/api/hubs/real-time/all');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.hubs) {
+          console.log('[Network OTP] Loaded basic real-time hub performance data');
+          setHubData(data.hubs);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('[Network OTP] Error fetching basic hub data:', error);
+    }
+
+    // Final fallback to generated data
     const hubPerformance: HubPerformance[] = primaryHubs.map(hubCode => {
       const hubFlights = virginAtlanticFlights.filter(flight => 
         flight.departure_airport === hubCode || flight.arrival_airport === hubCode
@@ -162,7 +213,8 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
           delayCode: Math.random() > 0.7 ? Object.keys(delayCodes)[Math.floor(Math.random() * Object.keys(delayCodes).length)] : undefined,
           delayReason: undefined
         })),
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
+        dataSource: 'fallback_generated'
       };
     });
     
@@ -263,7 +315,7 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
 
   useEffect(() => {
     if (virginAtlanticFlights.length > 0) {
-      generateHubPerformanceData();
+      fetchDualTrackOTPData();
       
       // Generate historical delay patterns
       const delayPatterns: FlightDelay[] = Object.entries(delayCodes).map(([code, reason]) => ({
@@ -812,6 +864,24 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                 <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
                   <h3 className="text-lg font-bold text-white mb-4">Model Performance</h3>
                   <div className="space-y-4">
+                    {/* Dual-Track OTP Data Sources */}
+                    <div className="bg-gray-700 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-white font-medium">Dual-Track Data Sources</span>
+                        <span className="text-blue-400 text-sm font-bold">Real-time + Historical</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <div className="text-gray-400">EUROCONTROL European Data</div>
+                          <div className="text-white font-bold">2018-2023 (2,000+ daily)</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-400">US BTS Historical Data</div>
+                          <div className="text-white font-bold">1987-present (6M+ monthly)</div>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* OTP Prediction Model */}
                     <div className="bg-gray-700 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
@@ -866,6 +936,36 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                       </div>
                     </div>
                   </div>
+                </div>
+
+                {/* US BTS Data Integration */}
+                <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                  <h3 className="text-lg font-bold text-white mb-4">US BTS Historical Data Integration</h3>
+                  {dualTrackOTPData?.historicalMLTraining?.usBTSData ? (
+                    <div className="space-y-4">
+                      <div className="bg-gray-700 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-white font-medium">Data Coverage</span>
+                          <span className="text-green-400 text-sm font-bold">1987-Present</span>
+                        </div>
+                        <div className="text-sm text-gray-300">
+                          <p className="mb-2">📊 {dualTrackOTPData.historicalMLTraining.usBTSData.recordCount}</p>
+                          <p className="mb-2">🌍 {dualTrackOTPData.historicalMLTraining.usBTSData.coverage}</p>
+                          <p>🔄 {dualTrackOTPData.historicalMLTraining.usBTSData.updateFrequency}</p>
+                        </div>
+                      </div>
+                      <div className="bg-gray-700 rounded-lg p-4">
+                        <div className="text-white font-medium mb-2">Key Metrics Available</div>
+                        <div className="text-sm text-gray-300 space-y-1">
+                          {dualTrackOTPData.historicalMLTraining.usBTSData.keyMetrics.map((metric, index) => (
+                            <div key={index}>• {metric}</div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-gray-400">Loading US BTS data integration...</div>
+                  )}
                 </div>
 
                 {/* Feature Importance */}
