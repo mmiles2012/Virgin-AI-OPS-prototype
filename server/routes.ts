@@ -73,6 +73,7 @@ import heathrowLiveDataService from "./heathrowLiveDataService";
 import integratedHoldingMLService from "./integratedHoldingMLService.js";
 import { flightAwareService } from "./flightAwareService";
 import { faaNotamService } from "./faaNotamService";
+import faaRiskIntelligenceRoutes from "./faaRiskIntelligenceRoutes";
 import { aviationIntelligenceService } from "./aviationIntelligenceService.js";
 import { hybridFlightService } from "./hybridFlightService";
 import sigmetRoutes from "./sigmetRoutes.js";
@@ -5609,6 +5610,9 @@ print(json.dumps(weather))
 
   // Intelligent Operations Agent routes
   app.use('/api/intelligent-ops', intelligentOpsRoutes);
+
+  // FAA Total Risk Intelligence routes
+  app.use('/api/faa-intelligence', faaRiskIntelligenceRoutes);
 
   // Emergency Communication System Endpoints
   app.post('/api/emergency/declare', async (req, res) => {
