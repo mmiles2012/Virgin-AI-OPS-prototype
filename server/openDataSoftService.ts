@@ -88,51 +88,20 @@ export class OpenDataSoftService {
     hasServices: boolean;
   }> {
     try {
-      // First try to get data from world airports dataset
-      const worldAirportsResponse = await axios.get(`${this.baseUrl}/catalog/datasets/world-airports-extended/records`, {
-        params: {
-          q: searchTerm.toUpperCase(),
-          limit: 20,
-          select: 'icao_code,iata_code,name,city,country,elevation_ft,latitude,longitude,type'
-        }
-      });
-
-      let airports: AirportRecord[] = [];
-      
-      if (worldAirportsResponse.data.records && worldAirportsResponse.data.records.length > 0) {
-        airports = worldAirportsResponse.data.records.map((record: any) => ({
-          iata_code: record.record.fields.iata_code || '',
-          icao_code: record.record.fields.icao_code || '',
-          airport_name: record.record.fields.name || '',
-          city: record.record.fields.city || '',
-          country: record.record.fields.country || '',
-          country_code: record.record.fields.country || '',
-          latitude: parseFloat(record.record.fields.latitude) || 0,
-          longitude: parseFloat(record.record.fields.longitude) || 0,
-          elevation: parseInt(record.record.fields.elevation_ft) || 0,
-          timezone: '',
-          type: record.record.fields.type || 'airport',
-          continent: '',
-          iso_region: '',
-          municipality: record.record.fields.city || '',
-          gps_code: record.record.fields.icao_code || '',
-          local_code: record.record.fields.iata_code || '',
-          home_link: '',
-          wikipedia_link: '',
-          keywords: ''
-        }));
-      }
-
+      // OpenDataSoft service disabled - returning empty results
+      console.log('OpenDataSoft service disabled, returning empty results for:', searchTerm);
       return {
-        airports,
-        totalCount: airports.length,
-        hasServices: airports.length > 0
+        airports: [],
+        totalCount: 0,
+        hasServices: false
       };
-
     } catch (error) {
       console.error('OpenDataSoft airport search failed:', error);
-      // Return comprehensive airport data for major airports
-      return this.getComprehensiveAirportFallback(searchTerm);
+      return {
+        airports: [],
+        totalCount: 0,
+        hasServices: false
+      };
     }
   }
 

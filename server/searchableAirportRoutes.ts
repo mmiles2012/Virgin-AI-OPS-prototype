@@ -1,7 +1,61 @@
 import { Router } from 'express';
 import { globalAirportService } from './globalAirportService';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const router = Router();
+
+// Fallback search function using raw CSV data
+function searchAirportsFromCSV(query: string, limit: number = 50): any[] {
+  try {
+    const csvPath = path.join(process.cwd(), 'data', 'global_airports_database.csv');
+    const csvContent = fs.readFileSync(csvPath, 'utf-8');
+    const lines = csvContent.split('\n');
+    
+    const results: any[] = [];
+    const searchTerm = query.toLowerCase().trim();
+    
+    for (let i = 1; i < lines.length && results.length < limit; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+      
+      const values = line.split(',').map(v => v.replace(/"/g, ''));
+      if (values.length < 14) continue;
+      
+      const airport = {
+        name: values[3] || '',
+        icao: values[12] || '',
+        iata: values[13] || '',
+        city: values[10] || '',
+        country: values[8] || '',
+        continent: values[7] || '',
+        type: values[2] || '',
+        latitude: parseFloat(values[4]) || 0,
+        longitude: parseFloat(values[5]) || 0,
+        elevation: parseFloat(values[6]) || 0,
+        scheduled_service: values[11] === 'yes'
+      };
+      
+      // Check if search term matches any field
+      const matches = (
+        airport.icao.toLowerCase().includes(searchTerm) ||
+        airport.iata.toLowerCase().includes(searchTerm) ||
+        airport.name.toLowerCase().includes(searchTerm) ||
+        airport.city.toLowerCase().includes(searchTerm) ||
+        airport.country.toLowerCase().includes(searchTerm)
+      );
+      
+      if (matches) {
+        results.push(airport);
+      }
+    }
+    
+    return results;
+  } catch (error) {
+    console.error('CSV search error:', error);
+    return [];
+  }
+}
 
 // Text search endpoint
 router.get('/search', (req, res) => {
@@ -18,41 +72,43 @@ router.get('/search', (req, res) => {
       });
     }
     
-    // Check if service is loaded
-    if (!globalAirportService.isLoaded()) {
-      return res.json({
-        success: false,
-        error: 'Airport database not loaded yet',
-        results: [],
-        total: 0
-      });
+    let results: any[] = [];
+    let searchSource = 'unknown';
+    
+    // Try global airport service first
+    if (globalAirportService.isLoaded()) {
+      const serviceResults = globalAirportService.textSearch(query, limit);
+      results = serviceResults.map(airport => ({
+        name: airport.name,
+        icao: airport.icao_code || '',
+        iata: airport.iata_code || '',
+        city: airport.municipality || '',
+        country: airport.iso_country || '',
+        continent: airport.continent || '',
+        type: airport.type || '',
+        latitude: airport.latitude_deg || 0,
+        longitude: airport.longitude_deg || 0,
+        elevation: airport.elevation_ft || 0,
+        scheduled_service: airport.scheduled_service === 'yes'
+      }));
+      searchSource = 'service';
+    } else {
+      // Fallback to direct CSV search
+      console.log('Service not loaded, using CSV fallback for:', query);
+      results = searchAirportsFromCSV(query, limit);
+      searchSource = 'csv';
     }
     
-    const results = globalAirportService.textSearch(query, limit);
-    console.log(`Airport search for "${query}" returned ${results.length} results`);
-    
-    // Format results for frontend compatibility
-    const formattedResults = results.map(airport => ({
-      name: airport.name,
-      icao: airport.icao_code || '',
-      iata: airport.iata_code || '',
-      city: airport.municipality || '',
-      country: airport.iso_country || '',
-      continent: airport.continent || '',
-      type: airport.type || '',
-      latitude: airport.latitude_deg || 0,
-      longitude: airport.longitude_deg || 0,
-      elevation: airport.elevation_ft || 0,
-      scheduled_service: airport.scheduled_service === 'yes'
-    }));
+    console.log(`Airport search for "${query}" returned ${results.length} results from ${searchSource}`);
     
     res.json({
       success: true,
-      results: formattedResults,
-      total: formattedResults.length,
+      results: results,
+      total: results.length,
       query: query.trim(),
       limit,
-      searchTerm: query.trim()
+      searchTerm: query.trim(),
+      source: searchSource
     });
   } catch (error) {
     console.error('Airport search error:', error);
