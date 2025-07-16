@@ -114,17 +114,17 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
               </div>
             </DialogTrigger>
             
-            <DialogContent className="max-w-4xl w-full h-[80vh] bg-slate-800 border-slate-700">
+            <DialogContent className="max-w-4xl w-full h-[80vh] bg-white border-gray-200">
               <DialogHeader>
-                <DialogTitle className="text-white flex items-center gap-2">
+                <DialogTitle className="text-gray-900 flex items-center gap-2">
                   <Cloud className="w-5 h-5" />
                   Weather Radar - {selectedSource.toUpperCase()}
                 </DialogTitle>
               </DialogHeader>
               
-              <div className="flex-1 bg-slate-700 rounded-lg flex items-center justify-center relative overflow-hidden">
+              <div className="flex-1 bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden">
                 {radarLoading ? (
-                  <div className="flex items-center gap-2 text-slate-300">
+                  <div className="flex items-center gap-2 text-gray-600">
                     <RefreshCw className="w-6 h-6 animate-spin" />
                     Loading radar...
                   </div>
@@ -168,7 +168,7 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
           </Dialog>
           
           {/* Last Updated */}
-          <div className="text-xs text-slate-400 mt-2 text-center">
+          <div className="text-xs text-gray-600 mt-2 text-center">
             Last updated: {lastUpdated.toLocaleTimeString()}
           </div>
         </CardContent>

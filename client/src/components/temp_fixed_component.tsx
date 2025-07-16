@@ -671,10 +671,10 @@ export default function EnhancedNetworkOTPDashboard() {
   };
 
   const getDelayBadgeColor = (delayMinutes: number) => {
-    if (delayMinutes === 0) return 'bg-green-500/20 text-green-400 border-green-500';
-    if (delayMinutes <= 15) return 'bg-yellow-500/20 text-yellow-400 border-yellow-500';
-    if (delayMinutes <= 30) return 'bg-orange-500/20 text-orange-400 border-orange-500';
-    return 'bg-red-500/20 text-red-400 border-red-500';
+    if (delayMinutes === 0) return 'bg-green-100 text-green-700 border-green-200';
+    if (delayMinutes <= 15) return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+    if (delayMinutes <= 30) return 'bg-orange-100 text-orange-700 border-orange-200';
+    return 'bg-red-100 text-red-700 border-red-200';
   };
 
   const getDelayImpactColor = (avgDelayMinutes: number): string => {

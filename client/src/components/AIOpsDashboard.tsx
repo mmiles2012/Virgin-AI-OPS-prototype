@@ -266,7 +266,7 @@ export default function AIOpsDashboard() {
   }, [adsbFlightData]);
 
   return (
-    <div className="bg-slate-900 text-white min-h-screen overflow-y-auto">
+    <div className="bg-gray-50 text-gray-900 min-h-screen overflow-y-auto">
       <div className="flex gap-4 p-4 min-h-screen">
         {/* Live Map View - Takes up 3/4 width */}
         <div className="w-3/4">
@@ -288,37 +288,37 @@ export default function AIOpsDashboard() {
         {/* Right Column - Takes up 1/4 width, allows scrolling */}
         <div className="w-1/4 space-y-4 overflow-y-auto max-h-screen">
           {/* Network Health */}
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className="bg-white border-gray-200">
           <CardContent className="p-4">
-            <h2 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
+            <h2 className="text-lg font-bold mb-3 text-gray-900 flex items-center gap-2">
               <Activity className="w-4 h-4" />
               Network Health
             </h2>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-slate-300 text-sm">On-Time Performance</span>
-                <span className="text-green-400 font-bold">{networkHealth.onTimePerformance}%</span>
+                <span className="text-gray-600 text-sm">On-Time Performance</span>
+                <span className="text-green-600 font-bold">{networkHealth.onTimePerformance}%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-300 text-sm">Cancellations</span>
-                <span className="text-red-400 font-bold">{networkHealth.cancellations}</span>
+                <span className="text-gray-600 text-sm">Cancellations</span>
+                <span className="text-red-600 font-bold">{networkHealth.cancellations}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-300 text-sm">Diversions</span>
-                <span className="text-yellow-400 font-bold">{networkHealth.diversions}</span>
+                <span className="text-gray-600 text-sm">Diversions</span>
+                <span className="text-yellow-600 font-bold">{networkHealth.diversions}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-300 text-sm">Curfews</span>
-                <span className="text-blue-400 font-bold">{networkHealth.curfews}</span>
+                <span className="text-gray-600 text-sm">Curfews</span>
+                <span className="text-blue-600 font-bold">{networkHealth.curfews}</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Digital Twin Alerts */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-4">
-            <h2 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
+            <h2 className="text-lg font-bold mb-3 text-gray-900 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4" />
               Digital Twin Alerts
             </h2>
@@ -328,17 +328,17 @@ export default function AIOpsDashboard() {
                   key={alert.id} 
                   className={`p-2 rounded-lg flex items-start gap-2 ${
                     alert.severity === 'high' 
-                      ? 'bg-red-900/50 border border-red-500/50' 
+                      ? 'bg-red-50 border border-red-200' 
                       : alert.severity === 'medium'
-                      ? 'bg-yellow-900/50 border border-yellow-500/50'
-                      : 'bg-blue-900/50 border border-blue-500/50'
+                      ? 'bg-yellow-50 border border-yellow-200'
+                      : 'bg-blue-50 border border-blue-200'
                   }`}
                 >
                   <AlertTriangle className={`w-3 h-3 mt-0.5 ${
-                    alert.severity === 'high' ? 'text-red-400' : 
-                    alert.severity === 'medium' ? 'text-yellow-400' : 'text-blue-400'
+                    alert.severity === 'high' ? 'text-red-600' : 
+                    alert.severity === 'medium' ? 'text-yellow-600' : 'text-blue-600'
                   }`} />
-                  <span className="text-xs text-white">{alert.message}</span>
+                  <span className="text-xs text-gray-900">{alert.message}</span>
                 </div>
               ))}
             </div>
@@ -346,16 +346,16 @@ export default function AIOpsDashboard() {
         </Card>
 
         {/* Predictive Disruption Timeline */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-4">
-            <h2 className="text-lg font-bold mb-3 text-white">Disruption Timeline</h2>
+            <h2 className="text-lg font-bold mb-3 text-gray-900">Disruption Timeline</h2>
             <div className="space-y-2">
               <div className="h-6 bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 rounded-lg relative">
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-slate-900 font-bold text-xs">0h → 6h Forecast</span>
+                  <span className="text-white font-bold text-xs">0h → 6h Forecast</span>
                 </div>
               </div>
-              <div className="flex justify-between text-xs text-slate-400">
+              <div className="flex justify-between text-xs text-gray-500">
                 <span>0h</span>
                 <span>2h</span>
                 <span>4h</span>
@@ -366,36 +366,36 @@ export default function AIOpsDashboard() {
         </Card>
 
         {/* ADS-B Exchange Flight Statistics */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-4">
-            <h2 className="text-lg font-bold mb-3 text-white flex items-center gap-2">
+            <h2 className="text-lg font-bold mb-3 text-gray-900 flex items-center gap-2">
               <Radio className="w-4 h-4" />
               ADS-B Exchange Data
             </h2>
             {isLoadingFlights ? (
               <div className="text-center py-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>
-                <p className="text-xs text-slate-400 mt-1">Loading flight data...</p>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="text-xs text-gray-600 mt-1">Loading flight data...</p>
               </div>
             ) : (
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-300 text-sm">Authentic Flights</span>
-                  <span className="text-green-400 font-bold">{flightStats.authentic_flights}</span>
+                  <span className="text-gray-600 text-sm">Authentic Flights</span>
+                  <span className="text-green-600 font-bold">{flightStats.authentic_flights}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-300 text-sm">Simulated Flights</span>
-                  <span className="text-blue-400 font-bold">{flightStats.simulated_flights}</span>
+                  <span className="text-gray-600 text-sm">Simulated Flights</span>
+                  <span className="text-blue-600 font-bold">{flightStats.simulated_flights}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-300 text-sm">Authentic Data</span>
-                  <span className="text-yellow-400 font-bold">{flightStats.authentic_percentage}%</span>
+                  <span className="text-gray-600 text-sm">Authentic Data</span>
+                  <span className="text-yellow-600 font-bold">{flightStats.authentic_percentage}%</span>
                 </div>
-                <div className="mt-2 pt-2 border-t border-slate-600">
-                  <span className="text-xs text-slate-400">Data Sources:</span>
+                <div className="mt-2 pt-2 border-t border-gray-200">
+                  <span className="text-xs text-gray-600">Data Sources:</span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {flightStats.data_sources.map(source => (
-                      <span key={source} className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">
+                      <span key={source} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
                         {source}
                       </span>
                     ))}
@@ -407,21 +407,21 @@ export default function AIOpsDashboard() {
         </Card>
 
         {/* Live Flight Data */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                 <Plane className="w-4 h-4" />
                 Live Virgin Atlantic Fleet
               </h2>
               {selectedFlight && (
                 <div className="flex items-center gap-2">
-                  <div className="text-xs text-blue-300">
+                  <div className="text-xs text-blue-600">
                     Selected: {selectedFlight.callsign || selectedFlight.flight_number}
                   </div>
                   <button
                     onClick={clearSelection}
-                    className="text-gray-400 hover:text-white transition-colors text-xs underline"
+                    className="text-gray-500 hover:text-gray-700 transition-colors text-xs underline"
                   >
                     Clear
                   </button>
@@ -429,8 +429,8 @@ export default function AIOpsDashboard() {
               )}
             </div>
             {adsbFlightData.length === 0 && !isLoadingFlights && (
-              <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-3 mb-3">
-                <div className="flex items-center gap-2 text-blue-300 text-sm">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                <div className="flex items-center gap-2 text-blue-700 text-sm">
                   <Radar className="w-4 h-4" />
                   <span>No Virgin Atlantic flights currently airborne - ADS-B Exchange active</span>
                 </div>
@@ -438,8 +438,8 @@ export default function AIOpsDashboard() {
             )}
             
             {adsbFlightData.length > 0 && flightStats.authentic_percentage === 100 && (
-              <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-3 mb-3">
-                <div className="flex items-center gap-2 text-green-300 text-sm">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
+                <div className="flex items-center gap-2 text-green-700 text-sm">
                   <Radar className="w-4 h-4" />
                   <span>100% Authentic ADS-B Exchange Data - {adsbFlightData.length} live flights tracked</span>
                 </div>
@@ -449,9 +449,9 @@ export default function AIOpsDashboard() {
               {adsbFlightData.slice(0, 3).map(flight => (
                 <div 
                   key={flight.icao24 || flight.flight_number} 
-                  className={`bg-slate-700 rounded-lg p-2 cursor-pointer transition-colors hover:bg-slate-600 ${
+                  className={`bg-gray-50 rounded-lg p-2 cursor-pointer transition-colors hover:bg-gray-100 ${
                     selectedFlight?.callsign === flight.flight_number || selectedFlight?.flight_number === flight.flight_number
-                      ? 'ring-2 ring-blue-500 bg-blue-900/30' 
+                      ? 'ring-2 ring-blue-500 bg-blue-50' 
                       : ''
                   }`}
                   onClick={() => {
@@ -471,27 +471,26 @@ export default function AIOpsDashboard() {
                       engineStatus: 'normal',
                       systemsStatus: 'normal',
                       authentic_tracking: flight.authentic_tracking,
-                      data_source: flight.data_source,
-                      status: flight.status || 'En Route'
+                      data_source: flight.data_source
                     });
                     console.log('🎯 AI Ops: Selected flight for cross-dashboard tracking:', flight.flight_number);
                   }}
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-white font-medium text-sm">{flight.flight_number}</p>
-                      <p className="text-slate-300 text-xs">{flight.aircraft_type}</p>
+                      <p className="text-gray-900 font-medium text-sm">{flight.flight_number}</p>
+                      <p className="text-gray-600 text-xs">{flight.aircraft_type}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-slate-300 text-xs">{flight.altitude}ft</p>
-                      <p className="text-slate-300 text-xs">{flight.velocity}kt</p>
+                      <p className="text-gray-600 text-xs">{flight.altitude}ft</p>
+                      <p className="text-gray-600 text-xs">{flight.velocity}kt</p>
                     </div>
                   </div>
                   <div className="mt-1">
                     <span className={`text-xs px-2 py-1 rounded ${
                       flight.authentic_tracking 
-                        ? 'bg-green-900 text-green-300' 
-                        : 'bg-blue-900 text-blue-300'
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-blue-100 text-blue-700'
                     }`}>
                       {flight.authentic_tracking ? 'Authentic' : 'Simulated'}
                     </span>

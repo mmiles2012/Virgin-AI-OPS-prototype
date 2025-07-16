@@ -339,8 +339,8 @@ export default function FAAStatusDashboard() {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-white">FAA NAS Status</h2>
-          <div className="flex items-center text-blue-400">
+          <h2 className="text-2xl font-bold text-gray-900">FAA NAS Status</h2>
+          <div className="flex items-center text-blue-600">
             <Wifi className="w-4 h-4 mr-2 animate-pulse" />
             <span>Loading...</span>
           </div>

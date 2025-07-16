@@ -655,26 +655,26 @@ export default function EnhancedNetworkOTPDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'on-time': return 'text-green-400';
-      case 'delayed': return 'text-yellow-400';
-      case 'cancelled': return 'text-red-400';
-      default: return 'text-gray-400';
+      case 'on-time': return 'text-green-600';
+      case 'delayed': return 'text-yellow-600';
+      case 'cancelled': return 'text-red-600';
+      default: return 'text-gray-600';
     }
   };
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'improving': return <TrendingUp className="w-4 h-4 text-green-400" />;
-      case 'declining': return <TrendingDown className="w-4 h-4 text-red-400" />;
-      default: return <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>;
+      case 'improving': return <TrendingUp className="w-4 h-4 text-green-600" />;
+      case 'declining': return <TrendingDown className="w-4 h-4 text-red-600" />;
+      default: return <div className="w-4 h-4 bg-yellow-600 rounded-full"></div>;
     }
   };
 
   const getDelayBadgeColor = (delayMinutes: number) => {
-    if (delayMinutes === 0) return 'bg-green-500/20 text-green-400 border-green-500';
-    if (delayMinutes <= 15) return 'bg-yellow-500/20 text-yellow-400 border-yellow-500';
-    if (delayMinutes <= 30) return 'bg-orange-500/20 text-orange-400 border-orange-500';
-    return 'bg-red-500/20 text-red-400 border-red-500';
+    if (delayMinutes === 0) return 'bg-green-100 text-green-700 border-green-200';
+    if (delayMinutes <= 15) return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+    if (delayMinutes <= 30) return 'bg-orange-100 text-orange-700 border-orange-200';
+    return 'bg-red-100 text-red-700 border-red-200';
   };
 
   const getDelayImpactColor = (avgDelayMinutes: number): string => {
@@ -718,11 +718,11 @@ export default function EnhancedNetworkOTPDashboard() {
   return (
     <div className="bg-gray-50 text-gray-900">
       <div className="p-6 space-y-6">
-      {/* Enhanced Header */}
-      <div className={`px-6 py-4 ${
-        networkAlertStatus === 'alert' 
-          ? 'bg-gradient-to-r from-red-600 to-red-700' 
-          : networkAlertStatus === 'minor'
+        {/* Enhanced Header */}
+        <div className={`px-6 py-4 ${
+          networkAlertStatus === 'alert' 
+            ? 'bg-gradient-to-r from-red-600 to-red-700' 
+            : networkAlertStatus === 'minor'
           ? 'bg-gradient-to-r from-amber-600 to-amber-700'
           : 'bg-gradient-to-r from-green-600 to-green-700'
       }`}>
@@ -845,7 +845,7 @@ export default function EnhancedNetworkOTPDashboard() {
                         <p className="text-sm text-gray-300 mt-1">{alert.message}</p>
                         {alert.hubs && (
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {alert.hubs.map((hub, i) => (
+                            {alert.hubs.map((hub: any, i: number) => (
                               <button
                                 key={i}
                                 onClick={() => handleAirportSelect(hub)}
@@ -901,7 +901,7 @@ export default function EnhancedNetworkOTPDashboard() {
               <div className="space-y-3">
                 <h4 className="font-semibold text-white">Recommended Actions</h4>
                 <ul className="space-y-2">
-                  {alertDetails.recommendations.map((rec, index) => (
+                  {alertDetails.recommendations.map((rec: any, index: number) => (
                     <li key={index} className="flex items-start gap-2 text-gray-300">
                       <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                       <span className="text-sm">{rec}</span>
@@ -942,9 +942,9 @@ export default function EnhancedNetworkOTPDashboard() {
       {/* Network Content */}
       <div className="flex-1 overflow-y-auto min-h-0 max-h-[calc(100vh-12rem)]">
         <div className="p-6 pb-16">
-        {networkView === 'delay-analysis' ? (
-          // Delay Analysis View
-          <div className="space-y-6">
+          {networkView === 'delay-analysis' ? (
+            // Delay Analysis View
+            <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Delay Categories Chart */}
               <Card className="bg-gray-800/50 border-gray-700">
@@ -1142,7 +1142,7 @@ export default function EnhancedNetworkOTPDashboard() {
                   Secondary Hubs
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                  {secondaryHubsData.map(hub => (
+                  {secondaryHubsData.map((hub: any) => (
                     <div 
                       key={hub.iata}
                       onClick={() => handleAirportSelect(hub.iata)}
@@ -1168,3 +1168,15 @@ export default function EnhancedNetworkOTPDashboard() {
               </div>
             )}
           </div>
+        ) : (
+          // Detailed View (empty for now)
+          <div className="text-center text-gray-400 py-12">
+            <h3 className="text-lg font-semibold mb-2">Detailed View</h3>
+            <p>Detailed network analysis view coming soon.</p>
+          </div>
+        )}
+        </div>
+      </div>
+    </div>
+  );
+}

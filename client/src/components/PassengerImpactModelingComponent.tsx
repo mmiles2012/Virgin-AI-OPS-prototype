@@ -140,22 +140,16 @@ const PassengerImpactModelingComponent: React.FC = () => {
   }
 
   return (
-    <Card className="bg-[#1e293b] border-gray-600">
+    <Card className="bg-white border-gray-200">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-            <Users className="h-6 w-6 text-blue-400" />
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <Users className="w-6 h-6" />
             Passenger Impact Modeling
           </h2>
-          <div className="flex gap-4 text-sm">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">{totalPax}</div>
-              <div className="text-gray-400">Total PAX</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-400">£{totalCost.toLocaleString()}</div>
-              <div className="text-gray-400">Est. Cost</div>
-            </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span className="text-sm text-gray-600">Real-time Analysis</span>
           </div>
         </div>
 

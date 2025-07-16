@@ -412,11 +412,11 @@ const GeopoliticalRiskCenter = () => {
 
   const getSeverityColor = (severity: string) => {
     switch(severity) {
-      case 'critical': return 'bg-red-900/20 border-red-600 text-red-300';
-      case 'high': return 'bg-orange-900/20 border-orange-600 text-orange-300';
-      case 'medium': return 'bg-yellow-900/20 border-yellow-600 text-yellow-300';
-      case 'low': return 'bg-green-900/20 border-green-600 text-green-300';
-      default: return 'bg-gray-900/20 border-gray-600 text-gray-300';
+      case 'critical': return 'bg-red-50 border-red-200 text-red-700';
+      case 'high': return 'bg-orange-50 border-orange-200 text-orange-700';
+      case 'medium': return 'bg-yellow-50 border-yellow-200 text-yellow-700';
+      case 'low': return 'bg-green-50 border-green-200 text-green-700';
+      default: return 'bg-gray-50 border-gray-200 text-gray-700';
     }
   };
 
@@ -431,16 +431,16 @@ const GeopoliticalRiskCenter = () => {
 
   const getRiskLevelColor = (riskLevel: string) => {
     switch(riskLevel) {
-      case 'critical': return 'text-red-400';
-      case 'high': return 'text-orange-400';
-      case 'medium': return 'text-yellow-400';
-      case 'low': return 'text-green-400';
-      default: return 'text-gray-400';
+      case 'critical': return 'text-red-600';
+      case 'high': return 'text-orange-600';
+      case 'medium': return 'text-yellow-600';
+      case 'low': return 'text-green-600';
+      default: return 'text-gray-600';
     }
   };
 
   return (
-    <div className="p-4 space-y-6 min-h-screen bg-gray-900 text-white overflow-y-auto">
+    <div className="p-4 space-y-6 min-h-screen bg-gray-50 text-gray-900 overflow-y-auto">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Geopolitical Risk Center</h1>

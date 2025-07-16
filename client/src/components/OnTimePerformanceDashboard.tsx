@@ -329,7 +329,7 @@ export default function OnTimePerformanceDashboard() {
   };
 
   return (
-    <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
+    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-4">
         <div className="flex items-center justify-between">
