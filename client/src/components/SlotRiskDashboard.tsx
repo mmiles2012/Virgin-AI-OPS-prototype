@@ -274,9 +274,9 @@ const SlotRiskDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white p-6">
+      <div className="min-h-screen bg-gray-50 text-gray-900 p-6">
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
           <span className="ml-4">Loading slot risk analysis...</span>
         </div>
       </div>
@@ -285,8 +285,8 @@ const SlotRiskDashboard: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white p-6">
-        <div className="bg-red-900/20 border border-red-600 rounded-lg p-4">
+      <div className="min-h-screen bg-gray-50 text-gray-900 p-6">
+        <div className="bg-red-100 border border-red-300 rounded-lg p-4">
           <div className="flex items-center">
             <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
             <span className="text-red-400">{error}</span>

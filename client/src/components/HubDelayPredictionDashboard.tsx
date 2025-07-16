@@ -372,7 +372,7 @@ const HubDelayPredictionDashboard: React.FC = () => {
   ] : [];
 
   return (
-    <div className="h-full bg-gray-900 text-white p-6">
+    <div className="h-full bg-gray-50 text-gray-900 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

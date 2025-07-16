@@ -56,10 +56,10 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Weather Radar Display */}
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className="bg-gray-50 border-gray-200">
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
               <Cloud className="w-4 h-4" />
               Live Weather Radar
             </h3>
@@ -67,7 +67,7 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
               <select
                 value={selectedSource}
                 onChange={(e) => setSelectedSource(e.target.value as 'noaa' | 'rainviewer')}
-                className="bg-slate-700 text-white text-xs border border-slate-600 rounded px-2 py-1"
+                className="bg-white text-gray-900 text-xs border border-gray-300 rounded px-2 py-1"
               >
                 <option value="noaa">NOAA</option>
                 <option value="rainviewer">RainViewer</option>
@@ -76,7 +76,7 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
                 onClick={() => fetchWeatherRadar(selectedSource)}
                 disabled={radarLoading}
                 size="sm"
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-red-600 hover:bg-red-700 text-white"
               >
                 <RefreshCw className={`w-3 h-3 ${radarLoading ? 'animate-spin' : ''}`} />
               </Button>
@@ -86,7 +86,7 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
           {/* Radar Display with Enlargeable Modal */}
           <Dialog>
             <DialogTrigger asChild>
-              <div className="h-48 bg-slate-700 rounded-lg flex items-center justify-center relative overflow-hidden cursor-pointer hover:bg-slate-600/50 transition-colors group">
+              <div className="h-48 bg-gray-200 rounded-lg flex items-center justify-center relative overflow-hidden cursor-pointer hover:bg-gray-300/50 transition-colors group">
                 {radarLoading ? (
                   <div className="flex items-center gap-2 text-slate-300">
                     <RefreshCw className="w-4 h-4 animate-spin" />
@@ -99,10 +99,10 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
                       alt="Weather Radar" 
                       className="w-full h-full object-cover rounded-lg"
                     />
-                    <div className="absolute top-2 right-2 bg-black/50 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute top-2 right-2 bg-gray-900/50 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Expand className="w-4 h-4 text-white" />
                     </div>
-                    <div className="absolute bottom-2 left-2 bg-black/50 rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute bottom-2 left-2 bg-gray-900/50 rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <span className="text-white text-xs">Click to enlarge</span>
                     </div>
                   </>
@@ -149,7 +149,7 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
                   <select
                     value={selectedSource}
                     onChange={(e) => setSelectedSource(e.target.value as 'noaa' | 'rainviewer')}
-                    className="bg-slate-700 text-white text-sm border border-slate-600 rounded px-3 py-1"
+                    className="bg-white text-gray-900 text-sm border border-gray-300 rounded px-3 py-1"
                   >
                     <option value="noaa">NOAA</option>
                     <option value="rainviewer">RainViewer</option>

@@ -195,9 +195,9 @@ const IntegratedHoldingMLDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full bg-gray-900 text-white p-6 overflow-y-auto flex items-center justify-center">
+      <div className="min-h-screen w-full bg-gray-50 text-gray-900 p-6 overflow-y-auto flex items-center justify-center">
         <div className="text-center">
-          <Activity className="w-8 h-8 text-blue-400 animate-spin mx-auto mb-4" />
+          <Activity className="w-8 h-8 text-red-600 animate-spin mx-auto mb-4" />
           <p className="text-lg">Loading Integrated Holding ML Analysis...</p>
         </div>
       </div>
@@ -219,15 +219,15 @@ const IntegratedHoldingMLDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gray-900 text-white p-6 overflow-y-auto">
+    <div className="min-h-screen w-full bg-gray-50 text-gray-900 p-6 overflow-y-auto">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <BarChart3 className="w-8 h-8 text-purple-400" />
+            <BarChart3 className="w-8 h-8 text-red-600" />
             <div>
               <h1 className="text-2xl font-bold">Integrated Holding Pattern ML Analysis</h1>
-              <p className="text-gray-300">Network OTP & Passenger Connection Impact Intelligence</p>
+              <p className="text-gray-600">Network OTP & Passenger Connection Impact Intelligence</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">

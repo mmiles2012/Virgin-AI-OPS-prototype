@@ -443,7 +443,7 @@ const GeopoliticalRiskCenter = () => {
     <div className="p-4 space-y-6 min-h-screen bg-gray-50 text-gray-900 overflow-y-auto">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Geopolitical Risk Center</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Geopolitical Risk Center</h1>
           <p className="text-gray-300 text-lg">Real-time global risk assessment for Virgin Atlantic operations</p>
         </div>
         <div className="text-sm text-gray-400">
@@ -453,18 +453,18 @@ const GeopoliticalRiskCenter = () => {
 
       {loading && (
         <div className="flex items-center justify-center h-96">
-          <div className="text-white text-xl">Loading geopolitical risk data...</div>
+          <div className="text-gray-900 text-xl">Loading geopolitical risk data...</div>
         </div>
       )}
 
       {/* Navigation Tabs */}
-      <div className="flex space-x-2 bg-gray-800 p-2 rounded-lg">
+      <div className="flex space-x-2 bg-white border border-gray-200 p-2 rounded-lg">
         <button
           onClick={() => setActiveTab('dashboard')}
           className={`px-6 py-3 rounded-md text-base font-medium transition-colors ${
             activeTab === 'dashboard' 
-              ? 'bg-blue-600 text-white' 
-              : 'text-gray-300 hover:text-white hover:bg-gray-700'
+              ? 'bg-red-600 text-white' 
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
           }`}
         >
           Dashboard
@@ -473,8 +473,8 @@ const GeopoliticalRiskCenter = () => {
           onClick={() => setActiveTab('analysis')}
           className={`px-6 py-3 rounded-md text-base font-medium transition-colors ${
             activeTab === 'analysis' 
-              ? 'bg-blue-600 text-white' 
-              : 'text-gray-300 hover:text-white hover:bg-gray-700'
+              ? 'bg-red-600 text-white' 
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
           }`}
         >
           Risk Analysis
@@ -485,7 +485,7 @@ const GeopoliticalRiskCenter = () => {
         <div className="space-y-8">
           {/* Executive Summary Card - Expanded */}
           <div className="bg-gray-800 rounded-lg p-8 mb-8">
-            <h2 className="text-4xl font-bold text-white mb-6">Executive Risk Summary</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">Executive Risk Summary</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <div className="bg-red-900/30 border border-red-600 rounded-lg p-6">
                 <div className="text-red-400 text-lg font-medium mb-3">CRITICAL ALERTS</div>

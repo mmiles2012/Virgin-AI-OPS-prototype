@@ -320,7 +320,7 @@ const VisaRequirementsDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-900 text-white overflow-y-auto">
+    <div className="min-h-screen w-full bg-gray-50 text-gray-900 overflow-y-auto">
       <div className="max-w-7xl mx-auto p-6">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Visa Requirements Intelligence</h1>
