@@ -797,17 +797,80 @@ const SlotRiskDashboard: React.FC = () => {
               {swapRecommendations.length > 0 ? (
                 <div className="space-y-4">
                   {swapRecommendations.map((rec, index) => (
-                    <div key={index} className="bg-gray-700 rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-2">
+                    <div key={index} className="bg-gray-700 rounded-lg p-4 border-l-4 border-blue-500">
+                      {rec.type === 'SLOT_SWAP' ? (
                         <div>
-                          <h4 className="text-md font-semibold text-white">{rec.flight_number}</h4>
-                          <p className="text-sm text-gray-400">{rec.route}</p>
+                          <div className="flex justify-between items-start mb-3">
+                            <div>
+                              <h4 className="text-md font-semibold text-white flex items-center">
+                                <Timer className="h-4 w-4 text-blue-400 mr-2" />
+                                Slot Swap Recommendation #{index + 1}
+                              </h4>
+                              <p className="text-sm text-gray-400">Risk Reduction: {rec.potential_savings?.risk_reduction} points</p>
+                            </div>
+                            <div className="bg-green-600 text-white px-2 py-1 rounded text-xs font-medium">
+                              £{rec.potential_savings?.cost_impact || '0'} savings
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div className="bg-red-900/20 border border-red-600 rounded p-3">
+                              <h5 className="text-sm font-semibold text-red-400 mb-2">High Risk Flight</h5>
+                              <p className="text-white font-medium">{rec.high_risk_flight?.flight_number}</p>
+                              <p className="text-gray-400 text-sm">{rec.high_risk_flight?.route}</p>
+                              <p className="text-red-400 text-sm">Risk Score: {rec.high_risk_flight?.current_risk?.toFixed(1)}</p>
+                            </div>
+                            <div className="bg-green-900/20 border border-green-600 rounded p-3">
+                              <h5 className="text-sm font-semibold text-green-400 mb-2">Recommended Swap</h5>
+                              <p className="text-white font-medium">{rec.recommended_swap?.flight_number}</p>
+                              <p className="text-gray-400 text-sm">{rec.recommended_swap?.route}</p>
+                              <p className="text-green-400 text-sm">Risk Score: {rec.recommended_swap?.current_risk?.toFixed(1)}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="mb-3">
+                            <h5 className="text-sm font-semibold text-white mb-2">Operational Impact</h5>
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div className="bg-gray-600 rounded p-2">
+                                <span className="text-gray-400">Operational: </span>
+                                <span className="text-white">{rec.operational_impact}</span>
+                              </div>
+                              <div className="bg-gray-600 rounded p-2">
+                                <span className="text-gray-400">Passenger: </span>
+                                <span className="text-white">{rec.passenger_impact}</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {rec.action_required && (
+                            <div>
+                              <h5 className="text-sm font-semibold text-white mb-2">Action Required</h5>
+                              <ul className="text-sm text-gray-300 space-y-1">
+                                {rec.action_required.map((action: string, actionIndex: number) => (
+                                  <li key={actionIndex} className="flex items-center">
+                                    <CheckCircle className="h-3 w-3 text-green-400 mr-2 flex-shrink-0" />
+                                    {action}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                         </div>
-                        <div className={`px-2 py-1 rounded text-xs ${getRiskColor(rec.risk_score)}`}>
-                          {rec.risk_level}
+                      ) : (
+                        <div>
+                          <h4 className="text-md font-semibold text-white mb-2">{rec.type}</h4>
+                          <p className="text-sm text-gray-400 mb-3">{rec.flight_number} - {rec.route}</p>
+                          {rec.recommendations && rec.recommendations.map((subRec: any, subIndex: number) => (
+                            <div key={subIndex} className="bg-gray-600 rounded p-2 mb-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-white font-medium">{subRec.action}</span>
+                                <span className="text-blue-400 text-xs">{subRec.feasibility} feasibility</span>
+                              </div>
+                              <p className="text-gray-300 text-sm mt-1">{subRec.description}</p>
+                            </div>
+                          ))}
                         </div>
-                      </div>
-                      <div className="text-sm text-gray-300">{rec.recommendation}</div>
+                      )}
                     </div>
                   ))}
                 </div>

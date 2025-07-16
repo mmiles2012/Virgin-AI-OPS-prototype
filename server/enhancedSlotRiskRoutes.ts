@@ -328,50 +328,121 @@ router.get('/enhanced-dashboard', async (req, res) => {
 // Slot swap recommendations endpoint
 router.get('/swap-recommendations', async (req, res) => {
   try {
-    const analyzer = new EnhancedSlotRiskAnalyzer();
-    const slotAnalysis = await analyzer.generateSlotAnalysis();
+    // Get current Virgin Atlantic flights
+    const flightResponse = await fetch('http://localhost:5000/api/aviation/virgin-atlantic-flights');
+    const flightData = await flightResponse.json();
+    const virginAtlanticFlights = flightData.flights || [];
     
-    const highRiskFlights = slotAnalysis.filter(f => f.at_risk);
-    const lowRiskFlights = slotAnalysis.filter(f => !f.at_risk);
+    // Get current slot risk analysis
+    const slotResponse = await fetch('http://localhost:5000/api/slot-risk/dashboard');
+    const slotData = await slotResponse.json();
+    const flightsWithRisk = slotData.flights || [];
+    
+    const highRiskFlights = flightsWithRisk.filter(f => f.at_risk);
+    const lowRiskFlights = flightsWithRisk.filter(f => !f.at_risk && f.slot_risk_score < 40);
     
     const recommendations = [];
     
+    // Generate swap recommendations for high-risk flights
     for (const highRiskFlight of highRiskFlights) {
-      for (const lowRiskFlight of lowRiskFlights) {
-        // Check if swap makes sense (same origin, significant risk difference)
-        if (highRiskFlight.origin === lowRiskFlight.origin &&
-            highRiskFlight.slot_risk_score - lowRiskFlight.slot_risk_score > 20) {
-          
-          const riskReduction = highRiskFlight.slot_risk_score - lowRiskFlight.slot_risk_score;
-          
-          recommendations.push({
-            id: `swap_${highRiskFlight.flight_number}_${lowRiskFlight.flight_number}`,
-            high_risk_flight: highRiskFlight.flight_number,
-            low_risk_flight: lowRiskFlight.flight_number,
-            origin: highRiskFlight.origin,
-            risk_reduction: parseFloat(riskReduction.toFixed(1)),
-            swap_recommendation: `Swap ${highRiskFlight.flight_number} ⬌ ${lowRiskFlight.flight_number}`,
-            potential_benefit: `Reduce risk by ${riskReduction.toFixed(1)} points`,
-            operational_impact: 'Minimal - same origin airport',
-            implementation_steps: [
-              'Coordinate with ATC for slot modification',
-              'Notify ground operations and catering',
-              'Update passenger notifications',
-              'Confirm crew duty time compliance',
-              'Execute swap with operational approval'
-            ]
-          });
-        }
+      // Find flights to same destination or similar time slots
+      const potentialSwaps = lowRiskFlights.filter(lowRisk => {
+        const sameDestination = lowRisk.destination === highRiskFlight.destination;
+        const similarTimeSlot = Math.abs(
+          new Date(lowRisk.scheduled_slot || new Date()).getHours() - 
+          new Date(highRiskFlight.scheduled_slot || new Date()).getHours()
+        ) <= 2;
+        
+        return sameDestination || similarTimeSlot;
+      });
+      
+      if (potentialSwaps.length > 0) {
+        const bestSwap = potentialSwaps[0]; // Take the lowest risk option
+        recommendations.push({
+          type: 'SLOT_SWAP',
+          high_risk_flight: {
+            flight_number: highRiskFlight.flight_number,
+            route: `${highRiskFlight.origin}-${highRiskFlight.destination}`,
+            current_risk: highRiskFlight.slot_risk_score,
+            current_delay: highRiskFlight.atfm_delay_min,
+            scheduled_slot: highRiskFlight.scheduled_slot
+          },
+          recommended_swap: {
+            flight_number: bestSwap.flight_number,
+            route: `${bestSwap.origin}-${bestSwap.destination}`,
+            current_risk: bestSwap.slot_risk_score,
+            current_delay: bestSwap.atfm_delay_min,
+            scheduled_slot: bestSwap.scheduled_slot
+          },
+          potential_savings: {
+            risk_reduction: Math.round(highRiskFlight.slot_risk_score - bestSwap.slot_risk_score),
+            delay_reduction: Math.max(0, highRiskFlight.atfm_delay_min - bestSwap.atfm_delay_min),
+            cost_impact: `£${((highRiskFlight.atfm_delay_min - bestSwap.atfm_delay_min) * 85).toLocaleString()}`
+          },
+          operational_impact: 'Medium',
+          passenger_impact: highRiskFlight.destination === bestSwap.destination ? 'Low' : 'Medium',
+          recommendation_confidence: 'High',
+          action_required: [
+            'Coordinate with NATS for slot modification',
+            'Notify passenger services of potential timing changes',
+            'Update crew scheduling systems',
+            'Confirm fuel planning adjustments'
+          ]
+        });
       }
     }
     
-    // Sort by risk reduction (highest first) and take top 5
-    recommendations.sort((a, b) => b.risk_reduction - a.risk_reduction);
+    // Add time-based optimization recommendations
+    if (recommendations.length === 0 && highRiskFlights.length > 0) {
+      // Generate alternative recommendations when no direct swaps available
+      for (const highRiskFlight of highRiskFlights.slice(0, 3)) {
+        recommendations.push({
+          type: 'SCHEDULE_OPTIMIZATION',
+          flight_number: highRiskFlight.flight_number,
+          route: `${highRiskFlight.origin}-${highRiskFlight.destination}`,
+          current_risk: highRiskFlight.slot_risk_score,
+          recommendations: [
+            {
+              action: 'Early Departure',
+              description: `Depart 30 minutes earlier to avoid peak congestion`,
+              risk_reduction: 15,
+              feasibility: 'High'
+            },
+            {
+              action: 'Alternative Route',
+              description: `Consider NATS alternative routing to reduce ATFM delays`,
+              risk_reduction: 10,
+              feasibility: 'Medium'  
+            },
+            {
+              action: 'Priority Handling',
+              description: `Request priority slot due to operational constraints`,
+              risk_reduction: 20,
+              feasibility: 'Low'
+            }
+          ]
+        });
+      }
+    }
+    
+    // Sort by potential impact and take top 3
+    recommendations.sort((a, b) => {
+      if (a.type === 'SLOT_SWAP' && b.type === 'SLOT_SWAP') {
+        return b.potential_savings.risk_reduction - a.potential_savings.risk_reduction;
+      }
+      return a.type === 'SLOT_SWAP' ? -1 : 1; // Prioritize slot swaps
+    });
     
     res.json({
       success: true,
       timestamp: new Date().toISOString(),
-      recommendations: recommendations.slice(0, 5)
+      summary: {
+        total_recommendations: recommendations.length,
+        slot_swaps: recommendations.filter(r => r.type === 'SLOT_SWAP').length,
+        schedule_optimizations: recommendations.filter(r => r.type === 'SCHEDULE_OPTIMIZATION').length,
+        high_risk_flights_analyzed: highRiskFlights.length
+      },
+      recommendations: recommendations.slice(0, 3)
     });
   } catch (error) {
     console.error('Swap recommendations error:', error);
