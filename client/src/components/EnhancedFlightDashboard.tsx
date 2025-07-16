@@ -5,7 +5,7 @@ import { useResponsive, ResponsiveGrid, ResponsiveContainer } from '../contexts/
 import { LoadingState, LoadingButton } from './ui/Loading';
 import { DashboardSkeleton, CardSkeleton, ChartSkeleton } from './ui/Skeleton';
 import { ComponentErrorBoundary } from './ui/ErrorBoundary';
-import { RefreshCw, Plane, TrendingUp, Alert, MapPin } from 'lucide-react';
+import { RefreshCw, Plane, TrendingUp, AlertTriangle, MapPin } from 'lucide-react';
 
 // Mock API functions for demonstration
 const fetchFlightSummary = async () => {
@@ -137,13 +137,13 @@ const EnhancedFlightDashboard: React.FC = () => {
                   color="green"
                 />
                 <StatCard
-                  icon={<Alert className="h-6 w-6" />}
+                  icon={<AlertTriangle className="h-6 w-6" />}
                   title="Delayed"
                   value={flightSummary.data.delayed}
                   color="orange"
                 />
                 <StatCard
-                  icon={<Alert className="h-6 w-6" />}
+                  icon={<AlertTriangle className="h-6 w-6" />}
                   title="Cancelled"
                   value={flightSummary.data.cancelled}
                   color="red"
@@ -282,17 +282,17 @@ const StatCard: React.FC<StatCardProps> = ({ icon, title, value, color }) => {
     blue: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20',
     green: 'text-green-600 bg-green-50 dark:bg-green-900/20',
     orange: 'text-orange-600 bg-orange-50 dark:bg-orange-900/20',
-    red: 'text-red-600 bg-red-50 dark:bg-red-900/20',
-    purple: 'text-purple-600 bg-purple-50 dark:bg-purple-900/20'
+    red: 'text-red-600 bg-red-50',
+    purple: 'text-purple-600 bg-purple-50'
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border">
+    <div className="bg-white rounded-lg p-4 border">
       <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${colorClasses[color]}`}>
         {icon}
       </div>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{title}</p>
-      <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+      <p className="text-sm text-gray-500 mb-1">{title}</p>
+      <p className="text-2xl font-bold text-gray-900">{value}</p>
     </div>
   );
 };

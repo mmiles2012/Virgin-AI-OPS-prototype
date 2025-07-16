@@ -119,20 +119,20 @@ const PassengerImpactModelingComponent: React.FC = () => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      case 'medium': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'low': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'high': return 'bg-red-100 text-red-800 border-red-200';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'low': return 'bg-green-100 text-green-800 border-green-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   if (loading) {
     return (
-      <Card className="bg-[#1e293b] border-gray-600">
+      <Card className="bg-white border-gray-200">
         <CardContent className="p-6">
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
-            <span className="ml-3 text-gray-400">Loading passenger impact data...</span>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-aero-blue-primary"></div>
+            <span className="ml-3 text-gray-600">Loading passenger impact data...</span>
           </div>
         </CardContent>
       </Card>

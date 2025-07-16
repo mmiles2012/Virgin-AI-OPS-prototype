@@ -117,7 +117,7 @@ export default function HeathrowHoldingDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full bg-gray-900 text-white p-6">
+      <div className="min-h-screen w-full bg-gray-50 text-gray-900 p-6">
         <div className="flex items-center justify-center h-64">
           <div className="flex items-center space-x-3">
             <Activity className="w-6 h-6 animate-spin" />

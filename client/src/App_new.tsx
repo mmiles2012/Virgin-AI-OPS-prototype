@@ -14,6 +14,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
       retry: 3,
       refetchOnWindowFocus: false,
     },
@@ -29,10 +30,12 @@ function App() {
         <ToastProvider>
           <ErrorBoundary>
             <div className="overflow-hidden">
-              <AppRouter 
-                isNavigationCollapsed={isNavigationCollapsed}
-                setIsNavigationCollapsed={setIsNavigationCollapsed}
-              />
+              <MobileFallback>
+                <AppRouter 
+                  isNavigationCollapsed={isNavigationCollapsed}
+                  setIsNavigationCollapsed={setIsNavigationCollapsed}
+                />
+              </MobileFallback>
             </div>
           </ErrorBoundary>
         </ToastProvider>

@@ -222,24 +222,24 @@ const AIOperationsCenter: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 p-6">
+    <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8 p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20">
-          <h1 className="text-4xl font-bold text-white mb-2 flex items-center justify-center gap-3">
-            <Plane className="w-8 h-8 text-yellow-400" />
+        <div className="text-center mb-8 p-6 bg-white shadow-lg rounded-2xl border border-gray-200">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
+            <Plane className="w-8 h-8 text-va-red-primary" />
             AI Aircraft Diversion Operations Center
           </h1>
-          <p className="text-blue-200">Automated Hotel Booking System for Emergency Diversions</p>
-          <div className="text-sm text-green-300 mt-2">🟢 Integrated with AINO Platform</div>
+          <p className="text-gray-600">Automated Hotel Booking System for Emergency Diversions</p>
+          <div className="text-sm text-green-600 font-medium mt-2">🟢 Integrated with AINO Platform</div>
         </div>
 
         {/* Main Dashboard */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Flight Information Panel */}
-          <Card className="bg-white/10 backdrop-blur-lg border-white/20">
+          <Card className="bg-white shadow-lg border border-gray-200">
             <CardHeader>
-              <CardTitle className="text-yellow-400 flex items-center gap-2">
+              <CardTitle className="text-va-red-primary flex items-center gap-2">
                 <MapPin className="w-5 h-5" />
                 Flight Information
               </CardTitle>
@@ -247,12 +247,12 @@ const AIOperationsCenter: React.FC = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-blue-200 mb-2">Flight Number</label>
+                  <label className="block text-sm font-medium text-gray-600 mb-2">Flight Number</label>
                   <input
                     type="text"
                     value={flightNumber}
                     onChange={(e) => setFlightNumber(e.target.value)}
-                    className="w-full p-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-blue-200"
+                    className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:border-va-red-primary focus:ring-1 focus:ring-va-red-primary"
                     placeholder="e.g., VS103"
                   />
                 </div>

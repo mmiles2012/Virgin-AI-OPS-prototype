@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   VirginAtlanticButton, 
   StatusBadge,
@@ -30,8 +31,6 @@ import {
 } from 'lucide-react';
 
 interface VirginAtlanticNavigationProps {
-  viewMode: string;
-  setViewMode: (mode: string) => void;
   isNavigationCollapsed: boolean;
   setIsNavigationCollapsed: (collapsed: boolean) => void;
 }
@@ -50,11 +49,82 @@ interface NavigationGroup {
 }
 
 const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
-  viewMode,
-  setViewMode,
   isNavigationCollapsed,
   setIsNavigationCollapsed,
 }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Map URLs to navigation IDs
+  const getViewModeFromPath = (pathname: string): string => {
+    const pathMap: { [key: string]: string } = {
+      '/ai-operations': 'ai-operations',
+      '/operations-center': 'operations-center',
+      '/enhanced-flight': 'enhanced-flight',
+      '/heathrow-holding': 'heathrow-holding',
+      '/heathrow-monitor': 'heathrow-monitor',
+      '/passenger-impact': 'passenger-impact',
+      '/design-showcase': 'design-showcase',
+      '/overview': 'overview',
+      '/realtime': 'realtime',
+      '/operations': 'operations',
+      '/otp-dashboard': 'otp-dashboard',
+      '/intelligence-dashboard': 'intelligence-dashboard',
+      '/enhanced-facilities': 'enhanced-facilities',
+      '/geopolitical': 'geopolitical',
+      '/visa-requirements': 'visa-requirements',
+      '/airspace': 'airspace',
+      '/faa-status': 'faa-status',
+      '/emergency-testing': 'emergency-testing',
+      '/scenario-engine': 'scenario-engine',
+      '/delay-prediction': 'delay-prediction',
+      '/diversion-support': 'diversion-support',
+      '/boeing-twin': 'boeing-twin',
+      '/airbus-twins': 'airbus-twins',
+      '/airbus-operations': 'airbus-operations',
+      '/financial-analytics': 'financial-analytics',
+      '/fleet-substitution': 'fleet-substitution',
+      '/slot-risk': 'slot-risk',
+    };
+    return pathMap[pathname] || 'ai-operations';
+  };
+  
+  const viewMode = getViewModeFromPath(location.pathname);
+  
+  // Navigation function that uses React Router
+  const navigateToView = (viewId: string) => {
+    const routeMap: { [key: string]: string } = {
+      'ai-operations': '/ai-operations',
+      'operations-center': '/operations-center', 
+      'enhanced-flight': '/enhanced-flight',
+      'heathrow-holding': '/heathrow-holding',
+      'heathrow-monitor': '/heathrow-monitor',
+      'passenger-impact': '/passenger-impact',
+      'design-showcase': '/design-showcase',
+      'overview': '/overview',
+      'realtime': '/realtime',
+      'operations': '/operations',
+      'otp-dashboard': '/otp-dashboard',
+      'intelligence-dashboard': '/intelligence-dashboard',
+      'enhanced-facilities': '/enhanced-facilities',
+      'geopolitical': '/geopolitical',
+      'visa-requirements': '/visa-requirements',
+      'airspace': '/airspace',
+      'faa-status': '/faa-status',
+      'emergency-testing': '/emergency-testing',
+      'scenario-engine': '/scenario-engine',
+      'delay-prediction': '/delay-prediction',
+      'diversion-support': '/diversion-support',
+      'boeing-twin': '/boeing-twin',
+      'airbus-twins': '/airbus-twins',
+      'airbus-operations': '/airbus-operations',
+      'financial-analytics': '/financial-analytics',
+      'fleet-substitution': '/fleet-substitution',
+      'slot-risk': '/slot-risk',
+    };
+    const route = routeMap[viewId] || '/ai-operations';
+    navigate(route);
+  };
   const navigationGroups: NavigationGroup[] = [
     {
       title: 'Core Operations',
@@ -126,9 +196,9 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
   };
 
   return (
-    <nav role="navigation" aria-label="Virgin Atlantic AINO Navigation" className="flex-shrink-0 h-screen p-4">
+    <nav role="navigation" aria-label="Virgin Atlantic AINO Navigation" className="flex-shrink-0 h-screen p-4 bg-gray-50">
       <div className={`
-        bg-gradient-aviation backdrop-blur-lg border border-surface-tertiary rounded-lg
+        bg-white shadow-lg border border-gray-200 rounded-lg
         transition-all duration-300 ease-in-out overflow-hidden h-full flex flex-col
         ${isNavigationCollapsed ? 'w-16' : 'w-72'}
       `}
@@ -136,7 +206,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
       aria-expanded={!isNavigationCollapsed}
       >
         {/* Header */}
-        <div className="p-2 border-b border-surface-tertiary flex-shrink-0">
+        <div className="p-2 border-b border-gray-200 flex-shrink-0">
           {isNavigationCollapsed ? (
             /* Collapsed Header */
             <div className="flex justify-center">
@@ -147,7 +217,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                   console.log('Toggle button clicked (collapsed), current state:', isNavigationCollapsed);
                   setIsNavigationCollapsed(!isNavigationCollapsed);
                 }}
-                className="navigation-toggle bg-red-500 text-white hover:bg-red-400 w-8 h-8 flex items-center justify-center rounded-md border-2 border-white transition-all duration-200 cursor-pointer"
+                className="navigation-toggle bg-va-red-primary text-white hover:bg-va-red-heritage w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer"
                 title="Expand Navigation"
                 type="button"
               >
@@ -162,8 +232,8 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                   <Plane className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <VAHeading.H4 className="text-white">AINO</VAHeading.H4>
-                  <VAText.Caption className="text-aero-blue-light">
+                  <VAHeading.H4 className="text-gray-900">AINO</VAHeading.H4>
+                  <VAText.Caption className="text-va-red-primary">
                     Virgin Atlantic Operations
                   </VAText.Caption>
                 </div>
@@ -175,7 +245,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                   console.log('Toggle button clicked (expanded), current state:', isNavigationCollapsed);
                   setIsNavigationCollapsed(!isNavigationCollapsed);
                 }}
-                className="navigation-toggle bg-red-500 text-white hover:bg-red-400 flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-md border-2 border-white transition-all duration-200 cursor-pointer"
+                className="navigation-toggle bg-va-red-primary text-white hover:bg-va-red-heritage flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer"
                 title="Collapse Navigation"
                 type="button"
               >
@@ -195,8 +265,8 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
               <div key={group.title} className="mb-4">
                 {/* Group Header */}
                 <div className="flex items-center gap-2 px-3 py-2 mb-2">
-                  <group.icon className="w-4 h-4 text-aero-blue-light" />
-                  <VAText.Label className="text-aero-blue-light text-xs uppercase tracking-wide">
+                  <group.icon className="w-4 h-4 text-va-red-primary" />
+                  <VAText.Label className="text-gray-600 text-xs uppercase tracking-wide">
                     {group.title}
                   </VAText.Label>
                 </div>
@@ -210,13 +280,13 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                     return (
                       <button
                         key={item.id}
-                        onClick={() => setViewMode(item.id)}
+                        onClick={() => navigateToView(item.id)}
                         className={`
                           w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium
                           transition-all duration-200 group
                           ${isActive 
-                            ? 'bg-gradient-va-red text-white shadow-va-glow' 
-                            : 'text-gray-300 hover:bg-surface-secondary hover:text-white'
+                            ? 'bg-gradient-va-red text-white shadow-lg' 
+                            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                           }
                         `}
                         aria-current={isActive ? 'page' : undefined}
@@ -225,7 +295,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                       >
                         <IconComponent className={`
                           w-4 h-4 transition-colors duration-200
-                          ${isActive ? 'text-white' : 'text-aero-blue-light group-hover:text-white'}
+                          ${isActive ? 'text-white' : 'text-va-red-primary group-hover:text-va-red-heritage'}
                         `} />
                         
                         <span className="flex-1 text-left truncate">
@@ -250,11 +320,11 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-surface-tertiary">
+          <div className="p-4 border-t border-gray-200">
             <div className="space-y-3">
               {/* Status Indicator */}
               <div className="flex items-center justify-between">
-                <VAText.Small className="text-gray-400">System Status</VAText.Small>
+                <VAText.Small className="text-gray-500">System Status</VAText.Small>
                 <StatusBadge variant="safe" size="sm">
                   <Activity className="w-3 h-3 mr-1" />
                   Operational
@@ -267,7 +337,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                   variant="ghost-blue" 
                   size="sm" 
                   className="flex-1"
-                  onClick={() => setViewMode('design-showcase')}
+                  onClick={() => navigateToView('design-showcase')}
                 >
                   <Settings className="w-3 h-3 mr-1" />
                   Design
@@ -294,24 +364,34 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                 const IconComponent = item.icon;
                 
                 return (
-                  <button
-                    key={item.id}
-                    onClick={() => setViewMode(item.id)}
-                    className={`
-                      w-12 h-12 flex items-center justify-center rounded-md
-                      transition-all duration-200 relative group
-                      ${isActive 
-                        ? 'bg-gradient-va-red text-white shadow-va-glow' 
-                        : 'text-gray-400 hover:bg-surface-secondary hover:text-white'
-                      }
-                    `}
-                    title={item.label}
-                  >
-                    <IconComponent className="w-5 h-5" />
-                    {item.badge && (
-                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-va-red-primary rounded-full"></div>
-                    )}
-                  </button>
+                  <div key={item.id} className="relative group">
+                    <button
+                      onClick={() => navigateToView(item.id)}
+                      className={`
+                        w-12 h-12 flex items-center justify-center rounded-md
+                        transition-all duration-200 relative
+                        ${isActive 
+                          ? 'bg-gradient-va-red text-white shadow-lg' 
+                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                        }
+                      `}
+                      title={item.label}
+                      aria-label={`${item.label}${item.badge ? ` (${item.badge})` : ''}`}
+                    >
+                      <IconComponent className="w-5 h-5" />
+                      {item.badge && (
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-va-red-primary rounded-full"></div>
+                      )}
+                    </button>
+                    
+                    {/* Tooltip */}
+                    <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                      {item.label}
+                      {item.badge && (
+                        <span className="ml-1 text-gray-300">({item.badge})</span>
+                      )}
+                    </div>
+                  </div>
                 );
               })
             )}

@@ -678,15 +678,15 @@ export default function EnhancedNetworkOTPDashboard() {
   };
 
   const getDelayImpactColor = (avgDelayMinutes: number): string => {
-    if (avgDelayMinutes === 0) return 'bg-green-800/50';
-    if (avgDelayMinutes <= 15) return 'bg-yellow-800/50';
-    if (avgDelayMinutes <= 30) return 'bg-orange-800/50';
-    return 'bg-red-800/50';
+    if (avgDelayMinutes === 0) return 'bg-green-100';
+    if (avgDelayMinutes <= 15) return 'bg-yellow-100';
+    if (avgDelayMinutes <= 30) return 'bg-orange-100';
+    return 'bg-red-100';
   };
 
   if (loading || hubData.length === 0) {
     return (
-      <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mx-auto mb-4"></div>
           <div className="text-gray-400">Loading enhanced network performance data...</div>

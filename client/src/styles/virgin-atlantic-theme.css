@@ -106,7 +106,7 @@
   }
 
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   body {
@@ -342,17 +342,17 @@ canvas {
 
   /* Virgin Atlantic Theme Enforcement & Accessibility */
   .va-theme {
-    /* Force dark mode globally for Virgin Atlantic aviation theme */
-    background-color: hsl(var(--va-deep-space)) !important;
-    color: hsl(var(--va-cloud-white)) !important;
+    /* Force light mode globally for Virgin Atlantic aviation theme */
+    background-color: hsl(var(--va-cloud-white)) !important;
+    color: hsl(var(--va-deep-space)) !important;
     
-    /* Apply dark theme to all child elements */
-    --background: var(--va-deep-space);
-    --foreground: var(--va-cloud-white);
-    --card: var(--surface-secondary);
-    --card-foreground: var(--va-cloud-white);
-    --popover: var(--surface-secondary);
-    --popover-foreground: var(--va-cloud-white);
+    /* Apply light theme to all child elements */
+    --background: var(--va-cloud-white);
+    --foreground: var(--va-deep-space);
+    --card: var(--va-cloud-white);
+    --card-foreground: var(--va-deep-space);
+    --popover: var(--va-cloud-white);
+    --popover-foreground: var(--va-deep-space);
   }
   
   /* Ensure all components use Virgin Atlantic dark theme */
@@ -362,32 +362,31 @@ canvas {
     border-color: hsl(var(--surface-tertiary)) !important;
   }
   
-  /* Override any light backgrounds in components */
-  .va-theme .bg-white,
-  .va-theme .bg-gray-50,
-  .va-theme .bg-gray-100,
-  .va-theme .bg-slate-50,
-  .va-theme .bg-slate-100 {
-    background-color: hsl(var(--surface-secondary)) !important;
-    color: hsl(var(--va-cloud-white)) !important;
+  /* Override any dark backgrounds in components */
+  .va-theme .bg-gray-900,
+  .va-theme .bg-gray-800,
+  .va-theme .bg-slate-900,
+  .va-theme .bg-slate-800 {
+    background-color: hsl(var(--va-cloud-white)) !important;
+    color: hsl(var(--va-deep-space)) !important;
   }
   
-  /* Override light text on light backgrounds */
-  .va-theme .text-gray-900,
-  .va-theme .text-gray-800,
-  .va-theme .text-slate-900,
-  .va-theme .text-slate-800,
-  .va-theme .text-black {
-    color: hsl(var(--va-cloud-white)) !important;
+  /* Override dark text on dark backgrounds */
+  .va-theme .text-white,
+  .va-theme .text-gray-50,
+  .va-theme .text-gray-100,
+  .va-theme .text-slate-50,
+  .va-theme .text-slate-100 {
+    color: hsl(var(--va-deep-space)) !important;
   }
   
-  /* Ensure good contrast for muted text */
+  /* Ensure good contrast for muted text on light background */
   .va-theme .text-gray-600,
   .va-theme .text-gray-500,
   .va-theme .text-slate-600,
   .va-theme .text-slate-500,
   .va-theme .text-muted-foreground {
-    color: hsl(0 0% 80%) !important; /* Light gray for good contrast */
+    color: hsl(0 0% 40%) !important; /* Darker gray for good contrast */
   }
   
   /* Status colors with proper contrast */
