@@ -4,4 +4,13 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
-*.tar
+*.tar./.cache/uv/archive-v0/Trjmi4piqceSwQV-yPucU/tensorflow/libtensorflow_cc.so.2
+./.cache/uv/archive-v0/5aZXL5j2bEk_QpEaFNWWS/xgboost/lib/libxgboost.so
+./.cache/uv/archive-v0/7RGHDM6kvekaYk3vKnOJs/nvidia/nccl/lib/libnccl.so.2
+./.cache/uv/archive-v0/pjG3aY0ZVa2G3c6IaVoV2/playwright/driver/node
+./node_modules/@tensorflow/tfjs-node/deps/lib/libtensorflow.so.2.9.1
+./.pythonlibs/lib/python3.11/site-packages/tensorflow/libtensorflow_cc.so.2
+./.pythonlibs/lib/python3.11/site-packages/xgboost/lib/libxgboost.so
+./.pythonlibs/lib/python3.11/site-packages/nvidia/nccl/lib/libnccl.so.2
+./.pythonlibs/lib/python3.11/site-packages/playwright/driver/node
+./aino-aviation-platform.tar
