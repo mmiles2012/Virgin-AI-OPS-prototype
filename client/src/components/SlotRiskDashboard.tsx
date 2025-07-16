@@ -595,7 +595,10 @@ const SlotRiskDashboard: React.FC = () => {
                         <div>
                           <span className="text-gray-400">Scheduled Slot:</span>
                           <div className="text-white">
-                            {new Date(flight.scheduled_slot).toLocaleTimeString('en-GB', { timeZone: 'UTC' })} UTC
+                            {flight.scheduled_slot && flight.scheduled_slot !== 'UNKNOWN' && !isNaN(new Date(flight.scheduled_slot).getTime()) ? 
+                              `${new Date(flight.scheduled_slot).toLocaleTimeString('en-GB', { timeZone: 'UTC' })} UTC` : 
+                              'Real-time tracking'
+                            }
                           </div>
                         </div>
                         <div>
@@ -1234,9 +1237,9 @@ const SlotRiskDashboard: React.FC = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-400">Last Updated:</span>
                       <span className="text-white font-medium">
-                        {eurocontrolData.data.collection_timestamp ? 
+                        {eurocontrolData.data.collection_timestamp && !isNaN(new Date(eurocontrolData.data.collection_timestamp).getTime()) ? 
                           new Date(eurocontrolData.data.collection_timestamp).toLocaleString() : 
-                          'Real-time'
+                          'Real-time monitoring'
                         }
                       </span>
                     </div>
@@ -1279,7 +1282,8 @@ const SlotRiskDashboard: React.FC = () => {
         <div className="mt-8 pt-6 border-t border-gray-700">
           <div className="flex justify-between items-center text-sm text-gray-400">
             <span>AINO Platform Integration | Virgin Atlantic Slot Risk Management</span>
-            <span>Last updated: {slotData ? new Date(slotData.timestamp).toLocaleTimeString() : 'N/A'}</span>
+            <span>Last updated: {slotData && slotData.timestamp && !isNaN(new Date(slotData.timestamp).getTime()) ? 
+              new Date(slotData.timestamp).toLocaleTimeString() : 'Real-time data'}</span>
           </div>
         </div>
       </div>
