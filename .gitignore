@@ -21,3 +21,43 @@ vite.config.ts.*
 ./.pythonlibs/lib/python3.11/site-packages/xgboost/lib/libxgboost.so
 ./.pythonlibs/lib/python3.11/site-packages/nvidia/nccl/lib/libnccl.so.2
 ./.pythonlibs/lib/python3.11/site-packages/playwright/driver/node
+
+# ML models and large data files
+*.pkl
+*.h5
+*.hdf5
+*.model
+*.bin
+*.safetensors
+*.ckpt
+*.pb
+*.pth
+*.pt
+*.onnx
+
+# Large data files (be specific to avoid ignoring important configs)
+# Large CSV files (>10MB typically)
+/data/**/*.csv
+/weather_analysis/**/*.csv
+/enhanced_buffer.csv
+/airport_flight_data.csv
+/economic_risk_summary.csv
+
+# Large JSON files (>1MB typically) - specific paths only
+/aino_comprehensive_analysis.json
+/aviation_economic_analysis.json
+/eurocontrol_flow_data_*.json
+/weather_analysis/**/*.json
+/authentic_ofp_data.json
+
+# Log files
+*.log
+/aviation_scraper.log
+/airport_scraper.log
+/aino_scheduler.log
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+/aviation_news.db
