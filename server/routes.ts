@@ -1161,7 +1161,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Heathrow Holding Areas Detection System
   app.get("/api/aviation/heathrow-holding", async (req, res) => {
     try {
-      
       // Get current Virgin Atlantic flights
       const flightResponse = await fetch(`http://localhost:5000/api/aviation/virgin-atlantic-flights`);
       const flightData = await flightResponse.json();
@@ -1179,95 +1178,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const holdingAlerts = heathrowHoldingService.checkHoldingAlerts();
       const holdingAreas = heathrowHoldingService.getHoldingAreas();
       
-      // Enhance flights with XGBoost delay predictions
-      const { spawn } = require('child_process');
-      
-      const flightsWithXGBoost = await Promise.all(
-        holdingAnalysis.flights.map(async (flight) => {
-          try {
-            // Get XGBoost prediction for this flight
-            const xgboostPrediction = await new Promise((resolve) => {
-              const pythonProcess = spawn('python3', [
-                'virgin_xgboost_delay_predictor.py',
-                '--predict-single',
-                JSON.stringify(flight)
-              ]);
-              
-              let pythonOutput = '';
-              let timeout = setTimeout(() => {
-                pythonProcess.kill();
-                resolve({
-                  xgb_predicted_risk: 'Timeout',
-                  confidence: 0.0,
-                  model_status: 'timeout'
-                });
-              }, 1500); // Short timeout for responsiveness
-              
-              pythonProcess.stdout.on('data', (data) => {
-                pythonOutput += data.toString();
-              });
-              
-              pythonProcess.on('close', (code) => {
-                clearTimeout(timeout);
-                if (code === 0) {
-                  try {
-                    const lines = pythonOutput.trim().split('\n');
-                    const jsonLine = lines.find(line => line.startsWith('{'));
-                    if (jsonLine) {
-                      resolve(JSON.parse(jsonLine));
-                    } else {
-                      resolve({
-                        xgb_predicted_risk: 'No Data',
-                        confidence: 0.0,
-                        model_status: 'no_output'
-                      });
-                    }
-                  } catch (parseError) {
-                    resolve({
-                      xgb_predicted_risk: 'Parse Error',
-                      confidence: 0.0,
-                      model_status: 'parse_error'
-                    });
-                  }
-                } else {
-                  resolve({
-                    xgb_predicted_risk: 'Model Error',
-                    confidence: 0.0,
-                    model_status: 'execution_error'
-                  });
-                }
-              });
-            });
-            
-            return {
-              ...flight,
-              xgboost_prediction: xgboostPrediction
-            };
-          } catch (error) {
-            return {
-              ...flight,
-              xgboost_prediction: {
-                xgb_predicted_risk: 'Error',
-                confidence: 0.0,
-                model_status: 'error'
-              }
-            };
-          }
-        })
-      );
-      
-      res.json({
+      // Return holding analysis
+      const response = {
         success: true,
         holding_analysis: {
-          ...holdingAnalysis,
-          flights: flightsWithXGBoost
+          flights: holdingAnalysis.flights,
+          summary: {
+            total_flights: holdingAnalysis.flights.length,
+            flights_in_holding: holdingAnalysis.flights.filter(f => f.holding_stack).length,
+            holding_areas_active: holdingAreas.filter(area => area.currentCount > 0).length
+          }
         },
         holding_status: holdingStatus,
         holding_alerts: holdingAlerts,
         holding_areas: holdingAreas,
-        xgboost_integration: true,
-        timestamp: new Date().toISOString()
-      });
+        timestamp: new Date().toISOString(),
+        data_source: 'ADS-B Exchange + Heathrow ML Analysis'
+      };
+      
+      res.json(response);
     } catch (error) {
       console.error('Error in Heathrow holding detection:', error);
       res.status(500).json({
