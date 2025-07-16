@@ -271,8 +271,20 @@ export default function IntelligenceDashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      <Card className="aviation-panel">
+    <div className="fixed inset-0 bg-gray-900 overflow-hidden">
+      <div className="h-full flex flex-col p-6 space-y-6">
+        <div className="flex-shrink-0">
+          <div className="flex items-center gap-3 mb-6">
+            <Brain className="h-8 w-8 text-blue-400" />
+            <div>
+              <h1 className="text-3xl font-bold text-white">Intelligence Center</h1>
+              <p className="text-gray-400">Real-time geopolitical risk assessment powered by comprehensive news intelligence</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex-1 overflow-hidden">
+          <Card className="aviation-panel h-full">
         <CardHeader>
           <CardTitle className="text-white flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -291,16 +303,16 @@ export default function IntelligenceDashboard() {
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4 bg-gray-800/50">
+        <CardContent className="h-full flex flex-col overflow-hidden">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
+            <TabsList className="grid w-full grid-cols-4 bg-gray-800/50 flex-shrink-0 mb-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="news">Intelligence Feed</TabsTrigger>
               <TabsTrigger value="alerts">Operational Alerts</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="overview" className="space-y-4">
+            <TabsContent value="overview" className="flex-1 overflow-y-auto space-y-4">
               {summaryData && (
                 <>
                   <div className="bg-gray-800/50 rounded p-4 mb-4">
@@ -384,7 +396,7 @@ export default function IntelligenceDashboard() {
               )}
             </TabsContent>
 
-            <TabsContent value="news" className="space-y-4">
+            <TabsContent value="news" className="flex-1 overflow-y-auto space-y-4">
               {intelligenceData && (
                 <>
                   <div className="flex justify-between items-center mb-4">
@@ -454,7 +466,7 @@ export default function IntelligenceDashboard() {
               )}
             </TabsContent>
 
-            <TabsContent value="alerts" className="space-y-4">
+            <TabsContent value="alerts" className="flex-1 overflow-y-auto space-y-4">
               {alertsData && (
                 <>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -517,7 +529,7 @@ export default function IntelligenceDashboard() {
               )}
             </TabsContent>
 
-            <TabsContent value="analytics" className="space-y-4">
+            <TabsContent value="analytics" className="flex-1 overflow-y-auto space-y-4">
               {intelligenceData && (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -571,7 +583,9 @@ export default function IntelligenceDashboard() {
             </TabsContent>
           </Tabs>
         </CardContent>
-      </Card>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
