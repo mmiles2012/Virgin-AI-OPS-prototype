@@ -614,6 +614,8 @@ canvas {
 }
 
 @layer utilities {
+  .bg-background { background-color: hsl(var(--background)); }
+  .text-foreground { color: hsl(var(--foreground)); }
   .text-va-red { color: hsl(var(--va-red-primary)); }
   .text-va-blue { color: hsl(var(--aero-blue-primary)); }
   .text-va-green { color: hsl(var(--aero-green-safe)); }
