@@ -407,7 +407,17 @@ export default function HeathrowHoldingDashboard() {
                                 </p>
                               </div>
                             ) : (
-                              <Badge variant="secondary">Not Holding</Badge>
+                              <div>
+                                <Badge variant="secondary">
+                                  {flight.route && flight.route.startsWith('LHR-') ? 
+                                    'Outbound' : 'Not Holding'}
+                                </Badge>
+                                {flight.route && flight.route.startsWith('LHR-') && (
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    Holding stacks apply to inbound flights only
+                                  </p>
+                                )}
+                              </div>
                             )}
                           </td>
                         </tr>

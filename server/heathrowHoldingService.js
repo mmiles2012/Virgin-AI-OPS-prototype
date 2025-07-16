@@ -65,8 +65,14 @@ class HeathrowHoldingService {
 
   /**
    * Determine which holding stack (if any) an aircraft is in
+   * Only applies to INBOUND flights to LHR/LGW
    */
-  assignHoldingStack(lat, lon, altitude) {
+  assignHoldingStack(lat, lon, altitude, flight) {
+    // Only check holding stacks for INBOUND flights to London airports
+    if (!this.isInboundToLondon(flight)) {
+      return null;
+    }
+    
     for (const [stackCode, stack] of Object.entries(this.HOLDING_STACKS)) {
       const distance = this.calculateDistance(lat, lon, stack.lat, stack.lon);
       
@@ -82,6 +88,17 @@ class HeathrowHoldingService {
       }
     }
     return { stack: null, name: null, distance: null, inStack: false };
+  }
+
+  /**
+   * Check if a flight is inbound to London airports (LHR, LGW, STN, LTN)
+   */
+  isInboundToLondon(flight) {
+    const londonAirports = ['LHR', 'LGW', 'STN', 'LTN', 'EGLL', 'EGKK', 'EGSS', 'EGGW'];
+    const destination = flight.destination || flight.arrival_airport;
+    
+    // Check if destination is a London airport
+    return londonAirports.includes(destination);
   }
 
   /**
@@ -163,8 +180,8 @@ class HeathrowHoldingService {
         continue;
       }
       
-      // Check if in holding stack area
-      const stackInfo = this.assignHoldingStack(latitude, longitude, altitude);
+      // Check if in holding stack area (only for inbound flights)
+      const stackInfo = this.assignHoldingStack(latitude, longitude, altitude, flight);
       
       // Detect holding pattern
       const holdingDetection = this.detectHoldingPattern(flight_number, {
