@@ -3,7 +3,14 @@ dist
 .DS_Store
 server/public
 vite.config.ts.*
+# Archive files
+*.tar
 *.tar.gz
+*.tgz
+*.tar.bz2
+*.tar.xz
+
+# Large binary files
 *.tar./.cache/uv/archive-v0/Trjmi4piqceSwQV-yPucU/tensorflow/libtensorflow_cc.so.2
 ./.cache/uv/archive-v0/5aZXL5j2bEk_QpEaFNWWS/xgboost/lib/libxgboost.so
 ./.cache/uv/archive-v0/7RGHDM6kvekaYk3vKnOJs/nvidia/nccl/lib/libnccl.so.2
@@ -13,4 +20,3 @@ vite.config.ts.*
 ./.pythonlibs/lib/python3.11/site-packages/xgboost/lib/libxgboost.so
 ./.pythonlibs/lib/python3.11/site-packages/nvidia/nccl/lib/libnccl.so.2
 ./.pythonlibs/lib/python3.11/site-packages/playwright/driver/node
-./aino-aviation-platform.tar
