@@ -70,7 +70,7 @@ class HeathrowHoldingService {
   assignHoldingStack(lat, lon, altitude, flight) {
     // Only check holding stacks for INBOUND flights to London airports
     if (!this.isInboundToLondon(flight)) {
-      return null;
+      return { stack: null, name: null, distance: null, inStack: false, isOutbound: true };
     }
     
     for (const [stackCode, stack] of Object.entries(this.HOLDING_STACKS)) {
@@ -83,11 +83,12 @@ class HeathrowHoldingService {
           stack: stackCode,
           name: stack.name,
           distance: distance,
-          inStack: true
+          inStack: true,
+          isOutbound: false
         };
       }
     }
-    return { stack: null, name: null, distance: null, inStack: false };
+    return { stack: null, name: null, distance: null, inStack: false, isOutbound: false };
   }
 
   /**
@@ -183,7 +184,23 @@ class HeathrowHoldingService {
       // Check if in holding stack area (only for inbound flights)
       const stackInfo = this.assignHoldingStack(latitude, longitude, altitude, flight);
       
-      // Detect holding pattern
+      // For outbound flights, skip holding analysis
+      if (stackInfo.isOutbound) {
+        // This is an outbound flight - no holding stack analysis
+        processedFlights.push({
+          ...flight,
+          holding: {
+            isHolding: false,
+            stack: null,
+            stackName: null,
+            confidence: 0,
+            distance: null
+          }
+        });
+        continue;
+      }
+      
+      // Detect holding pattern for inbound flights only
       const holdingDetection = this.detectHoldingPattern(flight_number, {
         lat: latitude,
         lon: longitude,
@@ -192,7 +209,7 @@ class HeathrowHoldingService {
         velocity: velocity || 0
       });
       
-      const isHolding = stackInfo.inStack && holdingDetection.isHolding;
+      const isHolding = stackInfo && stackInfo.inStack && holdingDetection.isHolding;
       
       if (isHolding) {
         holdingSummary.totalHolding++;
@@ -229,10 +246,10 @@ class HeathrowHoldingService {
         ...flight,
         holding: {
           isHolding,
-          stack: stackInfo.stack,
-          stackName: stackInfo.name,
-          confidence: holdingDetection.confidence,
-          distance: stackInfo.distance
+          stack: stackInfo?.stack || null,
+          stackName: stackInfo?.name || null,
+          confidence: holdingDetection?.confidence || 0,
+          distance: stackInfo?.distance || null
         }
       });
     }
