@@ -175,7 +175,6 @@
 }
 
 canvas {
-  background: hsl(var(--background));
   width: 100% !important;
   height: 100% !important;
   touch-action: none;
@@ -187,36 +186,35 @@ canvas {
   height: 8px;
 }
 
-
 ::-webkit-scrollbar-track {
-  background: hsl(var(--background));
+  background: hsl(var(--surface-secondary));
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--surface-accent));
+  background: hsl(var(--va-red-primary) / 0.6);
   border-radius: 4px;
-  border: 1px solid hsl(var(--border));
+  border: 1px solid hsl(var(--surface-tertiary));
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--surface-accent));
+  background: hsl(var(--va-red-primary) / 0.8);
 }
 
 ::-webkit-scrollbar-corner {
-  background: hsl(var(--background));
+  background: hsl(var(--surface-secondary));
 }
 
 /* Firefox scrollbar styling */
 * {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--surface-accent)) hsl(var(--background));
+  scrollbar-color: hsl(var(--va-red-primary) / 0.6) hsl(var(--surface-secondary));
 }
 
-
+/* Aviation-specific scrollable elements */
 .aviation-scrollable {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--surface-accent)) hsl(var(--background));
+  scrollbar-color: hsl(var(--aero-blue-primary) / 0.6) hsl(var(--surface-secondary));
 }
 
 .aviation-scrollable::-webkit-scrollbar {
@@ -224,17 +222,17 @@ canvas {
 }
 
 .aviation-scrollable::-webkit-scrollbar-track {
-  background: hsl(var(--background));
+  background: hsl(var(--surface-secondary));
   border-radius: 3px;
 }
 
 .aviation-scrollable::-webkit-scrollbar-thumb {
-  background: hsl(var(--surface-accent));
+  background: hsl(var(--aero-blue-primary) / 0.6);
   border-radius: 3px;
 }
 
 .aviation-scrollable::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--surface-accent));
+  background: hsl(var(--aero-blue-primary) / 0.8);
 }
 
 @layer components {
@@ -458,9 +456,9 @@ canvas {
 
   /* Navigation collapse button visibility fix */
   .va-theme .navigation-toggle {
-    background-color: hsl(var(--background)) !important;
-    color: hsl(var(--foreground)) !important;
-    border: 1px solid hsl(var(--border)) !important;
+    background-color: hsl(var(--surface-secondary)) !important;
+    color: hsl(var(--va-cloud-white)) !important;
+    border: 1px solid hsl(var(--surface-tertiary)) !important;
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: auto !important;
@@ -472,7 +470,7 @@ canvas {
   }
   
   .va-theme .navigation-toggle:hover {
-    background-color: hsl(var(--surface-accent)) !important;
+    background-color: hsl(var(--surface-tertiary)) !important;
     border-color: hsl(var(--va-red-primary)) !important;
     transform: scale(1.05) !important;
   }

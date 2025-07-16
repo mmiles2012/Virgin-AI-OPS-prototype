@@ -1,1 +1,324 @@
-import React, { useState, useEffect } from 'react'; import { AlertTriangle, Shield, Clock, MapPin, Radio, Plane, Info } from 'lucide-react'; import { useSelectedFlight } from '../lib/stores/useSelectedFlight'; const Badge = ({ className, children, ...props }: any) => ( <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`} {...props}> {children} </span> ); interface SafeAirspaceAlert { id: string; type: 'NOTAM' | 'TFR' | 'RESTRICTED' | 'WARNING' | 'PROHIBITED'; title: string; description: string; location: { lat: number; lon: number; radius?: number; }; altitude: { min: number; max: number; }; timeframe: { start: string; end: string; }; severity: 'low' | 'medium' | 'high' | 'critical'; source: string; lastUpdated: string; } export default function AirspaceAlerts() { const [alerts, setAlerts] = useState<SafeAirspaceAlert[]>([]); const [flightPathAlerts, setFlightPathAlerts] = useState<SafeAirspaceAlert[]>([]); const [loading, setLoading] = useState(true); const [lastUpdated, setLastUpdated] = useState<string>(''); const [alertBreakdown, setAlertBreakdown] = useState<any>({}); const [dataSources, setDataSources] = useState<string[]>([]); const [scraperStatus, setScraperStatus] = useState<string>(''); const { selectedFlight } = useSelectedFlight(); useEffect(() => { fetchAirspaceAlerts(); const interval = setInterval(fetchAirspaceAlerts, 300000); // Update every 5 minutes return () => clearInterval(interval); }, []); useEffect(() => { if (selectedFlight) { checkFlightPathAlerts(); } else { setFlightPathAlerts([]); } }, [selectedFlight]); const fetchAirspaceAlerts = async () => { try { const response = await fetch('/api/aviation/airspace-alerts'); const data = await response.json(); if (data.success) { setAlerts(data.alerts); setLastUpdated(data.timestamp); setAlertBreakdown(data.alert_breakdown || {}); setDataSources(data.data_sources || []); setScraperStatus(data.scraper_status || 'unknown'); } } catch (error) { console.error('Failed to fetch airspace alerts:', error); } finally { setLoading(false); } }; const checkFlightPathAlerts = async () => { if (!selectedFlight) return; try { const response = await fetch('/api/aviation/check-flight-alerts', { method: 'POST', headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ origin: { lat: 51.4700, lon: -0.4543 }, // Default origin (LHR) destination: { lat: 40.6413, lon: -73.7781 }, // Default destination (JFK) currentPosition: { lat: selectedFlight.latitude, lon: selectedFlight.longitude }, altitude: selectedFlight.altitude }) }); const data = await response.json(); if (data.success) { setFlightPathAlerts(data.alerts); } } catch (error) { console.error('Failed to check flight path alerts:', error); } }; const getSeverityColor = (severity: string) => { switch (severity) { case 'critical': return 'border-red-500 bg-red-500/10 text-red-400'; case 'high': return 'border-orange-500 bg-orange-500/10 text-orange-400'; case 'medium': return 'border-yellow-500 bg-yellow-500/10 text-va-red-primary'; case 'low': return 'border-blue-500 bg-blue-500/10 text-blue-400'; default: return 'border-gray-500 bg-gray-500/10 text-gray-400'; } }; const getTypeIcon = (type: string) => { switch (type) { case 'TFR': return <Shield className="h-4 w-4" />; case 'NOTAM': return <Info className="h-4 w-4" />; case 'WARNING': return <AlertTriangle className="h-4 w-4" />; case 'RESTRICTED': return <Radio className="h-4 w-4" />; case 'PROHIBITED': return <Plane className="h-4 w-4" />; default: return <AlertTriangle className="h-4 w-4" />; } }; const formatDateTime = (dateString: string) => { return new Date(dateString).toLocaleString(); }; const isActiveAlert = (alert: SafeAirspaceAlert) => { const now = new Date(); const start = new Date(alert.timeframe.start); const end = new Date(alert.timeframe.end); return now >= start && now <= end; }; if (loading) { return ( <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-6"> <div className="animate-pulse"> <div className="h-6 bg-gray-700 rounded w-1/3 mb-4"></div> <div className="space-y-3"> <div className="h-16 bg-gray-700 rounded"></div> <div className="h-16 bg-gray-700 rounded"></div> <div className="h-16 bg-gray-700 rounded"></div> </div> </div> </div> ); } const activeAlerts = alerts.filter(isActiveAlert); const relevantAlerts = selectedFlight ? flightPathAlerts : activeAlerts; return ( <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-6"> <div className="flex items-center justify-between mb-6"> <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2"> <Shield className="h-5 w-5 text-orange-400" /> Airspace Alerts <Badge className="bg-orange-500/20 text-orange-400 border-orange-500 text-xs"> Live Aviation Scraper </Badge> {selectedFlight && ( <span className="text-sm text-gray-400 ml-2"> (Flight Path: {selectedFlight.callsign}) </span> )} </h3> <div className="flex items-center gap-4 text-xs text-gray-400"> <div className="flex items-center"> <Clock className="h-3 w-3 inline mr-1" /> Updated: {lastUpdated ? formatDateTime(lastUpdated) : 'Never'} </div> <Badge className="bg-blue-500/20 text-blue-400 border-blue-500 text-xs"> Multi-Source </Badge> <div className="flex items-center text-xs"> <div className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></div> Live Scraper Active </div> </div> </div> {/* Enhanced Scraper Status Display */} <div className="mb-4 p-3 bg-gray-50/50 rounded-lg border border-gray-200"> <div className="flex items-center justify-between mb-2"> <div className="text-sm font-medium text-gray-300">Data Sources</div> <div className="text-xs"> <Badge className={`${ scraperStatus === 'active' ? 'bg-green-500/20 text-green-600 border-green-500/20' : scraperStatus === 'no_authentic_data' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/20' : 'bg-gray-500/20 text-gray-300 border-gray-500/20' }`}> {scraperStatus === 'active' ? '● Enhanced Scraper Active' : scraperStatus === 'no_authentic_data' ? '● No Authentic Data' : '● Status Unknown'} </Badge> </div> </div> <div className="grid grid-cols-2 gap-4 text-xs"> <div> <div className="text-gray-400 mb-1">Alert Breakdown</div> <div className="space-y-1"> <div>Enhanced Scraper: {alertBreakdown.live_scraped_alerts || 0}</div> <div>SafeAirspace NOTAMs: {alertBreakdown.safe_airspace_alerts || 0}</div> <div>ICAO ML Intelligence: {alertBreakdown.icao_ml_alerts || 0}</div> </div> </div> <div> <div className="text-gray-400 mb-1">Severity Distribution</div> <div className="space-y-1"> <div className="text-red-400">Critical: {alertBreakdown.critical || 0}</div> <div className="text-orange-400">High: {alertBreakdown.high || 0}</div> <div className="text-va-red-primary">Medium: {alertBreakdown.medium || 0}</div> <div className="text-blue-400">Low: {alertBreakdown.low || 0}</div> </div> </div> </div> <div className="mt-2 text-xs text-gray-500"> Sources: {dataSources.length > 0 ? dataSources.join(', ') : 'None available'} </div> </div> {relevantAlerts.length === 0 ? ( <div className="text-center py-8 text-gray-400"> <Shield className="h-12 w-12 mx-auto mb-3 opacity-50" /> <p>Aviation data collection in progress</p> <p className="text-sm text-va-red-primary"> Scraper status: Monitoring live aviation sources </p> <p className="text-xs mt-2"> No authentic alerts currently available from external sources </p> </div> ) : ( <div className="max-h-96 overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"> {relevantAlerts.map((alert) => ( <div key={alert.id} className={`border rounded-lg p-4 ${getSeverityColor(alert.severity)}`} > <div className="flex items-start justify-between mb-2"> <div className="flex items-center gap-2"> {getTypeIcon(alert.type)} <span className="font-medium text-sm">{alert.type}</span> <span className="text-xs px-2 py-1 rounded bg-gray-700 text-gray-300"> {alert.severity.toUpperCase()} </span> </div> <span className="text-xs text-gray-400">{alert.source}</span> </div> <h4 className="font-semibold text-gray-900 mb-2">{alert.title}</h4> <p className="text-sm text-gray-300 mb-3">{alert.description}</p> <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs"> <div> <div className="flex items-center gap-1 text-gray-400 mb-1"> <MapPin className="h-3 w-3" /> Location </div> <div className="text-gray-900"> {alert.location.lat.toFixed(4)}°, {alert.location.lon.toFixed(4)}° {alert.location.radius && ( <div className="text-gray-400">Radius: {alert.location.radius} nm</div> )} </div> </div> <div> <div className="flex items-center gap-1 text-gray-400 mb-1"> <Plane className="h-3 w-3" /> Altitude </div> <div className="text-gray-900"> {alert.altitude.min.toLocaleString()} - {alert.altitude.max.toLocaleString()} ft </div> </div> <div> <div className="flex items-center gap-1 text-gray-400 mb-1"> <Clock className="h-3 w-3" /> Duration </div> <div className="text-gray-900"> <div>From: {formatDateTime(alert.timeframe.start)}</div> <div>To: {formatDateTime(alert.timeframe.end)}</div> </div> </div> </div> {!isActiveAlert(alert) && ( <div className="mt-3 text-xs text-gray-500 italic"> Alert not currently active </div> )} </div> ))} </div> )} <div className="mt-6 text-xs text-gray-500"> <p>Data sourced from aviation authorities including FAA, CAA, NATS, and Transport Canada.</p> <p>Always verify with official NOTAMs before flight operations.</p> </div> </div> ); }
+import React, { useState, useEffect } from 'react';
+import { AlertTriangle, Shield, Clock, MapPin, Radio, Plane, Info } from 'lucide-react';
+import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
+
+const Badge = ({ className, children, ...props }: any) => (
+  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${className}`} {...props}>
+    {children}
+  </span>
+);
+
+interface SafeAirspaceAlert {
+  id: string;
+  type: 'NOTAM' | 'TFR' | 'RESTRICTED' | 'WARNING' | 'PROHIBITED';
+  title: string;
+  description: string;
+  location: {
+    lat: number;
+    lon: number;
+    radius?: number;
+  };
+  altitude: {
+    min: number;
+    max: number;
+  };
+  timeframe: {
+    start: string;
+    end: string;
+  };
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  source: string;
+  lastUpdated: string;
+}
+
+export default function AirspaceAlerts() {
+  const [alerts, setAlerts] = useState<SafeAirspaceAlert[]>([]);
+  const [flightPathAlerts, setFlightPathAlerts] = useState<SafeAirspaceAlert[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<string>('');
+  const [alertBreakdown, setAlertBreakdown] = useState<any>({});
+  const [dataSources, setDataSources] = useState<string[]>([]);
+  const [scraperStatus, setScraperStatus] = useState<string>('');
+  const { selectedFlight } = useSelectedFlight();
+
+  useEffect(() => {
+    fetchAirspaceAlerts();
+    const interval = setInterval(fetchAirspaceAlerts, 300000); // Update every 5 minutes
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (selectedFlight) {
+      checkFlightPathAlerts();
+    } else {
+      setFlightPathAlerts([]);
+    }
+  }, [selectedFlight]);
+
+  const fetchAirspaceAlerts = async () => {
+    try {
+      const response = await fetch('/api/aviation/airspace-alerts');
+      const data = await response.json();
+      
+      if (data.success) {
+        setAlerts(data.alerts);
+        setLastUpdated(data.timestamp);
+        setAlertBreakdown(data.alert_breakdown || {});
+        setDataSources(data.data_sources || []);
+        setScraperStatus(data.scraper_status || 'unknown');
+      }
+    } catch (error) {
+      console.error('Failed to fetch airspace alerts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const checkFlightPathAlerts = async () => {
+    if (!selectedFlight) return;
+
+    try {
+      const response = await fetch('/api/aviation/check-flight-alerts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          origin: { lat: 51.4700, lon: -0.4543 }, // Default origin (LHR)
+          destination: { lat: 40.6413, lon: -73.7781 }, // Default destination (JFK)
+          currentPosition: {
+            lat: selectedFlight.latitude,
+            lon: selectedFlight.longitude
+          },
+          altitude: selectedFlight.altitude
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setFlightPathAlerts(data.alerts);
+      }
+    } catch (error) {
+      console.error('Failed to check flight path alerts:', error);
+    }
+  };
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'critical':
+        return 'border-red-500 bg-red-500/10 text-red-400';
+      case 'high':
+        return 'border-orange-500 bg-orange-500/10 text-orange-400';
+      case 'medium':
+        return 'border-yellow-500 bg-yellow-500/10 text-yellow-400';
+      case 'low':
+        return 'border-blue-500 bg-blue-500/10 text-blue-400';
+      default:
+        return 'border-gray-500 bg-gray-500/10 text-gray-400';
+    }
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'TFR':
+        return <Shield className="h-4 w-4" />;
+      case 'NOTAM':
+        return <Info className="h-4 w-4" />;
+      case 'WARNING':
+        return <AlertTriangle className="h-4 w-4" />;
+      case 'RESTRICTED':
+        return <Radio className="h-4 w-4" />;
+      case 'PROHIBITED':
+        return <Plane className="h-4 w-4" />;
+      default:
+        return <AlertTriangle className="h-4 w-4" />;
+    }
+  };
+
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString();
+  };
+
+  const isActiveAlert = (alert: SafeAirspaceAlert) => {
+    const now = new Date();
+    const start = new Date(alert.timeframe.start);
+    const end = new Date(alert.timeframe.end);
+    return now >= start && now <= end;
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-700 rounded w-1/3 mb-4"></div>
+          <div className="space-y-3">
+            <div className="h-16 bg-gray-700 rounded"></div>
+            <div className="h-16 bg-gray-700 rounded"></div>
+            <div className="h-16 bg-gray-700 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const activeAlerts = alerts.filter(isActiveAlert);
+  const relevantAlerts = selectedFlight ? flightPathAlerts : activeAlerts;
+
+  return (
+    <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+          <Shield className="h-5 w-5 text-orange-400" />
+          Airspace Alerts
+          <Badge className="bg-orange-500/20 text-orange-400 border-orange-500 text-xs">
+            Live Aviation Scraper
+          </Badge>
+          {selectedFlight && (
+            <span className="text-sm text-gray-400 ml-2">
+              (Flight Path: {selectedFlight.callsign})
+            </span>
+          )}
+        </h3>
+        <div className="flex items-center gap-4 text-xs text-gray-400">
+          <div className="flex items-center">
+            <Clock className="h-3 w-3 inline mr-1" />
+            Updated: {lastUpdated ? formatDateTime(lastUpdated) : 'Never'}
+          </div>
+          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500 text-xs">
+            Multi-Source
+          </Badge>
+          <div className="flex items-center text-xs">
+            <div className="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></div>
+            Live Scraper Active
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced Scraper Status Display */}
+      <div className="mb-4 p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm font-medium text-gray-300">Data Sources</div>
+          <div className="text-xs">
+            <Badge className={`${
+              scraperStatus === 'active' ? 'bg-green-500/20 text-green-300 border-green-500/20' :
+              scraperStatus === 'no_authentic_data' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/20' :
+              'bg-gray-500/20 text-gray-300 border-gray-500/20'
+            }`}>
+              {scraperStatus === 'active' ? '● Enhanced Scraper Active' :
+               scraperStatus === 'no_authentic_data' ? '● No Authentic Data' :
+               '● Status Unknown'}
+            </Badge>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4 text-xs">
+          <div>
+            <div className="text-gray-400 mb-1">Alert Breakdown</div>
+            <div className="space-y-1">
+              <div>Enhanced Scraper: {alertBreakdown.live_scraped_alerts || 0}</div>
+              <div>SafeAirspace NOTAMs: {alertBreakdown.safe_airspace_alerts || 0}</div>
+              <div>ICAO ML Intelligence: {alertBreakdown.icao_ml_alerts || 0}</div>
+            </div>
+          </div>
+          
+          <div>
+            <div className="text-gray-400 mb-1">Severity Distribution</div>
+            <div className="space-y-1">
+              <div className="text-red-400">Critical: {alertBreakdown.critical || 0}</div>
+              <div className="text-orange-400">High: {alertBreakdown.high || 0}</div>
+              <div className="text-yellow-400">Medium: {alertBreakdown.medium || 0}</div>
+              <div className="text-blue-400">Low: {alertBreakdown.low || 0}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-2 text-xs text-gray-500">
+          Sources: {dataSources.length > 0 ? dataSources.join(', ') : 'None available'}
+        </div>
+      </div>
+
+      {relevantAlerts.length === 0 ? (
+        <div className="text-center py-8 text-gray-400">
+          <Shield className="h-12 w-12 mx-auto mb-3 opacity-50" />
+          <p>Aviation data collection in progress</p>
+          <p className="text-sm text-yellow-400">
+            Scraper status: Monitoring live aviation sources
+          </p>
+          <p className="text-xs mt-2">
+            No authentic alerts currently available from external sources
+          </p>
+        </div>
+      ) : (
+        <div className="max-h-96 overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+          {relevantAlerts.map((alert) => (
+            <div
+              key={alert.id}
+              className={`border rounded-lg p-4 ${getSeverityColor(alert.severity)}`}
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  {getTypeIcon(alert.type)}
+                  <span className="font-medium text-sm">{alert.type}</span>
+                  <span className="text-xs px-2 py-1 rounded bg-gray-700 text-gray-300">
+                    {alert.severity.toUpperCase()}
+                  </span>
+                </div>
+                <span className="text-xs text-gray-400">{alert.source}</span>
+              </div>
+
+              <h4 className="font-semibold text-white mb-2">{alert.title}</h4>
+              <p className="text-sm text-gray-300 mb-3">{alert.description}</p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <div>
+                  <div className="flex items-center gap-1 text-gray-400 mb-1">
+                    <MapPin className="h-3 w-3" />
+                    Location
+                  </div>
+                  <div className="text-white">
+                    {alert.location.lat.toFixed(4)}°, {alert.location.lon.toFixed(4)}°
+                    {alert.location.radius && (
+                      <div className="text-gray-400">Radius: {alert.location.radius} nm</div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-1 text-gray-400 mb-1">
+                    <Plane className="h-3 w-3" />
+                    Altitude
+                  </div>
+                  <div className="text-white">
+                    {alert.altitude.min.toLocaleString()} - {alert.altitude.max.toLocaleString()} ft
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-1 text-gray-400 mb-1">
+                    <Clock className="h-3 w-3" />
+                    Duration
+                  </div>
+                  <div className="text-white">
+                    <div>From: {formatDateTime(alert.timeframe.start)}</div>
+                    <div>To: {formatDateTime(alert.timeframe.end)}</div>
+                  </div>
+                </div>
+              </div>
+
+              {!isActiveAlert(alert) && (
+                <div className="mt-3 text-xs text-gray-500 italic">
+                  Alert not currently active
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-6 text-xs text-gray-500">
+        <p>Data sourced from aviation authorities including FAA, CAA, NATS, and Transport Canada.</p>
+        <p>Always verify with official NOTAMs before flight operations.</p>
+      </div>
+    </div>
+  );
+}

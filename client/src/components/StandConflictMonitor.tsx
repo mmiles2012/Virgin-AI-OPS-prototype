@@ -1,1 +1,224 @@
-import React, { useEffect, useState } from 'react'; import { Card, CardHeader, CardTitle, CardContent } from './ui/card'; import { Badge } from './ui/badge'; import { Button } from './ui/button'; import { AlertTriangle, MapPin, Clock, Plane, CheckCircle, XCircle, Settings } from 'lucide-react'; interface StandConflictData { flightNumber: string; gate: string; aircraft: string; route: string; scheduledArrival: string; estimatedArrival: string; conflictType: 'NONE' | 'MINOR' | 'MAJOR' | 'CRITICAL'; waitTime: number; previousFlightId?: string; affectedConnections: number; recommendations: string[]; } interface StandConflictMonitorProps { flights: any[]; } export const StandConflictMonitor: React.FC<StandConflictMonitorProps> = ({ flights }) => { const [standConflicts, setStandConflicts] = useState<StandConflictData[]>([]); const [lastUpdate, setLastUpdate] = useState<Date>(new Date()); const [isLoading, setIsLoading] = useState(false); // Fetch authentic stand conflicts from backend API const fetchStandConflicts = async (): Promise<void> => { try { setIsLoading(true); const response = await fetch('/api/stand-conflict/conflicts'); if (!response.ok) { throw new Error('Failed to fetch stand conflicts'); } const data = await response.json(); if (data.success && data.conflicts) { // Map backend response to frontend interface const mappedConflicts: StandConflictData[] = data.conflicts.map((conflict: any) => ({ flightNumber: conflict.flightNumber, gate: conflict.gate, aircraft: conflict.aircraft, route: conflict.route, scheduledArrival: conflict.scheduledArrival, estimatedArrival: conflict.estimatedArrival, conflictType: conflict.conflictType, waitTime: conflict.waitTime, previousFlightId: conflict.previousFlightId, affectedConnections: conflict.affectedConnections, recommendations: conflict.recommendations || [] })); setStandConflicts(mappedConflicts); setLastUpdate(new Date()); console.log(`✅ Stand conflicts loaded: ${mappedConflicts.length} flights with authentic gate assignments`); } } catch (error) { console.error('Error fetching stand conflicts:', error); } finally { setIsLoading(false); } }; useEffect(() => { // Fetch authentic stand conflicts on component mount and when flights change fetchStandConflicts(); // Set up periodic refresh to get latest authentic gate assignments const interval = setInterval(fetchStandConflicts, 45000); // Update every 45 seconds return () => clearInterval(interval); }, []); // Empty dependency array since we want to fetch regardless of flights prop const getConflictColor = (type: string) => { switch (type) { case 'CRITICAL': return 'bg-red-600 text-gray-900'; case 'MAJOR': return 'bg-orange-600 text-gray-900'; case 'MINOR': return 'bg-yellow-600 text-gray-900'; default: return 'bg-green-600 text-gray-900'; } }; const getConflictIcon = (type: string) => { switch (type) { case 'CRITICAL': return <XCircle className="h-4 w-4" />; case 'MAJOR': return <AlertTriangle className="h-4 w-4" />; case 'MINOR': return <Clock className="h-4 w-4" />; default: return <CheckCircle className="h-4 w-4" />; } }; const criticalConflicts = standConflicts.filter(c => c.conflictType === 'CRITICAL'); const majorConflicts = standConflicts.filter(c => c.conflictType === 'MAJOR'); const minorConflicts = standConflicts.filter(c => c.conflictType === 'MINOR'); const noConflicts = standConflicts.filter(c => c.conflictType === 'NONE'); return ( <Card className="bg-white border-gray-700"> <CardHeader> <div className="flex items-center justify-between w-full"> <div className="flex items-center gap-2"> <MapPin className="h-5 w-5 text-blue-400" /> <span className="text-gray-900">Stand Conflict Monitor - LHR Terminal 3</span> <Badge className="ml-2 bg-blue-600 text-gray-900"> {standConflicts.length} Flights </Badge> </div> <Button onClick={fetchStandConflicts} disabled={isLoading} size="sm" className="bg-blue-600 hover:bg-blue-700 text-gray-900" > <Settings className="h-4 w-4 mr-1" /> Refresh Gates </Button> </div> <div className="flex items-center gap-4 text-sm text-gray-400"> <span>Last Updated: {lastUpdate.toLocaleTimeString()}</span> <span>Authentic Heathrow T3 Gate Assignments</span> {isLoading && <span className="flex items-center gap-1"> <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div> Updating... </span>} </div> </CardHeader> <CardContent className="space-y-4"> {/* Summary Statistics */} <div className="grid grid-cols-4 gap-4"> <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-3 text-center"> <div className="text-2xl font-bold text-red-400">{criticalConflicts.length}</div> <div className="text-xs text-red-300">Critical</div> </div> <div className="bg-orange-900/30 border border-orange-500/50 rounded-lg p-3 text-center"> <div className="text-2xl font-bold text-orange-400">{majorConflicts.length}</div> <div className="text-xs text-orange-300">Major</div> </div> <div className="bg-yellow-900/30 border border-yellow-500/50 rounded-lg p-3 text-center"> <div className="text-2xl font-bold text-va-red-primary">{minorConflicts.length}</div> <div className="text-xs text-yellow-300">Minor</div> </div> <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-3 text-center"> <div className="text-2xl font-bold text-green-600">{noConflicts.length}</div> <div className="text-xs text-green-600">Clear</div> </div> </div> {/* Conflict Details */} <div className="space-y-3 max-h-96 overflow-y-auto"> {standConflicts.map((conflict, index) => ( <div key={index} className="bg-gray-800 border border-gray-600 rounded-lg p-3"> <div className="flex items-center justify-between mb-2"> <div className="flex items-center gap-2"> <Plane className="h-4 w-4 text-blue-400" /> <span className="font-bold text-gray-900">{conflict.flightNumber}</span> <span className="text-gray-400">{conflict.aircraft}</span> <span className="text-gray-400">→</span> <span className="text-gray-400">{conflict.route}</span> </div> <Badge className={getConflictColor(conflict.conflictType)}> {getConflictIcon(conflict.conflictType)} {conflict.conflictType} </Badge> </div> <div className="grid grid-cols-2 gap-4 text-sm"> <div> <div className="text-gray-400">Gate Assignment:</div> <div className="text-gray-900 font-mono">{conflict.gate}</div> </div> <div> <div className="text-gray-400">ETA:</div> <div className="text-gray-900"> {new Date(conflict.estimatedArrival).toLocaleTimeString()} </div> </div> </div> {conflict.conflictType !== 'NONE' && ( <div className="mt-3 p-2 bg-gray-700 rounded"> <div className="flex items-center gap-2 mb-1"> <AlertTriangle className="h-4 w-4 text-va-red-primary" /> <span className="text-va-red-primary font-medium">Conflict Details</span> </div> <div className="text-sm text-gray-300 space-y-1"> {conflict.previousFlightId && ( <div>Previous flight: {conflict.previousFlightId}</div> )} <div>Wait time: {conflict.waitTime} minutes</div> <div>Affected connections: {conflict.affectedConnections}</div> </div> {conflict.recommendations.length > 0 && ( <div className="mt-2"> <div className="text-blue-400 font-medium mb-1">Recommendations:</div> <ul className="text-xs text-gray-300 space-y-1"> {conflict.recommendations.map((rec, i) => ( <li key={i}>• {rec}</li> ))} </ul> </div> )} </div> )} </div> ))} </div> {standConflicts.length === 0 && ( <div className="text-center py-8 text-gray-400"> <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" /> <div>No stand conflicts detected</div> <div className="text-sm">All gates available for arriving flights</div> </div> )} </CardContent> </Card> ); }; export default StandConflictMonitor;
+import React, { useEffect, useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { AlertTriangle, MapPin, Clock, Plane, CheckCircle, XCircle, Settings } from 'lucide-react';
+
+interface StandConflictData {
+  flightNumber: string;
+  gate: string;
+  aircraft: string;
+  route: string;
+  scheduledArrival: string;
+  estimatedArrival: string;
+  conflictType: 'NONE' | 'MINOR' | 'MAJOR' | 'CRITICAL';
+  waitTime: number;
+  previousFlightId?: string;
+  affectedConnections: number;
+  recommendations: string[];
+}
+
+interface StandConflictMonitorProps {
+  flights: any[];
+}
+
+export const StandConflictMonitor: React.FC<StandConflictMonitorProps> = ({ flights }) => {
+  const [standConflicts, setStandConflicts] = useState<StandConflictData[]>([]);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch authentic stand conflicts from backend API
+  const fetchStandConflicts = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      
+      const response = await fetch('/api/stand-conflict/conflicts');
+      if (!response.ok) {
+        throw new Error('Failed to fetch stand conflicts');
+      }
+      
+      const data = await response.json();
+      if (data.success && data.conflicts) {
+        // Map backend response to frontend interface
+        const mappedConflicts: StandConflictData[] = data.conflicts.map((conflict: any) => ({
+          flightNumber: conflict.flightNumber,
+          gate: conflict.gate,
+          aircraft: conflict.aircraft,
+          route: conflict.route,
+          scheduledArrival: conflict.scheduledArrival,
+          estimatedArrival: conflict.estimatedArrival,
+          conflictType: conflict.conflictType,
+          waitTime: conflict.waitTime,
+          previousFlightId: conflict.previousFlightId,
+          affectedConnections: conflict.affectedConnections,
+          recommendations: conflict.recommendations || []
+        }));
+        
+        setStandConflicts(mappedConflicts);
+        setLastUpdate(new Date());
+        console.log(`✅ Stand conflicts loaded: ${mappedConflicts.length} flights with authentic gate assignments`);
+      }
+    } catch (error) {
+      console.error('Error fetching stand conflicts:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch authentic stand conflicts on component mount and when flights change
+    fetchStandConflicts();
+    
+    // Set up periodic refresh to get latest authentic gate assignments
+    const interval = setInterval(fetchStandConflicts, 45000); // Update every 45 seconds
+
+    return () => clearInterval(interval);
+  }, []); // Empty dependency array since we want to fetch regardless of flights prop
+
+  const getConflictColor = (type: string) => {
+    switch (type) {
+      case 'CRITICAL': return 'bg-red-600 text-white';
+      case 'MAJOR': return 'bg-orange-600 text-white';
+      case 'MINOR': return 'bg-yellow-600 text-white';
+      default: return 'bg-green-600 text-white';
+    }
+  };
+
+  const getConflictIcon = (type: string) => {
+    switch (type) {
+      case 'CRITICAL': return <XCircle className="h-4 w-4" />;
+      case 'MAJOR': return <AlertTriangle className="h-4 w-4" />;
+      case 'MINOR': return <Clock className="h-4 w-4" />;
+      default: return <CheckCircle className="h-4 w-4" />;
+    }
+  };
+
+  const criticalConflicts = standConflicts.filter(c => c.conflictType === 'CRITICAL');
+  const majorConflicts = standConflicts.filter(c => c.conflictType === 'MAJOR');
+  const minorConflicts = standConflicts.filter(c => c.conflictType === 'MINOR');
+  const noConflicts = standConflicts.filter(c => c.conflictType === 'NONE');
+
+  return (
+    <Card className="bg-gray-900 border-gray-700">
+      <CardHeader>
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-blue-400" />
+            <span className="text-white">Stand Conflict Monitor - LHR Terminal 3</span>
+            <Badge className="ml-2 bg-blue-600 text-white">
+              {standConflicts.length} Flights
+            </Badge>
+          </div>
+          <Button 
+            onClick={fetchStandConflicts}
+            disabled={isLoading}
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Settings className="h-4 w-4 mr-1" />
+            Refresh Gates
+          </Button>
+        </div>
+        <div className="flex items-center gap-4 text-sm text-gray-400">
+          <span>Last Updated: {lastUpdate.toLocaleTimeString()}</span>
+          <span>Authentic Heathrow T3 Gate Assignments</span>
+          {isLoading && <span className="flex items-center gap-1">
+            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+            Updating...
+          </span>}
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Summary Statistics */}
+        <div className="grid grid-cols-4 gap-4">
+          <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-red-400">{criticalConflicts.length}</div>
+            <div className="text-xs text-red-300">Critical</div>
+          </div>
+          <div className="bg-orange-900/30 border border-orange-500/50 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-orange-400">{majorConflicts.length}</div>
+            <div className="text-xs text-orange-300">Major</div>
+          </div>
+          <div className="bg-yellow-900/30 border border-yellow-500/50 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-yellow-400">{minorConflicts.length}</div>
+            <div className="text-xs text-yellow-300">Minor</div>
+          </div>
+          <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-green-400">{noConflicts.length}</div>
+            <div className="text-xs text-green-300">Clear</div>
+          </div>
+        </div>
+
+        {/* Conflict Details */}
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {standConflicts.map((conflict, index) => (
+            <div key={index} className="bg-gray-800 border border-gray-600 rounded-lg p-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Plane className="h-4 w-4 text-blue-400" />
+                  <span className="font-bold text-white">{conflict.flightNumber}</span>
+                  <span className="text-gray-400">{conflict.aircraft}</span>
+                  <span className="text-gray-400">→</span>
+                  <span className="text-gray-400">{conflict.route}</span>
+                </div>
+                <Badge className={getConflictColor(conflict.conflictType)}>
+                  {getConflictIcon(conflict.conflictType)}
+                  {conflict.conflictType}
+                </Badge>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <div className="text-gray-400">Gate Assignment:</div>
+                  <div className="text-white font-mono">{conflict.gate}</div>
+                </div>
+                <div>
+                  <div className="text-gray-400">ETA:</div>
+                  <div className="text-white">
+                    {new Date(conflict.estimatedArrival).toLocaleTimeString()}
+                  </div>
+                </div>
+              </div>
+
+              {conflict.conflictType !== 'NONE' && (
+                <div className="mt-3 p-2 bg-gray-700 rounded">
+                  <div className="flex items-center gap-2 mb-1">
+                    <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                    <span className="text-yellow-400 font-medium">Conflict Details</span>
+                  </div>
+                  <div className="text-sm text-gray-300 space-y-1">
+                    {conflict.previousFlightId && (
+                      <div>Previous flight: {conflict.previousFlightId}</div>
+                    )}
+                    <div>Wait time: {conflict.waitTime} minutes</div>
+                    <div>Affected connections: {conflict.affectedConnections}</div>
+                  </div>
+                  {conflict.recommendations.length > 0 && (
+                    <div className="mt-2">
+                      <div className="text-blue-400 font-medium mb-1">Recommendations:</div>
+                      <ul className="text-xs text-gray-300 space-y-1">
+                        {conflict.recommendations.map((rec, i) => (
+                          <li key={i}>• {rec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {standConflicts.length === 0 && (
+          <div className="text-center py-8 text-gray-400">
+            <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" />
+            <div>No stand conflicts detected</div>
+            <div className="text-sm">All gates available for arriving flights</div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default StandConflictMonitor;

@@ -1,1 +1,427 @@
-import { useState } from 'react'; import { CheckCircle, XCircle, Loader2, Settings, Globe, Plane, MapPin } from 'lucide-react'; interface ApiService { id: string; name: string; description: string; icon: React.ReactNode; status: 'connected' | 'disconnected' | 'testing' | 'error'; features: string[]; testEndpoint: string; connected: boolean; } interface TestResult { service: string; success: boolean; message: string; data?: any; } export default function SimpleApiWizard({ onClose }: { onClose: () => void }) { console.log('SimpleApiWizard component rendered'); const [currentStep, setCurrentStep] = useState(0); const [isTestingAll, setIsTestingAll] = useState(false); const [testResults, setTestResults] = useState<TestResult[]>([]); const [apiServices, setApiServices] = useState<ApiService[]>([ { id: 'aviationstack', name: 'AviationStack', description: 'Real-time flight tracking and airport data', icon: <Plane className="h-5 w-5" />, status: 'disconnected', features: ['Live flight tracking', 'Airport information', 'Aircraft details'], testEndpoint: '/api/aviation/test-aviationstack', connected: false }, { id: 'opensky', name: 'OpenSky Network', description: 'Live aircraft position data', icon: <Globe className="h-5 w-5" />, status: 'disconnected', features: ['Aircraft positions', 'Flight paths', 'Real-time tracking'], testEndpoint: '/api/aviation/test-opensky', connected: false }, { id: 'mapbox', name: 'Mapbox', description: 'Satellite maps and geographic services', icon: <MapPin className="h-5 w-5" />, status: 'disconnected', features: ['Satellite imagery', 'Geographic data', 'Custom map styles'], testEndpoint: '/api/aviation/test-mapbox', connected: false } ]); const testApiConnection = async (service: ApiService) => { console.log('Testing API connection for:', service.name); setApiServices(prev => prev.map(s => s.id === service.id ? { ...s, status: 'testing' } : s )); try { console.log('Fetching:', service.testEndpoint); const response = await fetch(service.testEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' } }); console.log('Response status:', response.status); const result = await response.json(); console.log('API test result:', result); const testResult: TestResult = { service: service.name, success: result.success, message: result.message, data: result.data }; setTestResults(prev => [...prev, testResult]); setApiServices(prev => prev.map(s => s.id === service.id ? { ...s, status: result.success ? 'connected' : 'error', connected: result.success } : s )); } catch (error: any) { console.error('API test error:', error); const testResult: TestResult = { service: service.name, success: false, message: `Connection failed: ${error.message}` }; setTestResults(prev => [...prev, testResult]); setApiServices(prev => prev.map(s => s.id === service.id ? { ...s, status: 'error', connected: false } : s )); } }; const testAllConnections = async () => { console.log('Testing all API connections'); setIsTestingAll(true); setTestResults([]); for (const service of apiServices) { await testApiConnection(service); await new Promise(resolve => setTimeout(resolve, 500)); } setIsTestingAll(false); }; const steps = [ { title: 'API Services Overview', description: 'Configure real-time aviation data sources' }, { title: 'Test Connections', description: 'Verify API connections and test data retrieval capabilities' }, { title: 'Integration Complete', description: 'Review connected services and start using live data' } ]; const renderStep = () => { switch (currentStep) { case 0: return ( <div className="space-y-6"> <div className="text-center mb-6"> <Settings className="h-12 w-12 text-blue-500 mx-auto mb-4" /> <h3 className="text-xl font-semibold text-gray-900 mb-2">Aviation API Services</h3> <p className="text-gray-300"> Connect to real-time aviation data sources for live flight tracking and operational intelligence </p> </div> <div className="grid gap-4"> {apiServices.map((service) => ( <div key={service.id} className="bg-gray-800/50 border border-gray-600 rounded-lg p-6"> <div className="flex items-start gap-4"> <div className="text-blue-400">{service.icon}</div> <div className="flex-1"> <div className="flex items-center justify-between mb-2"> <h4 className="font-semibold text-gray-900">{service.name}</h4> <div className="flex items-center gap-2"> {service.status === 'connected' && <CheckCircle className="h-5 w-5 text-green-500" />} {service.status === 'error' && <XCircle className="h-5 w-5 text-red-500" />} {service.status === 'testing' && <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />} <span className={`text-sm ${ service.status === 'connected' ? 'text-green-600' : service.status === 'error' ? 'text-red-400' : service.status === 'testing' ? 'text-blue-400' : 'text-gray-400' }`}> {service.status === 'connected' ? 'Connected' : service.status === 'error' ? 'Error' : service.status === 'testing' ? 'Testing...' : 'Not Connected'} </span> </div> </div> <p className="text-gray-300 text-sm mb-3">{service.description}</p> <div className="flex flex-wrap gap-2 mb-4"> {service.features.map((feature, index) => ( <span key={index} className="px-2 py-1 bg-blue-900/30 text-gray-700 text-xs rounded" > {feature} </span> ))} </div> <button onClick={() => { console.log('Test Connection button clicked for:', service.name); testApiConnection(service); }} disabled={service.status === 'testing'} className="w-full px-4 py-2 bg-blue-600 text-gray-900 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors" > {service.status === 'testing' ? ( <span className="flex items-center justify-center gap-2"> <Loader2 className="h-4 w-4 animate-spin" /> Testing Connection... </span> ) : ( 'Test Connection' )} </button> </div> </div> </div> ))} </div> </div> ); case 1: return ( <div className="space-y-6"> <div className="text-center mb-6"> <Globe className="h-12 w-12 text-blue-500 mx-auto mb-4" /> <h3 className="text-xl font-semibold text-gray-900 mb-2">Test API Connections</h3> <p className="text-gray-300"> Verify API connections and test data retrieval capabilities </p> </div> <div className="flex justify-center mb-6"> <button onClick={() => { console.log('Test All Connections button clicked'); testAllConnections(); }} disabled={isTestingAll} className="px-6 py-3 bg-blue-600 text-gray-900 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors" > {isTestingAll ? ( <span className="flex items-center gap-2"> <Loader2 className="h-4 w-4 animate-spin" /> Testing All Services... </span> ) : ( 'Test All Connections' )} </button> </div> <div className="space-y-4"> {testResults.map((result, index) => ( <div key={index} className="bg-gray-800/50 border border-gray-600 rounded-lg p-4"> <div className="flex items-center gap-3 mb-2"> {result.success ? ( <CheckCircle className="h-5 w-5 text-green-500" /> ) : ( <XCircle className="h-5 w-5 text-red-500" /> )} <h4 className="font-semibold text-gray-900">{result.service}</h4> </div> <p className={`text-sm ${result.success ? 'text-green-600' : 'text-red-400'}`}> {result.message} </p> {result.data && ( <div className="mt-3 p-3 bg-gray-500 rounded text-xs"> <pre className="text-gray-300 overflow-x-auto"> {JSON.stringify(result.data, null, 2)} </pre> </div> )} </div> ))} </div> </div> ); case 2: const connectedServices = apiServices.filter(s => s.connected); return ( <div className="space-y-6"> <div className="text-center mb-6"> <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" /> <h3 className="text-xl font-semibold text-gray-900 mb-2">Integration Complete</h3> <p className="text-gray-300"> Successfully connected {connectedServices.length} of {apiServices.length} aviation data services </p> </div> <div className="bg-green-900/20 border border-green-600 rounded-lg p-6"> <h4 className="font-semibold text-green-600 mb-4">Active Services:</h4> <div className="space-y-3"> {connectedServices.map((service) => ( <div key={service.id} className="flex items-center gap-3"> <CheckCircle className="h-5 w-5 text-green-500" /> <div className="text-green-600">{service.icon}</div> <span className="text-gray-900">{service.name}</span> </div> ))} </div> </div> <div className="bg-blue-900/20 border border-blue-600 rounded-lg p-6"> <h4 className="font-semibold text-gray-700 mb-4">Available Features:</h4> <div className="grid grid-cols-2 gap-3"> <div className="flex items-center gap-2"> <CheckCircle className="h-4 w-4 text-green-500" /> <span className="text-sm text-gray-900">Real-time Flight Tracking</span> </div> <div className="flex items-center gap-2"> <CheckCircle className="h-4 w-4 text-green-500" /> <span className="text-sm text-gray-900">Live Aircraft Positions</span> </div> <div className="flex items-center gap-2"> <CheckCircle className="h-4 w-4 text-green-500" /> <span className="text-sm text-gray-900">Airport Information</span> </div> <div className="flex items-center gap-2"> <CheckCircle className="h-4 w-4 text-green-500" /> <span className="text-sm text-gray-900">Weather Data</span> </div> <div className="flex items-center gap-2"> <CheckCircle className="h-4 w-4 text-green-500" /> <span className="text-sm text-gray-900">Satellite Imagery</span> </div> <div className="flex items-center gap-2"> <CheckCircle className="h-4 w-4 text-green-500" /> <span className="text-sm text-gray-900">Flight Path Tracking</span> </div> </div> </div> </div> ); default: return null; } }; return ( <div className="fixed inset-0 z-50 bg-black/80 shadow-sm flex items-center justify-center p-4"> <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white border border-gray-700 rounded-xl"> <div className="border-b border-gray-700 p-6"> <div className="flex items-center justify-between"> <div> <h2 className="text-2xl font-bold text-gray-900">API Integration Wizard</h2> <p className="text-gray-400 mt-1">{steps[currentStep].description}</p> </div> <button onClick={() => { console.log('Close (X) button clicked'); onClose(); }} className="text-gray-400 hover:text-gray-900 p-2 hover:bg-gray-800 rounded transition-colors" > ✕ </button> </div> {/* Progress indicator */} <div className="flex items-center gap-2 mt-4"> {steps.map((step, index) => ( <div key={index} className="flex items-center"> <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${ index <= currentStep ? 'bg-blue-600 text-gray-900' : 'bg-gray-700 text-gray-300' }`} > {index + 1} </div> <div className="ml-2 text-sm"> <div className={`font-medium ${ index <= currentStep ? 'text-gray-900' : 'text-gray-400' }`}> {step.title} </div> </div> {index < steps.length - 1 && ( <div className={`w-12 h-0.5 mx-2 ${ index < currentStep ? 'bg-blue-600' : 'bg-gray-700' }`} /> )} </div> ))} </div> </div> <div className="p-6"> {renderStep()} </div> <div className="border-t border-gray-700 p-6 flex justify-between"> <button onClick={() => { console.log('Previous button clicked, currentStep:', currentStep); setCurrentStep(Math.max(0, currentStep - 1)); }} disabled={currentStep === 0} className="px-4 py-2 border border-gray-600 text-gray-300 rounded hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors" > Previous </button> {currentStep < steps.length - 1 ? ( <button onClick={() => { console.log('Next button clicked, currentStep:', currentStep); setCurrentStep(Math.min(steps.length - 1, currentStep + 1)); }} className="px-4 py-2 bg-blue-600 text-gray-900 rounded hover:bg-blue-700 transition-colors" > Next </button> ) : ( <button onClick={() => { console.log('Complete Integration button clicked'); onClose(); }} className="px-4 py-2 bg-green-600 text-gray-900 rounded hover:bg-green-700 transition-colors" > Complete Integration </button> )} </div> </div> </div> ); }
+import { useState } from 'react';
+import { CheckCircle, XCircle, Loader2, Settings, Globe, Plane, MapPin } from 'lucide-react';
+
+interface ApiService {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  status: 'connected' | 'disconnected' | 'testing' | 'error';
+  features: string[];
+  testEndpoint: string;
+  connected: boolean;
+}
+
+interface TestResult {
+  service: string;
+  success: boolean;
+  message: string;
+  data?: any;
+}
+
+export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
+  console.log('SimpleApiWizard component rendered');
+  
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isTestingAll, setIsTestingAll] = useState(false);
+  const [testResults, setTestResults] = useState<TestResult[]>([]);
+  const [apiServices, setApiServices] = useState<ApiService[]>([
+    {
+      id: 'aviationstack',
+      name: 'AviationStack',
+      description: 'Real-time flight tracking and airport data',
+      icon: <Plane className="h-5 w-5" />,
+      status: 'disconnected',
+      features: ['Live flight tracking', 'Airport information', 'Aircraft details'],
+      testEndpoint: '/api/aviation/test-aviationstack',
+      connected: false
+    },
+    {
+      id: 'opensky',
+      name: 'OpenSky Network',
+      description: 'Live aircraft position data',
+      icon: <Globe className="h-5 w-5" />,
+      status: 'disconnected',
+      features: ['Aircraft positions', 'Flight paths', 'Real-time tracking'],
+      testEndpoint: '/api/aviation/test-opensky',
+      connected: false
+    },
+    {
+      id: 'mapbox',
+      name: 'Mapbox',
+      description: 'Satellite maps and geographic services',
+      icon: <MapPin className="h-5 w-5" />,
+      status: 'disconnected',
+      features: ['Satellite imagery', 'Geographic data', 'Custom map styles'],
+      testEndpoint: '/api/aviation/test-mapbox',
+      connected: false
+    }
+  ]);
+
+  const testApiConnection = async (service: ApiService) => {
+    console.log('Testing API connection for:', service.name);
+    setApiServices(prev => prev.map(s => 
+      s.id === service.id ? { ...s, status: 'testing' } : s
+    ));
+
+    try {
+      console.log('Fetching:', service.testEndpoint);
+      const response = await fetch(service.testEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      console.log('Response status:', response.status);
+      const result = await response.json();
+      console.log('API test result:', result);
+      
+      const testResult: TestResult = {
+        service: service.name,
+        success: result.success,
+        message: result.message,
+        data: result.data
+      };
+
+      setTestResults(prev => [...prev, testResult]);
+      
+      setApiServices(prev => prev.map(s => 
+        s.id === service.id 
+          ? { 
+              ...s, 
+              status: result.success ? 'connected' : 'error',
+              connected: result.success 
+            } 
+          : s
+      ));
+    } catch (error: any) {
+      console.error('API test error:', error);
+      const testResult: TestResult = {
+        service: service.name,
+        success: false,
+        message: `Connection failed: ${error.message}`
+      };
+
+      setTestResults(prev => [...prev, testResult]);
+      
+      setApiServices(prev => prev.map(s => 
+        s.id === service.id ? { ...s, status: 'error', connected: false } : s
+      ));
+    }
+  };
+
+  const testAllConnections = async () => {
+    console.log('Testing all API connections');
+    setIsTestingAll(true);
+    setTestResults([]);
+    
+    for (const service of apiServices) {
+      await testApiConnection(service);
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
+    setIsTestingAll(false);
+  };
+
+  const steps = [
+    {
+      title: 'API Services Overview',
+      description: 'Configure real-time aviation data sources'
+    },
+    {
+      title: 'Test Connections',
+      description: 'Verify API connections and test data retrieval capabilities'
+    },
+    {
+      title: 'Integration Complete',
+      description: 'Review connected services and start using live data'
+    }
+  ];
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 0:
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <Settings className="h-12 w-12 text-blue-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Aviation API Services</h3>
+              <p className="text-gray-300">
+                Connect to real-time aviation data sources for live flight tracking and operational intelligence
+              </p>
+            </div>
+
+            <div className="grid gap-4">
+              {apiServices.map((service) => (
+                <div key={service.id} className="bg-gray-800/50 border border-gray-600 rounded-lg p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="text-blue-400">{service.icon}</div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-white">{service.name}</h4>
+                        <div className="flex items-center gap-2">
+                          {service.status === 'connected' && <CheckCircle className="h-5 w-5 text-green-500" />}
+                          {service.status === 'error' && <XCircle className="h-5 w-5 text-red-500" />}
+                          {service.status === 'testing' && <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />}
+                          <span className={`text-sm ${
+                            service.status === 'connected' ? 'text-green-400' :
+                            service.status === 'error' ? 'text-red-400' :
+                            service.status === 'testing' ? 'text-blue-400' :
+                            'text-gray-400'
+                          }`}>
+                            {service.status === 'connected' ? 'Connected' :
+                             service.status === 'error' ? 'Error' :
+                             service.status === 'testing' ? 'Testing...' :
+                             'Not Connected'}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-gray-300 text-sm mb-3">{service.description}</p>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {service.features.map((feature, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 bg-blue-900/30 text-blue-300 text-xs rounded"
+                          >
+                            {feature}
+                          </span>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => {
+                          console.log('Test Connection button clicked for:', service.name);
+                          testApiConnection(service);
+                        }}
+                        disabled={service.status === 'testing'}
+                        className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {service.status === 'testing' ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Testing Connection...
+                          </span>
+                        ) : (
+                          'Test Connection'
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 1:
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <Globe className="h-12 w-12 text-blue-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Test API Connections</h3>
+              <p className="text-gray-300">
+                Verify API connections and test data retrieval capabilities
+              </p>
+            </div>
+
+            <div className="flex justify-center mb-6">
+              <button
+                onClick={() => {
+                  console.log('Test All Connections button clicked');
+                  testAllConnections();
+                }}
+                disabled={isTestingAll}
+                className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isTestingAll ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Testing All Services...
+                  </span>
+                ) : (
+                  'Test All Connections'
+                )}
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {testResults.map((result, index) => (
+                <div key={index} className="bg-gray-800/50 border border-gray-600 rounded-lg p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    {result.success ? (
+                      <CheckCircle className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <XCircle className="h-5 w-5 text-red-500" />
+                    )}
+                    <h4 className="font-semibold text-white">{result.service}</h4>
+                  </div>
+                  <p className={`text-sm ${result.success ? 'text-green-400' : 'text-red-400'}`}>
+                    {result.message}
+                  </p>
+                  {result.data && (
+                    <div className="mt-3 p-3 bg-gray-900/50 rounded text-xs">
+                      <pre className="text-gray-300 overflow-x-auto">
+                        {JSON.stringify(result.data, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 2:
+        const connectedServices = apiServices.filter(s => s.connected);
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Integration Complete</h3>
+              <p className="text-gray-300">
+                Successfully connected {connectedServices.length} of {apiServices.length} aviation data services
+              </p>
+            </div>
+
+            <div className="bg-green-900/20 border border-green-600 rounded-lg p-6">
+              <h4 className="font-semibold text-green-300 mb-4">Active Services:</h4>
+              <div className="space-y-3">
+                {connectedServices.map((service) => (
+                  <div key={service.id} className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <div className="text-green-400">{service.icon}</div>
+                    <span className="text-white">{service.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-blue-900/20 border border-blue-600 rounded-lg p-6">
+              <h4 className="font-semibold text-blue-300 mb-4">Available Features:</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-sm text-white">Real-time Flight Tracking</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-sm text-white">Live Aircraft Positions</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-sm text-white">Airport Information</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-sm text-white">Weather Data</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-sm text-white">Satellite Imagery</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-sm text-white">Flight Path Tracking</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-gray-900 border border-gray-700 rounded-xl">
+        <div className="border-b border-gray-700 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-white">API Integration Wizard</h2>
+              <p className="text-gray-400 mt-1">{steps[currentStep].description}</p>
+            </div>
+            <button 
+              onClick={() => {
+                console.log('Close (X) button clicked');
+                onClose();
+              }}
+              className="text-gray-400 hover:text-white p-2 hover:bg-gray-800 rounded transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+          
+          {/* Progress indicator */}
+          <div className="flex items-center gap-2 mt-4">
+            {steps.map((step, index) => (
+              <div key={index} className="flex items-center">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                    index <= currentStep
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-700 text-gray-300'
+                  }`}
+                >
+                  {index + 1}
+                </div>
+                <div className="ml-2 text-sm">
+                  <div className={`font-medium ${
+                    index <= currentStep ? 'text-white' : 'text-gray-400'
+                  }`}>
+                    {step.title}
+                  </div>
+                </div>
+                {index < steps.length - 1 && (
+                  <div
+                    className={`w-12 h-0.5 mx-2 ${
+                      index < currentStep ? 'bg-blue-600' : 'bg-gray-700'
+                    }`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-6">
+          {renderStep()}
+        </div>
+
+        <div className="border-t border-gray-700 p-6 flex justify-between">
+          <button
+            onClick={() => {
+              console.log('Previous button clicked, currentStep:', currentStep);
+              setCurrentStep(Math.max(0, currentStep - 1));
+            }}
+            disabled={currentStep === 0}
+            className="px-4 py-2 border border-gray-600 text-gray-300 rounded hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Previous
+          </button>
+          
+          {currentStep < steps.length - 1 ? (
+            <button
+              onClick={() => {
+                console.log('Next button clicked, currentStep:', currentStep);
+                setCurrentStep(Math.min(steps.length - 1, currentStep + 1));
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+            >
+              Next
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                console.log('Complete Integration button clicked');
+                onClose();
+              }}
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+            >
+              Complete Integration
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

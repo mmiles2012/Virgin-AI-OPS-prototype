@@ -1,1 +1,60 @@
-import { useKeyboardControls } from '@react-three/drei'; import { Badge } from '@/components/ui/badge'; enum FlightControlKeys { pitchUp = 'pitchUp', pitchDown = 'pitchDown', rollLeft = 'rollLeft', rollRight = 'rollRight', yawLeft = 'yawLeft', yawRight = 'yawRight', throttleUp = 'throttleUp', throttleDown = 'throttleDown', autopilot = 'autopilot', emergency = 'emergency' } export default function FlightControls() { const [subscribe, getKeys] = useKeyboardControls(); const controls = [ { name: 'Pitch Up', key: 'S', control: FlightControlKeys.pitchUp }, { name: 'Pitch Down', key: 'W', control: FlightControlKeys.pitchDown }, { name: 'Roll Left', key: 'A', control: FlightControlKeys.rollLeft }, { name: 'Roll Right', key: 'D', control: FlightControlKeys.rollRight }, { name: 'Yaw Left', key: 'Q', control: FlightControlKeys.yawLeft }, { name: 'Yaw Right', key: 'E', control: FlightControlKeys.yawRight }, { name: 'Throttle Up', key: 'R', control: FlightControlKeys.throttleUp }, { name: 'Throttle Down', key: 'F', control: FlightControlKeys.throttleDown }, { name: 'Autopilot', key: 'T', control: FlightControlKeys.autopilot }, { name: 'Emergency', key: 'Space', control: FlightControlKeys.emergency } ]; return ( <div className="space-y-2"> <h4 className="text-gray-700 font-medium text-sm">Active Controls</h4> <div className="space-y-1"> {controls.map(({ name, key, control }) => { const keys = getKeys(); const isPressed = keys[control as keyof typeof keys] || false; return ( <div key={control} className="flex items-center justify-between text-xs"> <span className="text-gray-600">{name}</span> <div className="flex items-center gap-1"> <Badge variant={isPressed ? "default" : "outline"} className="text-xs px-1 py-0" > {key} </Badge> {isPressed && ( <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div> )} </div> </div> ); })} </div> </div> ); } 
+import { useKeyboardControls } from '@react-three/drei';
+import { Badge } from '@/components/ui/badge';
+
+enum FlightControlKeys {
+  pitchUp = 'pitchUp',
+  pitchDown = 'pitchDown',
+  rollLeft = 'rollLeft',
+  rollRight = 'rollRight',
+  yawLeft = 'yawLeft',
+  yawRight = 'yawRight',
+  throttleUp = 'throttleUp',
+  throttleDown = 'throttleDown',
+  autopilot = 'autopilot',
+  emergency = 'emergency'
+}
+
+export default function FlightControls() {
+  const [subscribe, getKeys] = useKeyboardControls();
+
+  const controls = [
+    { name: 'Pitch Up', key: 'S', control: FlightControlKeys.pitchUp },
+    { name: 'Pitch Down', key: 'W', control: FlightControlKeys.pitchDown },
+    { name: 'Roll Left', key: 'A', control: FlightControlKeys.rollLeft },
+    { name: 'Roll Right', key: 'D', control: FlightControlKeys.rollRight },
+    { name: 'Yaw Left', key: 'Q', control: FlightControlKeys.yawLeft },
+    { name: 'Yaw Right', key: 'E', control: FlightControlKeys.yawRight },
+    { name: 'Throttle Up', key: 'R', control: FlightControlKeys.throttleUp },
+    { name: 'Throttle Down', key: 'F', control: FlightControlKeys.throttleDown },
+    { name: 'Autopilot', key: 'T', control: FlightControlKeys.autopilot },
+    { name: 'Emergency', key: 'Space', control: FlightControlKeys.emergency }
+  ];
+
+  return (
+    <div className="space-y-2">
+      <h4 className="text-blue-300 font-medium text-sm">Active Controls</h4>
+      <div className="space-y-1">
+        {controls.map(({ name, key, control }) => {
+          const keys = getKeys();
+          const isPressed = keys[control as keyof typeof keys] || false;
+          return (
+            <div key={control} className="flex items-center justify-between text-xs">
+              <span className="text-blue-200">{name}</span>
+              <div className="flex items-center gap-1">
+                <Badge 
+                  variant={isPressed ? "default" : "outline"} 
+                  className="text-xs px-1 py-0"
+                >
+                  {key}
+                </Badge>
+                {isPressed && (
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

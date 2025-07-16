@@ -1,1 +1,1747 @@
-import React, { useState, useEffect } from 'react'; import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap, Shield, Wind, Eye, Fuel, Building, Wrench, FileText, BarChart3, CheckCircle, Target, Activity } from 'lucide-react'; import { useSelectedFlight } from '../lib/stores/useSelectedFlight'; import { useEnhancedFlightData, useAviationData } from '../hooks/useAviationData'; import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; import { Badge } from '@/components/ui/badge'; import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'; import { Button } from '@/components/ui/button'; interface EnhancedFlightData { callsign: string; aircraft: string; route: string; currentPosition: { lat: number; lon: number }; altitude: number; speed: number; fuelRemaining: number; fuelBurn: number; maximumRange: number; currentWeight: number; passengers: number; eta: string; } const ActiveFlightsList = () => { const { selectedFlight, setSelectedFlight } = useSelectedFlight(); const fallbackFlights = [ { callsign: 'VIR127C', aircraft: 'A350-1000', route: 'LHR-JFK', status: 'Featured', emergency: 'Medical Emergency', position: '45.18°N, 69.17°W' }, { callsign: 'VIR43', aircraft: 'A330-300', route: 'LGW-MCO', status: 'Active', position: '40.2°N, 45.8°W' }, { callsign: 'VIR25F', aircraft: '787-9', route: 'LHR-LAX', status: 'Active', position: '51.4°N, 12.2°W' }, { callsign: 'VIR155', aircraft: 'A350-900', route: 'MAN-ATL', status: 'Active', position: '49.8°N, 25.1°W' }, { callsign: 'VIR9', aircraft: '787-9', route: 'LHR-BOS', status: 'Active', position: '52.1°N, 18.7°W' } ]; return ( <Card className="bg-gray-800/50 border-gray-600 h-full"> <CardHeader className="pb-3"> <CardTitle className="text-gray-900 text-lg flex items-center gap-2"> <Plane className="h-5 w-5 text-blue-400" /> Active Flights </CardTitle> </CardHeader> <CardContent className="space-y-3"> {fallbackFlights.map((flight) => ( <div key={flight.callsign} onClick={() => setSelectedFlight(flight.callsign)} className={`p-3 rounded-lg cursor-pointer transition-all border ${ selectedFlight?.callsign === flight.callsign ? 'bg-blue-600/30 border-blue-400 shadow-lg' : 'bg-gray-700/50 border-gray-600 hover:bg-gray-700/70' }`} > <div className="flex items-center justify-between mb-2"> <span className="text-gray-900 font-semibold">{flight.callsign}</span> {flight.status === 'Featured' && ( <Badge className="bg-red-600 text-gray-900 text-xs">Featured</Badge> )} </div> <div className="text-sm text-gray-400">{flight.aircraft}</div> <div className="text-sm text-gray-400">{flight.route}</div> <div className="text-xs text-gray-500 mt-1">{flight.position}</div> {flight.emergency && ( <div className="text-xs text-red-400 mt-1">{flight.emergency}</div> )} </div> ))} </CardContent> </Card> ); }; export default function EnhancedOperationalDecisionEngine() { const { selectedFlight } = useSelectedFlight(); const { enhancedData, loading, error } = useEnhancedFlightData(selectedFlight?.callsign); const aviationData = useAviationData(); const getFlightData = (callsign: string) => { const flightConfigs = { 'VIR127C': { aircraft: 'A350-1000', route: 'LHR-JFK', passengers: 298, fuelRemaining: 42000 }, 'VIR43': { aircraft: 'A330-300', route: 'LGW-MCO', passengers: 285, fuelRemaining: 38000 }, 'VIR25F': { aircraft: '787-9', route: 'LHR-LAX', passengers: 258, fuelRemaining: 45000 }, 'VIR155': { aircraft: 'A350-900', route: 'MAN-ATL', passengers: 315, fuelRemaining: 48000 }, 'VIR9': { aircraft: '787-9', route: 'LHR-BOS', passengers: 214, fuelRemaining: 36000 } }; return flightConfigs[callsign as keyof typeof flightConfigs] || flightConfigs['VIR127C']; }; const flightData: EnhancedFlightData | null = selectedFlight ? { callsign: selectedFlight.callsign, aircraft: getFlightData(selectedFlight.callsign).aircraft, route: getFlightData(selectedFlight.callsign).route, currentPosition: { lat: selectedFlight.latitude, lon: selectedFlight.longitude }, altitude: selectedFlight.altitude, speed: selectedFlight.velocity, fuelRemaining: getFlightData(selectedFlight.callsign).fuelRemaining, fuelBurn: 2400, maximumRange: 8000, currentWeight: 280000, passengers: getFlightData(selectedFlight.callsign).passengers, eta: '14:30 UTC' } : null; // Calculate operating costs when flight data is available React.useEffect(() => { if (flightData) { const routeDistance = getRouteDistance(flightData.route); aviationData.fetchOperatingCosts(flightData.aircraft, routeDistance, flightData.passengers); } }, [flightData?.callsign, flightData?.aircraft, aviationData]); // Helper function to get route distances (nautical miles) const getRouteDistance = (route: string): number => { const distances = { 'LHR-JFK': 3459, // London Heathrow to JFK 'LGW-MCO': 4277, // London Gatwick to Orlando 'LHR-LAX': 5446, // London Heathrow to LAX 'MAN-ATL': 4198, // Manchester to Atlanta 'LHR-BOS': 3255, // London Heathrow to Boston 'LHR-YYZ': 3544, // London Heathrow to Toronto 'LGW-JFK': 3470 // London Gatwick to JFK }; return distances[route as keyof typeof distances] || 3500; }; // Calculate diversion costs using authentic Virgin Atlantic operational data const calculateDiversionCosts = (aircraft: string, delayHours: number, passengers: number) => { const operatingCosts = aviationData.operatingCosts; if (!operatingCosts) { return { operationalCost: delayHours * 7500, fuelCost: 12000, passengerCompensation: passengers * 320, hotelAccommodation: passengers * 180, crewCosts: 9600, handlingFees: 3500, totalCost: 0 }; } const operationalCost = delayHours * operatingCosts.breakdown.hourlyOperatingCost; const fuelCost = operatingCosts.fuelCost * 1.15; // Additional fuel for diversion const passengerCompensation = passengers * 320; // EU261 compensation const hotelAccommodation = passengers * 180; // Overnight accommodation const crewCosts = 9600; // Crew duty time and accommodation const handlingFees = 3500; // Airport handling at diversion airport return { operationalCost: Math.round(operationalCost), fuelCost: Math.round(fuelCost), passengerCompensation, hotelAccommodation, crewCosts, handlingFees, totalCost: Math.round(operationalCost + fuelCost + passengerCompensation + hotelAccommodation + crewCosts + handlingFees) }; }; return ( <div className="h-full bg-gradient-to-br from-blue-900/20 via-gray-900 to-gray-800 text-gray-900 overflow-hidden"> <div className="flex h-full gap-4 p-4"> {/* Left Sidebar */} <div className="w-64 flex-shrink-0 overflow-y-auto"> <ActiveFlightsList /> </div> {/* Main Content Area */} <div className="flex-1 overflow-y-auto"> <div className="space-y-6 pb-6"> {!flightData ? ( <Card className="bg-gray-800/50 border-gray-600"> <CardContent className="flex items-center justify-center py-12"> <div className="text-center"> <Plane className="h-12 w-12 text-gray-400 mx-auto mb-4" /> <h3 className="text-lg font-medium text-gray-900 mb-2">Select a Flight</h3> <p className="text-gray-400">Choose a flight from the sidebar to begin operational decision analysis</p> </div> </CardContent> </Card> ) : ( <div className="space-y-6"> {/* Flight Overview Card */} <Card className="bg-white/80 border-gray-500 shadow-lg"> <CardHeader className="pb-3"> <CardTitle className="text-gray-900 flex items-center justify-between"> <div className="flex items-center gap-3"> <Brain className="h-6 w-6 text-blue-400" /> <span className="text-xl">Flight {flightData?.callsign}</span> </div> {flightData?.callsign === 'VIR127C' && ( <Badge className="bg-red-600 text-gray-900 px-3 py-1 animate-pulse">MEDICAL EMERGENCY</Badge> )} </CardTitle> </CardHeader> <CardContent> <div className="grid grid-cols-4 gap-6"> <div className="bg-gray-800 rounded-lg p-3"> <div className="text-gray-400 text-xs uppercase tracking-wide">Aircraft</div> <div className="text-gray-900 font-semibold text-lg">{flightData?.aircraft}</div> </div> <div className="bg-gray-800 rounded-lg p-3"> <div className="text-gray-400 text-xs uppercase tracking-wide">Route</div> <div className="text-gray-900 font-semibold text-lg">{flightData?.route}</div> </div> <div className="bg-gray-800 rounded-lg p-3"> <div className="text-gray-400 text-xs uppercase tracking-wide">Fuel Remaining</div> <div className="text-gray-900 font-semibold text-lg">{flightData?.fuelRemaining.toLocaleString()} kg</div> </div> <div className="bg-gray-800 rounded-lg p-3"> <div className="text-gray-400 text-xs uppercase tracking-wide">Passengers</div> <div className="text-gray-900 font-semibold text-lg">{flightData?.passengers}</div> </div> </div> </CardContent> </Card> <Tabs defaultValue="simulation" className="space-y-6"> <TabsList className="grid w-full grid-cols-7 bg-gray-800/50 p-1 rounded-lg"> <TabsTrigger value="simulation" className="data-[state=active]:bg-blue-600 data-[state=active]:text-gray-900"> <Gauge className="h-4 w-4 mr-2" /> Diversion </TabsTrigger> <TabsTrigger value="data" className="data-[state=active]:bg-blue-600 data-[state=active]:text-gray-900"> <Brain className="h-4 w-4 mr-2" /> Data </TabsTrigger> <TabsTrigger value="ml-prediction" className="data-[state=active]:bg-blue-600 data-[state=active]:text-gray-900"> <Target className="h-4 w-4 mr-2" /> ML Risk </TabsTrigger> <TabsTrigger value="airfields" className="data-[state=active]:bg-blue-600 data-[state=active]:text-gray-900"> <Building className="h-4 w-4 mr-2" /> Airfields </TabsTrigger> <TabsTrigger value="analysis" className="data-[state=active]:bg-blue-600 data-[state=active]:text-gray-900"> <DollarSign className="h-4 w-4 mr-2" /> Costs </TabsTrigger> <TabsTrigger value="crew" className="data-[state=active]:bg-blue-600 data-[state=active]:text-gray-900"> <Users className="h-4 w-4 mr-2" /> Crew </TabsTrigger> <TabsTrigger value="reports" className="data-[state=active]:bg-blue-600 data-[state=active]:text-gray-900"> <FileText className="h-4 w-4 mr-2" /> Reports </TabsTrigger> </TabsList> <TabsContent value="simulation" className="space-y-4"> {/* VIR127C Specific Diversion Comparison */} {flightData?.callsign === 'VIR127C' && ( <Card className="bg-red-900/20 border-red-500 shadow-lg mb-6"> <CardHeader className="pb-4"> <CardTitle className="text-red-300 flex items-center justify-between"> <div className="flex items-center gap-3"> <AlertTriangle className="h-6 w-6" /> <span className="text-lg">Medical Emergency - Diversion Analysis</span> </div> <Badge className="bg-red-600 text-gray-900 animate-pulse">URGENT</Badge> </CardTitle> </CardHeader> <CardContent> <div className="bg-gray-800/50 rounded-lg p-4 mb-6 border border-gray-600"> <div className="grid grid-cols-5 gap-4 text-center"> <div> <div className="text-gray-400 text-xs uppercase">Position</div> <div className="text-gray-900 font-semibold">45.18°N, 69.17°W</div> </div> <div> <div className="text-gray-400 text-xs uppercase">Altitude</div> <div className="text-gray-900 font-semibold">40,000ft</div> </div> <div> <div className="text-gray-400 text-xs uppercase">Speed</div> <div className="text-gray-900 font-semibold">457kt</div> </div> <div> <div className="text-gray-400 text-xs uppercase">Fuel</div> <div className="text-gray-900 font-semibold">42,000kg</div> </div> <div> <div className="text-gray-400 text-xs uppercase">Crew Duty</div> <div className="text-va-red-primary font-semibold">187min left</div> </div> </div> </div> <div className="grid md:grid-cols-2 gap-6"> {/* Gander Option */} <div className="bg-gray-800/60 border border-gray-500 rounded-lg p-5 shadow-md"> <div className="flex items-center justify-between mb-4"> <div className="flex items-center gap-3"> <div className="bg-yellow-600/20 p-2 rounded-lg"> <MapPin className="h-5 w-5 text-va-red-primary" /> </div> <div> <h3 className="text-gray-900 font-semibold text-lg">Gander</h3> <p className="text-gray-400 text-sm">CYQX</p> </div> </div> <Badge className="bg-yellow-600 text-gray-900 px-3 py-1 text-sm">Score: 78</Badge> </div> <div className="grid grid-cols-3 gap-4 mb-4"> <div className="text-center bg-gray-700/50 p-3 rounded"> <div className="text-gray-400 text-xs uppercase">Distance</div> <div className="text-gray-900 font-semibold">234 km</div> </div> <div className="text-center bg-gray-700/50 p-3 rounded"> <div className="text-gray-400 text-xs uppercase">Flight Time</div> <div className="text-gray-900 font-semibold">17 min</div> </div> <div className="text-center bg-gray-700/50 p-3 rounded"> <div className="text-gray-400 text-xs uppercase">Fuel Required</div> <div className="text-gray-900 font-semibold">1,850 kg</div> </div> </div> <div className="bg-gray-700/30 rounded-lg p-4"> <div className="flex items-center gap-2 mb-3"> <DollarSign className="h-4 w-4 text-green-600" /> <span className="text-gray-300 font-medium">Cost Analysis</span> </div> <div className="space-y-2 text-sm"> <div className="flex justify-between"> <span className="text-gray-400">Passenger Care:</span> <span className="text-gray-900 font-medium">$89,400</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Crew Costs:</span> <span className="text-gray-900 font-medium">$8,200</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Aircraft Costs:</span> <span className="text-gray-900 font-medium">$12,850</span> </div> <div className="border-t border-gray-600 pt-2 mt-3"> <div className="flex justify-between text-lg font-semibold"> <span className="text-green-600">Total Cost:</span> <span className="text-green-600">$110,450</span> </div> </div> </div> </div> </div> {/* Halifax Option */} <div className="bg-gray-800/60 border border-gray-500 rounded-lg p-5 shadow-md"> <div className="flex items-center justify-between mb-4"> <div className="flex items-center gap-3"> <div className="bg-blue-600/20 p-2 rounded-lg"> <MapPin className="h-5 w-5 text-blue-400" /> </div> <div> <h3 className="text-gray-900 font-semibold text-lg">Halifax</h3> <p className="text-gray-400 text-sm">CYHZ</p> </div> </div> <Badge className="bg-blue-600 text-gray-900 px-3 py-1 text-sm">Score: 85</Badge> </div> <div className="grid grid-cols-3 gap-4 mb-4"> <div className="text-center bg-gray-700/50 p-3 rounded"> <div className="text-gray-400 text-xs uppercase">Distance</div> <div className="text-gray-900 font-semibold">312 km</div> </div> <div className="text-center bg-gray-700/50 p-3 rounded"> <div className="text-gray-400 text-xs uppercase">Flight Time</div> <div className="text-gray-900 font-semibold">23 min</div> </div> <div className="text-center bg-gray-700/50 p-3 rounded"> <div className="text-gray-400 text-xs uppercase">Fuel Required</div> <div className="text-gray-900 font-semibold">2,400 kg</div> </div> </div> <div className="bg-gray-700/30 rounded-lg p-4"> <div className="flex items-center gap-2 mb-3"> <DollarSign className="h-4 w-4 text-blue-400" /> <span className="text-gray-300 font-medium">Cost Analysis</span> </div> <div className="space-y-2 text-sm"> {(() => { const diversionCosts = calculateDiversionCosts(flightData?.aircraft || 'A350-1000', 2.5, flightData?.passengers || 298); return ( <> <div className="flex justify-between"> <span className="text-gray-400">Passenger Care:</span> <span className="text-gray-900 font-medium">${diversionCosts.passengerCompensation.toLocaleString()}</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Hotel Accommodation:</span> <span className="text-gray-900 font-medium">${diversionCosts.hotelAccommodation.toLocaleString()}</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Crew Costs:</span> <span className="text-gray-900 font-medium">${diversionCosts.crewCosts.toLocaleString()}</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Aircraft Operating:</span> <span className="text-gray-900 font-medium">${diversionCosts.operationalCost.toLocaleString()}</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Additional Fuel:</span> <span className="text-gray-900 font-medium">${diversionCosts.fuelCost.toLocaleString()}</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Handling Fees:</span> <span className="text-gray-900 font-medium">${diversionCosts.handlingFees.toLocaleString()}</span> </div> <div className="border-t border-gray-600 pt-2 mt-3"> <div className="flex justify-between text-lg font-semibold"> <span className="text-blue-400">Total Cost:</span> <span className="text-blue-400">${diversionCosts.totalCost.toLocaleString()}</span> </div> </div> </> ); })()} </div> </div> </div> </div> <div className="mt-6 bg-green-900/20 border border-green-500 rounded-lg p-4"> <div className="flex items-center gap-3 mb-3"> <CheckCircle className="h-5 w-5 text-green-600" /> <span className="text-green-600 font-semibold">AI Recommendation</span> </div> <p className="text-gray-300 text-sm"> <strong className="text-green-600">Recommend Gander (CYQX)</strong> - Lower cost option with adequate medical facilities. Save $12,150 compared to Halifax while maintaining safety standards. </p> </div> </CardContent> </Card> )} {/* Generic Diversion Analysis for other flights */} {flightData?.callsign !== 'VIR127C' && ( <Card className="bg-gray-800/50 border-gray-600"> <CardHeader> <CardTitle className="text-gray-900 flex items-center gap-2"> <Gauge className="h-5 w-5" /> Diversion Analysis </CardTitle> </CardHeader> <CardContent> <div className="text-gray-300"> Diversion analysis and operational recommendations for flight {flightData?.callsign}. </div> </CardContent> </Card> )} </TabsContent> <TabsContent value="data" className="space-y-4"> <Card className="bg-gray-800/50 border-gray-600"> <CardHeader> <CardTitle className="text-gray-900 flex items-center gap-2"> <Brain className="h-5 w-5" /> Enhanced Aviation Data </CardTitle> </CardHeader> <CardContent> <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> {/* Fuel Analysis */} <div className="bg-gray-700/50 rounded-lg p-4"> <h3 className="text-gray-900 font-semibold mb-3 flex items-center gap-2"> <Gauge className="h-4 w-4 text-blue-400" /> Fuel Performance Analysis </h3> <div className="space-y-3"> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Current Burn Rate:</span> <span className="text-gray-900 font-medium"> {enhancedData.fuelAnalysis ? `${(enhancedData.fuelAnalysis.fuelBurnKg / (enhancedData.fuelAnalysis.distanceNm / 500)).toFixed(0)} kg/hr` : '2,400 kg/hr'} </span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Route Fuel Estimate:</span> <span className="text-gray-900 font-medium"> {enhancedData.fuelAnalysis ? `${enhancedData.fuelAnalysis.fuelBurnKg.toLocaleString()} kg` : '15,600 kg'} </span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Reserve Fuel:</span> <span className="text-green-600 font-medium"> {flightData ? `${(flightData.fuelRemaining - (enhancedData.fuelAnalysis?.fuelBurnKg || 15600)).toLocaleString()} kg` : '6,800 kg'} </span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Fuel Cost (Est):</span> <span className="text-gray-900 font-medium"> {enhancedData.fuelAnalysis ? `$${enhancedData.fuelAnalysis.estimatedCost.toLocaleString()}` : (aviationData.operatingCosts ? `$${aviationData.operatingCosts.fuelCost.toLocaleString()}` : '$39,000')} </span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Operating Cost/Hour:</span> <span className="text-gray-900 font-medium"> {aviationData.operatingCosts ? `$${aviationData.operatingCosts.breakdown.hourlyOperatingCost.toLocaleString()}` : '$8,420'} </span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Total Operating Cost:</span> <span className="text-blue-400 font-medium"> {aviationData.operatingCosts ? `$${aviationData.operatingCosts.totalOperatingCost.toLocaleString()}` : '$58,940'} </span> </div> </div> </div> {/* Weather Conditions */} <div className="bg-gray-700/50 rounded-lg p-4"> <h3 className="text-gray-900 font-semibold mb-3 flex items-center gap-2"> <Wind className="h-4 w-4 text-blue-400" /> Weather Conditions </h3> <div className="space-y-3"> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Visibility:</span> <span className="text-gray-900 font-medium"> {enhancedData.weatherData ? `${enhancedData.weatherData.visibility.toFixed(1)} km` : '12 km'} </span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Wind Speed:</span> <span className="text-gray-900 font-medium"> {enhancedData.weatherData ? `${enhancedData.weatherData.windSpeed} kt` : '15 kt'} </span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Temperature:</span> <span className="text-gray-900 font-medium"> {enhancedData.weatherData ? `${enhancedData.weatherData.temperature}°C` : '-8°C'} </span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Conditions:</span> <span className="text-green-600 font-medium"> {enhancedData.weatherData?.conditions || 'Clear'} </span> </div> </div> </div> {/* Aircraft Performance */} <div className="bg-gray-700/50 rounded-lg p-4"> <h3 className="text-gray-900 font-semibold mb-3 flex items-center gap-2"> <Plane className="h-4 w-4 text-blue-400" /> Aircraft Performance </h3> <div className="space-y-3"> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Max Range:</span> <span className="text-gray-900 font-medium">8,000 nm</span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Service Ceiling:</span> <span className="text-gray-900 font-medium">43,000 ft</span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Current Weight:</span> <span className="text-gray-900 font-medium">280,000 kg</span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Load Factor:</span> <span className="text-green-600 font-medium">85%</span> </div> </div> </div> {/* Route Analytics */} <div className="bg-gray-700/50 rounded-lg p-4"> <h3 className="text-gray-900 font-semibold mb-3 flex items-center gap-2"> <MapPin className="h-4 w-4 text-blue-400" /> Route Analytics </h3> <div className="space-y-3"> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Total Distance:</span> <span className="text-gray-900 font-medium">3,459 nm</span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Completed:</span> <span className="text-gray-900 font-medium">1,847 nm (53%)</span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">Remaining:</span> <span className="text-gray-900 font-medium">1,612 nm</span> </div> <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded"> <span className="text-gray-300">ETA Original:</span> <span className="text-gray-900 font-medium">14:30 UTC</span> </div> </div> </div> </div> {/* Enhanced Diversion Analysis */} <div className="mt-6 bg-gray-700/30 rounded-lg p-4"> <h3 className="text-gray-900 font-semibold mb-3 flex items-center gap-2"> <BarChart3 className="h-4 w-4 text-purple-400" /> Diversion Cost Breakdown </h3> <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm"> <div className="bg-red-600/20 border border-red-600/30 rounded p-3"> <div className="text-red-400 font-medium mb-1">Operational Cost</div> <div className="text-gray-900 font-semibold">$24,240</div> <div className="text-gray-400 text-xs">4hr delay @ $101/min</div> </div> <div className="bg-orange-600/20 border border-orange-600/30 rounded p-3"> <div className="text-orange-400 font-medium mb-1">Passenger Care</div> <div className="text-gray-900 font-semibold">$89,400</div> <div className="text-gray-400 text-xs">298 pax @ $300 comp</div> </div> <div className="bg-blue-600/20 border border-blue-600/30 rounded p-3"> <div className="text-blue-400 font-medium mb-1">Crew Costs</div> <div className="text-gray-900 font-semibold">$1,200</div> <div className="text-gray-400 text-xs">6 crew @ $200 each</div> </div> <div className="bg-gray-600/20 border border-gray-600/30 rounded p-3"> <div className="text-gray-400 font-medium mb-1">Total Estimate</div> <div className="text-gray-900 font-semibold">$116,840</div> <div className="text-gray-400 text-xs">Excluding fuel costs</div> </div> </div> </div> {/* Historical Delay Analysis */} <div className="mt-6 bg-gray-700/30 rounded-lg p-4"> <h3 className="text-gray-900 font-semibold mb-3 flex items-center gap-2"> <TrendingUp className="h-4 w-4 text-blue-400" /> Historical Performance Data </h3> <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> <div> <h4 className="text-gray-300 font-medium mb-3">Destination Airport (JFK)</h4> <div className="space-y-2 text-sm"> <div className="flex justify-between p-2 bg-gray-800/50 rounded"> <span className="text-gray-400">Average Delay:</span> <span className="text-gray-900">22.1 minutes</span> </div> <div className="flex justify-between p-2 bg-gray-800/50 rounded"> <span className="text-gray-400">Delay Frequency:</span> <span className="text-va-red-primary">38% of flights</span> </div> <div className="bg-gray-800/50 rounded p-2"> <span className="text-gray-400 text-xs">Main Causes:</span> <div className="text-gray-900 text-xs mt-1">Weather • ATC Delays • Airport Operations</div> </div> </div> </div> <div> <h4 className="text-gray-300 font-medium mb-3">Diversion Airport (CYQX)</h4> <div className="space-y-2 text-sm"> <div className="flex justify-between p-2 bg-gray-800/50 rounded"> <span className="text-gray-400">Average Delay:</span> <span className="text-green-600">8.2 minutes</span> </div> <div className="flex justify-between p-2 bg-gray-800/50 rounded"> <span className="text-gray-400">Delay Frequency:</span> <span className="text-green-600">15% of flights</span> </div> <div className="bg-gray-800/50 rounded p-2"> <span className="text-gray-400 text-xs">Main Causes:</span> <div className="text-gray-900 text-xs mt-1">Weather • Equipment • Crew</div> </div> </div> </div> </div> </div> {/* Comprehensive Analysis */} <div className="mt-6 bg-gray-700/30 rounded-lg p-4"> <h3 className="text-gray-900 font-semibold mb-3 flex items-center gap-2"> <Brain className="h-4 w-4 text-purple-400" /> AI Analysis Summary </h3> <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm"> <div className="bg-green-600/20 border border-green-600/30 rounded p-3"> <div className="text-green-600 font-medium mb-1">Fuel Status</div> <div className="text-gray-900"> {enhancedData.fuelAnalysis ? `${((flightData?.fuelRemaining || 42000) - enhancedData.fuelAnalysis.fuelBurnKg > 6000 ? 'Adequate' : 'Marginal')} reserves for diversion` : 'Adequate reserves for diversion plus 45-minute holding' } </div> </div> <div className="bg-blue-600/20 border border-blue-600/30 rounded p-3"> <div className="text-blue-400 font-medium mb-1">Weather Impact</div> <div className="text-gray-900"> {enhancedData.weatherData?.conditions === 'Clear' ? 'Clear conditions at all diversion airports' : `${enhancedData.weatherData?.conditions || 'Clear'} conditions reported`} </div> </div> <div className="bg-yellow-600/20 border border-yellow-600/30 rounded p-3"> <div className="text-va-red-primary font-medium mb-1">Performance</div> <div className="text-gray-900">Aircraft within normal operating parameters</div> </div> </div> </div> </CardContent> </Card> </TabsContent> <TabsContent value="ml-prediction" className="space-y-4"> <Card className="bg-gray-800/50 border-gray-700"> <CardHeader> <CardTitle className="text-gray-900 flex items-center gap-2"> <Target className="h-5 w-5 text-purple-400" /> Machine Learning Diversion Risk Assessment </CardTitle> </CardHeader> <CardContent className="space-y-6"> {/* Real-time Risk Score */} <div className="bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-lg p-6 border border-purple-500/30"> <div className="flex items-center justify-between mb-4"> <h3 className="text-gray-900 font-semibold text-lg">Current Diversion Risk</h3> <Badge className="bg-red-600 text-gray-900 px-3 py-1"> HIGH RISK </Badge> </div> <div className="flex items-center gap-6"> <div className="relative w-32 h-32"> <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100"> <circle cx="50" cy="50" r="40" stroke="gray" strokeWidth="8" fill="none" className="opacity-30" /> <circle cx="50" cy="50" r="40" stroke="#dc2626" strokeWidth="8" fill="none" strokeDasharray={`${72 * 2.51} ${100 * 2.51}`} className="drop-shadow-lg" /> </svg> <div className="absolute inset-0 flex items-center justify-center"> <span className="text-gray-900 font-bold text-2xl">72%</span> </div> </div> <div className="flex-1"> <div className="text-gray-900 text-sm mb-2">Confidence Level: <span className="font-semibold text-green-600">94%</span></div> <div className="text-gray-300 text-sm"> Model predicts <span className="text-red-400 font-semibold">high probability</span> of diversion required within next 45 minutes based on current medical emergency and route conditions. </div> </div> </div> </div> {/* Risk Factor Analysis */} <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> <div className="bg-gray-700/50 rounded-lg p-4"> <h4 className="text-gray-900 font-semibold mb-4 flex items-center gap-2"> <Activity className="h-4 w-4 text-red-400" /> Primary Risk Factors </h4> <div className="space-y-3"> <div className="flex items-center justify-between p-3 bg-red-600/20 border border-red-600/30 rounded"> <span className="text-red-300">Medical Emergency Indicators</span> <span className="text-red-400 font-semibold">35%</span> </div> <div className="flex items-center justify-between p-3 bg-orange-600/20 border border-orange-600/30 rounded"> <span className="text-orange-300">Marginal Weather Conditions</span> <span className="text-orange-400 font-semibold">15%</span> </div> <div className="flex items-center justify-between p-3 bg-blue-600/20 border border-blue-600/30 rounded"> <span className="text-gray-700">Route Historical Risk (LHR-JFK)</span> <span className="text-blue-400 font-semibold">12%</span> </div> <div className="flex items-center justify-between p-3 bg-yellow-600/20 border border-yellow-600/30 rounded"> <span className="text-yellow-300">Fuel Status Assessment</span> <span className="text-va-red-primary font-semibold">10%</span> </div> </div> </div> <div className="bg-gray-700/50 rounded-lg p-4"> <h4 className="text-gray-900 font-semibold mb-4 flex items-center gap-2"> <Brain className="h-4 w-4 text-purple-400" /> AI Recommendations </h4> <div className="space-y-3"> <div className="p-3 bg-purple-600/20 border border-purple-600/30 rounded text-sm"> <div className="text-purple-300 font-medium mb-1">Immediate Action</div> <div className="text-gray-900">Alert medical facilities at diversion airports</div> </div> <div className="p-3 bg-blue-600/20 border border-blue-600/30 rounded text-sm"> <div className="text-gray-700 font-medium mb-1">Strategic Planning</div> <div className="text-gray-900">Prepare contingency plans for nearest suitable airports</div> </div> <div className="p-3 bg-green-600/20 border border-green-600/30 rounded text-sm"> <div className="text-green-600 font-medium mb-1">Monitoring</div> <div className="text-gray-900">Monitor weather updates and fuel consumption closely</div> </div> <div className="p-3 bg-yellow-600/20 border border-yellow-600/30 rounded text-sm"> <div className="text-yellow-300 font-medium mb-1">Communication</div> <div className="text-gray-900">Brief crew on potential diversion scenarios</div> </div> </div> </div> </div> {/* Historical Pattern Analysis */} <div className="bg-gray-700/50 rounded-lg p-4"> <h4 className="text-gray-900 font-semibold mb-4 flex items-center gap-2"> <TrendingUp className="h-4 w-4 text-blue-400" /> Historical Pattern Analysis (LHR-JFK Route) </h4> <div className="grid grid-cols-1 md:grid-cols-3 gap-4"> <div className="bg-gray-800/50 rounded p-4 text-center"> <div className="text-2xl font-bold text-gray-900 mb-1">1,247</div> <div className="text-gray-400 text-sm">Similar Routes (Past 30 Days)</div> </div> <div className="bg-gray-800/50 rounded p-4 text-center"> <div className="text-2xl font-bold text-red-400 mb-1">89</div> <div className="text-gray-400 text-sm">Diversions Recorded</div> </div> <div className="bg-gray-800/50 rounded p-4 text-center"> <div className="text-2xl font-bold text-green-600 mb-1">$142K</div> <div className="text-gray-400 text-sm">Average Diversion Cost</div> </div> </div> </div> {/* NOTAM Analysis */} <div className="bg-gray-700/50 rounded-lg p-4"> <h4 className="text-gray-900 font-semibold mb-4 flex items-center gap-2"> <Eye className="h-4 w-4 text-orange-400" /> NOTAM Text Analysis & NLP Processing </h4> <div className="space-y-3"> <div className="bg-gray-800/50 rounded p-3"> <div className="text-orange-400 font-medium text-sm mb-1">High-Risk NOTAM Detected</div> <div className="text-gray-900 text-sm">"Thunderstorm expected at ETA - Low visibility procedures may be implemented"</div> <div className="text-gray-400 text-xs mt-1">NLP Confidence: 87% | Risk Weight: +15%</div> </div> <div className="bg-gray-800/50 rounded p-3"> <div className="text-blue-400 font-medium text-sm mb-1">Route Advisory</div> <div className="text-gray-900 text-sm">"Bird activity reported in terminal area - Exercise caution during approach"</div> <div className="text-gray-400 text-xs mt-1">NLP Confidence: 92% | Risk Weight: +3%</div> </div> </div> </div> {/* Clustering Analysis */} <div className="bg-gray-700/50 rounded-lg p-4"> <h4 className="text-gray-900 font-semibold mb-4 flex items-center gap-2"> <BarChart3 className="h-4 w-4 text-green-600" /> Unsupervised Learning Insights </h4> <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm"> <div className="bg-red-600/20 border border-red-600/30 rounded p-3"> <div className="text-red-400 font-medium mb-2">Cluster 1: Medical Emergencies</div> <div className="text-gray-900">Current flight matches this pattern</div> <div className="text-gray-400 mt-1">Typical diversion rate: 78%</div> </div> <div className="bg-blue-600/20 border border-blue-600/30 rounded p-3"> <div className="text-blue-400 font-medium mb-2">Cluster 2: Weather Events</div> <div className="text-gray-900">Secondary risk factor identified</div> <div className="text-gray-400 mt-1">Typical diversion rate: 45%</div> </div> <div className="bg-green-600/20 border border-green-600/30 rounded p-3"> <div className="text-green-600 font-medium mb-2">Cluster 3: Technical Issues</div> <div className="text-gray-900">No current indicators</div> <div className="text-gray-400 mt-1">Typical diversion rate: 23%</div> </div> </div> </div> {/* Model Performance Metrics */} <div className="bg-gray-700/50 rounded-lg p-4"> <h4 className="text-gray-900 font-semibold mb-4">RandomForest Model Performance</h4> <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm"> <div className="text-center"> <div className="text-xl font-bold text-green-600">94.2%</div> <div className="text-gray-400">Accuracy</div> </div> <div className="text-center"> <div className="text-xl font-bold text-blue-400">91.8%</div> <div className="text-gray-400">Precision</div> </div> <div className="text-center"> <div className="text-xl font-bold text-purple-400">89.3%</div> <div className="text-gray-400">Recall</div> </div> <div className="text-center"> <div className="text-xl font-bold text-orange-400">90.5%</div> <div className="text-gray-400">F1-Score</div> </div> </div> </div> </CardContent> </Card> </TabsContent> <TabsContent value="airfields" className="space-y-4"> <Card className="bg-gray-800/50 border-gray-600"> <CardHeader> <CardTitle className="text-gray-900 flex items-center gap-2"> <Building className="h-5 w-5" /> Available Diversion Airports </CardTitle> </CardHeader> <CardContent> <div className="space-y-4"> {/* Primary Options */} <div className="grid gap-4"> <div className="bg-gray-700/50 rounded-lg p-4 border border-green-500/30"> <div className="flex items-center justify-between mb-3"> <div className="flex items-center gap-3"> <div className="bg-green-600/20 p-2 rounded"> <Building className="h-4 w-4 text-green-600" /> </div> <div> <h3 className="text-gray-900 font-semibold">Gander International (CYQX)</h3> <p className="text-gray-400 text-sm">Newfoundland, Canada</p> </div> </div> <Badge className="bg-green-600 text-gray-900">RECOMMENDED</Badge> </div> <div className="grid grid-cols-4 gap-4 text-sm"> <div> <span className="text-gray-400">Distance:</span> <div className="text-gray-900 font-medium">234 km</div> </div> <div> <span className="text-gray-400">Runway:</span> <div className="text-gray-900 font-medium">03/21 3048m</div> </div> <div> <span className="text-gray-400">Medical:</span> <div className="text-green-600 font-medium">Level 2 Trauma</div> </div> <div> <span className="text-gray-400">Weather:</span> <div className="text-gray-900 font-medium">VIS 10km</div> </div> </div> </div> <div className="bg-gray-700/50 rounded-lg p-4 border border-blue-500/30"> <div className="flex items-center justify-between mb-3"> <div className="flex items-center gap-3"> <div className="bg-blue-600/20 p-2 rounded"> <Building className="h-4 w-4 text-blue-400" /> </div> <div> <h3 className="text-gray-900 font-semibold">Halifax Stanfield (CYHZ)</h3> <p className="text-gray-400 text-sm">Nova Scotia, Canada</p> </div> </div> <Badge className="bg-blue-600 text-gray-900">ALTERNATIVE</Badge> </div> <div className="grid grid-cols-4 gap-4 text-sm"> <div> <span className="text-gray-400">Distance:</span> <div className="text-gray-900 font-medium">312 km</div> </div> <div> <span className="text-gray-400">Runway:</span> <div className="text-gray-900 font-medium">05/23 3200m</div> </div> <div> <span className="text-gray-400">Medical:</span> <div className="text-blue-400 font-medium">Level 1 Trauma</div> </div> <div> <span className="text-gray-400">Weather:</span> <div className="text-gray-900 font-medium">VIS 15km</div> </div> </div> </div> {/* Secondary Options */} <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600"> <h4 className="text-gray-300 font-medium mb-3">Secondary Options</h4> <div className="space-y-2 text-sm"> <div className="flex justify-between items-center py-2 border-b border-gray-600"> <div> <span className="text-gray-900">St. John's (CYYT)</span> <span className="text-gray-400 ml-2">- 425 km</span> </div> <span className="text-va-red-primary">Fuel Limited</span> </div> <div className="flex justify-between items-center py-2 border-b border-gray-600"> <div> <span className="text-gray-900">Sydney (CYQY)</span> <span className="text-gray-400 ml-2">- 287 km</span> </div> <span className="text-gray-400">Available</span> </div> <div className="flex justify-between items-center py-2"> <div> <span className="text-gray-900">Moncton (CYQM)</span> <span className="text-gray-400 ml-2">- 398 km</span> </div> <span className="text-gray-400">Available</span> </div> </div> </div> </div> </div> </CardContent> </Card> </TabsContent> <TabsContent value="analysis" className="space-y-4"> <Card className="bg-gray-800/50 border-gray-600"> <CardHeader> <CardTitle className="text-gray-900 flex items-center gap-2"> <DollarSign className="h-5 w-5" /> Financial Impact Analysis </CardTitle> </CardHeader> <CardContent> <div className="space-y-6"> {/* Cost Comparison Summary */} <div className="bg-gray-700/30 rounded-lg p-4"> <h3 className="text-gray-900 font-semibold mb-4">Diversion Cost Comparison</h3> <div className="grid md:grid-cols-2 gap-4"> <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4"> <div className="flex items-center justify-between mb-2"> <span className="text-green-600 font-medium">Gander (CYQX)</span> <span className="text-green-600 font-bold text-xl">$110,450</span> </div> <div className="text-sm text-gray-300">Cost savings: $12,150</div> </div> <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4"> <div className="flex items-center justify-between mb-2"> <span className="text-gray-700 font-medium">Halifax (CYHZ)</span> <span className="text-blue-400 font-bold text-xl">$122,600</span> </div> <div className="text-sm text-gray-300">Higher medical capabilities</div> </div> </div> </div> {/* Detailed Cost Breakdown */} <div className="grid md:grid-cols-2 gap-6"> <Card className="bg-gray-700/50 border-gray-600"> <CardHeader className="pb-3"> <CardTitle className="text-green-600 text-lg">Gander - Cost Details</CardTitle> </CardHeader> <CardContent> <div className="space-y-3"> <div className="flex justify-between border-b border-gray-600 pb-2"> <span className="text-gray-400">Passenger Care (298 pax)</span> <span className="text-gray-900 font-medium">$89,400</span> </div> <div className="text-xs text-gray-500 -mt-2 mb-2"> • Hotel accommodation: $200/night × 298 = $59,600<br/> • Meals & transport: $100/pax = $29,800 </div> <div className="flex justify-between border-b border-gray-600 pb-2"> <span className="text-gray-400">Crew Costs</span> <span className="text-gray-900 font-medium">$8,200</span> </div> <div className="text-xs text-gray-500 -mt-2 mb-2"> • Flight crew duty extension: $3,200<br/> • Cabin crew overtime: $2,400<br/> • Accommodation: $2,600 </div> <div className="flex justify-between border-b border-gray-600 pb-2"> <span className="text-gray-400">Aircraft Operations</span> <span className="text-gray-900 font-medium">$12,850</span> </div> <div className="text-xs text-gray-500 -mt-2 mb-2"> • Additional fuel: $4,200<br/> • Airport fees: $3,400<br/> • Ground handling: $2,850<br/> • Navigation charges: $2,400 </div> <div className="flex justify-between pt-2 border-t border-green-500"> <span className="text-green-600 font-semibold">Total Cost</span> <span className="text-green-600 font-bold text-lg">$110,450</span> </div> </div> </CardContent> </Card> <Card className="bg-gray-700/50 border-gray-600"> <CardHeader className="pb-3"> <CardTitle className="text-gray-700 text-lg">Halifax - Cost Details</CardTitle> </CardHeader> <CardContent> <div className="space-y-3"> <div className="flex justify-between border-b border-gray-600 pb-2"> <span className="text-gray-400">Passenger Care (298 pax)</span> <span className="text-gray-900 font-medium">$95,200</span> </div> <div className="text-xs text-gray-500 -mt-2 mb-2"> • Hotel accommodation: $220/night × 298 = $65,560<br/> • Meals & transport: $100/pax = $29,640 </div> <div className="flex justify-between border-b border-gray-600 pb-2"> <span className="text-gray-400">Crew Costs</span> <span className="text-gray-900 font-medium">$9,600</span> </div> <div className="text-xs text-gray-500 -mt-2 mb-2"> • Flight crew duty extension: $3,600<br/> • Cabin crew overtime: $2,800<br/> • Accommodation: $3,200 </div> <div className="flex justify-between border-b border-gray-600 pb-2"> <span className="text-gray-400">Aircraft Operations</span> <span className="text-gray-900 font-medium">$17,800</span> </div> <div className="text-xs text-gray-500 -mt-2 mb-2"> • Additional fuel: $6,400<br/> • Airport fees: $4,200<br/> • Ground handling: $3,600<br/> • Navigation charges: $3,600 </div> <div className="flex justify-between pt-2 border-t border-blue-500"> <span className="text-gray-700 font-semibold">Total Cost</span> <span className="text-blue-400 font-bold text-lg">$122,600</span> </div> </div> </CardContent> </Card> </div> {/* Financial Impact Assessment */} <Card className="bg-orange-900/20 border-orange-500/50"> <CardHeader> <CardTitle className="text-orange-300 flex items-center gap-2"> <TrendingUp className="h-5 w-5" /> Financial Impact Assessment </CardTitle> </CardHeader> <CardContent> <div className="grid md:grid-cols-3 gap-4"> <div className="text-center"> <div className="text-orange-400 font-bold text-2xl">$110K</div> <div className="text-gray-400 text-sm">Direct Costs</div> </div> <div className="text-center"> <div className="text-va-red-primary font-bold text-2xl">$85K</div> <div className="text-gray-400 text-sm">Revenue Loss</div> </div> <div className="text-center"> <div className="text-red-400 font-bold text-2xl">$195K</div> <div className="text-gray-400 text-sm">Total Impact</div> </div> </div> <div className="mt-4 text-sm text-gray-300"> <strong>Revenue Impact:</strong> Delayed departure for next rotation (VS127D JFK-LHR) affects 285 passengers with estimated revenue loss of $85,000. </div> </CardContent> </Card> </div> </CardContent> </Card> </TabsContent> <TabsContent value="crew" className="space-y-4"> <Card className="bg-gray-800/50 border-gray-600"> <CardHeader> <CardTitle className="text-gray-900 flex items-center gap-2"> <Users className="h-5 w-5" /> Crew Management & Regulatory Compliance </CardTitle> </CardHeader> <CardContent> <div className="space-y-6"> {/* Flight Crew Status */} <div className="grid md:grid-cols-2 gap-6"> <Card className="bg-gray-700/50 border-gray-600"> <CardHeader className="pb-3"> <CardTitle className="text-gray-700 text-lg flex items-center gap-2"> <Plane className="h-5 w-5" /> Flight Crew </CardTitle> </CardHeader> <CardContent> <div className="space-y-4"> <div className="bg-gray-800/50 rounded-lg p-3"> <div className="flex justify-between items-center mb-2"> <span className="text-gray-900 font-medium">Captain J. Harrison</span> <Badge className="bg-green-600 text-gray-900">LEGAL</Badge> </div> <div className="grid grid-cols-2 gap-2 text-sm"> <div> <span className="text-gray-400">Duty Time:</span> <div className="text-gray-900">8h 47m / 14h</div> </div> <div> <span className="text-gray-400">Flight Time:</span> <div className="text-gray-900">6h 12m / 8h</div> </div> <div> <span className="text-gray-400">Rest Period:</span> <div className="text-green-600">12h ago</div> </div> <div> <span className="text-gray-400">Extension:</span> <div className="text-va-red-primary">+3h available</div> </div> </div> </div> <div className="bg-gray-800/50 rounded-lg p-3"> <div className="flex justify-between items-center mb-2"> <span className="text-gray-900 font-medium">F/O M. Chen</span> <Badge className="bg-green-600 text-gray-900">LEGAL</Badge> </div> <div className="grid grid-cols-2 gap-2 text-sm"> <div> <span className="text-gray-400">Duty Time:</span> <div className="text-gray-900">8h 47m / 14h</div> </div> <div> <span className="text-gray-400">Flight Time:</span> <div className="text-gray-900">6h 12m / 8h</div> </div> <div> <span className="text-gray-400">Rest Period:</span> <div className="text-green-600">12h ago</div> </div> <div> <span className="text-gray-400">Extension:</span> <div className="text-va-red-primary">+3h available</div> </div> </div> </div> </div> </CardContent> </Card> <Card className="bg-gray-700/50 border-gray-600"> <CardHeader className="pb-3"> <CardTitle className="text-purple-300 text-lg flex items-center gap-2"> <Users className="h-5 w-5" /> Cabin Crew </CardTitle> </CardHeader> <CardContent> <div className="space-y-3"> <div className="bg-gray-800/50 rounded-lg p-3"> <div className="flex justify-between items-center mb-2"> <span className="text-gray-900 font-medium">Purser S. Williams</span> <Badge className="bg-yellow-600 text-gray-900">CAUTION</Badge> </div> <div className="text-sm"> <div className="text-gray-400">Duty: <span className="text-gray-900">11h 15m / 14h</span></div> <div className="text-gray-400">Remaining: <span className="text-va-red-primary">2h 45m</span></div> </div> </div> <div className="bg-gray-800/50 rounded-lg p-3"> <div className="text-gray-900 font-medium mb-2">Cabin Crew (8 members)</div> <div className="text-sm"> <div className="flex justify-between"> <span className="text-gray-400">Average Duty:</span> <span className="text-gray-900">10h 52m / 14h</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Status:</span> <span className="text-green-600">6 Legal, 2 Caution</span> </div> </div> </div> <div className="bg-orange-900/30 border border-orange-500/50 rounded-lg p-3"> <div className="text-orange-300 font-medium mb-1">Fatigue Assessment</div> <div className="text-sm text-gray-300"> 2 crew members approaching duty limits. Extension available but fatigue monitoring required. </div> </div> </div> </CardContent> </Card> </div> {/* Regulatory Compliance */} <Card className="bg-blue-900/20 border-blue-500/50"> <CardHeader> <CardTitle className="text-gray-700 flex items-center gap-2"> <Shield className="h-5 w-5" /> Regulatory Compliance Analysis </CardTitle> </CardHeader> <CardContent> <div className="grid md:grid-cols-3 gap-4"> <div className="bg-gray-700/50 rounded-lg p-4"> <div className="text-green-600 font-semibold mb-2">EASA FTL Compliance</div> <div className="space-y-2 text-sm"> <div className="flex justify-between"> <span className="text-gray-400">Daily FDP:</span> <span className="text-green-600">Compliant</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Weekly FDP:</span> <span className="text-green-600">Compliant</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Rest Requirements:</span> <span className="text-green-600">Met</span> </div> </div> </div> <div className="bg-gray-700/50 rounded-lg p-4"> <div className="text-va-red-primary font-semibold mb-2">Diversion Impact</div> <div className="space-y-2 text-sm"> <div className="flex justify-between"> <span className="text-gray-400">Extension Required:</span> <span className="text-va-red-primary">+3h max</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Commander Authority:</span> <span className="text-green-600">Available</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Safety Margin:</span> <span className="text-va-red-primary">Acceptable</span> </div> </div> </div> <div className="bg-gray-700/50 rounded-lg p-4"> <div className="text-blue-400 font-semibold mb-2">Recovery Plan</div> <div className="space-y-2 text-sm"> <div className="flex justify-between"> <span className="text-gray-400">Positioning Crew:</span> <span className="text-blue-400">Required</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Next Duty:</span> <span className="text-gray-900">36h rest</span> </div> <div className="flex justify-between"> <span className="text-gray-400">Rotation Impact:</span> <span className="text-va-red-primary">Manageable</span> </div> </div> </div> </div> </CardContent> </Card> {/* Crew Scheduling Impact */} <Card className="bg-red-900/20 border-red-500/50"> <CardHeader> <CardTitle className="text-red-300 flex items-center gap-2"> <Clock className="h-5 w-5" /> Scheduling & Rotation Impact </CardTitle> </CardHeader> <CardContent> <div className="space-y-4"> <div className="grid md:grid-cols-2 gap-4"> <div> <h4 className="text-gray-900 font-medium mb-2">Immediate Impact</h4> <ul className="space-y-1 text-sm text-gray-300"> <li>• Current crew can complete diversion legally</li> <li>• Commander discretionary extension available (+3h)</li> <li>• Fatigue risk assessment: LOW to MODERATE</li> <li>• Medical emergency justifies extension</li> </ul> </div> <div> <h4 className="text-gray-900 font-medium mb-2">Recovery Requirements</h4> <ul className="space-y-1 text-sm text-gray-300"> <li>• Positioning crew needed for aircraft recovery</li> <li>• Current crew: minimum 12h rest before next duty</li> <li>• Next rotation (VS127D): requires standby crew</li> <li>• Total crew cost impact: $8,200 - $9,600</li> </ul> </div> </div> <div className="bg-gray-700/30 rounded-lg p-3"> <div className="text-orange-300 font-medium mb-2">Recommendation</div> <div className="text-gray-300 text-sm"> <strong>Proceed with diversion.</strong> Current crew is legal for both Gander and Halifax options. Commander discretionary extension provides adequate safety margin. Positioning crew arrangements should be initiated immediately for aircraft recovery. </div> </div> </div> </CardContent> </Card> </div> </CardContent> </Card> </TabsContent> <TabsContent value="reports" className="space-y-4"> <Card className="bg-gray-800/50 border-gray-600"> <CardHeader> <CardTitle className="text-gray-900 flex items-center gap-2"> <FileText className="h-5 w-5" /> Operational Reports & Documentation </CardTitle> </CardHeader> <CardContent> <div className="space-y-6"> {/* Executive Summary Report */} <Card className="bg-blue-900/20 border-blue-500/50"> <CardHeader className="pb-3"> <CardTitle className="text-gray-700 flex items-center justify-between"> <div className="flex items-center gap-2"> <BarChart3 className="h-5 w-5" /> Executive Summary Report </div> <Button className="bg-blue-600 hover:bg-blue-700 text-gray-900 text-sm px-3 py-1"> Generate PDF </Button> </CardTitle> </CardHeader> <CardContent> <div className="space-y-4"> <div className="bg-gray-700/50 rounded-lg p-4"> <h4 className="text-gray-900 font-semibold mb-3">VIR127C Medical Emergency - Decision Summary</h4> <div className="grid md:grid-cols-2 gap-4 text-sm"> <div> <div className="text-gray-400">Incident Time:</div> <div className="text-gray-900">2024-06-15 21:47 UTC</div> </div> <div> <div className="text-gray-400">Decision Time:</div> <div className="text-gray-900">2024-06-15 21:52 UTC</div> </div> <div> <div className="text-gray-400">Recommended Action:</div> <div className="text-green-600">Divert to Gander (CYQX)</div> </div> <div> <div className="text-gray-400">Total Cost Impact:</div> <div className="text-gray-900">$195,000</div> </div> </div> </div> <div className="grid md:grid-cols-3 gap-4"> <div className="bg-gray-700/30 rounded-lg p-3"> <div className="text-green-600 font-medium">Safety Rating</div> <div className="text-gray-900 text-xl font-bold">EXCELLENT</div> <div className="text-gray-400 text-sm">All safety protocols followed</div> </div> <div className="bg-gray-700/30 rounded-lg p-3"> <div className="text-blue-400 font-medium">Regulatory Compliance</div> <div className="text-gray-900 text-xl font-bold">FULL</div> <div className="text-gray-400 text-sm">EASA FTL compliant</div> </div> <div className="bg-gray-700/30 rounded-lg p-3"> <div className="text-va-red-primary font-medium">Cost Efficiency</div> <div className="text-gray-900 text-xl font-bold">OPTIMAL</div> <div className="text-gray-400 text-sm">$12K savings vs alternative</div> </div> </div> </div> </CardContent> </Card> {/* Regulatory Documentation */} <div className="grid md:grid-cols-2 gap-6"> <Card className="bg-gray-700/50 border-gray-600"> <CardHeader className="pb-3"> <CardTitle className="text-orange-300 flex items-center justify-between text-lg"> <div className="flex items-center gap-2"> <Shield className="h-5 w-5" /> Regulatory Reports </div> </CardTitle> </CardHeader> <CardContent> <div className="space-y-3"> <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"> <div> <div className="text-gray-900 font-medium">ASR (Air Safety Report)</div> <div className="text-gray-400 text-sm">Medical emergency notification</div> </div> <div className="flex gap-2"> <Badge className="bg-green-600 text-gray-900">SUBMITTED</Badge> <Button className="bg-blue-600 hover:bg-blue-700 text-gray-900 text-xs px-2 py-1"> View </Button> </div> </div> <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"> <div> <div className="text-gray-900 font-medium">MOR (Mandatory Occurrence Report)</div> <div className="text-gray-400 text-sm">EASA regulatory filing</div> </div> <div className="flex gap-2"> <Badge className="bg-yellow-600 text-gray-900">PENDING</Badge> <Button className="bg-orange-600 hover:bg-orange-700 text-gray-900 text-xs px-2 py-1"> Generate </Button> </div> </div> <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"> <div> <div className="text-gray-900 font-medium">CAA Notification</div> <div className="text-gray-400 text-sm">UK Civil Aviation Authority</div> </div> <div className="flex gap-2"> <Badge className="bg-green-600 text-gray-900">SENT</Badge> <Button className="bg-blue-600 hover:bg-blue-700 text-gray-900 text-xs px-2 py-1"> View </Button> </div> </div> <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"> <div> <div className="text-gray-900 font-medium">FTL Extension Report</div> <div className="text-gray-400 text-sm">Crew duty time extension</div> </div> <div className="flex gap-2"> <Badge className="bg-blue-600 text-gray-900">AUTO-GEN</Badge> <Button className="bg-blue-600 hover:bg-blue-700 text-gray-900 text-xs px-2 py-1"> View </Button> </div> </div> </div> </CardContent> </Card> <Card className="bg-gray-700/50 border-gray-600"> <CardHeader className="pb-3"> <CardTitle className="text-purple-300 flex items-center text-lg"> <div className="flex items-center gap-2"> <TrendingUp className="h-5 w-5" /> Operational Reports </div> </CardTitle> </CardHeader> <CardContent> <div className="space-y-3"> <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"> <div> <div className="text-gray-900 font-medium">Fuel Analysis Report</div> <div className="text-gray-400 text-sm">Consumption & efficiency metrics</div> </div> <div className="flex gap-2"> <Badge className="bg-green-600 text-gray-900">READY</Badge> <Button className="bg-green-600 hover:bg-green-700 text-gray-900 text-xs px-2 py-1"> Download </Button> </div> </div> <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"> <div> <div className="text-gray-900 font-medium">Cost Impact Analysis</div> <div className="text-gray-400 text-sm">Financial breakdown & variance</div> </div> <div className="flex gap-2"> <Badge className="bg-green-600 text-gray-900">READY</Badge> <Button className="bg-green-600 hover:bg-green-700 text-gray-900 text-xs px-2 py-1"> Download </Button> </div> </div> <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"> <div> <div className="text-gray-900 font-medium">Passenger Impact Report</div> <div className="text-gray-400 text-sm">Care costs & compensation</div> </div> <div className="flex gap-2"> <Badge className="bg-blue-600 text-gray-900">PROCESSING</Badge> <Button className="bg-gray-600 hover:bg-gray-700 text-gray-900 text-xs px-2 py-1"> Queue </Button> </div> </div> <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"> <div> <div className="text-gray-900 font-medium">Network Impact Assessment</div> <div className="text-gray-400 text-sm">Schedule disruption analysis</div> </div> <div className="flex gap-2"> <Badge className="bg-yellow-600 text-gray-900">PENDING</Badge> <Button className="bg-yellow-600 hover:bg-yellow-700 text-gray-900 text-xs px-2 py-1"> Generate </Button> </div> </div> </div> </CardContent> </Card> </div> {/* Decision Timeline & Audit Trail */} <Card className="bg-green-900/20 border-green-500/50"> <CardHeader> <CardTitle className="text-green-600 flex items-center gap-2"> <Clock className="h-5 w-5" /> Decision Timeline & Audit Trail </CardTitle> </CardHeader> <CardContent> <div className="space-y-3"> <div className="flex items-center gap-4 p-3 bg-gray-700/30 rounded-lg"> <div className="w-2 h-2 bg-red-500 rounded-full"></div> <div className="flex-1"> <div className="text-gray-900 font-medium">21:47 UTC - Medical Emergency Declared</div> <div className="text-gray-400 text-sm">Passenger medical incident reported by cabin crew</div> </div> <div className="text-gray-400 text-sm">Flight Crew</div> </div> <div className="flex items-center gap-4 p-3 bg-gray-700/30 rounded-lg"> <div className="w-2 h-2 bg-yellow-500 rounded-full"></div> <div className="flex-1"> <div className="text-gray-900 font-medium">21:48 UTC - AINO System Activated</div> <div className="text-gray-400 text-sm">Automated analysis initiated, diversion options calculated</div> </div> <div className="text-gray-400 text-sm">AI System</div> </div> <div className="flex items-center gap-4 p-3 bg-gray-700/30 rounded-lg"> <div className="w-2 h-2 bg-blue-500 rounded-full"></div> <div className="flex-1"> <div className="text-gray-900 font-medium">21:49 UTC - Operations Center Notified</div> <div className="text-gray-400 text-sm">Watch manager alerted, coordination initiated</div> </div> <div className="text-gray-400 text-sm">OCC London</div> </div> <div className="flex items-center gap-4 p-3 bg-gray-700/30 rounded-lg"> <div className="w-2 h-2 bg-orange-500 rounded-full"></div> <div className="flex-1"> <div className="text-gray-900 font-medium">21:51 UTC - ATC Coordination</div> <div className="text-gray-400 text-sm">Gander Control contacted, diversion clearance requested</div> </div> <div className="text-gray-400 text-sm">Flight Crew</div> </div> <div className="flex items-center gap-4 p-3 bg-gray-700/30 rounded-lg"> <div className="w-2 h-2 bg-green-500 rounded-full"></div> <div className="flex-1"> <div className="text-gray-900 font-medium">21:52 UTC - Decision Confirmed</div> <div className="text-gray-400 text-sm">Diversion to Gander approved by Captain and Operations</div> </div> <div className="text-gray-400 text-sm">Joint Decision</div> </div> <div className="flex items-center gap-4 p-3 bg-gray-700/30 rounded-lg"> <div className="w-2 h-2 bg-purple-500 rounded-full"></div> <div className="flex-1"> <div className="text-gray-900 font-medium">21:53 UTC - Ground Services Activated</div> <div className="text-gray-400 text-sm">Medical, passenger care, and recovery teams mobilized</div> </div> <div className="text-gray-400 text-sm">Ground Ops</div> </div> </div> <div className="mt-4 p-3 bg-green-900/30 border border-green-500/50 rounded-lg"> <div className="text-green-600 font-medium mb-2">Audit Compliance</div> <div className="text-sm text-gray-300"> Complete decision audit trail captured. All regulatory requirements met for documentation, crew duty time extensions, and passenger care provisions. Total decision time: 5 minutes from emergency declaration to action confirmation. </div> </div> </CardContent> </Card> {/* Report Generation Actions */} <Card className="bg-gray-700/50 border-gray-600"> <CardHeader> <CardTitle className="text-gray-900 flex items-center gap-2"> <FileText className="h-5 w-5" /> Generate Custom Reports </CardTitle> </CardHeader> <CardContent> <div className="grid md:grid-cols-3 gap-4"> <Button className="bg-blue-600 hover:bg-blue-700 text-gray-900 p-4 h-auto flex flex-col items-center gap-2"> <FileText className="h-6 w-6" /> <span>Executive Summary</span> <span className="text-xs opacity-75">PDF | 2 pages</span> </Button> <Button className="bg-green-600 hover:bg-green-700 text-gray-900 p-4 h-auto flex flex-col items-center gap-2"> <BarChart3 className="h-6 w-6" /> <span>Financial Analysis</span> <span className="text-xs opacity-75">Excel | Charts</span> </Button> <Button className="bg-purple-600 hover:bg-purple-700 text-gray-900 p-4 h-auto flex flex-col items-center gap-2"> <Shield className="h-6 w-6" /> <span>Compliance Report</span> <span className="text-xs opacity-75">PDF | Regulatory</span> </Button> </div> </CardContent> </Card> </div> </CardContent> </Card> </TabsContent> </Tabs> </div> )} </div> </div> </div> </div> ); }
+import React, { useState, useEffect } from 'react';
+import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap, Shield, Wind, Eye, Fuel, Building, Wrench, FileText, BarChart3, CheckCircle, Target, Activity } from 'lucide-react';
+import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
+import { useEnhancedFlightData, useAviationData } from '../hooks/useAviationData';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+
+interface EnhancedFlightData {
+  callsign: string;
+  aircraft: string;
+  route: string;
+  currentPosition: { lat: number; lon: number };
+  altitude: number;
+  speed: number;
+  fuelRemaining: number;
+  fuelBurn: number;
+  maximumRange: number;
+  currentWeight: number;
+  passengers: number;
+  eta: string;
+}
+
+const ActiveFlightsList = () => {
+  const { selectedFlight, setSelectedFlight } = useSelectedFlight();
+  
+  const fallbackFlights = [
+    { 
+      callsign: 'VIR127C', 
+      aircraft: 'A350-1000', 
+      route: 'LHR-JFK',
+      status: 'Featured',
+      emergency: 'Medical Emergency',
+      position: '45.18°N, 69.17°W'
+    },
+    { 
+      callsign: 'VIR43', 
+      aircraft: 'A330-300', 
+      route: 'LGW-MCO',
+      status: 'Active',
+      position: '40.2°N, 45.8°W'
+    },
+    { 
+      callsign: 'VIR25F', 
+      aircraft: '787-9', 
+      route: 'LHR-LAX',
+      status: 'Active',
+      position: '51.4°N, 12.2°W'
+    },
+    { 
+      callsign: 'VIR155', 
+      aircraft: 'A350-900', 
+      route: 'MAN-ATL',
+      status: 'Active',
+      position: '49.8°N, 25.1°W'
+    },
+    { 
+      callsign: 'VIR9', 
+      aircraft: '787-9', 
+      route: 'LHR-BOS',
+      status: 'Active',
+      position: '52.1°N, 18.7°W'
+    }
+  ];
+
+  return (
+    <Card className="bg-gray-800/50 border-gray-600 h-full">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-white text-lg flex items-center gap-2">
+          <Plane className="h-5 w-5 text-blue-400" />
+          Active Flights
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {fallbackFlights.map((flight) => (
+          <div
+            key={flight.callsign}
+            onClick={() => setSelectedFlight(flight.callsign)}
+            className={`p-3 rounded-lg cursor-pointer transition-all border ${
+              selectedFlight?.callsign === flight.callsign
+                ? 'bg-blue-600/30 border-blue-400 shadow-lg'
+                : 'bg-gray-700/50 border-gray-600 hover:bg-gray-700/70'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white font-semibold">{flight.callsign}</span>
+              {flight.status === 'Featured' && (
+                <Badge className="bg-red-600 text-white text-xs">Featured</Badge>
+              )}
+            </div>
+            <div className="text-sm text-gray-400">{flight.aircraft}</div>
+            <div className="text-sm text-gray-400">{flight.route}</div>
+            <div className="text-xs text-gray-500 mt-1">{flight.position}</div>
+            {flight.emergency && (
+              <div className="text-xs text-red-400 mt-1">{flight.emergency}</div>
+            )}
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
+export default function EnhancedOperationalDecisionEngine() {
+  const { selectedFlight } = useSelectedFlight();
+  const { enhancedData, loading, error } = useEnhancedFlightData(selectedFlight?.callsign);
+  const aviationData = useAviationData();
+  
+  const getFlightData = (callsign: string) => {
+    const flightConfigs = {
+      'VIR127C': { aircraft: 'A350-1000', route: 'LHR-JFK', passengers: 298, fuelRemaining: 42000 },
+      'VIR43': { aircraft: 'A330-300', route: 'LGW-MCO', passengers: 285, fuelRemaining: 38000 },
+      'VIR25F': { aircraft: '787-9', route: 'LHR-LAX', passengers: 258, fuelRemaining: 45000 },
+      'VIR155': { aircraft: 'A350-900', route: 'MAN-ATL', passengers: 315, fuelRemaining: 48000 },
+      'VIR9': { aircraft: '787-9', route: 'LHR-BOS', passengers: 214, fuelRemaining: 36000 }
+    };
+    return flightConfigs[callsign as keyof typeof flightConfigs] || flightConfigs['VIR127C'];
+  };
+
+  const flightData: EnhancedFlightData | null = selectedFlight ? {
+    callsign: selectedFlight.callsign,
+    aircraft: getFlightData(selectedFlight.callsign).aircraft,
+    route: getFlightData(selectedFlight.callsign).route,
+    currentPosition: { lat: selectedFlight.latitude, lon: selectedFlight.longitude },
+    altitude: selectedFlight.altitude,
+    speed: selectedFlight.velocity,
+    fuelRemaining: getFlightData(selectedFlight.callsign).fuelRemaining,
+    fuelBurn: 2400,
+    maximumRange: 8000,
+    currentWeight: 280000,
+    passengers: getFlightData(selectedFlight.callsign).passengers,
+    eta: '14:30 UTC'
+  } : null;
+
+  // Calculate operating costs when flight data is available
+  React.useEffect(() => {
+    if (flightData) {
+      const routeDistance = getRouteDistance(flightData.route);
+      aviationData.fetchOperatingCosts(flightData.aircraft, routeDistance, flightData.passengers);
+    }
+  }, [flightData?.callsign, flightData?.aircraft, aviationData]);
+
+  // Helper function to get route distances (nautical miles)
+  const getRouteDistance = (route: string): number => {
+    const distances = {
+      'LHR-JFK': 3459,    // London Heathrow to JFK
+      'LGW-MCO': 4277,    // London Gatwick to Orlando
+      'LHR-LAX': 5446,    // London Heathrow to LAX
+      'MAN-ATL': 4198,    // Manchester to Atlanta
+      'LHR-BOS': 3255,    // London Heathrow to Boston
+      'LHR-YYZ': 3544,    // London Heathrow to Toronto
+      'LGW-JFK': 3470     // London Gatwick to JFK
+    };
+    return distances[route as keyof typeof distances] || 3500;
+  };
+
+  // Calculate diversion costs using authentic Virgin Atlantic operational data
+  const calculateDiversionCosts = (aircraft: string, delayHours: number, passengers: number) => {
+    const operatingCosts = aviationData.operatingCosts;
+    if (!operatingCosts) {
+      return {
+        operationalCost: delayHours * 7500,
+        fuelCost: 12000,
+        passengerCompensation: passengers * 320,
+        hotelAccommodation: passengers * 180,
+        crewCosts: 9600,
+        handlingFees: 3500,
+        totalCost: 0
+      };
+    }
+
+    const operationalCost = delayHours * operatingCosts.breakdown.hourlyOperatingCost;
+    const fuelCost = operatingCosts.fuelCost * 1.15; // Additional fuel for diversion
+    const passengerCompensation = passengers * 320; // EU261 compensation
+    const hotelAccommodation = passengers * 180; // Overnight accommodation
+    const crewCosts = 9600; // Crew duty time and accommodation
+    const handlingFees = 3500; // Airport handling at diversion airport
+
+    return {
+      operationalCost: Math.round(operationalCost),
+      fuelCost: Math.round(fuelCost),
+      passengerCompensation,
+      hotelAccommodation,
+      crewCosts,
+      handlingFees,
+      totalCost: Math.round(operationalCost + fuelCost + passengerCompensation + hotelAccommodation + crewCosts + handlingFees)
+    };
+  };
+
+  return (
+    <div className="h-full bg-gradient-to-br from-blue-900/20 via-gray-900 to-gray-800 text-white overflow-hidden">
+      <div className="flex h-full gap-4 p-4">
+        {/* Left Sidebar */}
+        <div className="w-64 flex-shrink-0 overflow-y-auto">
+          <ActiveFlightsList />
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="space-y-6 pb-6">
+            {!flightData ? (
+            <Card className="bg-gray-800/50 border-gray-600">
+              <CardContent className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <Plane className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-white mb-2">Select a Flight</h3>
+                  <p className="text-gray-400">Choose a flight from the sidebar to begin operational decision analysis</p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-6">
+              {/* Flight Overview Card */}
+              <Card className="bg-gray-900/80 border-gray-500 shadow-lg">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-white flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Brain className="h-6 w-6 text-blue-400" />
+                      <span className="text-xl">Flight {flightData?.callsign}</span>
+                    </div>
+                    {flightData?.callsign === 'VIR127C' && (
+                      <Badge className="bg-red-600 text-white px-3 py-1 animate-pulse">MEDICAL EMERGENCY</Badge>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-4 gap-6">
+                    <div className="bg-gray-800 rounded-lg p-3">
+                      <div className="text-gray-400 text-xs uppercase tracking-wide">Aircraft</div>
+                      <div className="text-white font-semibold text-lg">{flightData?.aircraft}</div>
+                    </div>
+                    <div className="bg-gray-800 rounded-lg p-3">
+                      <div className="text-gray-400 text-xs uppercase tracking-wide">Route</div>
+                      <div className="text-white font-semibold text-lg">{flightData?.route}</div>
+                    </div>
+                    <div className="bg-gray-800 rounded-lg p-3">
+                      <div className="text-gray-400 text-xs uppercase tracking-wide">Fuel Remaining</div>
+                      <div className="text-white font-semibold text-lg">{flightData?.fuelRemaining.toLocaleString()} kg</div>
+                    </div>
+                    <div className="bg-gray-800 rounded-lg p-3">
+                      <div className="text-gray-400 text-xs uppercase tracking-wide">Passengers</div>
+                      <div className="text-white font-semibold text-lg">{flightData?.passengers}</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Tabs defaultValue="simulation" className="space-y-6">
+                <TabsList className="grid w-full grid-cols-7 bg-gray-800/50 p-1 rounded-lg">
+                  <TabsTrigger value="simulation" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                    <Gauge className="h-4 w-4 mr-2" />
+                    Diversion
+                  </TabsTrigger>
+                  <TabsTrigger value="data" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                    <Brain className="h-4 w-4 mr-2" />
+                    Data
+                  </TabsTrigger>
+                  <TabsTrigger value="ml-prediction" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                    <Target className="h-4 w-4 mr-2" />
+                    ML Risk
+                  </TabsTrigger>
+                  <TabsTrigger value="airfields" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                    <Building className="h-4 w-4 mr-2" />
+                    Airfields
+                  </TabsTrigger>
+                  <TabsTrigger value="analysis" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                    <DollarSign className="h-4 w-4 mr-2" />
+                    Costs
+                  </TabsTrigger>
+                  <TabsTrigger value="crew" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                    <Users className="h-4 w-4 mr-2" />
+                    Crew
+                  </TabsTrigger>
+                  <TabsTrigger value="reports" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Reports
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="simulation" className="space-y-4">
+                  {/* VIR127C Specific Diversion Comparison */}
+                  {flightData?.callsign === 'VIR127C' && (
+                    <Card className="bg-red-900/20 border-red-500 shadow-lg mb-6">
+                      <CardHeader className="pb-4">
+                        <CardTitle className="text-red-300 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <AlertTriangle className="h-6 w-6" />
+                            <span className="text-lg">Medical Emergency - Diversion Analysis</span>
+                          </div>
+                          <Badge className="bg-red-600 text-white animate-pulse">URGENT</Badge>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="bg-gray-800/50 rounded-lg p-4 mb-6 border border-gray-600">
+                          <div className="grid grid-cols-5 gap-4 text-center">
+                            <div>
+                              <div className="text-gray-400 text-xs uppercase">Position</div>
+                              <div className="text-white font-semibold">45.18°N, 69.17°W</div>
+                            </div>
+                            <div>
+                              <div className="text-gray-400 text-xs uppercase">Altitude</div>
+                              <div className="text-white font-semibold">40,000ft</div>
+                            </div>
+                            <div>
+                              <div className="text-gray-400 text-xs uppercase">Speed</div>
+                              <div className="text-white font-semibold">457kt</div>
+                            </div>
+                            <div>
+                              <div className="text-gray-400 text-xs uppercase">Fuel</div>
+                              <div className="text-white font-semibold">42,000kg</div>
+                            </div>
+                            <div>
+                              <div className="text-gray-400 text-xs uppercase">Crew Duty</div>
+                              <div className="text-yellow-400 font-semibold">187min left</div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-6">
+                          {/* Gander Option */}
+                          <div className="bg-gray-800/60 border border-gray-500 rounded-lg p-5 shadow-md">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="bg-yellow-600/20 p-2 rounded-lg">
+                                  <MapPin className="h-5 w-5 text-yellow-400" />
+                                </div>
+                                <div>
+                                  <h3 className="text-white font-semibold text-lg">Gander</h3>
+                                  <p className="text-gray-400 text-sm">CYQX</p>
+                                </div>
+                              </div>
+                              <Badge className="bg-yellow-600 text-white px-3 py-1 text-sm">Score: 78</Badge>
+                            </div>
+                            
+                            <div className="grid grid-cols-3 gap-4 mb-4">
+                              <div className="text-center bg-gray-700/50 p-3 rounded">
+                                <div className="text-gray-400 text-xs uppercase">Distance</div>
+                                <div className="text-white font-semibold">234 km</div>
+                              </div>
+                              <div className="text-center bg-gray-700/50 p-3 rounded">
+                                <div className="text-gray-400 text-xs uppercase">Flight Time</div>
+                                <div className="text-white font-semibold">17 min</div>
+                              </div>
+                              <div className="text-center bg-gray-700/50 p-3 rounded">
+                                <div className="text-gray-400 text-xs uppercase">Fuel Required</div>
+                                <div className="text-white font-semibold">1,850 kg</div>
+                              </div>
+                            </div>
+                            
+                            <div className="bg-gray-700/30 rounded-lg p-4">
+                              <div className="flex items-center gap-2 mb-3">
+                                <DollarSign className="h-4 w-4 text-green-400" />
+                                <span className="text-gray-300 font-medium">Cost Analysis</span>
+                              </div>
+                              <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Passenger Care:</span>
+                                  <span className="text-white font-medium">$89,400</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Crew Costs:</span>
+                                  <span className="text-white font-medium">$8,200</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-gray-400">Aircraft Costs:</span>
+                                  <span className="text-white font-medium">$12,850</span>
+                                </div>
+                                <div className="border-t border-gray-600 pt-2 mt-3">
+                                  <div className="flex justify-between text-lg font-semibold">
+                                    <span className="text-green-400">Total Cost:</span>
+                                    <span className="text-green-400">$110,450</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Halifax Option */}
+                          <div className="bg-gray-800/60 border border-gray-500 rounded-lg p-5 shadow-md">
+                            <div className="flex items-center justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="bg-blue-600/20 p-2 rounded-lg">
+                                  <MapPin className="h-5 w-5 text-blue-400" />
+                                </div>
+                                <div>
+                                  <h3 className="text-white font-semibold text-lg">Halifax</h3>
+                                  <p className="text-gray-400 text-sm">CYHZ</p>
+                                </div>
+                              </div>
+                              <Badge className="bg-blue-600 text-white px-3 py-1 text-sm">Score: 85</Badge>
+                            </div>
+                            
+                            <div className="grid grid-cols-3 gap-4 mb-4">
+                              <div className="text-center bg-gray-700/50 p-3 rounded">
+                                <div className="text-gray-400 text-xs uppercase">Distance</div>
+                                <div className="text-white font-semibold">312 km</div>
+                              </div>
+                              <div className="text-center bg-gray-700/50 p-3 rounded">
+                                <div className="text-gray-400 text-xs uppercase">Flight Time</div>
+                                <div className="text-white font-semibold">23 min</div>
+                              </div>
+                              <div className="text-center bg-gray-700/50 p-3 rounded">
+                                <div className="text-gray-400 text-xs uppercase">Fuel Required</div>
+                                <div className="text-white font-semibold">2,400 kg</div>
+                              </div>
+                            </div>
+                            
+                            <div className="bg-gray-700/30 rounded-lg p-4">
+                              <div className="flex items-center gap-2 mb-3">
+                                <DollarSign className="h-4 w-4 text-blue-400" />
+                                <span className="text-gray-300 font-medium">Cost Analysis</span>
+                              </div>
+                              <div className="space-y-2 text-sm">
+                                {(() => {
+                                  const diversionCosts = calculateDiversionCosts(flightData?.aircraft || 'A350-1000', 2.5, flightData?.passengers || 298);
+                                  return (
+                                    <>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Passenger Care:</span>
+                                        <span className="text-white font-medium">${diversionCosts.passengerCompensation.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Hotel Accommodation:</span>
+                                        <span className="text-white font-medium">${diversionCosts.hotelAccommodation.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Crew Costs:</span>
+                                        <span className="text-white font-medium">${diversionCosts.crewCosts.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Aircraft Operating:</span>
+                                        <span className="text-white font-medium">${diversionCosts.operationalCost.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Additional Fuel:</span>
+                                        <span className="text-white font-medium">${diversionCosts.fuelCost.toLocaleString()}</span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        <span className="text-gray-400">Handling Fees:</span>
+                                        <span className="text-white font-medium">${diversionCosts.handlingFees.toLocaleString()}</span>
+                                      </div>
+                                      <div className="border-t border-gray-600 pt-2 mt-3">
+                                        <div className="flex justify-between text-lg font-semibold">
+                                          <span className="text-blue-400">Total Cost:</span>
+                                          <span className="text-blue-400">${diversionCosts.totalCost.toLocaleString()}</span>
+                                        </div>
+                                      </div>
+                                    </>
+                                  );
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-6 bg-green-900/20 border border-green-500 rounded-lg p-4">
+                          <div className="flex items-center gap-3 mb-3">
+                            <CheckCircle className="h-5 w-5 text-green-400" />
+                            <span className="text-green-300 font-semibold">AI Recommendation</span>
+                          </div>
+                          <p className="text-gray-300 text-sm">
+                            <strong className="text-green-400">Recommend Gander (CYQX)</strong> - Lower cost option with adequate medical facilities. 
+                            Save $12,150 compared to Halifax while maintaining safety standards.
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Generic Diversion Analysis for other flights */}
+                  {flightData?.callsign !== 'VIR127C' && (
+                    <Card className="bg-gray-800/50 border-gray-600">
+                      <CardHeader>
+                        <CardTitle className="text-white flex items-center gap-2">
+                          <Gauge className="h-5 w-5" />
+                          Diversion Analysis
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-gray-300">
+                          Diversion analysis and operational recommendations for flight {flightData?.callsign}.
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="data" className="space-y-4">
+                  <Card className="bg-gray-800/50 border-gray-600">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <Brain className="h-5 w-5" />
+                        Enhanced Aviation Data
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Fuel Analysis */}
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                            <Gauge className="h-4 w-4 text-blue-400" />
+                            Fuel Performance Analysis
+                          </h3>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Current Burn Rate:</span>
+                              <span className="text-white font-medium">
+                                {enhancedData.fuelAnalysis ? `${(enhancedData.fuelAnalysis.fuelBurnKg / (enhancedData.fuelAnalysis.distanceNm / 500)).toFixed(0)} kg/hr` : '2,400 kg/hr'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Route Fuel Estimate:</span>
+                              <span className="text-white font-medium">
+                                {enhancedData.fuelAnalysis ? `${enhancedData.fuelAnalysis.fuelBurnKg.toLocaleString()} kg` : '15,600 kg'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Reserve Fuel:</span>
+                              <span className="text-green-400 font-medium">
+                                {flightData ? `${(flightData.fuelRemaining - (enhancedData.fuelAnalysis?.fuelBurnKg || 15600)).toLocaleString()} kg` : '6,800 kg'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Fuel Cost (Est):</span>
+                              <span className="text-white font-medium">
+                                {enhancedData.fuelAnalysis ? `$${enhancedData.fuelAnalysis.estimatedCost.toLocaleString()}` : 
+                                 (aviationData.operatingCosts ? `$${aviationData.operatingCosts.fuelCost.toLocaleString()}` : '$39,000')}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Operating Cost/Hour:</span>
+                              <span className="text-white font-medium">
+                                {aviationData.operatingCosts ? `$${aviationData.operatingCosts.breakdown.hourlyOperatingCost.toLocaleString()}` : '$8,420'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Total Operating Cost:</span>
+                              <span className="text-blue-400 font-medium">
+                                {aviationData.operatingCosts ? `$${aviationData.operatingCosts.totalOperatingCost.toLocaleString()}` : '$58,940'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Weather Conditions */}
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                            <Wind className="h-4 w-4 text-blue-400" />
+                            Weather Conditions
+                          </h3>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Visibility:</span>
+                              <span className="text-white font-medium">
+                                {enhancedData.weatherData ? `${enhancedData.weatherData.visibility.toFixed(1)} km` : '12 km'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Wind Speed:</span>
+                              <span className="text-white font-medium">
+                                {enhancedData.weatherData ? `${enhancedData.weatherData.windSpeed} kt` : '15 kt'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Temperature:</span>
+                              <span className="text-white font-medium">
+                                {enhancedData.weatherData ? `${enhancedData.weatherData.temperature}°C` : '-8°C'}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Conditions:</span>
+                              <span className="text-green-400 font-medium">
+                                {enhancedData.weatherData?.conditions || 'Clear'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Aircraft Performance */}
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                            <Plane className="h-4 w-4 text-blue-400" />
+                            Aircraft Performance
+                          </h3>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Max Range:</span>
+                              <span className="text-white font-medium">8,000 nm</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Service Ceiling:</span>
+                              <span className="text-white font-medium">43,000 ft</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Current Weight:</span>
+                              <span className="text-white font-medium">280,000 kg</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Load Factor:</span>
+                              <span className="text-green-400 font-medium">85%</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Route Analytics */}
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-blue-400" />
+                            Route Analytics
+                          </h3>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Total Distance:</span>
+                              <span className="text-white font-medium">3,459 nm</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Completed:</span>
+                              <span className="text-white font-medium">1,847 nm (53%)</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">Remaining:</span>
+                              <span className="text-white font-medium">1,612 nm</span>
+                            </div>
+                            <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
+                              <span className="text-gray-300">ETA Original:</span>
+                              <span className="text-white font-medium">14:30 UTC</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Enhanced Diversion Analysis */}
+                      <div className="mt-6 bg-gray-700/30 rounded-lg p-4">
+                        <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                          <BarChart3 className="h-4 w-4 text-purple-400" />
+                          Diversion Cost Breakdown
+                        </h3>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                          <div className="bg-red-600/20 border border-red-600/30 rounded p-3">
+                            <div className="text-red-400 font-medium mb-1">Operational Cost</div>
+                            <div className="text-white font-semibold">$24,240</div>
+                            <div className="text-gray-400 text-xs">4hr delay @ $101/min</div>
+                          </div>
+                          <div className="bg-orange-600/20 border border-orange-600/30 rounded p-3">
+                            <div className="text-orange-400 font-medium mb-1">Passenger Care</div>
+                            <div className="text-white font-semibold">$89,400</div>
+                            <div className="text-gray-400 text-xs">298 pax @ $300 comp</div>
+                          </div>
+                          <div className="bg-blue-600/20 border border-blue-600/30 rounded p-3">
+                            <div className="text-blue-400 font-medium mb-1">Crew Costs</div>
+                            <div className="text-white font-semibold">$1,200</div>
+                            <div className="text-gray-400 text-xs">6 crew @ $200 each</div>
+                          </div>
+                          <div className="bg-gray-600/20 border border-gray-600/30 rounded p-3">
+                            <div className="text-gray-400 font-medium mb-1">Total Estimate</div>
+                            <div className="text-white font-semibold">$116,840</div>
+                            <div className="text-gray-400 text-xs">Excluding fuel costs</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Historical Delay Analysis */}
+                      <div className="mt-6 bg-gray-700/30 rounded-lg p-4">
+                        <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4 text-blue-400" />
+                          Historical Performance Data
+                        </h3>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <div>
+                            <h4 className="text-gray-300 font-medium mb-3">Destination Airport (JFK)</h4>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between p-2 bg-gray-800/50 rounded">
+                                <span className="text-gray-400">Average Delay:</span>
+                                <span className="text-white">22.1 minutes</span>
+                              </div>
+                              <div className="flex justify-between p-2 bg-gray-800/50 rounded">
+                                <span className="text-gray-400">Delay Frequency:</span>
+                                <span className="text-yellow-400">38% of flights</span>
+                              </div>
+                              <div className="bg-gray-800/50 rounded p-2">
+                                <span className="text-gray-400 text-xs">Main Causes:</span>
+                                <div className="text-white text-xs mt-1">Weather • ATC Delays • Airport Operations</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <h4 className="text-gray-300 font-medium mb-3">Diversion Airport (CYQX)</h4>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between p-2 bg-gray-800/50 rounded">
+                                <span className="text-gray-400">Average Delay:</span>
+                                <span className="text-green-400">8.2 minutes</span>
+                              </div>
+                              <div className="flex justify-between p-2 bg-gray-800/50 rounded">
+                                <span className="text-gray-400">Delay Frequency:</span>
+                                <span className="text-green-400">15% of flights</span>
+                              </div>
+                              <div className="bg-gray-800/50 rounded p-2">
+                                <span className="text-gray-400 text-xs">Main Causes:</span>
+                                <div className="text-white text-xs mt-1">Weather • Equipment • Crew</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Comprehensive Analysis */}
+                      <div className="mt-6 bg-gray-700/30 rounded-lg p-4">
+                        <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                          <Brain className="h-4 w-4 text-purple-400" />
+                          AI Analysis Summary
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          <div className="bg-green-600/20 border border-green-600/30 rounded p-3">
+                            <div className="text-green-400 font-medium mb-1">Fuel Status</div>
+                            <div className="text-white">
+                              {enhancedData.fuelAnalysis ? 
+                                `${((flightData?.fuelRemaining || 42000) - enhancedData.fuelAnalysis.fuelBurnKg > 6000 ? 'Adequate' : 'Marginal')} reserves for diversion` : 
+                                'Adequate reserves for diversion plus 45-minute holding'
+                              }
+                            </div>
+                          </div>
+                          <div className="bg-blue-600/20 border border-blue-600/30 rounded p-3">
+                            <div className="text-blue-400 font-medium mb-1">Weather Impact</div>
+                            <div className="text-white">
+                              {enhancedData.weatherData?.conditions === 'Clear' ? 'Clear conditions at all diversion airports' : 
+                               `${enhancedData.weatherData?.conditions || 'Clear'} conditions reported`}
+                            </div>
+                          </div>
+                          <div className="bg-yellow-600/20 border border-yellow-600/30 rounded p-3">
+                            <div className="text-yellow-400 font-medium mb-1">Performance</div>
+                            <div className="text-white">Aircraft within normal operating parameters</div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="ml-prediction" className="space-y-4">
+                  <Card className="bg-gray-800/50 border-gray-700">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <Target className="h-5 w-5 text-purple-400" />
+                        Machine Learning Diversion Risk Assessment
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {/* Real-time Risk Score */}
+                      <div className="bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-lg p-6 border border-purple-500/30">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-white font-semibold text-lg">Current Diversion Risk</h3>
+                          <Badge className="bg-red-600 text-white px-3 py-1">
+                            HIGH RISK
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-6">
+                          <div className="relative w-32 h-32">
+                            <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
+                              <circle cx="50" cy="50" r="40" stroke="gray" strokeWidth="8" fill="none" className="opacity-30" />
+                              <circle 
+                                cx="50" cy="50" r="40" stroke="#dc2626" strokeWidth="8" fill="none"
+                                strokeDasharray={`${72 * 2.51} ${100 * 2.51}`}
+                                className="drop-shadow-lg"
+                              />
+                            </svg>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-white font-bold text-2xl">72%</span>
+                            </div>
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-white text-sm mb-2">Confidence Level: <span className="font-semibold text-green-400">94%</span></div>
+                            <div className="text-gray-300 text-sm">
+                              Model predicts <span className="text-red-400 font-semibold">high probability</span> of diversion required within next 45 minutes based on current medical emergency and route conditions.
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Risk Factor Analysis */}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                            <Activity className="h-4 w-4 text-red-400" />
+                            Primary Risk Factors
+                          </h4>
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between p-3 bg-red-600/20 border border-red-600/30 rounded">
+                              <span className="text-red-300">Medical Emergency Indicators</span>
+                              <span className="text-red-400 font-semibold">35%</span>
+                            </div>
+                            <div className="flex items-center justify-between p-3 bg-orange-600/20 border border-orange-600/30 rounded">
+                              <span className="text-orange-300">Marginal Weather Conditions</span>
+                              <span className="text-orange-400 font-semibold">15%</span>
+                            </div>
+                            <div className="flex items-center justify-between p-3 bg-blue-600/20 border border-blue-600/30 rounded">
+                              <span className="text-blue-300">Route Historical Risk (LHR-JFK)</span>
+                              <span className="text-blue-400 font-semibold">12%</span>
+                            </div>
+                            <div className="flex items-center justify-between p-3 bg-yellow-600/20 border border-yellow-600/30 rounded">
+                              <span className="text-yellow-300">Fuel Status Assessment</span>
+                              <span className="text-yellow-400 font-semibold">10%</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-gray-700/50 rounded-lg p-4">
+                          <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                            <Brain className="h-4 w-4 text-purple-400" />
+                            AI Recommendations
+                          </h4>
+                          <div className="space-y-3">
+                            <div className="p-3 bg-purple-600/20 border border-purple-600/30 rounded text-sm">
+                              <div className="text-purple-300 font-medium mb-1">Immediate Action</div>
+                              <div className="text-white">Alert medical facilities at diversion airports</div>
+                            </div>
+                            <div className="p-3 bg-blue-600/20 border border-blue-600/30 rounded text-sm">
+                              <div className="text-blue-300 font-medium mb-1">Strategic Planning</div>
+                              <div className="text-white">Prepare contingency plans for nearest suitable airports</div>
+                            </div>
+                            <div className="p-3 bg-green-600/20 border border-green-600/30 rounded text-sm">
+                              <div className="text-green-300 font-medium mb-1">Monitoring</div>
+                              <div className="text-white">Monitor weather updates and fuel consumption closely</div>
+                            </div>
+                            <div className="p-3 bg-yellow-600/20 border border-yellow-600/30 rounded text-sm">
+                              <div className="text-yellow-300 font-medium mb-1">Communication</div>
+                              <div className="text-white">Brief crew on potential diversion scenarios</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Historical Pattern Analysis */}
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4 text-blue-400" />
+                          Historical Pattern Analysis (LHR-JFK Route)
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="bg-gray-800/50 rounded p-4 text-center">
+                            <div className="text-2xl font-bold text-white mb-1">1,247</div>
+                            <div className="text-gray-400 text-sm">Similar Routes (Past 30 Days)</div>
+                          </div>
+                          <div className="bg-gray-800/50 rounded p-4 text-center">
+                            <div className="text-2xl font-bold text-red-400 mb-1">89</div>
+                            <div className="text-gray-400 text-sm">Diversions Recorded</div>
+                          </div>
+                          <div className="bg-gray-800/50 rounded p-4 text-center">
+                            <div className="text-2xl font-bold text-green-400 mb-1">$142K</div>
+                            <div className="text-gray-400 text-sm">Average Diversion Cost</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* NOTAM Analysis */}
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                          <Eye className="h-4 w-4 text-orange-400" />
+                          NOTAM Text Analysis & NLP Processing
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="bg-gray-800/50 rounded p-3">
+                            <div className="text-orange-400 font-medium text-sm mb-1">High-Risk NOTAM Detected</div>
+                            <div className="text-white text-sm">"Thunderstorm expected at ETA - Low visibility procedures may be implemented"</div>
+                            <div className="text-gray-400 text-xs mt-1">NLP Confidence: 87% | Risk Weight: +15%</div>
+                          </div>
+                          <div className="bg-gray-800/50 rounded p-3">
+                            <div className="text-blue-400 font-medium text-sm mb-1">Route Advisory</div>
+                            <div className="text-white text-sm">"Bird activity reported in terminal area - Exercise caution during approach"</div>
+                            <div className="text-gray-400 text-xs mt-1">NLP Confidence: 92% | Risk Weight: +3%</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Clustering Analysis */}
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <h4 className="text-white font-semibold mb-4 flex items-center gap-2">
+                          <BarChart3 className="h-4 w-4 text-green-400" />
+                          Unsupervised Learning Insights
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          <div className="bg-red-600/20 border border-red-600/30 rounded p-3">
+                            <div className="text-red-400 font-medium mb-2">Cluster 1: Medical Emergencies</div>
+                            <div className="text-white">Current flight matches this pattern</div>
+                            <div className="text-gray-400 mt-1">Typical diversion rate: 78%</div>
+                          </div>
+                          <div className="bg-blue-600/20 border border-blue-600/30 rounded p-3">
+                            <div className="text-blue-400 font-medium mb-2">Cluster 2: Weather Events</div>
+                            <div className="text-white">Secondary risk factor identified</div>
+                            <div className="text-gray-400 mt-1">Typical diversion rate: 45%</div>
+                          </div>
+                          <div className="bg-green-600/20 border border-green-600/30 rounded p-3">
+                            <div className="text-green-400 font-medium mb-2">Cluster 3: Technical Issues</div>
+                            <div className="text-white">No current indicators</div>
+                            <div className="text-gray-400 mt-1">Typical diversion rate: 23%</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Model Performance Metrics */}
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <h4 className="text-white font-semibold mb-4">RandomForest Model Performance</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-green-400">94.2%</div>
+                            <div className="text-gray-400">Accuracy</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-blue-400">91.8%</div>
+                            <div className="text-gray-400">Precision</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-purple-400">89.3%</div>
+                            <div className="text-gray-400">Recall</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-orange-400">90.5%</div>
+                            <div className="text-gray-400">F1-Score</div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="airfields" className="space-y-4">
+                  <Card className="bg-gray-800/50 border-gray-600">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <Building className="h-5 w-5" />
+                        Available Diversion Airports
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {/* Primary Options */}
+                        <div className="grid gap-4">
+                          <div className="bg-gray-700/50 rounded-lg p-4 border border-green-500/30">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-3">
+                                <div className="bg-green-600/20 p-2 rounded">
+                                  <Building className="h-4 w-4 text-green-400" />
+                                </div>
+                                <div>
+                                  <h3 className="text-white font-semibold">Gander International (CYQX)</h3>
+                                  <p className="text-gray-400 text-sm">Newfoundland, Canada</p>
+                                </div>
+                              </div>
+                              <Badge className="bg-green-600 text-white">RECOMMENDED</Badge>
+                            </div>
+                            <div className="grid grid-cols-4 gap-4 text-sm">
+                              <div>
+                                <span className="text-gray-400">Distance:</span>
+                                <div className="text-white font-medium">234 km</div>
+                              </div>
+                              <div>
+                                <span className="text-gray-400">Runway:</span>
+                                <div className="text-white font-medium">03/21 3048m</div>
+                              </div>
+                              <div>
+                                <span className="text-gray-400">Medical:</span>
+                                <div className="text-green-400 font-medium">Level 2 Trauma</div>
+                              </div>
+                              <div>
+                                <span className="text-gray-400">Weather:</span>
+                                <div className="text-white font-medium">VIS 10km</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="bg-gray-700/50 rounded-lg p-4 border border-blue-500/30">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-3">
+                                <div className="bg-blue-600/20 p-2 rounded">
+                                  <Building className="h-4 w-4 text-blue-400" />
+                                </div>
+                                <div>
+                                  <h3 className="text-white font-semibold">Halifax Stanfield (CYHZ)</h3>
+                                  <p className="text-gray-400 text-sm">Nova Scotia, Canada</p>
+                                </div>
+                              </div>
+                              <Badge className="bg-blue-600 text-white">ALTERNATIVE</Badge>
+                            </div>
+                            <div className="grid grid-cols-4 gap-4 text-sm">
+                              <div>
+                                <span className="text-gray-400">Distance:</span>
+                                <div className="text-white font-medium">312 km</div>
+                              </div>
+                              <div>
+                                <span className="text-gray-400">Runway:</span>
+                                <div className="text-white font-medium">05/23 3200m</div>
+                              </div>
+                              <div>
+                                <span className="text-gray-400">Medical:</span>
+                                <div className="text-blue-400 font-medium">Level 1 Trauma</div>
+                              </div>
+                              <div>
+                                <span className="text-gray-400">Weather:</span>
+                                <div className="text-white font-medium">VIS 15km</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Secondary Options */}
+                          <div className="bg-gray-700/30 rounded-lg p-4 border border-gray-600">
+                            <h4 className="text-gray-300 font-medium mb-3">Secondary Options</h4>
+                            <div className="space-y-2 text-sm">
+                              <div className="flex justify-between items-center py-2 border-b border-gray-600">
+                                <div>
+                                  <span className="text-white">St. John's (CYYT)</span>
+                                  <span className="text-gray-400 ml-2">- 425 km</span>
+                                </div>
+                                <span className="text-yellow-400">Fuel Limited</span>
+                              </div>
+                              <div className="flex justify-between items-center py-2 border-b border-gray-600">
+                                <div>
+                                  <span className="text-white">Sydney (CYQY)</span>
+                                  <span className="text-gray-400 ml-2">- 287 km</span>
+                                </div>
+                                <span className="text-gray-400">Available</span>
+                              </div>
+                              <div className="flex justify-between items-center py-2">
+                                <div>
+                                  <span className="text-white">Moncton (CYQM)</span>
+                                  <span className="text-gray-400 ml-2">- 398 km</span>
+                                </div>
+                                <span className="text-gray-400">Available</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="analysis" className="space-y-4">
+                  <Card className="bg-gray-800/50 border-gray-600">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <DollarSign className="h-5 w-5" />
+                        Financial Impact Analysis
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        {/* Cost Comparison Summary */}
+                        <div className="bg-gray-700/30 rounded-lg p-4">
+                          <h3 className="text-white font-semibold mb-4">Diversion Cost Comparison</h3>
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-green-300 font-medium">Gander (CYQX)</span>
+                                <span className="text-green-400 font-bold text-xl">$110,450</span>
+                              </div>
+                              <div className="text-sm text-gray-300">Cost savings: $12,150</div>
+                            </div>
+                            <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-blue-300 font-medium">Halifax (CYHZ)</span>
+                                <span className="text-blue-400 font-bold text-xl">$122,600</span>
+                              </div>
+                              <div className="text-sm text-gray-300">Higher medical capabilities</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Detailed Cost Breakdown */}
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <Card className="bg-gray-700/50 border-gray-600">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-green-300 text-lg">Gander - Cost Details</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-3">
+                                <div className="flex justify-between border-b border-gray-600 pb-2">
+                                  <span className="text-gray-400">Passenger Care (298 pax)</span>
+                                  <span className="text-white font-medium">$89,400</span>
+                                </div>
+                                <div className="text-xs text-gray-500 -mt-2 mb-2">
+                                  • Hotel accommodation: $200/night × 298 = $59,600<br/>
+                                  • Meals & transport: $100/pax = $29,800
+                                </div>
+
+                                <div className="flex justify-between border-b border-gray-600 pb-2">
+                                  <span className="text-gray-400">Crew Costs</span>
+                                  <span className="text-white font-medium">$8,200</span>
+                                </div>
+                                <div className="text-xs text-gray-500 -mt-2 mb-2">
+                                  • Flight crew duty extension: $3,200<br/>
+                                  • Cabin crew overtime: $2,400<br/>
+                                  • Accommodation: $2,600
+                                </div>
+
+                                <div className="flex justify-between border-b border-gray-600 pb-2">
+                                  <span className="text-gray-400">Aircraft Operations</span>
+                                  <span className="text-white font-medium">$12,850</span>
+                                </div>
+                                <div className="text-xs text-gray-500 -mt-2 mb-2">
+                                  • Additional fuel: $4,200<br/>
+                                  • Airport fees: $3,400<br/>
+                                  • Ground handling: $2,850<br/>
+                                  • Navigation charges: $2,400
+                                </div>
+
+                                <div className="flex justify-between pt-2 border-t border-green-500">
+                                  <span className="text-green-300 font-semibold">Total Cost</span>
+                                  <span className="text-green-400 font-bold text-lg">$110,450</span>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          <Card className="bg-gray-700/50 border-gray-600">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-blue-300 text-lg">Halifax - Cost Details</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-3">
+                                <div className="flex justify-between border-b border-gray-600 pb-2">
+                                  <span className="text-gray-400">Passenger Care (298 pax)</span>
+                                  <span className="text-white font-medium">$95,200</span>
+                                </div>
+                                <div className="text-xs text-gray-500 -mt-2 mb-2">
+                                  • Hotel accommodation: $220/night × 298 = $65,560<br/>
+                                  • Meals & transport: $100/pax = $29,640
+                                </div>
+
+                                <div className="flex justify-between border-b border-gray-600 pb-2">
+                                  <span className="text-gray-400">Crew Costs</span>
+                                  <span className="text-white font-medium">$9,600</span>
+                                </div>
+                                <div className="text-xs text-gray-500 -mt-2 mb-2">
+                                  • Flight crew duty extension: $3,600<br/>
+                                  • Cabin crew overtime: $2,800<br/>
+                                  • Accommodation: $3,200
+                                </div>
+
+                                <div className="flex justify-between border-b border-gray-600 pb-2">
+                                  <span className="text-gray-400">Aircraft Operations</span>
+                                  <span className="text-white font-medium">$17,800</span>
+                                </div>
+                                <div className="text-xs text-gray-500 -mt-2 mb-2">
+                                  • Additional fuel: $6,400<br/>
+                                  • Airport fees: $4,200<br/>
+                                  • Ground handling: $3,600<br/>
+                                  • Navigation charges: $3,600
+                                </div>
+
+                                <div className="flex justify-between pt-2 border-t border-blue-500">
+                                  <span className="text-blue-300 font-semibold">Total Cost</span>
+                                  <span className="text-blue-400 font-bold text-lg">$122,600</span>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+
+                        {/* Financial Impact Assessment */}
+                        <Card className="bg-orange-900/20 border-orange-500/50">
+                          <CardHeader>
+                            <CardTitle className="text-orange-300 flex items-center gap-2">
+                              <TrendingUp className="h-5 w-5" />
+                              Financial Impact Assessment
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid md:grid-cols-3 gap-4">
+                              <div className="text-center">
+                                <div className="text-orange-400 font-bold text-2xl">$110K</div>
+                                <div className="text-gray-400 text-sm">Direct Costs</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-yellow-400 font-bold text-2xl">$85K</div>
+                                <div className="text-gray-400 text-sm">Revenue Loss</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-red-400 font-bold text-2xl">$195K</div>
+                                <div className="text-gray-400 text-sm">Total Impact</div>
+                              </div>
+                            </div>
+                            <div className="mt-4 text-sm text-gray-300">
+                              <strong>Revenue Impact:</strong> Delayed departure for next rotation (VS127D JFK-LHR) 
+                              affects 285 passengers with estimated revenue loss of $85,000.
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="crew" className="space-y-4">
+                  <Card className="bg-gray-800/50 border-gray-600">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <Users className="h-5 w-5" />
+                        Crew Management & Regulatory Compliance
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        {/* Flight Crew Status */}
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <Card className="bg-gray-700/50 border-gray-600">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-blue-300 text-lg flex items-center gap-2">
+                                <Plane className="h-5 w-5" />
+                                Flight Crew
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-4">
+                                <div className="bg-gray-800/50 rounded-lg p-3">
+                                  <div className="flex justify-between items-center mb-2">
+                                    <span className="text-white font-medium">Captain J. Harrison</span>
+                                    <Badge className="bg-green-600 text-white">LEGAL</Badge>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-2 text-sm">
+                                    <div>
+                                      <span className="text-gray-400">Duty Time:</span>
+                                      <div className="text-white">8h 47m / 14h</div>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-400">Flight Time:</span>
+                                      <div className="text-white">6h 12m / 8h</div>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-400">Rest Period:</span>
+                                      <div className="text-green-400">12h ago</div>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-400">Extension:</span>
+                                      <div className="text-yellow-400">+3h available</div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="bg-gray-800/50 rounded-lg p-3">
+                                  <div className="flex justify-between items-center mb-2">
+                                    <span className="text-white font-medium">F/O M. Chen</span>
+                                    <Badge className="bg-green-600 text-white">LEGAL</Badge>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-2 text-sm">
+                                    <div>
+                                      <span className="text-gray-400">Duty Time:</span>
+                                      <div className="text-white">8h 47m / 14h</div>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-400">Flight Time:</span>
+                                      <div className="text-white">6h 12m / 8h</div>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-400">Rest Period:</span>
+                                      <div className="text-green-400">12h ago</div>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-400">Extension:</span>
+                                      <div className="text-yellow-400">+3h available</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          <Card className="bg-gray-700/50 border-gray-600">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-purple-300 text-lg flex items-center gap-2">
+                                <Users className="h-5 w-5" />
+                                Cabin Crew
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-3">
+                                <div className="bg-gray-800/50 rounded-lg p-3">
+                                  <div className="flex justify-between items-center mb-2">
+                                    <span className="text-white font-medium">Purser S. Williams</span>
+                                    <Badge className="bg-yellow-600 text-white">CAUTION</Badge>
+                                  </div>
+                                  <div className="text-sm">
+                                    <div className="text-gray-400">Duty: <span className="text-white">11h 15m / 14h</span></div>
+                                    <div className="text-gray-400">Remaining: <span className="text-yellow-400">2h 45m</span></div>
+                                  </div>
+                                </div>
+
+                                <div className="bg-gray-800/50 rounded-lg p-3">
+                                  <div className="text-white font-medium mb-2">Cabin Crew (8 members)</div>
+                                  <div className="text-sm">
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-400">Average Duty:</span>
+                                      <span className="text-white">10h 52m / 14h</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-400">Status:</span>
+                                      <span className="text-green-400">6 Legal, 2 Caution</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="bg-orange-900/30 border border-orange-500/50 rounded-lg p-3">
+                                  <div className="text-orange-300 font-medium mb-1">Fatigue Assessment</div>
+                                  <div className="text-sm text-gray-300">
+                                    2 crew members approaching duty limits. Extension available but fatigue monitoring required.
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+
+                        {/* Regulatory Compliance */}
+                        <Card className="bg-blue-900/20 border-blue-500/50">
+                          <CardHeader>
+                            <CardTitle className="text-blue-300 flex items-center gap-2">
+                              <Shield className="h-5 w-5" />
+                              Regulatory Compliance Analysis
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid md:grid-cols-3 gap-4">
+                              <div className="bg-gray-700/50 rounded-lg p-4">
+                                <div className="text-green-400 font-semibold mb-2">EASA FTL Compliance</div>
+                                <div className="space-y-2 text-sm">
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Daily FDP:</span>
+                                    <span className="text-green-400">Compliant</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Weekly FDP:</span>
+                                    <span className="text-green-400">Compliant</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Rest Requirements:</span>
+                                    <span className="text-green-400">Met</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="bg-gray-700/50 rounded-lg p-4">
+                                <div className="text-yellow-400 font-semibold mb-2">Diversion Impact</div>
+                                <div className="space-y-2 text-sm">
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Extension Required:</span>
+                                    <span className="text-yellow-400">+3h max</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Commander Authority:</span>
+                                    <span className="text-green-400">Available</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Safety Margin:</span>
+                                    <span className="text-yellow-400">Acceptable</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="bg-gray-700/50 rounded-lg p-4">
+                                <div className="text-blue-400 font-semibold mb-2">Recovery Plan</div>
+                                <div className="space-y-2 text-sm">
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Positioning Crew:</span>
+                                    <span className="text-blue-400">Required</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Next Duty:</span>
+                                    <span className="text-white">36h rest</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-gray-400">Rotation Impact:</span>
+                                    <span className="text-yellow-400">Manageable</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {/* Crew Scheduling Impact */}
+                        <Card className="bg-red-900/20 border-red-500/50">
+                          <CardHeader>
+                            <CardTitle className="text-red-300 flex items-center gap-2">
+                              <Clock className="h-5 w-5" />
+                              Scheduling & Rotation Impact
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-4">
+                              <div className="grid md:grid-cols-2 gap-4">
+                                <div>
+                                  <h4 className="text-white font-medium mb-2">Immediate Impact</h4>
+                                  <ul className="space-y-1 text-sm text-gray-300">
+                                    <li>• Current crew can complete diversion legally</li>
+                                    <li>• Commander discretionary extension available (+3h)</li>
+                                    <li>• Fatigue risk assessment: LOW to MODERATE</li>
+                                    <li>• Medical emergency justifies extension</li>
+                                  </ul>
+                                </div>
+                                <div>
+                                  <h4 className="text-white font-medium mb-2">Recovery Requirements</h4>
+                                  <ul className="space-y-1 text-sm text-gray-300">
+                                    <li>• Positioning crew needed for aircraft recovery</li>
+                                    <li>• Current crew: minimum 12h rest before next duty</li>
+                                    <li>• Next rotation (VS127D): requires standby crew</li>
+                                    <li>• Total crew cost impact: $8,200 - $9,600</li>
+                                  </ul>
+                                </div>
+                              </div>
+
+                              <div className="bg-gray-700/30 rounded-lg p-3">
+                                <div className="text-orange-300 font-medium mb-2">Recommendation</div>
+                                <div className="text-gray-300 text-sm">
+                                  <strong>Proceed with diversion.</strong> Current crew is legal for both Gander and Halifax options. 
+                                  Commander discretionary extension provides adequate safety margin. Positioning crew arrangements 
+                                  should be initiated immediately for aircraft recovery.
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="reports" className="space-y-4">
+                  <Card className="bg-gray-800/50 border-gray-600">
+                    <CardHeader>
+                      <CardTitle className="text-white flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Operational Reports & Documentation
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        {/* Executive Summary Report */}
+                        <Card className="bg-blue-900/20 border-blue-500/50">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-blue-300 flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <BarChart3 className="h-5 w-5" />
+                                Executive Summary Report
+                              </div>
+                              <Button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1">
+                                Generate PDF
+                              </Button>
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-4">
+                              <div className="bg-gray-700/50 rounded-lg p-4">
+                                <h4 className="text-white font-semibold mb-3">VIR127C Medical Emergency - Decision Summary</h4>
+                                <div className="grid md:grid-cols-2 gap-4 text-sm">
+                                  <div>
+                                    <div className="text-gray-400">Incident Time:</div>
+                                    <div className="text-white">2024-06-15 21:47 UTC</div>
+                                  </div>
+                                  <div>
+                                    <div className="text-gray-400">Decision Time:</div>
+                                    <div className="text-white">2024-06-15 21:52 UTC</div>
+                                  </div>
+                                  <div>
+                                    <div className="text-gray-400">Recommended Action:</div>
+                                    <div className="text-green-400">Divert to Gander (CYQX)</div>
+                                  </div>
+                                  <div>
+                                    <div className="text-gray-400">Total Cost Impact:</div>
+                                    <div className="text-white">$195,000</div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="grid md:grid-cols-3 gap-4">
+                                <div className="bg-gray-700/30 rounded-lg p-3">
+                                  <div className="text-green-400 font-medium">Safety Rating</div>
+                                  <div className="text-white text-xl font-bold">EXCELLENT</div>
+                                  <div className="text-gray-400 text-sm">All safety protocols followed</div>
+                                </div>
+                                <div className="bg-gray-700/30 rounded-lg p-3">
+                                  <div className="text-blue-400 font-medium">Regulatory Compliance</div>
+                                  <div className="text-white text-xl font-bold">FULL</div>
+                                  <div className="text-gray-400 text-sm">EASA FTL compliant</div>
+                                </div>
+                                <div className="bg-gray-700/30 rounded-lg p-3">
+                                  <div className="text-yellow-400 font-medium">Cost Efficiency</div>
+                                  <div className="text-white text-xl font-bold">OPTIMAL</div>
+                                  <div className="text-gray-400 text-sm">$12K savings vs alternative</div>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {/* Regulatory Documentation */}
+                        <div className="grid md:grid-cols-2 gap-6">
+                          <Card className="bg-gray-700/50 border-gray-600">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-orange-300 flex items-center justify-between text-lg">
+                                <div className="flex items-center gap-2">
+                                  <Shield className="h-5 w-5" />
+                                  Regulatory Reports
+                                </div>
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                                  <div>
+                                    <div className="text-white font-medium">ASR (Air Safety Report)</div>
+                                    <div className="text-gray-400 text-sm">Medical emergency notification</div>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Badge className="bg-green-600 text-white">SUBMITTED</Badge>
+                                    <Button className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1">
+                                      View
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                                  <div>
+                                    <div className="text-white font-medium">MOR (Mandatory Occurrence Report)</div>
+                                    <div className="text-gray-400 text-sm">EASA regulatory filing</div>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Badge className="bg-yellow-600 text-white">PENDING</Badge>
+                                    <Button className="bg-orange-600 hover:bg-orange-700 text-white text-xs px-2 py-1">
+                                      Generate
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                                  <div>
+                                    <div className="text-white font-medium">CAA Notification</div>
+                                    <div className="text-gray-400 text-sm">UK Civil Aviation Authority</div>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Badge className="bg-green-600 text-white">SENT</Badge>
+                                    <Button className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1">
+                                      View
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                                  <div>
+                                    <div className="text-white font-medium">FTL Extension Report</div>
+                                    <div className="text-gray-400 text-sm">Crew duty time extension</div>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Badge className="bg-blue-600 text-white">AUTO-GEN</Badge>
+                                    <Button className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1">
+                                      View
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          <Card className="bg-gray-700/50 border-gray-600">
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-purple-300 flex items-center text-lg">
+                                <div className="flex items-center gap-2">
+                                  <TrendingUp className="h-5 w-5" />
+                                  Operational Reports
+                                </div>
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                                  <div>
+                                    <div className="text-white font-medium">Fuel Analysis Report</div>
+                                    <div className="text-gray-400 text-sm">Consumption & efficiency metrics</div>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Badge className="bg-green-600 text-white">READY</Badge>
+                                    <Button className="bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1">
+                                      Download
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                                  <div>
+                                    <div className="text-white font-medium">Cost Impact Analysis</div>
+                                    <div className="text-gray-400 text-sm">Financial breakdown & variance</div>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Badge className="bg-green-600 text-white">READY</Badge>
+                                    <Button className="bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1">
+                                      Download
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                                  <div>
+                                    <div className="text-white font-medium">Passenger Impact Report</div>
+                                    <div className="text-gray-400 text-sm">Care costs & compensation</div>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Badge className="bg-blue-600 text-white">PROCESSING</Badge>
+                                    <Button className="bg-gray-600 hover:bg-gray-700 text-white text-xs px-2 py-1">
+                                      Queue
+                                    </Button>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg">
+                                  <div>
+                                    <div className="text-white font-medium">Network Impact Assessment</div>
+                                    <div className="text-gray-400 text-sm">Schedule disruption analysis</div>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Badge className="bg-yellow-600 text-white">PENDING</Badge>
+                                    <Button className="bg-yellow-600 hover:bg-yellow-700 text-white text-xs px-2 py-1">
+                                      Generate
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+
+                        {/* Decision Timeline & Audit Trail */}
+                        <Card className="bg-green-900/20 border-green-500/50">
+                          <CardHeader>
+                            <CardTitle className="text-green-300 flex items-center gap-2">
+                              <Clock className="h-5 w-5" />
+                              Decision Timeline & Audit Trail
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-4 p-3 bg-gray-700/30 rounded-lg">
+                                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                <div className="flex-1">
+                                  <div className="text-white font-medium">21:47 UTC - Medical Emergency Declared</div>
+                                  <div className="text-gray-400 text-sm">Passenger medical incident reported by cabin crew</div>
+                                </div>
+                                <div className="text-gray-400 text-sm">Flight Crew</div>
+                              </div>
+
+                              <div className="flex items-center gap-4 p-3 bg-gray-700/30 rounded-lg">
+                                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                <div className="flex-1">
+                                  <div className="text-white font-medium">21:48 UTC - AINO System Activated</div>
+                                  <div className="text-gray-400 text-sm">Automated analysis initiated, diversion options calculated</div>
+                                </div>
+                                <div className="text-gray-400 text-sm">AI System</div>
+                              </div>
+
+                              <div className="flex items-center gap-4 p-3 bg-gray-700/30 rounded-lg">
+                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <div className="flex-1">
+                                  <div className="text-white font-medium">21:49 UTC - Operations Center Notified</div>
+                                  <div className="text-gray-400 text-sm">Watch manager alerted, coordination initiated</div>
+                                </div>
+                                <div className="text-gray-400 text-sm">OCC London</div>
+                              </div>
+
+                              <div className="flex items-center gap-4 p-3 bg-gray-700/30 rounded-lg">
+                                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                <div className="flex-1">
+                                  <div className="text-white font-medium">21:51 UTC - ATC Coordination</div>
+                                  <div className="text-gray-400 text-sm">Gander Control contacted, diversion clearance requested</div>
+                                </div>
+                                <div className="text-gray-400 text-sm">Flight Crew</div>
+                              </div>
+
+                              <div className="flex items-center gap-4 p-3 bg-gray-700/30 rounded-lg">
+                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <div className="flex-1">
+                                  <div className="text-white font-medium">21:52 UTC - Decision Confirmed</div>
+                                  <div className="text-gray-400 text-sm">Diversion to Gander approved by Captain and Operations</div>
+                                </div>
+                                <div className="text-gray-400 text-sm">Joint Decision</div>
+                              </div>
+
+                              <div className="flex items-center gap-4 p-3 bg-gray-700/30 rounded-lg">
+                                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                <div className="flex-1">
+                                  <div className="text-white font-medium">21:53 UTC - Ground Services Activated</div>
+                                  <div className="text-gray-400 text-sm">Medical, passenger care, and recovery teams mobilized</div>
+                                </div>
+                                <div className="text-gray-400 text-sm">Ground Ops</div>
+                              </div>
+                            </div>
+
+                            <div className="mt-4 p-3 bg-green-900/30 border border-green-500/50 rounded-lg">
+                              <div className="text-green-300 font-medium mb-2">Audit Compliance</div>
+                              <div className="text-sm text-gray-300">
+                                Complete decision audit trail captured. All regulatory requirements met for documentation, 
+                                crew duty time extensions, and passenger care provisions. Total decision time: 5 minutes from 
+                                emergency declaration to action confirmation.
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {/* Report Generation Actions */}
+                        <Card className="bg-gray-700/50 border-gray-600">
+                          <CardHeader>
+                            <CardTitle className="text-white flex items-center gap-2">
+                              <FileText className="h-5 w-5" />
+                              Generate Custom Reports
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="grid md:grid-cols-3 gap-4">
+                              <Button className="bg-blue-600 hover:bg-blue-700 text-white p-4 h-auto flex flex-col items-center gap-2">
+                                <FileText className="h-6 w-6" />
+                                <span>Executive Summary</span>
+                                <span className="text-xs opacity-75">PDF | 2 pages</span>
+                              </Button>
+                              
+                              <Button className="bg-green-600 hover:bg-green-700 text-white p-4 h-auto flex flex-col items-center gap-2">
+                                <BarChart3 className="h-6 w-6" />
+                                <span>Financial Analysis</span>
+                                <span className="text-xs opacity-75">Excel | Charts</span>
+                              </Button>
+                              
+                              <Button className="bg-purple-600 hover:bg-purple-700 text-white p-4 h-auto flex flex-col items-center gap-2">
+                                <Shield className="h-6 w-6" />
+                                <span>Compliance Report</span>
+                                <span className="text-xs opacity-75">PDF | Regulatory</span>
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </div>
+          )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

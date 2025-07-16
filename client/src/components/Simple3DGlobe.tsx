@@ -1,1 +1,69 @@
-import React, { useRef } from 'react'; import { Canvas, useFrame } from '@react-three/fiber'; import { OrbitControls, Sphere } from '@react-three/drei'; import * as THREE from 'three'; // Simple Earth Globe const EarthSphere: React.FC = () => { const meshRef = useRef<THREE.Mesh>(null); useFrame(() => { if (meshRef.current) { meshRef.current.rotation.y += 0.005; } }); return ( <Sphere ref={meshRef} args={[3, 64, 64]}> <meshPhongMaterial color="#1e40af" shininess={100} specular="#60a5fa" /> </Sphere> ); }; // Simple Airport Marker const AirportMarker: React.FC<{ position: [number, number, number]; name: string }> = ({ position, name }) => { return ( <group position={position}> <Sphere args={[0.1, 16, 16]}> <meshBasicMaterial color="#fbbf24" /> </Sphere> </group> ); }; const Simple3DGlobe: React.FC = () => { // Sample airport positions const airports = [ { name: "EGLL", position: [1.5, 1.5, 2.5] as [number, number, number] }, { name: "KJFK", position: [-2, 1, 2] as [number, number, number] }, { name: "OMDB", position: [2, 0, 2.5] as [number, number, number] }, ]; return ( <div className="w-full h-full bg-black"> <Canvas camera={{ position: [0, 0, 8], fov: 60 }}> <ambientLight intensity={0.3} /> <directionalLight position={[5, 5, 5]} intensity={1} /> <EarthSphere /> {airports.map((airport, index) => ( <AirportMarker key={index} position={airport.position} name={airport.name} /> ))} <OrbitControls enableZoom enablePan enableRotate /> </Canvas> <div className="absolute top-4 left-4 bg-black/80 text-gray-900 p-4 rounded"> <h3 className="text-lg font-bold">3D Globe Network</h3> <p className="text-sm">Virgin Atlantic Global Network</p> </div> </div> ); }; export default Simple3DGlobe;
+import React, { useRef } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, Sphere } from '@react-three/drei';
+import * as THREE from 'three';
+
+// Simple Earth Globe
+const EarthSphere: React.FC = () => {
+  const meshRef = useRef<THREE.Mesh>(null);
+  
+  useFrame(() => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y += 0.005;
+    }
+  });
+
+  return (
+    <Sphere ref={meshRef} args={[3, 64, 64]}>
+      <meshPhongMaterial
+        color="#1e40af"
+        shininess={100}
+        specular="#60a5fa"
+      />
+    </Sphere>
+  );
+};
+
+// Simple Airport Marker
+const AirportMarker: React.FC<{ position: [number, number, number]; name: string }> = ({ position, name }) => {
+  return (
+    <group position={position}>
+      <Sphere args={[0.1, 16, 16]}>
+        <meshBasicMaterial color="#fbbf24" />
+      </Sphere>
+    </group>
+  );
+};
+
+const Simple3DGlobe: React.FC = () => {
+  // Sample airport positions
+  const airports = [
+    { name: "EGLL", position: [1.5, 1.5, 2.5] as [number, number, number] },
+    { name: "KJFK", position: [-2, 1, 2] as [number, number, number] },
+    { name: "OMDB", position: [2, 0, 2.5] as [number, number, number] },
+  ];
+
+  return (
+    <div className="w-full h-full bg-black">
+      <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
+        <ambientLight intensity={0.3} />
+        <directionalLight position={[5, 5, 5]} intensity={1} />
+        
+        <EarthSphere />
+        
+        {airports.map((airport, index) => (
+          <AirportMarker key={index} position={airport.position} name={airport.name} />
+        ))}
+        
+        <OrbitControls enableZoom enablePan enableRotate />
+      </Canvas>
+      
+      <div className="absolute top-4 left-4 bg-black/80 text-white p-4 rounded">
+        <h3 className="text-lg font-bold">3D Globe Network</h3>
+        <p className="text-sm">Virgin Atlantic Global Network</p>
+      </div>
+    </div>
+  );
+};
+
+export default Simple3DGlobe;
