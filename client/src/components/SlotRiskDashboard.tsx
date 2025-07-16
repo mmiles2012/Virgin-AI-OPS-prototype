@@ -188,10 +188,42 @@ const SlotRiskDashboard: React.FC = () => {
   const fetchEurocontrolData = async () => {
     try {
       const response = await fetch('/api/eurocontrol/flow-data');
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
       const data = await response.json();
-      setEurocontrolData(data);
+      
+      // Handle both success and error cases properly
+      if (data.success) {
+        console.log('✅ EUROCONTROL data loaded successfully');
+        setEurocontrolData(data);
+      } else {
+        console.log('⚠️ EUROCONTROL data returned with success: false');
+        setEurocontrolData(data); // Still show the data structure
+      }
     } catch (err) {
-      console.error('EUROCONTROL data error:', err);
+      console.error('❌ EUROCONTROL data fetch error:', err);
+      // Show fallback structure with error indication
+      setEurocontrolData({ 
+        success: false, 
+        error: err.message,
+        data: {
+          collection_timestamp: new Date().toISOString(),
+          data_source: 'Connection Error',
+          network_situation: {
+            network_status: 'ERROR',
+            total_delays: 0,
+            atfm_delays: 0,
+            weather_delays: 0,
+            capacity_delays: 0,
+            regulations_active: 0,
+            traffic_count: 0
+          },
+          flow_measures: [],
+          airport_delays: [],
+          sector_regulations: []
+        }
+      });
     }
   };
 
@@ -897,7 +929,7 @@ const SlotRiskDashboard: React.FC = () => {
             </div>
 
             {/* Network Status Overview */}
-            {eurocontrolData?.success && (
+            {eurocontrolData?.data && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -970,7 +1002,7 @@ const SlotRiskDashboard: React.FC = () => {
             )}
 
             {/* Detailed Delay Breakdown */}
-            {eurocontrolData?.success && (
+            {eurocontrolData?.data && (
               <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6">
                 <h3 className="text-lg font-semibold text-white mb-6 flex items-center">
                   <BarChart3 className="h-5 w-5 text-purple-500 mr-2" />
@@ -1032,7 +1064,7 @@ const SlotRiskDashboard: React.FC = () => {
             )}
 
             {/* Active Flow Measures */}
-            {eurocontrolData?.success && eurocontrolData.data.flow_measures && (
+            {eurocontrolData?.data?.flow_measures && (
               <div className="bg-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                   <Target className="h-5 w-5 text-purple-500 mr-2" />
@@ -1063,7 +1095,10 @@ const SlotRiskDashboard: React.FC = () => {
                         </div>
                       </div>
                       <div className="mt-2 text-xs text-gray-400">
-                        {new Date(measure.start_time).toLocaleString()} - {new Date(measure.end_time).toLocaleString()}
+                        {measure.start_time && measure.start_time !== 'UNKNOWN' ? 
+                          `${new Date(measure.start_time).toLocaleString()} - ${new Date(measure.end_time).toLocaleString()}` : 
+                          'Active measure - real-time monitoring'
+                        }
                       </div>
                     </div>
                   ))}
@@ -1072,7 +1107,7 @@ const SlotRiskDashboard: React.FC = () => {
             )}
 
             {/* Airport Delays */}
-            {eurocontrolData?.success && eurocontrolData.data.airport_delays && (
+            {eurocontrolData?.data?.airport_delays && (
               <div className="bg-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                   <Plane className="h-5 w-5 text-purple-500 mr-2" />
@@ -1116,7 +1151,7 @@ const SlotRiskDashboard: React.FC = () => {
             )}
 
             {/* Sector Regulations */}
-            {eurocontrolData?.success && eurocontrolData.data.sector_regulations && (
+            {eurocontrolData?.data?.sector_regulations && (
               <div className="bg-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                   <AlertTriangle className="h-5 w-5 text-purple-500 mr-2" />
@@ -1199,7 +1234,10 @@ const SlotRiskDashboard: React.FC = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-400">Last Updated:</span>
                       <span className="text-white font-medium">
-                        {new Date(eurocontrolData.data.collection_timestamp).toLocaleString()}
+                        {eurocontrolData.data.collection_timestamp ? 
+                          new Date(eurocontrolData.data.collection_timestamp).toLocaleString() : 
+                          'Real-time'
+                        }
                       </span>
                     </div>
                     <div className="flex justify-between">
