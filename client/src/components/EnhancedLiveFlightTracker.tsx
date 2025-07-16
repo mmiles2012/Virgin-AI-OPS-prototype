@@ -162,7 +162,8 @@ export default function EnhancedLiveFlightTracker() {
             fuel_efficiency: calculateFuelEfficiency(flight),
             optimization_strategy: flight.fuel_optimization?.optimization_strategy?.strategy || 'STANDARD',
             cost_impact: flight.fuel_optimization?.optimization_strategy?.cost_impact_usd || 0,
-            fuel_percentage: calculateFuelPercentage(flight)
+            fuel_percentage: calculateFuelPercentage(flight),
+            fuel_amount_kg: calculateFuelAmountKg(flight)
           };
         });
         setFuelOptimizationData(fuelMap);
@@ -189,6 +190,29 @@ export default function EnhancedLiveFlightTracker() {
     const maxCapacity = fuelData.max_fuel_capacity || 100000;
     const currentFuel = fuelData.total_fuel_required || 75000;
     return Math.round((currentFuel / maxCapacity) * 100);
+  };
+
+  const calculateFuelAmountKg = (flight: any) => {
+    // Aircraft fuel capacity in kg
+    const fuelCapacities: { [key: string]: number } = {
+      'A35K': 156000, // A350-1000
+      'A350': 156000,
+      'B789': 126372, // B787-9
+      'B787': 126372,
+      'A333': 97530,  // A330-300
+      'A330': 97530,
+      'A339': 111000  // A330-900
+    };
+    
+    const aircraftType = flight.aircraft_type || flight.aircraft || 'A35K';
+    const maxCapacity = fuelCapacities[aircraftType] || 100000;
+    
+    // Calculate current fuel based on route progress
+    const routeProgress = flight.flight_progress || 50;
+    const fuelBurnRate = 0.4; // 40% fuel burn rate over flight
+    const currentFuel = maxCapacity * (1 - (routeProgress / 100) * fuelBurnRate);
+    
+    return Math.round(currentFuel);
   };
 
   useEffect(() => {
@@ -351,7 +375,10 @@ export default function EnhancedLiveFlightTracker() {
                     <div className="text-center">
                       <div className="text-gray-400">Fuel</div>
                       <div className="text-white font-mono">
-                        {fuelOptimizationData[flight.callsign]?.fuel_efficiency || 85}%
+                        {fuelOptimizationData[flight.callsign]?.fuel_amount_kg || calculateFuelAmountKg(flight)} kg
+                      </div>
+                      <div className="text-xs text-blue-400">
+                        {fuelOptimizationData[flight.callsign]?.fuel_efficiency || 85}% eff
                       </div>
                       <div className="text-xs text-gray-500">
                         {fuelOptimizationData[flight.callsign]?.optimization_strategy || 'STANDARD'}
