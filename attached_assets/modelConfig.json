@@ -1,5 +1,0 @@
-{
-  "delayRiskModel": "xgb-delay-v2",
-  "diversionRiskModel": "rf-divert-v1",
-  "stackPredictor": "knn-stack-v1"
-}
