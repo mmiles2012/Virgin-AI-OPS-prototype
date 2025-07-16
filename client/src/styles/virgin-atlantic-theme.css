@@ -1,0 +1,648 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Virgin Atlantic Brand Colors */
+    --va-red-primary: 14 96% 45%;           /* #E10A17 */
+    --va-red-heritage: 348 81% 47%;         /* #C8102E */
+    --va-red-rebel: 0 100% 50%;             /* #FF0000 */
+    --va-deep-space: 0 0% 11%;              /* #1B1B1B */
+    --va-cosmic-grey: 0 0% 40%;             /* #666666 */
+    --va-cloud-white: 0 0% 100%;            /* #FFFFFF */
+    --va-sky-blue: 212 100% 40%;            /* #0066CC */
+    --va-midnight: 0 0% 0%;                 /* #000000 */
+    
+    /* Aviation Operations Extended Palette */
+    --aero-blue-primary: 212 100% 40%;      /* #0066CC */
+    --aero-blue-light: 215 100% 65%;        /* #4A9EFF */
+    --aero-blue-dark: 212 100% 23%;         /* #003A75 */
+    --aero-blue-ultra: 220 91% 51%;         /* #3B82F6 */
+    --aero-green-safe: 158 64% 52%;         /* #10B981 */
+    --aero-green-light: 142 76% 73%;        /* #6EE7B7 */
+    --aero-amber-caution: 38 92% 50%;       /* #F59E0B */
+    --aero-amber-light: 43 96% 56%;         /* #FCD34D */
+    --aero-orange-alert: 25 95% 53%;        /* #F97316 */
+    --aero-purple-premium: 250 84% 54%;     /* #8B5CF6 */
+    
+    /* Surface Colors */
+    --surface-primary: var(--va-deep-space);
+    --surface-secondary: 216 19% 16%;       /* #252A35 */
+    --surface-tertiary: 215 25% 27%;        /* #374151 */
+    --surface-accent: 214 32% 91%;          /* #E5E7EB */
+    
+    /* Light Mode */
+    --background: var(--va-cloud-white);
+    --foreground: var(--va-deep-space);
+    --card: var(--va-cloud-white);
+    --card-foreground: var(--va-deep-space);
+    --popover: var(--va-cloud-white);
+    --popover-foreground: var(--va-deep-space);
+    --primary: var(--va-red-primary);
+    --primary-foreground: var(--va-cloud-white);
+    --secondary: var(--aero-blue-primary);
+    --secondary-foreground: var(--va-cloud-white);
+    --muted: 210 40% 98%;
+    --muted-foreground: 215 16% 47%;
+    --accent: var(--aero-blue-light);
+    --accent-foreground: var(--va-cloud-white);
+    --destructive: var(--va-red-primary);
+    --destructive-foreground: var(--va-cloud-white);
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: var(--va-red-primary);
+    --radius: 0.75rem;
+    
+    /* Chart Colors */
+    --chart-1: var(--va-red-primary);
+    --chart-2: var(--aero-blue-primary);
+    --chart-3: var(--aero-green-safe);
+    --chart-4: var(--aero-amber-caution);
+    --chart-5: var(--aero-purple-premium);
+    
+    /* Sidebar Colors */
+    --sidebar-background: var(--surface-primary);
+    --sidebar-foreground: var(--va-cloud-white);
+    --sidebar-primary: var(--va-red-primary);
+    --sidebar-primary-foreground: var(--va-cloud-white);
+    --sidebar-accent: var(--surface-secondary);
+    --sidebar-accent-foreground: var(--va-cloud-white);
+    --sidebar-border: var(--surface-tertiary);
+    --sidebar-ring: var(--va-red-primary);
+  }
+
+  .dark {
+    /* Dark Mode - Aviation Operations Theme */
+    --background: var(--va-deep-space);
+    --foreground: var(--va-cloud-white);
+    --card: var(--surface-secondary);
+    --card-foreground: var(--va-cloud-white);
+    --popover: var(--surface-secondary);
+    --popover-foreground: var(--va-cloud-white);
+    --primary: var(--va-red-primary);
+    --primary-foreground: var(--va-cloud-white);
+    --secondary: var(--aero-blue-primary);
+    --secondary-foreground: var(--va-cloud-white);
+    --muted: var(--surface-tertiary);
+    --muted-foreground: 215 20% 65%;
+    --accent: var(--aero-blue-light);
+    --accent-foreground: var(--va-cloud-white);
+    --destructive: var(--va-red-primary);
+    --destructive-foreground: var(--va-cloud-white);
+    --border: var(--surface-tertiary);
+    --input: var(--surface-tertiary);
+    --ring: var(--va-red-primary);
+    
+    /* Sidebar in Dark Mode */
+    --sidebar-background: var(--surface-primary);
+    --sidebar-foreground: var(--va-cloud-white);
+    --sidebar-primary: var(--va-red-primary);
+    --sidebar-primary-foreground: var(--va-cloud-white);
+    --sidebar-accent: var(--surface-secondary);
+    --sidebar-accent-foreground: var(--va-cloud-white);
+    --sidebar-border: var(--surface-tertiary);
+    --sidebar-ring: var(--va-red-primary);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-size: 14px; /* Better default font size */
+    line-height: 1.5;
+  }
+
+  /* Virgin Atlantic Typography Scale */
+  .va-heading-xl {
+    @apply text-4xl font-bold tracking-tight;
+    font-weight: 700;
+  }
+
+  .va-heading-lg {
+    @apply text-3xl font-bold tracking-tight;
+    font-weight: 700;
+  }
+
+  .va-heading-md {
+    @apply text-2xl font-semibold tracking-tight;
+    font-weight: 600;
+  }
+
+  .va-heading-sm {
+    @apply text-xl font-semibold tracking-tight;
+    font-weight: 600;
+  }
+
+  .va-body-lg {
+    @apply text-base font-normal;
+    font-weight: 400;
+  }
+
+  .va-body-md {
+    @apply text-sm font-normal;
+    font-weight: 400;
+  }
+
+  .va-body-sm {
+    @apply text-xs font-normal;
+    font-weight: 400;
+  }
+
+  .va-label {
+    @apply text-sm font-medium;
+    font-weight: 500;
+  }
+
+  .va-caption {
+    @apply text-xs font-medium text-muted-foreground;
+    font-weight: 500;
+  }
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none;
+}
+
+/* Virgin Atlantic Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--surface-secondary));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--va-red-primary) / 0.6);
+  border-radius: 4px;
+  border: 1px solid hsl(var(--surface-tertiary));
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--va-red-primary) / 0.8);
+}
+
+::-webkit-scrollbar-corner {
+  background: hsl(var(--surface-secondary));
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--va-red-primary) / 0.6) hsl(var(--surface-secondary));
+}
+
+/* Aviation-specific scrollable elements */
+.aviation-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--aero-blue-primary) / 0.6) hsl(var(--surface-secondary));
+}
+
+.aviation-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.aviation-scrollable::-webkit-scrollbar-track {
+  background: hsl(var(--surface-secondary));
+  border-radius: 3px;
+}
+
+.aviation-scrollable::-webkit-scrollbar-thumb {
+  background: hsl(var(--aero-blue-primary) / 0.6);
+  border-radius: 3px;
+}
+
+.aviation-scrollable::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--aero-blue-primary) / 0.8);
+}
+
+@layer components {
+  /* Virgin Atlantic Button Variants */
+  .va-btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-2 focus:ring-primary focus:ring-offset-2 font-medium transition-all duration-200;
+    background: linear-gradient(135deg, hsl(var(--va-red-primary)), hsl(var(--va-red-heritage)));
+  }
+
+  .va-btn-primary:hover {
+    background: linear-gradient(135deg, hsl(var(--va-red-primary) / 0.9), hsl(var(--va-red-heritage) / 0.9));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px hsl(var(--va-red-primary) / 0.3);
+  }
+
+  .va-btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 focus:ring-2 focus:ring-secondary focus:ring-offset-2 font-medium transition-all duration-200;
+  }
+
+  .va-btn-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px hsl(var(--aero-blue-primary) / 0.3);
+  }
+
+  .va-btn-ghost {
+    @apply bg-transparent text-foreground hover:bg-muted hover:text-accent-foreground focus:ring-2 focus:ring-primary focus:ring-offset-2 font-medium transition-all duration-200;
+  }
+
+  .va-btn-outline {
+    @apply border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-primary-foreground focus:ring-2 focus:ring-primary focus:ring-offset-2 font-medium transition-all duration-200;
+  }
+
+  /* Aviation Status Indicators */
+  .aero-status-safe {
+    @apply bg-green-500/20 text-green-400 border border-green-500/30;
+    background: linear-gradient(135deg, hsl(var(--aero-green-safe) / 0.1), hsl(var(--aero-green-light) / 0.1));
+  }
+
+  .aero-status-caution {
+    @apply bg-amber-500/20 text-amber-400 border border-amber-500/30;
+    background: linear-gradient(135deg, hsl(var(--aero-amber-caution) / 0.1), hsl(var(--aero-amber-light) / 0.1));
+  }
+
+  .aero-status-critical {
+    @apply bg-red-500/20 text-red-400 border border-red-500/30;
+    background: linear-gradient(135deg, hsl(var(--va-red-primary) / 0.1), hsl(var(--va-red-rebel) / 0.1));
+  }
+
+  .aero-status-info {
+    @apply bg-blue-500/20 text-blue-400 border border-blue-500/30;
+    background: linear-gradient(135deg, hsl(var(--aero-blue-primary) / 0.1), hsl(var(--aero-blue-light) / 0.1));
+  }
+
+  /* Aviation Panel Styling */
+  .aviation-panel {
+    background: linear-gradient(135deg, hsl(var(--surface-primary)), hsl(var(--surface-secondary)));
+    border: 1px solid hsl(var(--surface-tertiary));
+    border-radius: calc(var(--radius) - 2px);
+    backdrop-filter: blur(8px);
+  }
+
+  .cockpit-display {
+    background: radial-gradient(circle at center, hsl(var(--surface-primary)), hsl(var(--va-midnight)));
+    border: 2px solid hsl(var(--aero-blue-primary));
+    color: hsl(var(--aero-blue-light));
+    box-shadow: inset 0 0 20px hsl(var(--aero-blue-primary) / 0.2);
+  }
+
+  .emergency-alert {
+    background: linear-gradient(45deg, hsl(var(--va-red-primary)), hsl(var(--va-red-rebel)));
+    animation: pulse-emergency 2s infinite;
+    box-shadow: 0 0 20px hsl(var(--va-red-primary) / 0.5);
+  }
+
+  @keyframes pulse-emergency {
+    0%, 100% { 
+      opacity: 1; 
+      box-shadow: 0 0 20px hsl(var(--va-red-primary) / 0.5);
+    }
+    50% { 
+      opacity: 0.8; 
+      box-shadow: 0 0 30px hsl(var(--va-red-primary) / 0.8);
+    }
+  }
+
+  /* Glass Morphism Effect */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Virgin Atlantic Card */
+  .va-card {
+    @apply rounded-lg border shadow-sm;
+    background: hsl(var(--card));
+    border-color: hsl(var(--border));
+    box-shadow: 0 4px 16px hsl(var(--va-deep-space) / 0.1);
+  }
+
+  .va-card:hover {
+    box-shadow: 0 8px 24px hsl(var(--va-deep-space) / 0.15);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+  }
+
+  /* Virgin Atlantic Theme Enforcement & Accessibility */
+  .va-theme {
+    /* Force dark mode globally for Virgin Atlantic aviation theme */
+    background-color: hsl(var(--va-deep-space)) !important;
+    color: hsl(var(--va-cloud-white)) !important;
+    
+    /* Apply dark theme to all child elements */
+    --background: var(--va-deep-space);
+    --foreground: var(--va-cloud-white);
+    --card: var(--surface-secondary);
+    --card-foreground: var(--va-cloud-white);
+    --popover: var(--surface-secondary);
+    --popover-foreground: var(--va-cloud-white);
+  }
+  
+  /* Ensure all components use Virgin Atlantic dark theme */
+  .va-theme *, 
+  .va-theme *:before, 
+  .va-theme *:after {
+    border-color: hsl(var(--surface-tertiary)) !important;
+  }
+  
+  /* Override any light backgrounds in components */
+  .va-theme .bg-white,
+  .va-theme .bg-gray-50,
+  .va-theme .bg-gray-100,
+  .va-theme .bg-slate-50,
+  .va-theme .bg-slate-100 {
+    background-color: hsl(var(--surface-secondary)) !important;
+    color: hsl(var(--va-cloud-white)) !important;
+  }
+  
+  /* Override light text on light backgrounds */
+  .va-theme .text-gray-900,
+  .va-theme .text-gray-800,
+  .va-theme .text-slate-900,
+  .va-theme .text-slate-800,
+  .va-theme .text-black {
+    color: hsl(var(--va-cloud-white)) !important;
+  }
+  
+  /* Ensure good contrast for muted text */
+  .va-theme .text-gray-600,
+  .va-theme .text-gray-500,
+  .va-theme .text-slate-600,
+  .va-theme .text-slate-500,
+  .va-theme .text-muted-foreground {
+    color: hsl(0 0% 80%) !important; /* Light gray for good contrast */
+  }
+  
+  /* Status colors with proper contrast */
+  .va-theme .text-green-400,
+  .va-theme .text-green-500,
+  .va-theme .text-green-600 {
+    color: hsl(var(--aero-green-safe)) !important;
+  }
+  
+  .va-theme .text-yellow-400,
+  .va-theme .text-yellow-500,
+  .va-theme .text-amber-400,
+  .va-theme .text-amber-500 {
+    color: hsl(var(--aero-amber-caution)) !important;
+  }
+  
+  .va-theme .text-red-400,
+  .va-theme .text-red-500,
+  .va-theme .text-red-600 {
+    color: hsl(0 100% 70%) !important; /* Brighter red for visibility */
+  }
+  
+  .va-theme .text-blue-400,
+  .va-theme .text-blue-500,
+  .va-theme .text-blue-600 {
+    color: hsl(var(--aero-blue-light)) !important;
+  }
+  
+  /* Card and panel backgrounds */
+  .va-theme .bg-gray-900,
+  .va-theme .bg-gray-800,
+  .va-theme .bg-slate-900,
+  .va-theme .bg-slate-800 {
+    background-color: hsl(var(--surface-secondary)) !important;
+  }
+  
+  /* Border consistency */
+  .va-theme .border-gray-700,
+  .va-theme .border-gray-600,
+  .va-theme .border-slate-700,
+  .va-theme .border-slate-600 {
+    border-color: hsl(var(--surface-tertiary)) !important;
+  }
+  
+  /* Focus and accessibility improvements */
+  .va-theme *:focus-visible {
+    outline: 2px solid hsl(var(--va-red-primary)) !important;
+    outline-offset: 2px !important;
+  }
+  
+  /* High contrast text for critical information */
+  .va-theme .va-high-contrast {
+    color: hsl(var(--va-cloud-white)) !important;
+    font-weight: 500;
+  }
+  
+  /* Ensure buttons have proper contrast */
+  .va-theme button:not([class*="bg-"]) {
+    background-color: hsl(var(--surface-secondary));
+    color: hsl(var(--va-cloud-white));
+    border-color: hsl(var(--surface-tertiary));
+  }
+  
+  .va-theme button:not([class*="bg-"]):hover {
+    background-color: hsl(var(--surface-tertiary));
+  }
+
+  /* Navigation collapse button visibility fix */
+  .va-theme .navigation-toggle {
+    background-color: hsl(var(--surface-secondary)) !important;
+    color: hsl(var(--va-cloud-white)) !important;
+    border: 1px solid hsl(var(--surface-tertiary)) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    position: relative !important;
+    z-index: 100 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  .va-theme .navigation-toggle:hover {
+    background-color: hsl(var(--surface-tertiary)) !important;
+    border-color: hsl(var(--va-red-primary)) !important;
+    transform: scale(1.05) !important;
+  }
+  
+  .va-theme .navigation-toggle:active {
+    transform: scale(0.95) !important;
+    background-color: hsl(var(--va-red-primary)) !important;
+  }
+
+  /* WCAG 2.1 Accessibility Compliance */
+  
+  /* Minimum contrast ratios for text */
+  .va-theme .va-text-normal {
+    /* Normal text: 4.5:1 contrast ratio */
+    color: hsl(0 0% 95%); /* Very light gray on dark background */
+  }
+  
+  .va-theme .va-text-large {
+    /* Large text (18pt+): 3:1 contrast ratio */
+    color: hsl(0 0% 85%); /* Light gray on dark background */
+  }
+  
+  /* Focus indicators for keyboard navigation */
+  .va-theme [role="button"]:focus-visible,
+  .va-theme button:focus-visible,
+  .va-theme input:focus-visible,
+  .va-theme select:focus-visible,
+  .va-theme textarea:focus-visible,
+  .va-theme [tabindex]:focus-visible {
+    outline: 3px solid hsl(var(--va-red-primary)) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 5px hsla(var(--va-red-primary) / 0.3) !important;
+  }
+  
+  /* Skip links for screen readers */
+  .va-theme .sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+  
+  .va-theme .sr-only:focus {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0.5rem 1rem !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+    background-color: hsl(var(--va-red-primary)) !important;
+    color: hsl(var(--va-cloud-white)) !important;
+    font-weight: bold !important;
+    z-index: 9999 !important;
+  }
+  
+  /* Reduced motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    .va-theme * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .va-theme {
+      --va-cloud-white: 0 0% 100%;
+      --va-deep-space: 0 0% 0%;
+      --surface-secondary: 0 0% 10%;
+      --surface-tertiary: 0 0% 20%;
+    }
+    
+    .va-theme * {
+      border-width: 2px !important;
+    }
+  }
+  
+  /* Color blind accessibility */
+  .va-theme .va-colorblind-safe {
+    /* Use patterns and icons in addition to color */
+    position: relative;
+  }
+  
+  .va-theme .va-status-safe::before {
+    content: "✓";
+    color: hsl(var(--aero-green-safe));
+    font-weight: bold;
+    margin-right: 0.25rem;
+  }
+  
+  .va-theme .va-status-warning::before {
+    content: "⚠";
+    color: hsl(var(--aero-amber-caution));
+    font-weight: bold;
+    margin-right: 0.25rem;
+  }
+  
+  .va-theme .va-status-critical::before {
+    content: "✕";
+    color: hsl(0 100% 70%);
+    font-weight: bold;
+    margin-right: 0.25rem;
+  }
+  
+  /* Font size scaling for accessibility */
+  .va-theme {
+    font-size: clamp(0.875rem, 2.5vw, 1rem); /* Responsive base font size */
+    line-height: 1.6; /* Improved readability */
+  }
+  
+  /* Touch target sizes for mobile accessibility */
+  .va-theme button,
+  .va-theme [role="button"],
+  .va-theme input[type="checkbox"],
+  .va-theme input[type="radio"] {
+    min-height: 44px !important; /* WCAG recommended touch target */
+    min-width: 44px !important;
+  }
+  
+  /* Better link visibility */
+  .va-theme a {
+    color: hsl(var(--aero-blue-light)) !important;
+    text-decoration: underline !important;
+  }
+  
+  .va-theme a:hover,
+  .va-theme a:focus {
+    color: hsl(var(--va-cloud-white)) !important;
+    background-color: hsl(var(--aero-blue-primary)) !important;
+    padding: 0.125rem 0.25rem !important;
+    border-radius: 0.25rem !important;
+  }
+}
+
+@layer utilities {
+  .text-va-red { color: hsl(var(--va-red-primary)); }
+  .text-va-blue { color: hsl(var(--aero-blue-primary)); }
+  .text-va-green { color: hsl(var(--aero-green-safe)); }
+  .text-va-amber { color: hsl(var(--aero-amber-caution)); }
+  .text-va-purple { color: hsl(var(--aero-purple-premium)); }
+  
+  .bg-va-red { background-color: hsl(var(--va-red-primary)); }
+  .bg-va-blue { background-color: hsl(var(--aero-blue-primary)); }
+  .bg-va-green { background-color: hsl(var(--aero-green-safe)); }
+  .bg-va-amber { background-color: hsl(var(--aero-amber-caution)); }
+  .bg-va-purple { background-color: hsl(var(--aero-purple-premium)); }
+  
+  .border-va-red { border-color: hsl(var(--va-red-primary)); }
+  .border-va-blue { border-color: hsl(var(--aero-blue-primary)); }
+  .border-va-green { border-color: hsl(var(--aero-green-safe)); }
+  .border-va-amber { border-color: hsl(var(--aero-amber-caution)); }
+  .border-va-purple { border-color: hsl(var(--aero-purple-premium)); }
+
+  /* Gradient Utilities */
+  .bg-gradient-va-red {
+    background: linear-gradient(135deg, hsl(var(--va-red-primary)), hsl(var(--va-red-heritage)));
+  }
+  
+  .bg-gradient-va-blue {
+    background: linear-gradient(135deg, hsl(var(--aero-blue-primary)), hsl(var(--aero-blue-light)));
+  }
+  
+  .bg-gradient-aviation {
+    background: linear-gradient(135deg, hsl(var(--surface-primary)), hsl(var(--surface-secondary)));
+  }
+}

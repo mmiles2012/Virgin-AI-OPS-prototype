@@ -66,7 +66,7 @@ const queryClient = new QueryClient({
 type ViewMode = 'operations' | 'decisions' | 'overview' | 'map' | 'airspace' | 'realtime' | 'geopolitical' | 'diversion' | 'diversion-support' | 'delay-prediction' | 'disruption-response' | 'what-if-scenarios' | 'nm-punctuality' | 'us-aviation' | 'api-testing' | 'news-intelligence' | 'airport-weather' | 'satellite' | 'boeing787-twin' | 'training-simulator' | 'airbus-ops' | 'financial-analytics' | 'fleet-substitution' | 'skygate-airports' | 'emergency-comm' | 'otp-dashboard' | 'fleet-monitor' | 'intelligence-dashboard' | '3d-globe' | 'emergency-testing' | 'airport-contacts' | 'enhanced-facilities' | 'data-authenticity' | 'visa-requirements' | 'heathrow-holding' | 'integrated-holding-ml' | 'flightaware-notam' | 'intelligent-decisions' | 'slot-risk' | 'faa-status' | 'design-showcase' | 'scenario-engine' | 'boeing-twin' | 'airbus-twins' | 'ai-operations' | 'adsb-exchange' | 'documentation-download';
 
 function App() {
-  const [viewMode, setViewMode] = useState<ViewMode>('overview');
+  const [viewMode, setViewMode] = useState<ViewMode>('design-showcase');
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false);
   const [showApiWizard, setShowApiWizard] = useState(false);
 
@@ -164,7 +164,7 @@ function App() {
       case 'faa-status':
         return <ConsolidatedFaaDashboard />;
       case 'scenario-engine':
-        return <ScenarioManager onEmergencyActivate={() => {}} />;
+        return <ScenarioManager />;
       case 'ai-operations':
         return <AIOpsDashboard />;
       case 'boeing-twin':
@@ -181,18 +181,18 @@ function App() {
       <ToastProvider>
         <ResponsiveProvider>
           <QueryClientProvider client={queryClient}>
-            <div className="w-full min-h-screen bg-va-surface-primary va-theme flex">
+            <div className="w-full min-h-screen bg-va-surface-primary va-theme">
               {/* Virgin Atlantic Navigation */}
               <VirginAtlanticNavigation
                 viewMode={viewMode}
-                setViewMode={(mode) => setViewMode(mode as ViewMode)}
+                setViewMode={setViewMode}
                 isNavigationCollapsed={isNavigationCollapsed}
                 setIsNavigationCollapsed={setIsNavigationCollapsed}
               />
               
               {/* Main Content Area */}
-              <div className={`flex-1 transition-all duration-300 ${!isNavigationCollapsed ? 'ml-4' : 'ml-4'}`}>
-                <div className="va-glass-panel min-h-screen m-4 rounded-lg p-6">
+              <div className={`transition-all duration-300 ${!isNavigationCollapsed ? 'md:ml-64' : 'md:ml-16'}`}>
+                <div className="va-glass-panel min-h-screen">
                   {renderMainContent()}
                 </div>
               </div>

@@ -178,38 +178,3 @@ export const ComponentErrorBoundary: React.FC<{ children: React.ReactNode }> = (
 );
 
 export default ErrorBoundary;
-              border: 'none',
-              borderRadius: '6px',
-              padding: '15px 30px',
-              fontSize: '16px',
-              cursor: 'pointer',
-              touchAction: 'manipulation'
-            }}
-          >
-            Refresh Platform
-          </button>
-          {this.state.error && (
-            <details style={{ marginTop: '30px', textAlign: 'left' }}>
-              <summary style={{ cursor: 'pointer', marginBottom: '10px' }}>
-                Technical Details
-              </summary>
-              <pre style={{ 
-                backgroundColor: 'rgba(0,0,0,0.5)', 
-                padding: '10px', 
-                borderRadius: '4px',
-                fontSize: '12px',
-                overflow: 'auto'
-              }}>
-                {this.state.error.message}
-              </pre>
-            </details>
-          )}
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
-
-export default ErrorBoundary;
