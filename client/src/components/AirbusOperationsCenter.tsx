@@ -479,21 +479,19 @@ export default function AirbusOperationsCenter() {
   };
 
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-hidden">
+    <div className="w-full h-full bg-background text-foreground overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between p-4 bg-black/20 backdrop-blur-sm border-b border-blue-500/30">
         <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-            AIRBUS OPERATIONS CENTER
-          </h1>
-          <p className="text-sm text-gray-400">Digital Twin Fleet Management • AINO Integration</p>
+          <h1 className="text-2xl font-bold text-primary">AIRBUS OPERATIONS CENTER</h1>
+          <p className="text-sm text-muted-foreground">Digital Twin Fleet Management • AINO Integration</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-sm text-gray-300">System Operational</span>
+            <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+            <span className="text-sm text-muted-foreground">System Operational</span>
           </div>
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-muted-foreground">
             {new Date().toLocaleTimeString()}
           </div>
         </div>
@@ -507,7 +505,7 @@ export default function AirbusOperationsCenter() {
             {/* Aircraft Selection */}
             <Card className="bg-black/30 border-blue-500/30">
               <CardHeader>
-                <CardTitle className="text-white">Aircraft Fleet Selection</CardTitle>
+                <CardTitle className="text-foreground">Aircraft Fleet Selection</CardTitle>
                 <div className="flex gap-2 flex-wrap">
                   {Object.keys(AIRBUS_FLEET_SPECS).map((aircraft) => (
                     <Button
@@ -526,28 +524,28 @@ export default function AirbusOperationsCenter() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-gray-400">Max Range</p>
-                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].range.toLocaleString()} km</p>
+                      <p className="text-muted-foreground">Max Range</p>
+                      <p className="text-foreground font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].range.toLocaleString()} km</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">MTOW</p>
-                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].mtow.toLocaleString()} kg</p>
+                      <p className="text-muted-foreground">MTOW</p>
+                      <p className="text-foreground font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].mtow.toLocaleString()} kg</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Passengers</p>
-                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].passengers.typical} typical</p>
+                      <p className="text-muted-foreground">Passengers</p>
+                      <p className="text-foreground font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].passengers.typical} typical</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Service Ceiling</p>
-                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].service_ceiling.toLocaleString()} ft</p>
+                      <p className="text-muted-foreground">Service Ceiling</p>
+                      <p className="text-foreground font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].service_ceiling.toLocaleString()} ft</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Wingspan</p>
-                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].wingspan} m</p>
+                      <p className="text-muted-foreground">Wingspan</p>
+                      <p className="text-foreground font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].wingspan} m</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Length</p>
-                      <p className="text-white font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].length} m</p>
+                      <p className="text-muted-foreground">Length</p>
+                      <p className="text-foreground font-medium">{AIRBUS_FLEET_SPECS[selectedAircraft].length} m</p>
                     </div>
                   </div>
                 </div>
@@ -557,43 +555,43 @@ export default function AirbusOperationsCenter() {
             {/* Aircraft Specifications */}
             <Card className="bg-black/30 border-blue-500/30">
               <CardHeader>
-                <CardTitle className="text-white">{selectedAircraft} Specifications</CardTitle>
+                <CardTitle className="text-foreground">{selectedAircraft} Specifications</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <div className="text-gray-400">Range</div>
-                    <div className="font-mono text-green-400">
+                    <div className="text-muted-foreground">Range</div>
+                    <div className="font-mono text-success">
                       {AIRBUS_FLEET_SPECS[selectedAircraft].range.toLocaleString()} km
                     </div>
                   </div>
                   <div>
-                    <div className="text-gray-400">Passengers</div>
-                    <div className="font-mono text-green-400">
+                    <div className="text-muted-foreground">Passengers</div>
+                    <div className="font-mono text-success">
                       {AIRBUS_FLEET_SPECS[selectedAircraft].passengers.typical}
                     </div>
                   </div>
                   <div>
-                    <div className="text-gray-400">MTOW</div>
-                    <div className="font-mono text-green-400">
+                    <div className="text-muted-foreground">MTOW</div>
+                    <div className="font-mono text-success">
                       {(AIRBUS_FLEET_SPECS[selectedAircraft].mtow / 1000).toFixed(0)}t
                     </div>
                   </div>
                   <div>
-                    <div className="text-gray-400">Wingspan</div>
-                    <div className="font-mono text-green-400">
+                    <div className="text-muted-foreground">Wingspan</div>
+                    <div className="font-mono text-success">
                       {AIRBUS_FLEET_SPECS[selectedAircraft].wingspan}m
                     </div>
                   </div>
                   <div>
-                    <div className="text-gray-400">Engines</div>
-                    <div className="font-mono text-green-400 text-xs">
+                    <div className="text-muted-foreground">Engines</div>
+                    <div className="font-mono text-success text-xs">
                       {AIRBUS_FLEET_SPECS[selectedAircraft].engines}
                     </div>
                   </div>
                   <div>
-                    <div className="text-gray-400">Runway Req.</div>
-                    <div className="font-mono text-green-400">
+                    <div className="text-muted-foreground">Runway Req.</div>
+                    <div className="font-mono text-success">
                       {AIRBUS_FLEET_SPECS[selectedAircraft].runway_requirements.takeoff}m
                     </div>
                   </div>
@@ -601,15 +599,15 @@ export default function AirbusOperationsCenter() {
 
                 {/* Operating Costs Section */}
                 <div className="mt-6 pt-4 border-t border-gray-600">
-                  <div className="text-sm text-gray-400 mb-3">Operating Costs (Per Hour)</div>
+                  <div className="text-sm text-muted-foreground mb-3">Operating Costs (Per Hour)</div>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Total Cost:</span>
-                      <span className="font-mono text-yellow-400 font-bold">
+                      <span className="text-muted-foreground">Total Cost:</span>
+                      <span className="font-mono text-warning font-bold">
                         ${AIRBUS_FLEET_SPECS[selectedAircraft].operating_costs.total_per_hour.toLocaleString()}
                       </span>
                     </div>
-                    <div className="text-xs space-y-1 text-gray-500">
+                    <div className="text-xs space-y-1 text-muted-foreground">
                       <div className="flex justify-between">
                         <span>Crew:</span>
                         <span>${AIRBUS_FLEET_SPECS[selectedAircraft].operating_costs.crew_cost_per_hour.toLocaleString()}</span>
@@ -631,13 +629,13 @@ export default function AirbusOperationsCenter() {
                 </div>
 
                 {flightData && (
-                  <div className="mt-4 pt-4 border-t border-gray-600">
-                    <div className="text-sm text-gray-400 mb-2">Current Flight Data</div>
+                  <div className="mt-4 pt-4 border-t border-muted">
+                    <div className="text-sm text-muted-foreground mb-2">Current Flight Data</div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div>Flight: <span className="text-blue-400">{flightData.flightId}</span></div>
-                      <div>Alt: <span className="text-green-400">{flightData.altitude || 'N/A'} ft</span></div>
-                      <div>Speed: <span className="text-green-400">{flightData.speed || 'N/A'} kts</span></div>
-                      <div>Fuel: <span className="text-green-400">{flightData.fuelRemaining || 'N/A'} kg</span></div>
+                      <div>Flight: <span className="text-accent">{flightData.flightId}</span></div>
+                      <div>Alt: <span className="text-success">{flightData.altitude || 'N/A'} ft</span></div>
+                      <div>Speed: <span className="text-success">{flightData.speed || 'N/A'} kts</span></div>
+                      <div>Fuel: <span className="text-success">{flightData.fuelRemaining || 'N/A'} kg</span></div>
                     </div>
                   </div>
                 )}

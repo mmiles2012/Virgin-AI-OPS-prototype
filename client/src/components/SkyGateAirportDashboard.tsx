@@ -266,10 +266,10 @@ const SkyGateAirportDashboard: React.FC = () => {
   const getSuitabilityColor = (score: string) => {
     switch (score) {
       case 'excellent': return 'bg-green-100 text-green-800';
-      case 'good': return 'bg-blue-100 text-blue-800';
-      case 'acceptable': return 'bg-yellow-100 text-yellow-800';
-      case 'limited': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'good': return 'bg-va-blue/10 text-va-blue';
+      case 'acceptable': return 'bg-va-amber/10 text-va-amber';
+      case 'limited': return 'bg-va-red/10 text-va-red';
+      default: return 'bg-va-gray/10 text-va-gray';
     }
   };
 
@@ -278,15 +278,15 @@ const SkyGateAirportDashboard: React.FC = () => {
       case 'excellent':
       case 'full_capability':
       case 'operational':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
+        return <CheckCircle className="h-4 w-4 text-va-green" />;
       case 'good':
       case 'medical_available':
-        return <Shield className="h-4 w-4 text-blue-600" />;
+        return <Shield className="h-4 w-4 text-va-blue" />;
       case 'limited':
       case 'basic':
-        return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
+        return <AlertTriangle className="h-4 w-4 text-va-amber" />;
       default:
-        return <XCircle className="h-4 w-4 text-red-600" />;
+        return <XCircle className="h-4 w-4 text-va-red" />;
     }
   };
 

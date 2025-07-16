@@ -31,18 +31,20 @@ const buttonVariants = cva(
         
         // Outline variants
         outline: 'border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground',
-        'outline-secondary': 'border-2 border-aero-blue-primary bg-transparent text-aero-blue-primary hover:bg-aero-blue-primary hover:text-white',
+        'outline-secondary': 'border-2 border-va-blue bg-transparent text-va-blue hover:bg-va-blue hover:text-va-cloud-white',
         
         // Ghost variants
         ghost: 'bg-transparent text-foreground hover:bg-muted hover:text-accent-foreground',
-        'ghost-red': 'bg-transparent text-va-red-primary hover:bg-va-red-primary/10',
-        'ghost-blue': 'bg-transparent text-aero-blue-primary hover:bg-aero-blue-primary/10',
+        'ghost-red': 'bg-transparent text-va-red hover:bg-va-red/10',
+        'ghost-blue': 'bg-transparent text-va-blue hover:bg-va-blue/10',
         
         // Muted/Disabled look
         muted: 'bg-surface-secondary text-muted-foreground hover:bg-surface-tertiary',
+        muted: 'bg-va-gray/10 text-va-gray hover:bg-va-gray/20',
         
         // Emergency/Alert - Animated
         emergency: 'bg-gradient-to-r from-va-red-primary to-va-red-rebel text-white animate-pulse-emergency shadow-va-glow',
+        emergency: 'bg-gradient-va-red text-va-cloud-white animate-pulse-emergency shadow-va-glow',
       },
       size: {
         sm: 'h-9 rounded-md px-3 text-xs',

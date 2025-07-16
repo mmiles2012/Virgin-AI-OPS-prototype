@@ -313,18 +313,18 @@ export default function OnTimePerformanceDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'on-time': return 'text-green-400';
-      case 'delayed': return 'text-yellow-400';
-      case 'cancelled': return 'text-red-400';
-      default: return 'text-gray-400';
+      case 'on-time': return 'text-va-green';
+      case 'delayed': return 'text-va-amber';
+      case 'cancelled': return 'text-va-red';
+      default: return 'text-va-gray';
     }
   };
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'improving': return <TrendingUp className="w-4 h-4 text-green-400" />;
-      case 'declining': return <TrendingDown className="w-4 h-4 text-red-400" />;
-      default: return <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>;
+      case 'improving': return <TrendingUp className="w-4 h-4 text-va-green" />;
+      case 'declining': return <TrendingDown className="w-4 h-4 text-va-red" />;
+      default: return <div className="w-4 h-4 bg-va-amber rounded-full"></div>;
     }
   };
 

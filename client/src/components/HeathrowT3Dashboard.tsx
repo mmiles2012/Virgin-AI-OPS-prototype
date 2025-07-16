@@ -133,26 +133,26 @@ const HeathrowT3Dashboard: React.FC = () => {
     switch (level) {
       case 'high': return 'text-red-600 bg-red-50';
       case 'medium': return 'text-yellow-600 bg-yellow-50';
-      case 'low': return 'text-green-600 bg-green-50';
-      default: return 'text-gray-600 bg-gray-50';
+      case 'low': return 'text-va-green bg-va-green/10';
+      default: return 'text-va-gray bg-va-gray/10';
     }
   };
 
   const getModelStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-green-600 bg-green-100';
-      case 'training': return 'text-blue-600 bg-blue-100';
-      case 'inactive': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'active': return 'text-va-green bg-va-green/20';
+      case 'training': return 'text-va-blue bg-va-blue/20';
+      case 'inactive': return 'text-va-red bg-va-red/20';
+      default: return 'text-va-gray bg-va-gray/20';
     }
   };
 
   const getConnectionRiskColor = (level: string) => {
     switch (level) {
-      case 'high': return 'text-red-600 bg-red-50';
-      case 'medium': return 'text-yellow-600 bg-yellow-50';
-      case 'low': return 'text-green-600 bg-green-50';
-      default: return 'text-gray-600 bg-gray-50';
+      case 'high': return 'text-va-red bg-va-red/10';
+      case 'medium': return 'text-va-amber bg-va-amber/10';
+      case 'low': return 'text-va-green bg-va-green/10';
+      default: return 'text-va-gray bg-va-gray/10';
     }
   };
 
@@ -334,27 +334,27 @@ const HeathrowT3Dashboard: React.FC = () => {
                 <div className="space-y-3">
                   <h5 className="text-sm font-medium text-gray-700">Connection Flights:</h5>
                   {passenger.connection_flights.map((flight, flightIndex) => (
-                    <div key={flightIndex} className="bg-gray-50 rounded p-3 flex items-center justify-between">
+                    <div key={flightIndex} className="bg-va-gray/5 rounded p-3 flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <div>
-                          <span className="text-sm font-medium text-gray-900">{flight.flight_number}</span>
-                          <span className="text-sm text-gray-500 ml-2">({flight.airline})</span>
+                          <span className="text-sm font-medium text-va-gray">{flight.flight_number}</span>
+                          <span className="text-sm text-va-gray ml-2">({flight.airline})</span>
                         </div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-va-gray">
                           {flight.route}
                         </div>
                         <div className="flex items-center space-x-2">
-                          <MapPin className="h-4 w-4 text-gray-500" />
-                          <span className="text-sm text-gray-600">{flight.terminal}</span>
+                          <MapPin className="h-4 w-4 text-va-gray" />
+                          <span className="text-sm text-va-gray">{flight.terminal}</span>
                           {flight.real_time_status.gate && (
-                            <span className="text-sm text-gray-600">Gate {flight.real_time_status.gate}</span>
+                            <span className="text-sm text-va-gray">Gate {flight.real_time_status.gate}</span>
                           )}
                         </div>
                       </div>
                       <span className={`px-2 py-1 text-xs rounded ${
-                        flight.real_time_status.current_status === 'On Time' || flight.real_time_status.current_status === 'Departed' ? 'bg-green-100 text-green-800' :
-                        flight.real_time_status.current_status === 'Delayed' ? 'bg-red-100 text-red-800' :
-                        'bg-yellow-100 text-yellow-800'
+                        flight.real_time_status.current_status === 'On Time' || flight.real_time_status.current_status === 'Departed' ? 'bg-va-green/10 text-va-green' :
+                        flight.real_time_status.current_status === 'Delayed' ? 'bg-va-red/10 text-va-red' :
+                        'bg-va-amber/10 text-va-amber'
                       }`}>
                         {flight.real_time_status.current_status}
                       </span>
@@ -387,23 +387,23 @@ const HeathrowT3Dashboard: React.FC = () => {
           <div className="space-y-4">
             {passengerAlerts.map((alert, index) => (
               <div key={index} className={`border rounded-lg p-4 ${
-                alert.risk_level === 'HIGH' ? 'border-red-200 bg-red-50' :
-                alert.risk_level === 'MEDIUM' ? 'border-yellow-200 bg-yellow-50' :
-                'border-blue-200 bg-blue-50'
+                alert.risk_level === 'HIGH' ? 'border-va-red bg-va-red/10' :
+                alert.risk_level === 'MEDIUM' ? 'border-va-amber bg-va-amber/10' :
+                'border-va-blue bg-va-blue/10'
               }`}>
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center space-x-2">
                       <AlertTriangle className={`h-4 w-4 ${
-                        alert.risk_level === 'HIGH' ? 'text-red-600' :
-                        alert.risk_level === 'MEDIUM' ? 'text-yellow-600' :
-                        'text-blue-600'
+                        alert.risk_level === 'HIGH' ? 'text-va-red' :
+                        alert.risk_level === 'MEDIUM' ? 'text-va-amber' :
+                        'text-va-blue'
                       }`} />
                       <span className="font-medium text-gray-900">{alert.passenger_name}</span>
                       <span className={`px-2 py-1 text-xs rounded-full ${
-                        alert.risk_level === 'HIGH' ? 'bg-red-100 text-red-800' :
-                        alert.risk_level === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-blue-100 text-blue-800'
+                        alert.risk_level === 'HIGH' ? 'bg-va-red/10 text-va-red' :
+                        alert.risk_level === 'MEDIUM' ? 'bg-va-amber/10 text-va-amber' :
+                        'bg-va-blue/10 text-va-blue'
                       }`}>
                         {alert.risk_level} RISK
                       </span>

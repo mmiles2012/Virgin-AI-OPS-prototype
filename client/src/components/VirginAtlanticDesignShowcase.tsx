@@ -80,11 +80,11 @@ const VirginAtlanticDesignShowcase: React.FC = () => {
                 Alert
               </VirginAtlanticButton>
               <VirginAtlanticButton variant="premium">
-                <Zap className="w-4 h-4 mr-2" />
-                Premium
+                <Zap className="w-4 h-4 mr-2 text-va-amber" />
+                <span className="text-va-amber">Premium</span>
               </VirginAtlanticButton>
               <VirginAtlanticButton variant="emergency">
-                EMERGENCY
+                <span className="text-va-red">EMERGENCY</span>
               </VirginAtlanticButton>
             </div>
           </div>
@@ -93,13 +93,13 @@ const VirginAtlanticDesignShowcase: React.FC = () => {
             <VAText.Label>Outline & Ghost</VAText.Label>
             <div className="flex flex-col gap-2">
               <VirginAtlanticButton variant="outline" size="sm">
-                Settings
+                <span className="text-va-blue">Settings</span>
               </VirginAtlanticButton>
               <VirginAtlanticButton variant="ghost-blue">
-                Details
+                <span className="text-va-blue">Details</span>
               </VirginAtlanticButton>
               <VirginAtlanticButton variant="muted">
-                Disabled
+                <span className="text-va-gray">Disabled</span>
               </VirginAtlanticButton>
             </div>
           </div>
@@ -108,7 +108,7 @@ const VirginAtlanticDesignShowcase: React.FC = () => {
 
       {/* Status Badge Showcase */}
       <VirginAtlanticCard className="p-6">
-        <VAHeading.H3 className="mb-4">Status Indicators</VAHeading.H3>
+        <VAHeading.H3 className="mb-4 text-va-blue">Status Indicators</VAHeading.H3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           <div className="space-y-3">
             <VAText.Label>Flight Status</VAText.Label>
