@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1400" height="1000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#047857;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="yellowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D97706;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="redGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#EF4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DC2626;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1400" height="1000" fill="#0F172A"/>
+  
+  <!-- Title -->
+  <text x="700" y="30" text-anchor="middle" fill="#F1F5F9" font-size="24" font-weight="bold">AINO Aviation Intelligence Platform - System Flow</text>
+  
+  <!-- Data Sources Layer -->
+  <text x="50" y="80" fill="#F1F5F9" font-size="16" font-weight="bold">1. DATA SOURCES</text>
+  
+  <!-- External APIs -->
+  <rect x="50" y="100" width="120" height="60" rx="8" fill="url(#blueGradient)" stroke="#3B82F6" stroke-width="2"/>
+  <text x="110" y="120" text-anchor="middle" fill="white" font-size="10" font-weight="bold">ADS-B Exchange</text>
+  <text x="110" y="135" text-anchor="middle" fill="white" font-size="8">Real-time positions</text>
+  <text x="110" y="150" text-anchor="middle" fill="white" font-size="8">14 Virgin Atlantic</text>
+  
+  <rect x="190" y="100" width="120" height="60" rx="8" fill="url(#blueGradient)" stroke="#3B82F6" stroke-width="2"/>
+  <text x="250" y="120" text-anchor="middle" fill="white" font-size="10" font-weight="bold">AVWX Weather</text>
+  <text x="250" y="135" text-anchor="middle" fill="white" font-size="8">METAR/TAF data</text>
+  <text x="250" y="150" text-anchor="middle" fill="white" font-size="8">30-min refresh</text>
+  
+  <rect x="330" y="100" width="120" height="60" rx="8" fill="url(#blueGradient)" stroke="#3B82F6" stroke-width="2"/>
+  <text x="390" y="120" text-anchor="middle" fill="white" font-size="10" font-weight="bold">News API</text>
+  <text x="390" y="135" text-anchor="middle" fill="white" font-size="8">Aviation news</text>
+  <text x="390" y="150" text-anchor="middle" fill="white" font-size="8">Intelligence feed</text>
+  
+  <rect x="470" y="100" width="120" height="60" rx="8" fill="url(#blueGradient)" stroke="#3B82F6" stroke-width="2"/>
+  <text x="530" y="120" text-anchor="middle" fill="white" font-size="10" font-weight="bold">FAA NOTAM</text>
+  <text x="530" y="135" text-anchor="middle" fill="white" font-size="8">Airspace alerts</text>
+  <text x="530" y="150" text-anchor="middle" fill="white" font-size="8">TFR/SIGMET</text>
+  
+  <!-- Arrow down from data sources -->
+  <path d="M 300 170 L 300 200" stroke="#64748B" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- Data Collection Layer -->
+  <text x="50" y="230" fill="#F1F5F9" font-size="16" font-weight="bold">2. DATA COLLECTION & PROCESSING</text>
+  
+  <rect x="50" y="250" width="200" height="80" rx="8" fill="url(#greenGradient)" stroke="#10B981" stroke-width="2"/>
+  <text x="150" y="270" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Flight Data Processor</text>
+  <text x="150" y="285" text-anchor="middle" fill="white" font-size="9">• Route detection &amp; matching</text>
+  <text x="150" y="300" text-anchor="middle" fill="white" font-size="9">• Position calculations</text>
+  <text x="150" y="315" text-anchor="middle" fill="white" font-size="9">• Progress tracking</text>
+  
+  <rect x="270" y="250" width="200" height="80" rx="8" fill="url(#greenGradient)" stroke="#10B981" stroke-width="2"/>
+  <text x="370" y="270" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Weather Intelligence</text>
+  <text x="370" y="285" text-anchor="middle" fill="white" font-size="9">• Conditions analysis</text>
+  <text x="370" y="300" text-anchor="middle" fill="white" font-size="9">• Impact assessment</text>
+  <text x="370" y="315" text-anchor="middle" fill="white" font-size="9">• Alert generation</text>
+  
+  <rect x="490" y="250" width="200" height="80" rx="8" fill="url(#greenGradient)" stroke="#10B981" stroke-width="2"/>
+  <text x="590" y="270" text-anchor="middle" fill="white" font-size="12" font-weight="bold">News Analytics</text>
+  <text x="590" y="285" text-anchor="middle" fill="white" font-size="9">• Content classification</text>
+  <text x="590" y="300" text-anchor="middle" fill="white" font-size="9">• Sentiment analysis</text>
+  <text x="590" y="315" text-anchor="middle" fill="white" font-size="9">• Economic impact</text>
+  
+  <!-- Arrow down from processing -->
+  <path d="M 370 340 L 370 370" stroke="#64748B" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- ML Engine Layer -->
+  <text x="50" y="400" fill="#F1F5F9" font-size="16" font-weight="bold">3. ML PREDICTION ENGINES</text>
+  
+  <rect x="50" y="420" width="150" height="100" rx="8" fill="url(#yellowGradient)" stroke="#F59E0B" stroke-width="2"/>
+  <text x="125" y="440" text-anchor="middle" fill="white" font-size="11" font-weight="bold">XGBoost Delay</text>
+  <text x="125" y="455" text-anchor="middle" fill="white" font-size="8">• 17 features</text>
+  <text x="125" y="470" text-anchor="middle" fill="white" font-size="8">• Weather integration</text>
+  <text x="125" y="485" text-anchor="middle" fill="white" font-size="8">• Route analysis</text>
+  <text x="125" y="500" text-anchor="middle" fill="white" font-size="8">• 70% confidence</text>
+  
+  <rect x="220" y="420" width="150" height="100" rx="8" fill="url(#yellowGradient)" stroke="#F59E0B" stroke-width="2"/>
+  <text x="295" y="440" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Random Forest</text>
+  <text x="295" y="455" text-anchor="middle" fill="white" font-size="8">• Connection risk</text>
+  <text x="295" y="470" text-anchor="middle" fill="white" font-size="8">• 92% accuracy</text>
+  <text x="295" y="485" text-anchor="middle" fill="white" font-size="8">• 4.23min MAE</text>
+  <text x="295" y="500" text-anchor="middle" fill="white" font-size="8">• 47+ features</text>
+  
+  <rect x="390" y="420" width="150" height="100" rx="8" fill="url(#yellowGradient)" stroke="#F59E0B" stroke-width="2"/>
+  <text x="465" y="440" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Digital Twin</text>
+  <text x="465" y="455" text-anchor="middle" fill="white" font-size="8">• Performance calc</text>
+  <text x="465" y="470" text-anchor="middle" fill="white" font-size="8">• Fuel optimization</text>
+  <text x="465" y="485" text-anchor="middle" fill="white" font-size="8">• System modeling</text>
+  <text x="465" y="500" text-anchor="middle" fill="white" font-size="8">• Boeing/Airbus</text>
+  
+  <rect x="560" y="420" width="150" height="100" rx="8" fill="url(#yellowGradient)" stroke="#F59E0B" stroke-width="2"/>
+  <text x="635" y="440" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Scenario Engine</text>
+  <text x="635" y="455" text-anchor="middle" fill="white" font-size="8">• What-if analysis</text>
+  <text x="635" y="470" text-anchor="middle" fill="white" font-size="8">• Failure modeling</text>
+  <text x="635" y="485" text-anchor="middle" fill="white" font-size="8">• Cost impact</text>
+  <text x="635" y="500" text-anchor="middle" fill="white" font-size="8">• Diversion plan</text>
+  
+  <!-- Arrow down from ML -->
+  <path d="M 370 530 L 370 560" stroke="#64748B" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- Alert Generation Layer -->
+  <text x="50" y="590" fill="#F1F5F9" font-size="16" font-weight="bold">4. ALERT GENERATION & ANALYSIS</text>
+  
+  <rect x="50" y="610" width="160" height="80" rx="8" fill="url(#redGradient)" stroke="#EF4444" stroke-width="2"/>
+  <text x="130" y="630" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Digital Twin Alerts</text>
+  <text x="130" y="645" text-anchor="middle" fill="white" font-size="8">• Weather impact</text>
+  <text x="130" y="660" text-anchor="middle" fill="white" font-size="8">• Peak hour ops</text>
+  <text x="130" y="675" text-anchor="middle" fill="white" font-size="8">• Fuel efficiency</text>
+  
+  <rect x="230" y="610" width="160" height="80" rx="8" fill="url(#redGradient)" stroke="#EF4444" stroke-width="2"/>
+  <text x="310" y="630" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Operational Alerts</text>
+  <text x="310" y="645" text-anchor="middle" fill="white" font-size="8">• Connection risk</text>
+  <text x="310" y="660" text-anchor="middle" fill="white" font-size="8">• Stand conflicts</text>
+  <text x="310" y="675" text-anchor="middle" fill="white" font-size="8">• Slot compliance</text>
+  
+  <rect x="410" y="610" width="160" height="80" rx="8" fill="url(#redGradient)" stroke="#EF4444" stroke-width="2"/>
+  <text x="490" y="630" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Predictive Alerts</text>
+  <text x="490" y="645" text-anchor="middle" fill="white" font-size="8">• Delay probability</text>
+  <text x="490" y="660" text-anchor="middle" fill="white" font-size="8">• Diversion risk</text>
+  <text x="490" y="675" text-anchor="middle" fill="white" font-size="8">• Network health</text>
+  
+  <rect x="590" y="610" width="160" height="80" rx="8" fill="url(#redGradient)" stroke="#EF4444" stroke-width="2"/>
+  <text x="670" y="630" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Emergency Alerts</text>
+  <text x="670" y="645" text-anchor="middle" fill="white" font-size="8">• System failures</text>
+  <text x="670" y="660" text-anchor="middle" fill="white" font-size="8">• Medical events</text>
+  <text x="670" y="675" text-anchor="middle" fill="white" font-size="8">• Security issues</text>
+  
+  <!-- Arrow down from alerts -->
+  <path d="M 400 700 L 400 730" stroke="#64748B" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- Dashboard Layer -->
+  <text x="50" y="760" fill="#F1F5F9" font-size="16" font-weight="bold">5. DASHBOARD VISUALIZATION</text>
+  
+  <rect x="50" y="780" width="200" height="100" rx="8" fill="#475569" stroke="#64748B" stroke-width="2"/>
+  <text x="150" y="800" text-anchor="middle" fill="white" font-size="12" font-weight="bold">AI Ops Dashboard</text>
+  <text x="150" y="815" text-anchor="middle" fill="white" font-size="9">• Live flight tracking</text>
+  <text x="150" y="830" text-anchor="middle" fill="white" font-size="9">• Network health</text>
+  <text x="150" y="845" text-anchor="middle" fill="white" font-size="9">• Real-time alerts</text>
+  <text x="150" y="860" text-anchor="middle" fill="white" font-size="9">• 30-second refresh</text>
+  
+  <rect x="270" y="780" width="200" height="100" rx="8" fill="#475569" stroke="#64748B" stroke-width="2"/>
+  <text x="370" y="800" text-anchor="middle" fill="white" font-size="12" font-weight="bold">ML Analytics</text>
+  <text x="370" y="815" text-anchor="middle" fill="white" font-size="9">• Prediction display</text>
+  <text x="370" y="830" text-anchor="middle" fill="white" font-size="9">• Model performance</text>
+  <text x="370" y="845" text-anchor="middle" fill="white" font-size="9">• Feature analysis</text>
+  <text x="370" y="860" text-anchor="middle" fill="white" font-size="9">• Confidence scores</text>
+  
+  <rect x="490" y="780" width="200" height="100" rx="8" fill="#475569" stroke="#64748B" stroke-width="2"/>
+  <text x="590" y="800" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Operational Tools</text>
+  <text x="590" y="815" text-anchor="middle" fill="white" font-size="9">• What-if scenarios</text>
+  <text x="590" y="830" text-anchor="middle" fill="white" font-size="9">• Diversion planning</text>
+  <text x="590" y="845" text-anchor="middle" fill="white" font-size="9">• Fuel optimization</text>
+  <text x="590" y="860" text-anchor="middle" fill="white" font-size="9">• Cost analysis</text>
+  
+  <!-- Right side - Decision Support -->
+  <text x="750" y="80" fill="#F1F5F9" font-size="16" font-weight="bold">DECISION SUPPORT SYSTEMS</text>
+  
+  <rect x="750" y="100" width="280" height="120" rx="8" fill="#1E293B" stroke="#475569" stroke-width="2"/>
+  <text x="890" y="120" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Virgin Atlantic Fleet Operations</text>
+  <text x="890" y="140" text-anchor="middle" fill="white" font-size="10">• A350-1000: 156,000kg fuel capacity</text>
+  <text x="890" y="155" text-anchor="middle" fill="white" font-size="10">• B787-9: 126,372kg fuel capacity</text>
+  <text x="890" y="170" text-anchor="middle" fill="white" font-size="10">• A330-300: 97,530kg fuel capacity</text>
+  <text x="890" y="185" text-anchor="middle" fill="white" font-size="10">• A330-900: 111,000kg fuel capacity</text>
+  <text x="890" y="205" text-anchor="middle" fill="white" font-size="9">Authentic manufacturer specifications</text>
+  
+  <rect x="750" y="240" width="280" height="100" rx="8" fill="#1E293B" stroke="#475569" stroke-width="2"/>
+  <text x="890" y="260" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Fuel Optimization Display</text>
+  <text x="890" y="280" text-anchor="middle" fill="white" font-size="10">Primary: Fuel amount in kg</text>
+  <text x="890" y="295" text-anchor="middle" fill="white" font-size="10">Secondary: Efficiency percentage</text>
+  <text x="890" y="310" text-anchor="middle" fill="white" font-size="10">Tertiary: Strategy (STANDARD/TANKERING)</text>
+  <text x="890" y="325" text-anchor="middle" fill="white" font-size="9">Example: "84,320 kg | 87% eff | STANDARD"</text>
+  
+  <rect x="750" y="360" width="280" height="100" rx="8" fill="#1E293B" stroke="#475569" stroke-width="2"/>
+  <text x="890" y="380" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Connection Management</text>
+  <text x="890" y="400" text-anchor="middle" fill="white" font-size="10">• Heathrow T3 operations</text>
+  <text x="890" y="415" text-anchor="middle" fill="white" font-size="10">• Virgin Atlantic ↔ SkyTeam</text>
+  <text x="890" y="430" text-anchor="middle" fill="white" font-size="10">• Risk assessment &amp; alerts</text>
+  <text x="890" y="445" text-anchor="middle" fill="white" font-size="9">Multi-protocol message bus</text>
+  
+  <rect x="750" y="480" width="280" height="120" rx="8" fill="#1E293B" stroke="#475569" stroke-width="2"/>
+  <text x="890" y="500" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Integrated Intelligence</text>
+  <text x="890" y="520" text-anchor="middle" fill="white" font-size="10">• Weather radar overlay</text>
+  <text x="890" y="535" text-anchor="middle" fill="white" font-size="10">• SIGMET alerts</text>
+  <text x="890" y="550" text-anchor="middle" fill="white" font-size="10">• NAT track monitoring</text>
+  <text x="890" y="565" text-anchor="middle" fill="white" font-size="10">• Visa requirements</text>
+  <text x="890" y="580" text-anchor="middle" fill="white" font-size="10">• Economic impact analysis</text>
+  
+  <rect x="750" y="620" width="280" height="120" rx="8" fill="#1E293B" stroke="#475569" stroke-width="2"/>
+  <text x="890" y="640" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Operational Workflow</text>
+  <text x="890" y="660" text-anchor="middle" fill="white" font-size="10">• Emergency diversion support</text>
+  <text x="890" y="675" text-anchor="middle" fill="white" font-size="10">• Passenger/crew accommodation</text>
+  <text x="890" y="690" text-anchor="middle" fill="white" font-size="10">• EU261 compliance</text>
+  <text x="890" y="705" text-anchor="middle" fill="white" font-size="10">• Cost impact modeling</text>
+  <text x="890" y="720" text-anchor="middle" fill="white" font-size="9">Comprehensive disruption response</text>
+  
+  <!-- Data Flow Arrows -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748B"/>
+    </marker>
+  </defs>
+  
+  <!-- Horizontal arrows to decision support -->
+  <path d="M 700 180 L 745 180" stroke="#64748B" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <path d="M 700 290 L 745 290" stroke="#64748B" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <path d="M 700 470 L 745 470" stroke="#64748B" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <path d="M 700 650 L 745 650" stroke="#64748B" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- Performance metrics -->
+  <text x="50" y="920" fill="#F1F5F9" font-size="12" font-weight="bold">KEY PERFORMANCE METRICS</text>
+  <text x="50" y="940" fill="#10B981" font-size="10">• 14 Virgin Atlantic flights tracked (100% authentic ADS-B data)</text>
+  <text x="50" y="955" fill="#10B981" font-size="10">• 30-second refresh cycle for real-time operations</text>
+  <text x="50" y="970" fill="#10B981" font-size="10">• 83,000+ global airport database</text>
+  <text x="400" y="940" fill="#F59E0B" font-size="10">• XGBoost: 70% confidence, medium risk predictions</text>
+  <text x="400" y="955" fill="#F59E0B" font-size="10">• Random Forest: 92% accuracy, 4.23min MAE</text>
+  <text x="400" y="970" fill="#F59E0B" font-size="10">• 47+ engineered features for ML models</text>
+  <text x="750" y="940" fill="#3B82F6" font-size="10">• Authentic aircraft fuel capacities (kg primary display)</text>
+  <text x="750" y="955" fill="#3B82F6" font-size="10">• Weather-accurate predictive alerts</text>
+  <text x="750" y="970" fill="#3B82F6" font-size="10">• Multi-source data integration (AVWX, ADS-B, News)</text>
+  
+  <!-- Bottom timestamp -->
+  <text x="1350" y="990" text-anchor="end" fill="#64748B" font-size="8">Generated: July 16, 2025</text>
+</svg>
