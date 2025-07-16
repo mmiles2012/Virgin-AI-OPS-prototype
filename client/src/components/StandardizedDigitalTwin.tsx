@@ -191,11 +191,11 @@ export default function StandardizedDigitalTwin({
 
   const getPriorityColor = (priority: string): string => {
     switch (priority.toLowerCase()) {
-      case 'low': return 'bg-blue-100 text-blue-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'high': return 'bg-orange-100 text-orange-800';
-      case 'critical': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'low': return 'bg-blue-600 text-white';
+      case 'medium': return 'bg-yellow-600 text-white';
+      case 'high': return 'bg-orange-600 text-white';
+      case 'critical': return 'bg-red-600 text-white';
+      default: return 'bg-gray-600 text-white';
     }
   };
 
@@ -204,7 +204,7 @@ export default function StandardizedDigitalTwin({
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading digital twin data...</p>
+          <p className="text-white">Loading digital twin data...</p>
         </div>
       </div>
     );
@@ -236,7 +236,7 @@ export default function StandardizedDigitalTwin({
                 <h2 className="text-xl font-bold">
                   {digitalTwinData.identity.aircraftType}
                 </h2>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-300">
                   {digitalTwinData.identity.tailNumber} • {digitalTwinData.identity.fleetId}
                 </p>
               </div>
@@ -255,23 +255,23 @@ export default function StandardizedDigitalTwin({
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <MapPin className="h-5 w-5 text-gray-600 mx-auto mb-1" />
-              <div className="text-sm font-medium">{digitalTwinData.currentState.location.altitude.toLocaleString()} ft</div>
-              <div className="text-xs text-gray-600">Altitude</div>
+            <div className="text-center p-3 bg-gray-800 rounded-lg">
+              <MapPin className="h-5 w-5 text-gray-300 mx-auto mb-1" />
+              <div className="text-sm font-medium text-white">{digitalTwinData.currentState.location.altitude.toLocaleString()} ft</div>
+              <div className="text-xs text-gray-300">Altitude</div>
             </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-gray-600 mx-auto mb-1" />
-              <div className="text-sm font-medium">{digitalTwinData.currentState.location.groundSpeed} kts</div>
-              <div className="text-xs text-gray-600">Ground Speed</div>
+            <div className="text-center p-3 bg-gray-800 rounded-lg">
+              <TrendingUp className="h-5 w-5 text-gray-300 mx-auto mb-1" />
+              <div className="text-sm font-medium text-white">{digitalTwinData.currentState.location.groundSpeed} kts</div>
+              <div className="text-xs text-gray-300">Ground Speed</div>
             </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <Fuel className="h-5 w-5 text-gray-600 mx-auto mb-1" />
-              <div className="text-sm font-medium">{digitalTwinData.currentState.fuel.remainingPercentage.toFixed(1)}%</div>
-              <div className="text-xs text-gray-600">Fuel Remaining</div>
+            <div className="text-center p-3 bg-gray-800 rounded-lg">
+              <Fuel className="h-5 w-5 text-gray-300 mx-auto mb-1" />
+              <div className="text-sm font-medium text-white">{digitalTwinData.currentState.fuel.remainingPercentage.toFixed(1)}%</div>
+              <div className="text-xs text-gray-300">Fuel Remaining</div>
             </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <Settings className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+            <div className="text-center p-3 bg-gray-800 rounded-lg">
+              <Settings className="h-5 w-5 text-gray-300 mx-auto mb-1" />
               <div className={`text-sm font-medium ${getStatusColor(digitalTwinData.currentState.engines.status)}`}>
                 {digitalTwinData.currentState.engines.status}
               </div>

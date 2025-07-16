@@ -321,11 +321,11 @@ const EmergencyCommDashboard: React.FC = () => {
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'bg-red-100 text-red-800 border-red-300';
-      case 'high': return 'bg-orange-100 text-orange-800 border-orange-300';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'low': return 'bg-blue-100 text-blue-800 border-blue-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'critical': return 'bg-red-600 text-white border-red-300';
+      case 'high': return 'bg-orange-600 text-white border-orange-300';
+      case 'medium': return 'bg-yellow-600 text-white border-yellow-300';
+      case 'low': return 'bg-blue-600 text-white border-blue-300';
+      default: return 'bg-gray-600 text-white border-gray-300';
     }
   };
 
@@ -392,21 +392,21 @@ const EmergencyCommDashboard: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <h4 className="font-semibold mb-2">Aircraft Information</h4>
-                        <p className="text-sm text-gray-600">Type: {alert.aircraft.type}</p>
-                        <p className="text-sm text-gray-600">Registration: {alert.aircraft.registration}</p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-white">Type: {alert.aircraft.type}</p>
+                        <p className="text-sm text-white">Registration: {alert.aircraft.registration}</p>
+                        <p className="text-sm text-white">
                           Position: {alert.aircraft.position.lat.toFixed(4)}, {alert.aircraft.position.lon.toFixed(4)}
                         </p>
-                        <p className="text-sm text-gray-600">Altitude: {alert.aircraft.position.alt.toLocaleString()} ft</p>
+                        <p className="text-sm text-white">Altitude: {alert.aircraft.position.alt.toLocaleString()} ft</p>
                       </div>
                       <div>
                         <h4 className="font-semibold mb-2">Emergency Details</h4>
-                        <p className="text-sm text-gray-600 mb-2">{alert.description}</p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-white mb-2">{alert.description}</p>
+                        <p className="text-sm text-white">
                           <Clock className="inline h-4 w-4 mr-1" />
                           Estimated Time: {alert.estimatedTime} minutes
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-white">
                           Declared: {new Date(alert.timestamp).toLocaleTimeString()}
                         </p>
                       </div>
@@ -414,7 +414,7 @@ const EmergencyCommDashboard: React.FC = () => {
 
                     <div>
                       <h4 className="font-semibold mb-2">Required Actions</h4>
-                      <ul className="text-sm text-gray-600 space-y-1">
+                      <ul className="text-sm text-white space-y-1">
                         {alert.requiredActions.map((action, index) => (
                           <li key={index} className="flex items-start gap-2">
                             <span className="text-blue-600">•</span>
@@ -485,7 +485,7 @@ const EmergencyCommDashboard: React.FC = () => {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Recipient</label>
+                  <label className="block text-sm font-medium mb-1 text-white">Recipient</label>
                   <select 
                     className="w-full p-2 border rounded-md"
                     value={selectedRecipient}
@@ -502,7 +502,7 @@ const EmergencyCommDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Message</label>
+                  <label className="block text-sm font-medium mb-1 text-white">Message</label>
                   <textarea
                     className="w-full p-2 border rounded-md h-24"
                     value={newMessage}
@@ -562,7 +562,7 @@ const EmergencyCommDashboard: React.FC = () => {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-gray-700">Aircraft Callsign</label>
+                    <label className="text-sm font-medium text-white">Aircraft Callsign</label>
                     <input
                       type="text"
                       placeholder="Enter aircraft callsign (e.g., VS133)"
@@ -570,7 +570,7 @@ const EmergencyCommDashboard: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">Priority Level</label>
+                    <label className="text-sm font-medium text-white">Priority Level</label>
                     <select className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
                       <option value="normal">Normal</option>
                       <option value="urgent">Urgent</option>
@@ -578,7 +578,7 @@ const EmergencyCommDashboard: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">Call Recipient</label>
+                    <label className="text-sm font-medium text-white">Call Recipient</label>
                     <select className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
                       <option value="flight-deck">Flight Deck</option>
                       <option value="cabin-crew">Cabin Crew</option>
@@ -612,7 +612,7 @@ const EmergencyCommDashboard: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <div className="text-sm font-medium text-gray-700">Active SATCOM Connections:</div>
+                    <div className="text-sm font-medium text-white">Active SATCOM Connections:</div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between p-2 bg-amber-50 rounded">
                         <span className="text-sm">VS133 - Flight Deck</span>
@@ -645,7 +645,7 @@ const EmergencyCommDashboard: React.FC = () => {
 
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-gray-700">Aircraft Callsign</label>
+                    <label className="text-sm font-medium text-white">Aircraft Callsign</label>
                     <input
                       type="text"
                       placeholder="Enter aircraft callsign"
@@ -653,7 +653,7 @@ const EmergencyCommDashboard: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">Medical Priority</label>
+                    <label className="text-sm font-medium text-white">Medical Priority</label>
                     <select className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
                       <option value="consultation">Medical Consultation</option>
                       <option value="urgent">Urgent Medical</option>

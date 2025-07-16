@@ -1,0 +1,221 @@
+{
+  "collection_timestamp": "2025-07-16T00:16:23.829989",
+  "data_source": "EUROCONTROL Network Operations Portal",
+  "network_situation": {
+    "timestamp": "2025-07-16T00:16:24.261259",
+    "network_status": "OPERATIONAL",
+    "total_delays": 0,
+    "atfm_delays": 0,
+    "weather_delays": 0,
+    "capacity_delays": 0,
+    "staffing_delays": 0,
+    "regulations_active": 0,
+    "flows_managed": 0,
+    "traffic_count": 0
+  },
+  "flow_measures": [
+    {
+      "measure_id": "FLOW_1_20250716",
+      "location": "SECTOR_1",
+      "reason": "Airspace Congestion",
+      "delay_value": 34,
+      "start_time": "2025-07-15T23:46:24.429955",
+      "end_time": "2025-07-16T02:16:24.429962",
+      "status": "ACTIVE",
+      "scraped_at": "2025-07-16T00:16:24.429965"
+    },
+    {
+      "measure_id": "FLOW_2_20250716",
+      "location": "SECTOR_2",
+      "reason": "Military Exercise",
+      "delay_value": 6,
+      "start_time": "2025-07-15T23:46:24.429974",
+      "end_time": "2025-07-16T02:16:24.429977",
+      "status": "ACTIVE",
+      "scraped_at": "2025-07-16T00:16:24.429979"
+    },
+    {
+      "measure_id": "FLOW_3_20250716",
+      "location": "SECTOR_3",
+      "reason": "Technical Issue",
+      "delay_value": 24,
+      "start_time": "2025-07-15T23:46:24.429988",
+      "end_time": "2025-07-16T02:16:24.429993",
+      "status": "ACTIVE",
+      "scraped_at": "2025-07-16T00:16:24.429997"
+    }
+  ],
+  "traffic_counts": {
+    "timestamp": "2025-07-16T00:16:24.609959",
+    "total_flights": 964,
+    "controlled_flights": 0,
+    "ifr_flights": 0,
+    "vfr_flights": 0,
+    "overflights": 578,
+    "departures": 192,
+    "arrivals": 192,
+    "peak_hour_count": 77,
+    "average_delay": 0
+  },
+  "airport_delays": [
+    {
+      "airport_icao": "EGLL",
+      "airport_name": "London Heathrow",
+      "airport_iata": "LHR",
+      "departure_delay": 39,
+      "arrival_delay": 7,
+      "atfm_delay": 1,
+      "weather_delay": 5,
+      "capacity_delay": 17,
+      "delay_cause": "Equipment",
+      "status": "OPERATIONAL",
+      "last_updated": "2025-07-16T00:16:24.610273"
+    },
+    {
+      "airport_icao": "LFPG",
+      "airport_name": "Paris Charles de Gaulle",
+      "airport_iata": "CDG",
+      "departure_delay": 14,
+      "arrival_delay": 14,
+      "atfm_delay": 4,
+      "weather_delay": 44,
+      "capacity_delay": 8,
+      "delay_cause": "Capacity",
+      "status": "OPERATIONAL",
+      "last_updated": "2025-07-16T00:16:24.610284"
+    },
+    {
+      "airport_icao": "EDDF",
+      "airport_name": "Frankfurt",
+      "airport_iata": "FRA",
+      "departure_delay": 35,
+      "arrival_delay": 14,
+      "atfm_delay": 14,
+      "weather_delay": 37,
+      "capacity_delay": 37,
+      "delay_cause": "Airspace",
+      "status": "OPERATIONAL",
+      "last_updated": "2025-07-16T00:16:24.610291"
+    },
+    {
+      "airport_icao": "EHAM",
+      "airport_name": "Amsterdam Schiphol",
+      "airport_iata": "AMS",
+      "departure_delay": 1,
+      "arrival_delay": 10,
+      "atfm_delay": 0,
+      "weather_delay": 34,
+      "capacity_delay": 11,
+      "delay_cause": "Air Traffic Control",
+      "status": "OPERATIONAL",
+      "last_updated": "2025-07-16T00:16:24.610303"
+    },
+    {
+      "airport_icao": "LEMD",
+      "airport_name": "Madrid Barajas",
+      "airport_iata": "MAD",
+      "departure_delay": 4,
+      "arrival_delay": 9,
+      "atfm_delay": 15,
+      "weather_delay": 34,
+      "capacity_delay": 5,
+      "delay_cause": "Staffing",
+      "status": "OPERATIONAL",
+      "last_updated": "2025-07-16T00:16:24.610314"
+    },
+    {
+      "airport_icao": "LIRF",
+      "airport_name": "Rome Fiumicino",
+      "airport_iata": "FCO",
+      "departure_delay": 7,
+      "arrival_delay": 1,
+      "atfm_delay": 33,
+      "weather_delay": 14,
+      "capacity_delay": 14,
+      "delay_cause": "Air Traffic Control",
+      "status": "OPERATIONAL",
+      "last_updated": "2025-07-16T00:16:24.610324"
+    },
+    {
+      "airport_icao": "LOWW",
+      "airport_name": "Vienna",
+      "airport_iata": "VIE",
+      "departure_delay": 1,
+      "arrival_delay": 8,
+      "atfm_delay": 16,
+      "weather_delay": 10,
+      "capacity_delay": 14,
+      "delay_cause": "Staffing",
+      "status": "OPERATIONAL",
+      "last_updated": "2025-07-16T00:16:24.610363"
+    },
+    {
+      "airport_icao": "LSZH",
+      "airport_name": "Zurich",
+      "airport_iata": "ZUR",
+      "departure_delay": 5,
+      "arrival_delay": 20,
+      "atfm_delay": 1,
+      "weather_delay": 25,
+      "capacity_delay": 45,
+      "delay_cause": "Air Traffic Control",
+      "status": "OPERATIONAL",
+      "last_updated": "2025-07-16T00:16:24.610377"
+    }
+  ],
+  "sector_regulations": [
+    {
+      "sector": "LFMMFIR",
+      "regulation_id": "REG_LFMMFIR_202507160016",
+      "reason": "Equipment Failure",
+      "start_time": "2025-07-15T23:46:24.610460",
+      "end_time": "2025-07-16T02:16:24.610465",
+      "delay_value": 9,
+      "impact_level": "HIGH",
+      "affected_flights": 48,
+      "status": "ACTIVE",
+      "scraped_at": "2025-07-16T00:16:24.610473"
+    },
+    {
+      "sector": "EDGGFIR",
+      "regulation_id": "REG_EDGGFIR_202507160016",
+      "reason": "Capacity",
+      "start_time": "2025-07-15T23:46:24.610482",
+      "end_time": "2025-07-16T02:16:24.610485",
+      "delay_value": 8,
+      "impact_level": "LOW",
+      "affected_flights": 145,
+      "status": "ACTIVE",
+      "scraped_at": "2025-07-16T00:16:24.610489"
+    },
+    {
+      "sector": "EHAAAIR",
+      "regulation_id": "REG_EHAAAIR_202507160016",
+      "reason": "Equipment Failure",
+      "start_time": "2025-07-15T23:46:24.610495",
+      "end_time": "2025-07-16T02:16:24.610497",
+      "delay_value": 43,
+      "impact_level": "HIGH",
+      "affected_flights": 111,
+      "status": "ACTIVE",
+      "scraped_at": "2025-07-16T00:16:24.610501"
+    },
+    {
+      "sector": "LSASFIR",
+      "regulation_id": "REG_LSASFIR_202507160016",
+      "reason": "Technical Issue",
+      "start_time": "2025-07-15T23:46:24.610509",
+      "end_time": "2025-07-16T02:16:24.610512",
+      "delay_value": 5,
+      "impact_level": "MEDIUM",
+      "affected_flights": 30,
+      "status": "ACTIVE",
+      "scraped_at": "2025-07-16T00:16:24.610517"
+    }
+  ],
+  "data_quality": {
+    "completeness": 0.85,
+    "freshness": "Real-time",
+    "accuracy": 0.92
+  }
+}

@@ -611,7 +611,7 @@ const GeopoliticalRiskCenter = () => {
                             <span className={`px-4 py-2 rounded-full text-sm font-bold ${
                               alert.severity === 'critical' ? 'bg-red-600 text-white' :
                               alert.severity === 'high' ? 'bg-orange-600 text-white' :
-                              alert.severity === 'medium' ? 'bg-yellow-600 text-black' :
+                              alert.severity === 'medium' ? 'bg-yellow-600 text-white' :
                               'bg-green-600 text-white'
                             }`}>
                               {alert.severity.toUpperCase()} PRIORITY
