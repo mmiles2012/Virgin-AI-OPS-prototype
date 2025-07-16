@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import VirginAtlanticNavigation from './VirginAtlanticNavigation';
+import AIOpsDashboard from "./AIOpsDashboard";
 import AIOperationsCenter from './AIOperationsCenter';
 import VirginAtlanticDesignShowcase from './VirginAtlanticDesignShowcase';
 import HeathrowHoldingDashboard from './HeathrowHoldingDashboard';
@@ -28,8 +29,8 @@ export const AppRouter: React.FC<AppRouterProps> = ({
         
         <div className="flex-1 transition-all duration-300">
           <Routes>
-            {/* Default route - redirect to AI Operations Center */}
-            <Route path="/" element={<Navigate to="/ai-operations" replace />} />
+            {/* Default route - show AI Ops Dashboard */}
+            <Route path="/" element={<AIOpsDashboard />} />
             
             {/* Core Operations */}
             <Route path="/ai-operations" element={<AIOperationsCenter />} />
