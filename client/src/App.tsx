@@ -98,11 +98,13 @@ function App() {
   const [isNavigationCollapsed, setIsNavigationCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showHoldingDropdown, setShowHoldingDropdown] = useState(false);
+  const [showDiversionDropdown, setShowDiversionDropdown] = useState(false);
 
-  // Close dropdown when navigation collapses
+  // Close dropdowns when navigation collapses
   useEffect(() => {
     if (isNavigationCollapsed) {
       setShowHoldingDropdown(false);
+      setShowDiversionDropdown(false);
     }
   }, [isNavigationCollapsed]);
 
@@ -507,27 +509,51 @@ function App() {
 
 
                   
-                  <button
-                    onClick={() => setViewMode('diversion')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'diversion' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Diversion Engine
-                  </button>
-                  
-                  <button
-                    onClick={() => setViewMode('diversion-support')}
-                    className={`w-full px-4 py-2 rounded transition-colors text-sm ${
-                      viewMode === 'diversion-support' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                  >
-                    Diversion Support
-                  </button>
+                  {/* Master Diversion Button with Dropdown */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowDiversionDropdown(!showDiversionDropdown)}
+                      className={`w-full px-4 py-2 rounded transition-colors text-sm flex items-center justify-between ${
+                        (viewMode === 'diversion' || viewMode === 'diversion-support') 
+                          ? 'bg-orange-600 text-white' 
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      <span>Diversion</span>
+                      <span className={`transition-transform ${showDiversionDropdown ? 'rotate-180' : ''}`}>▼</span>
+                    </button>
+                    
+                    {showDiversionDropdown && (
+                      <div className="absolute left-0 top-full mt-1 w-full bg-gray-800 border border-gray-600 rounded shadow-lg z-10">
+                        <button
+                          onClick={() => {
+                            setViewMode('diversion');
+                            setShowDiversionDropdown(false);
+                          }}
+                          className={`w-full px-4 py-2 text-left text-sm transition-colors ${
+                            viewMode === 'diversion' 
+                              ? 'bg-orange-600 text-white' 
+                              : 'text-gray-300 hover:bg-gray-700'
+                          }`}
+                        >
+                          Diversion Engine
+                        </button>
+                        <button
+                          onClick={() => {
+                            setViewMode('diversion-support');
+                            setShowDiversionDropdown(false);
+                          }}
+                          className={`w-full px-4 py-2 text-left text-sm transition-colors ${
+                            viewMode === 'diversion-support' 
+                              ? 'bg-orange-600 text-white' 
+                              : 'text-gray-300 hover:bg-gray-700'
+                          }`}
+                        >
+                          Diversion Support
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   
                   {/* Communications Section */}
                   <div className="border-t border-gray-600 pt-3 mt-3">

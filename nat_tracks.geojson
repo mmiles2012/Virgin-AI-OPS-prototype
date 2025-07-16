@@ -1,7 +1,7 @@
 {
   "type": "FeatureCollection",
   "properties": {
-    "generated_at": "2025-07-15T23:59:41.578815",
+    "generated_at": "2025-07-16T00:02:53.737688",
     "source": "FAA NOTAM",
     "total_tracks": 19
   },
@@ -12,7 +12,7 @@
         "track_id": "P",
         "direction": "Eastbound",
         "color": "#FFA500",
-        "timestamp": "2025-07-15T23:59:41.576748",
+        "timestamp": "2025-07-16T00:02:53.735128",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "NEEKO 54/50 57/40 57/30 55/20 RESNO NETKI\nEAST LVLS 340 350 360 370 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N699A N693A-"
@@ -45,7 +45,7 @@
         "track_id": "Q",
         "direction": "Eastbound",
         "color": "#FFA500",
-        "timestamp": "2025-07-15T23:59:41.576906",
+        "timestamp": "2025-07-16T00:02:53.735333",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "RIKAL 53/50 56/40 56/30 54/20 DOGAL BEXET\nEAST LVLS 340 350 360 370 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N647B N643B-"
@@ -78,7 +78,7 @@
         "track_id": "R",
         "direction": "Eastbound",
         "color": "#FFA500",
-        "timestamp": "2025-07-15T23:59:41.577009",
+        "timestamp": "2025-07-16T00:02:53.735458",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "TUDEP 52/50 55/40 55/30 53/20 MALOT GISTI\nEAST LVLS 340 350 360 370 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N581A N567B-"
@@ -111,7 +111,7 @@
         "track_id": "S",
         "direction": "Eastbound",
         "color": "#FFA500",
-        "timestamp": "2025-07-15T23:59:41.577251",
+        "timestamp": "2025-07-16T00:02:53.735702",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "UMESI 5130/50 5430/40 5430/30 5230/20 TOBOR RILED\nEAST LVLS 350 360 370 380 390\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N549A N535B-"
@@ -144,7 +144,7 @@
         "track_id": "T",
         "direction": "Eastbound",
         "color": "#FFA500",
-        "timestamp": "2025-07-15T23:59:41.577350",
+        "timestamp": "2025-07-16T00:02:53.735813",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "ALLRY 51/50 54/40 54/30 52/20 LIMRI XETBO\nEAST LVLS 340 350 360 370 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N519A N501B-"
@@ -177,7 +177,7 @@
         "track_id": "U",
         "direction": "Eastbound",
         "color": "#FFA500",
-        "timestamp": "2025-07-15T23:59:41.577462",
+        "timestamp": "2025-07-16T00:02:53.735939",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "BUDAR 5030/50 5330/40 5330/30 5130/20 ADARA LEKVA\nEAST LVLS 350 360 370 380 390\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N479B N465B-"
@@ -210,7 +210,7 @@
         "track_id": "V",
         "direction": "Eastbound",
         "color": "#FFA500",
-        "timestamp": "2025-07-15T23:59:41.577553",
+        "timestamp": "2025-07-16T00:02:53.736047",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "ELSIR 50/50 53/40 53/30 51/20 DINIM ELSOX\nEAST LVLS 340 350 360 370 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N441B N427A-"
@@ -243,7 +243,7 @@
         "track_id": "W",
         "direction": "Eastbound",
         "color": "#FFA500",
-        "timestamp": "2025-07-15T23:59:41.577654",
+        "timestamp": "2025-07-16T00:02:53.736240",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "NICSO 48/50 49/40 49/30 49/20 SOMAX ATSUR\nEAST LVLS 340 350 360 370 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N285B N257B-"
@@ -276,7 +276,7 @@
         "track_id": "X",
         "direction": "Eastbound",
         "color": "#FFA500",
-        "timestamp": "2025-07-15T23:59:41.577743",
+        "timestamp": "2025-07-16T00:02:53.736349",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "PORTI 47/50 48/40 48/30 48/20 BEDRA NASBA\nEAST LVLS 350 360 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N199B N167B-"
@@ -309,7 +309,7 @@
         "track_id": "Y",
         "direction": "Eastbound",
         "color": "#FFA500",
-        "timestamp": "2025-07-15T23:59:41.577833",
+        "timestamp": "2025-07-16T00:02:53.736456",
         "source": "FAA NOTAM",
         "waypoint_count": 5,
         "raw_text": "SUPRY 46/50 47/40 47/30 47/20 48/15 OMOKO GUNSO\nEAST LVLS 350 360 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N119B N89B-"
@@ -346,7 +346,7 @@
         "track_id": "Z",
         "direction": "Eastbound",
         "color": "#FFA500",
-        "timestamp": "2025-07-15T23:59:41.577926",
+        "timestamp": "2025-07-16T00:02:53.736570",
         "source": "FAA NOTAM",
         "waypoint_count": 6,
         "raw_text": "DOVEY 42/60 44/50 46/40 46/30 46/20 47/15 ETIKI REGHI\nEAST LVLS 360 380 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR NIL-"
@@ -387,7 +387,7 @@
         "track_id": "A",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-15T23:59:41.578011",
+        "timestamp": "2025-07-16T00:02:53.736702",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "ERAKA 60/20 60/30 59/40 57/50 HOIST\nEAST LVLS NIL\nWEST LVLS 340 350 360 370\nEUR RTS WEST\nNAR N750B N754B-"
@@ -420,7 +420,7 @@
         "track_id": "B",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-15T23:59:41.578162",
+        "timestamp": "2025-07-16T00:02:53.736817",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "GOMUP 59/20 59/30 58/40 56/50 JANJO\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST\nNAR N712B N714B-"
@@ -453,7 +453,7 @@
         "track_id": "C",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-15T23:59:41.578269",
+        "timestamp": "2025-07-16T00:02:53.736987",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "SUNOT 58/20 58/30 57/40 55/50 LOMSI\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N668A N672A-"
@@ -486,7 +486,7 @@
         "track_id": "D",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-15T23:59:41.578363",
+        "timestamp": "2025-07-16T00:02:53.737091",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "PIKIL 57/20 57/30 56/40 54/50 NEEKO\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N622E N624C-"
@@ -519,7 +519,7 @@
         "track_id": "E",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-15T23:59:41.578474",
+        "timestamp": "2025-07-16T00:02:53.737274",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "ETARI 5630/20 5630/30 5530/40 5330/50 PELTU\nEAST LVLS NIL\nWEST LVLS 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N592A N600B-"
@@ -552,7 +552,7 @@
         "track_id": "F",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-15T23:59:41.578562",
+        "timestamp": "2025-07-16T00:02:53.737398",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "RESNO 56/20 56/30 55/40 53/50 RIKAL\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N572A N576B-"
@@ -585,7 +585,7 @@
         "track_id": "G",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-15T23:59:41.578676",
+        "timestamp": "2025-07-16T00:02:53.737516",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "VENER 5530/20 5530/30 5430/40 5230/50 SAXAN\nEAST LVLS NIL\nWEST LVLS 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N544E N556B-"
@@ -618,7 +618,7 @@
         "track_id": "H",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-15T23:59:41.578773",
+        "timestamp": "2025-07-16T00:02:53.737644",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "DOGAL 55/20 55/30 54/40 52/50 TUDEP\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N520C N530A-"
