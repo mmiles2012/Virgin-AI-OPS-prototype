@@ -7765,10 +7765,10 @@ else:
   });
 
   // Enhanced European Network Manager ML Analytics with real-time insights
-  app.get('/api/nm-punctuality/analytics', (req, res) => {
+  app.get('/api/nm-punctuality/analytics', async (req, res) => {
     try {
-      const fs = require('fs');
-      const path = require('path');
+      const fs = await import('fs');
+      const path = await import('path');
       
       const csvPath = path.join('attached_assets', 'Download nm_network_punctuality_1751725331403.csv');
       
