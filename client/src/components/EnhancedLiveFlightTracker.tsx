@@ -73,6 +73,7 @@ export default function EnhancedLiveFlightTracker() {
   const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [fuelOptimizationData, setFuelOptimizationData] = useState<any>({});
   const [autoRefresh, setAutoRefresh] = useState(true);
 
   const enhanceFlightData = (baseFlights: FlightData[]): EnhancedFlightData[] => {
@@ -137,12 +138,57 @@ export default function EnhancedLiveFlightTracker() {
         const enhancedFlights = enhanceFlightData(data.flights);
         setFlights(enhancedFlights);
         setLastUpdate(new Date());
+        
+        // Fetch fuel optimization data
+        fetchFuelOptimizationData();
       }
     } catch (error) {
       console.error('Failed to fetch flight data:', error);
     } finally {
       setLoading(false);
     }
+  };
+  
+  const fetchFuelOptimizationData = async () => {
+    try {
+      const response = await fetch('/api/fuel/virgin-atlantic-fleet');
+      const data = await response.json();
+      
+      if (data.success) {
+        // Create a map of flight callsigns to fuel optimization data
+        const fuelMap: any = {};
+        data.optimized_flights.forEach((flight: any) => {
+          fuelMap[flight.callsign] = {
+            fuel_efficiency: calculateFuelEfficiency(flight),
+            optimization_strategy: flight.fuel_optimization?.optimization_strategy?.strategy || 'STANDARD',
+            cost_impact: flight.fuel_optimization?.optimization_strategy?.cost_impact_usd || 0,
+            fuel_percentage: calculateFuelPercentage(flight)
+          };
+        });
+        setFuelOptimizationData(fuelMap);
+      }
+    } catch (error) {
+      console.error('Error fetching fuel optimization data:', error);
+    }
+  };
+  
+  const calculateFuelEfficiency = (flight: any) => {
+    const fuelData = flight.fuel_optimization?.fuel_requirements;
+    if (!fuelData) return 85; // Default efficiency
+    
+    const efficiency = Math.max(75, Math.min(95, 
+      100 - (fuelData.weather_factor - 1) * 50 - (fuelData.complexity_factor - 1) * 30
+    ));
+    return Math.round(efficiency);
+  };
+  
+  const calculateFuelPercentage = (flight: any) => {
+    const fuelData = flight.fuel_optimization?.fuel_requirements;
+    if (!fuelData) return 75; // Default percentage
+    
+    const maxCapacity = fuelData.max_fuel_capacity || 100000;
+    const currentFuel = fuelData.total_fuel_required || 75000;
+    return Math.round((currentFuel / maxCapacity) * 100);
   };
 
   useEffect(() => {
@@ -304,7 +350,12 @@ export default function EnhancedLiveFlightTracker() {
                     </div>
                     <div className="text-center">
                       <div className="text-gray-400">Fuel</div>
-                      <div className="text-white font-mono">{Math.round(flight.fuel_remaining)}%</div>
+                      <div className="text-white font-mono">
+                        {fuelOptimizationData[flight.callsign]?.fuel_efficiency || 85}%
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {fuelOptimizationData[flight.callsign]?.optimization_strategy || 'STANDARD'}
+                      </div>
                     </div>
                     {selectedFlightId === flight.callsign ? 
                       <ChevronUp className="h-5 w-5 text-gray-400" /> : 

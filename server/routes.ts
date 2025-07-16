@@ -53,6 +53,7 @@ import { virginAtlanticFlightTracker } from "./routeMatcher";
 import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
 import mlOtpRoutes from "./mlOtpRoutes";
 import visaRoutes from "./visaRoutes";
+import fuelOptimizationRoutes from "./fuelOptimizationRoutes";
 import FAAStatusService from "./faaStatusService.js";
 
 // Initialize FAA Status Service
@@ -5519,6 +5520,7 @@ print(json.dumps(weather))
   
   // Visa Requirements Routes
   app.use('/api/visa', visaRoutes);
+  app.use('/api/fuel', fuelOptimizationRoutes);
 
   // Stand Conflict Detection Routes
   app.use('/api/stand-conflict', standConflictRoutes);
