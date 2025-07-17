@@ -92,7 +92,7 @@ export const AppRouter: React.FC<AppRouterProps> = ({
             <Route path="/design-showcase" element={<VirginAtlanticDesignShowcase />} />
             
             {/* Fallback - redirect to AI Operations */}
-            <Route path="*" element={<Navigate to="/ai-operations" replace />} />
+            {/*<Route path="*" element={<Navigate to="/ai-operations" replace />} /> */}
           </Routes>
         </div>
       </div>
