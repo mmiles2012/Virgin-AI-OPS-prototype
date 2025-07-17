@@ -338,6 +338,7 @@ class IntegratedHoldingMLService {
       // High delay - rebooking and support
       totalCost = baseCost.rebooking + baseCost.meals + baseCost.staff_time;
     } else if (holdingImpact.estimatedDelay >= MEDIUM_DELAY_THRESHOLD) {
+
       // Medium delay - minimal support
       totalCost = baseCost.staff_time;
     }
