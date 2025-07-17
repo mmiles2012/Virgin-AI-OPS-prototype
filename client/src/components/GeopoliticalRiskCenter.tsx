@@ -412,59 +412,59 @@ const GeopoliticalRiskCenter = () => {
 
   const getSeverityColor = (severity: string) => {
     switch(severity) {
-      case 'critical': return 'bg-red-50 border-red-200 text-red-700';
-      case 'high': return 'bg-orange-50 border-orange-200 text-orange-700';
-      case 'medium': return 'bg-yellow-50 border-yellow-200 text-yellow-700';
-      case 'low': return 'bg-green-50 border-green-200 text-green-700';
-      default: return 'bg-gray-50 border-gray-200 text-gray-700';
+      case 'critical': return 'bg-va-red-primary/10 border-va-red-primary text-va-red-primary';
+      case 'high': return 'bg-va-red-rebel/10 border-va-red-rebel text-va-red-rebel';
+      case 'medium': return 'bg-aero-amber-light border-aero-amber-caution text-aero-amber-caution';
+      case 'low': return 'bg-aero-green-light border-aero-green-safe text-aero-green-safe';
+      default: return 'bg-surface-primary border-va-grey text-va-grey';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch(status) {
-      case 'disrupted': return 'bg-red-500';
-      case 'monitoring': return 'bg-yellow-500';
-      case 'normal': return 'bg-green-500';
-      default: return 'bg-gray-500';
+      case 'disrupted': return 'bg-va-red-primary';
+      case 'monitoring': return 'bg-aero-amber-caution';
+      case 'normal': return 'bg-aero-green-safe';
+      default: return 'bg-va-grey';
     }
   };
 
   const getRiskLevelColor = (riskLevel: string) => {
     switch(riskLevel) {
-      case 'critical': return 'text-red-600';
-      case 'high': return 'text-orange-600';
-      case 'medium': return 'text-yellow-600';
-      case 'low': return 'text-green-600';
-      default: return 'text-gray-600';
+      case 'critical': return 'text-va-red-primary';
+      case 'high': return 'text-va-red-rebel';
+      case 'medium': return 'text-aero-amber-caution';
+      case 'low': return 'text-aero-green-safe';
+      default: return 'text-va-grey';
     }
   };
 
   return (
-    <div className="p-4 space-y-6 min-h-screen bg-gray-50 text-gray-900 overflow-y-auto">
+    <div className="p-4 space-y-6 min-h-screen h-screen bg-va-white text-va-midnight overflow-y-auto">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Geopolitical Risk Center</h1>
-          <p className="text-gray-300 text-lg">Real-time global risk assessment for Virgin Atlantic operations</p>
+          <h1 className="text-3xl font-bold text-va-midnight mb-2">Geopolitical Risk Center</h1>
+          <p className="text-va-grey text-lg">Real-time global risk assessment for Virgin Atlantic operations</p>
         </div>
-        <div className="text-sm text-gray-400">
+        <div className="text-sm text-va-grey">
           Last updated: {currentTime.toLocaleTimeString()}
         </div>
       </div>
 
       {loading && (
         <div className="flex items-center justify-center h-96">
-          <div className="text-gray-900 text-xl">Loading geopolitical risk data...</div>
+          <div className="text-va-midnight text-xl">Loading geopolitical risk data...</div>
         </div>
       )}
 
       {/* Navigation Tabs */}
-      <div className="flex space-x-2 bg-white border border-gray-200 p-2 rounded-lg">
+      <div className="flex space-x-2 bg-va-white border border-va-grey p-2 rounded-lg">
         <button
           onClick={() => setActiveTab('dashboard')}
           className={`px-6 py-3 rounded-md text-base font-medium transition-colors ${
             activeTab === 'dashboard' 
-              ? 'bg-red-600 text-white' 
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              ? 'bg-va-red-primary text-va-white' 
+              : 'text-va-midnight hover:text-va-red-primary hover:bg-va-white'
           }`}
         >
           Dashboard
@@ -473,8 +473,8 @@ const GeopoliticalRiskCenter = () => {
           onClick={() => setActiveTab('analysis')}
           className={`px-6 py-3 rounded-md text-base font-medium transition-colors ${
             activeTab === 'analysis' 
-              ? 'bg-red-600 text-white' 
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              ? 'bg-va-red-primary text-va-white' 
+              : 'text-va-midnight hover:text-va-red-primary hover:bg-va-white'
           }`}
         >
           Risk Analysis
@@ -484,46 +484,46 @@ const GeopoliticalRiskCenter = () => {
       {activeTab === 'dashboard' && (
         <div className="space-y-8">
           {/* Executive Summary Card - Expanded */}
-          <div className="bg-gray-800 rounded-lg p-8 mb-8">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">Executive Risk Summary</h2>
+          <div className="bg-va-white rounded-lg p-8 mb-8 border border-va-grey">
+            <h2 className="text-4xl font-bold text-va-midnight mb-6">Executive Risk Summary</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-red-900/30 border border-red-600 rounded-lg p-6">
-                <div className="text-red-400 text-lg font-medium mb-3">CRITICAL ALERTS</div>
-                <div className="text-5xl font-bold text-red-300 mb-2">{alerts.filter(a => a.severity === 'critical').length}</div>
-                <div className="text-red-300 text-base">Immediate Action Required</div>
+              <div className="bg-va-red-primary/10 border border-va-red-primary rounded-lg p-6">
+                <div className="text-va-red-primary text-lg font-medium mb-3">CRITICAL ALERTS</div>
+                <div className="text-5xl font-bold text-va-red-primary mb-2">{alerts.filter(a => a.severity === 'critical').length}</div>
+                <div className="text-va-red-primary text-base">Immediate Action Required</div>
               </div>
-              <div className="bg-orange-900/30 border border-orange-600 rounded-lg p-6">
-                <div className="text-orange-400 text-lg font-medium mb-3">HIGH RISK</div>
-                <div className="text-5xl font-bold text-orange-300 mb-2">{alerts.filter(a => a.severity === 'high').length}</div>
-                <div className="text-orange-300 text-base">Enhanced Monitoring</div>
+              <div className="bg-va-red-rebel/10 border border-va-red-rebel rounded-lg p-6">
+                <div className="text-va-red-rebel text-lg font-medium mb-3">HIGH RISK</div>
+                <div className="text-5xl font-bold text-va-red-rebel mb-2">{alerts.filter(a => a.severity === 'high').length}</div>
+                <div className="text-va-red-rebel text-base">Enhanced Monitoring</div>
               </div>
-              <div className="bg-yellow-900/30 border border-yellow-600 rounded-lg p-6">
-                <div className="text-yellow-400 text-lg font-medium mb-3">ROUTES MONITORED</div>
-                <div className="text-5xl font-bold text-yellow-300 mb-2">{routes.length}</div>
-                <div className="text-yellow-300 text-base">Active Virgin Atlantic Routes</div>
+              <div className="bg-aero-amber-light border border-aero-amber-caution rounded-lg p-6">
+                <div className="text-aero-amber-caution text-lg font-medium mb-3">ROUTES MONITORED</div>
+                <div className="text-5xl font-bold text-aero-amber-caution mb-2">{routes.length}</div>
+                <div className="text-aero-amber-caution text-base">Active Virgin Atlantic Routes</div>
               </div>
-              <div className="bg-blue-900/30 border border-blue-600 rounded-lg p-6">
-                <div className="text-blue-400 text-lg font-medium mb-3">REGIONS ASSESSED</div>
-                <div className="text-5xl font-bold text-blue-300 mb-2">{regionalAssessments.length}</div>
-                <div className="text-blue-300 text-base">Global Risk Coverage</div>
+              <div className="bg-aero-blue-light border border-aero-blue-primary rounded-lg p-6">
+                <div className="text-aero-blue-primary text-lg font-medium mb-3">REGIONS ASSESSED</div>
+                <div className="text-5xl font-bold text-aero-blue-primary mb-2">{regionalAssessments.length}</div>
+                <div className="text-aero-blue-primary text-base">Global Risk Coverage</div>
               </div>
             </div>
             
             {/* Risk Status Bar */}
-            <div className="bg-gray-700 rounded-lg p-6">
-              <h3 className="text-2xl font-semibold text-white mb-4">Global Risk Status</h3>
+            <div className="bg-va-white rounded-lg p-6 border border-va-grey">
+              <h3 className="text-2xl font-semibold text-va-midnight mb-4">Global Risk Status</h3>
               <div className="flex items-center space-x-6">
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-                  <span className="text-lg text-gray-300">Normal Operations: {routes.filter(r => r.status === 'normal').length} routes</span>
+                  <div className="w-4 h-4 bg-aero-green-safe rounded-full"></div>
+                  <span className="text-lg text-va-grey">Normal Operations: {routes.filter(r => r.status === 'normal').length} routes</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-                  <span className="text-lg text-gray-300">Monitoring: {routes.filter(r => r.status === 'monitoring').length} routes</span>
+                  <div className="w-4 h-4 bg-aero-amber-caution rounded-full"></div>
+                  <span className="text-lg text-va-grey">Monitoring: {routes.filter(r => r.status === 'monitoring').length} routes</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-                  <span className="text-lg text-gray-300">Disrupted: {routes.filter(r => r.status === 'disrupted').length} routes</span>
+                  <div className="w-4 h-4 bg-va-red-primary rounded-full"></div>
+                  <span className="text-lg text-va-grey">Disrupted: {routes.filter(r => r.status === 'disrupted').length} routes</span>
                 </div>
               </div>
             </div>
@@ -531,61 +531,58 @@ const GeopoliticalRiskCenter = () => {
 
           {/* Key Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-va-white border-va-grey">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-base text-gray-400 mb-1">Active Alerts</p>
-                    <p className="text-4xl font-bold text-red-400">{alerts.length}</p>
+                    <p className="text-base text-va-grey mb-1">Active Alerts</p>
+                    <p className="text-4xl font-bold text-va-red-primary">{alerts.length}</p>
                   </div>
-                  <AlertTriangle className="h-12 w-12 text-red-500" />
+                  <AlertTriangle className="h-12 w-12 text-va-red-primary" />
                 </div>
               </CardContent>
             </Card>
-            
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-va-white border-va-grey">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-base text-gray-400 mb-1">Affected Routes</p>
-                    <p className="text-4xl font-bold text-orange-400">
+                    <p className="text-base text-va-grey mb-1">Affected Routes</p>
+                    <p className="text-4xl font-bold text-va-red-rebel">
                       {routes.filter(r => r.status !== 'normal').length}
                     </p>
                   </div>
-                  <Navigation className="h-12 w-12 text-orange-500" />
+                  <Navigation className="h-12 w-12 text-va-red-rebel" />
                 </div>
               </CardContent>
             </Card>
-            
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-va-white border-va-grey">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-base text-gray-400 mb-1">Passengers Impacted</p>
-                    <p className="text-4xl font-bold text-blue-400">530</p>
+                    <p className="text-base text-va-grey mb-1">Passengers Impacted</p>
+                    <p className="text-4xl font-bold text-aero-blue-primary">530</p>
                   </div>
-                  <Users className="h-12 w-12 text-blue-500" />
+                  <Users className="h-12 w-12 text-aero-blue-primary" />
                 </div>
               </CardContent>
             </Card>
-            
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-va-white border-va-grey">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-base text-gray-400 mb-1">Cost Impact</p>
-                    <p className="text-4xl font-bold text-purple-400">$75K</p>
+                    <p className="text-base text-va-grey mb-1">Cost Impact</p>
+                    <p className="text-4xl font-bold text-aero-purple-premium">$75K</p>
                   </div>
-                  <DollarSign className="h-12 w-12 text-purple-500" />
+                  <DollarSign className="h-12 w-12 text-aero-purple-premium" />
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* All Alerts - Expanded */}
-          <div className="bg-gray-800 rounded-lg p-8 mb-8">
-            <h2 className="text-4xl font-bold text-white mb-6 flex items-center">
-              <AlertTriangle className="h-10 w-10 mr-4 text-red-500" />
+          <div className="bg-va-white rounded-lg p-8 mb-8 border border-va-grey">
+            <h2 className="text-4xl font-bold text-va-midnight mb-6 flex items-center">
+              <AlertTriangle className="h-10 w-10 mr-4 text-va-red-primary" />
               Global Alert Management Center
             </h2>
             
@@ -593,85 +590,85 @@ const GeopoliticalRiskCenter = () => {
               {alerts.map((alert) => (
                 <div
                   key={alert.id}
-                  className={`p-8 rounded-xl border-2 ${getSeverityColor(alert.severity)} transition-all hover:shadow-lg`}
+                  className={`p-8 rounded-xl border-2 ${getSeverityColor(alert.severity)} transition-all hover:shadow-va-md bg-va-white`}
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Alert Header */}
                     <div className="lg:col-span-2">
                       <div className="flex items-start space-x-4 mb-4">
                         <div className={`w-3 h-3 rounded-full mt-2 ${
-                          alert.severity === 'critical' ? 'bg-red-500' :
-                          alert.severity === 'high' ? 'bg-orange-500' :
-                          alert.severity === 'medium' ? 'bg-yellow-500' :
-                          'bg-green-500'
+                          alert.severity === 'critical' ? 'bg-va-red-primary' :
+                          alert.severity === 'high' ? 'bg-va-red-rebel' :
+                          alert.severity === 'medium' ? 'bg-aero-amber-caution' :
+                          'bg-aero-green-safe'
                         }`}></div>
                         <div className="flex-1">
-                          <h3 className="text-3xl font-bold mb-3">{alert.title}</h3>
+                          <h3 className="text-3xl font-bold mb-3 text-va-midnight">{alert.title}</h3>
                           <div className="flex flex-wrap gap-2 mb-4">
                             <span className={`px-4 py-2 rounded-full text-sm font-bold ${
-                              alert.severity === 'critical' ? 'bg-red-600 text-white' :
-                              alert.severity === 'high' ? 'bg-orange-600 text-white' :
-                              alert.severity === 'medium' ? 'bg-yellow-600 text-white' :
-                              'bg-green-600 text-white'
+                              alert.severity === 'critical' ? 'bg-va-red-primary text-va-white' :
+                              alert.severity === 'high' ? 'bg-va-red-rebel text-va-white' :
+                              alert.severity === 'medium' ? 'bg-aero-amber-caution text-va-midnight' :
+                              'bg-aero-green-safe text-va-midnight'
                             }`}>
                               {alert.severity.toUpperCase()} PRIORITY
                             </span>
-                            <span className="px-4 py-2 rounded-full text-sm font-medium bg-gray-700 text-gray-300">
+                            <span className="px-4 py-2 rounded-full text-sm font-medium bg-surface-secondary text-va-grey">
                               {alert.type.replace('_', ' ').toUpperCase()}
                             </span>
-                            <span className="px-4 py-2 rounded-full text-sm font-medium bg-blue-700 text-blue-300">
+                            <span className="px-4 py-2 rounded-full text-sm font-medium bg-aero-blue-light text-aero-blue-primary">
                               {alert.region}
                             </span>
                           </div>
                         </div>
                       </div>
                       
-                      <p className="text-xl mb-6 text-gray-300 leading-relaxed">{alert.description}</p>
+                      <p className="text-xl mb-6 text-va-grey leading-relaxed">{alert.description}</p>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <div className="bg-gray-700/50 rounded-lg p-4">
-                          <div className="text-sm font-medium text-gray-400 mb-2">Impact Assessment</div>
-                          <div className="text-lg font-semibold text-white">{alert.impact}</div>
+                        <div className="bg-surface-primary rounded-lg p-4 border border-va-grey">
+                          <div className="text-sm font-medium text-va-grey mb-2">Impact Assessment</div>
+                          <div className="text-lg font-semibold text-va-midnight">{alert.impact}</div>
                         </div>
-                        <div className="bg-gray-700/50 rounded-lg p-4">
-                          <div className="text-sm font-medium text-gray-400 mb-2">Time Frame</div>
-                          <div className="text-lg font-semibold text-white">{alert.timeRemaining}</div>
+                        <div className="bg-surface-primary rounded-lg p-4 border border-va-grey">
+                          <div className="text-sm font-medium text-va-grey mb-2">Time Frame</div>
+                          <div className="text-lg font-semibold text-va-midnight">{alert.timeRemaining}</div>
                         </div>
                       </div>
                     </div>
                     
                     {/* Alert Details */}
                     <div className="space-y-4">
-                      <div className="bg-gray-700/30 rounded-lg p-4">
-                        <div className="text-sm font-medium text-gray-400 mb-3">Affected Routes</div>
+                      <div className="bg-surface-primary rounded-lg p-4 border border-va-grey">
+                        <div className="text-sm font-medium text-va-grey mb-3">Affected Routes</div>
                         <div className="space-y-2">
                           {alert.affectedRoutes.map((route, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-2 bg-blue-900/30 rounded">
-                              <span className="text-blue-300 font-medium">{route}</span>
-                              <span className="text-xs text-gray-400">Active</span>
+                            <div key={idx} className="flex items-center justify-between p-2 bg-aero-blue-light rounded">
+                              <span className="text-aero-blue-primary font-medium">{route}</span>
+                              <span className="text-xs text-va-grey">Active</span>
                             </div>
                           ))}
                         </div>
                       </div>
                       
-                      <div className="bg-gray-700/30 rounded-lg p-4">
-                        <div className="text-sm font-medium text-gray-400 mb-3">Risk Metrics</div>
+                      <div className="bg-surface-primary rounded-lg p-4 border border-va-grey">
+                        <div className="text-sm font-medium text-va-grey mb-3">Risk Metrics</div>
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <span className="text-gray-300">Routes Affected:</span>
-                            <span className="text-white font-bold">{alert.affectedRoutes.length}</span>
+                            <span className="text-va-grey">Routes Affected:</span>
+                            <span className="text-va-midnight font-bold">{alert.affectedRoutes.length}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-300">Alert Duration:</span>
-                            <span className="text-white font-bold">{alert.timeRemaining}</span>
+                            <span className="text-va-grey">Alert Duration:</span>
+                            <span className="text-va-midnight font-bold">{alert.timeRemaining}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-300">Priority Level:</span>
+                            <span className="text-va-grey">Priority Level:</span>
                             <span className={`font-bold ${
-                              alert.severity === 'critical' ? 'text-red-400' :
-                              alert.severity === 'high' ? 'text-orange-400' :
-                              alert.severity === 'medium' ? 'text-yellow-400' :
-                              'text-green-400'
+                              alert.severity === 'critical' ? 'text-va-red-primary' :
+                              alert.severity === 'high' ? 'text-va-red-rebel' :
+                              alert.severity === 'medium' ? 'text-aero-amber-caution' :
+                              'text-aero-green-safe'
                             }`}>
                               {alert.severity.toUpperCase()}
                             </span>
@@ -682,33 +679,32 @@ const GeopoliticalRiskCenter = () => {
                   </div>
                   
                   {/* Recommendation Section */}
-                  <div className="mt-6 bg-blue-900/20 border border-blue-600 rounded-lg p-6">
+                  <div className="mt-6 bg-aero-blue-light border border-aero-blue-primary rounded-lg p-6">
                     <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center mt-1">
-                        <span className="text-white text-xs font-bold">!</span>
+                      <div className="w-6 h-6 bg-aero-blue-primary rounded-full flex items-center justify-center mt-1">
+                        <span className="text-va-white text-xs font-bold">!</span>
                       </div>
                       <div className="flex-1">
-                        <div className="text-lg font-bold text-blue-300 mb-2">Operational Recommendation</div>
-                        <div className="text-base text-blue-200">{alert.recommendation}</div>
+                        <div className="text-lg font-bold text-aero-blue-primary mb-2">Operational Recommendation</div>
+                        <div className="text-base text-va-grey">{alert.recommendation}</div>
                       </div>
                     </div>
                   </div>
                 </div>
               ))}
-              
               {alerts.length === 0 && (
                 <div className="text-center py-16">
-                  <div className="text-8xl text-gray-600 mb-6">🌍</div>
-                  <div className="text-3xl text-gray-400 mb-4">No Active Alerts</div>
-                  <div className="text-xl text-gray-500">All regions showing normal operational status</div>
-                  <div className="mt-6 text-lg text-gray-500">System monitoring {routes.length} active Virgin Atlantic routes</div>
+                  <div className="text-8xl text-va-grey mb-6">🌍</div>
+                  <div className="text-3xl text-va-grey mb-4">No Active Alerts</div>
+                  <div className="text-xl text-va-grey">All regions showing normal operational status</div>
+                  <div className="mt-6 text-lg text-va-grey">System monitoring {routes.length} active Virgin Atlantic routes</div>
                 </div>
               )}
             </div>
           </div>
 
           {/* Route Status Overview - Expanded */}
-          <div className="bg-gray-800 rounded-lg p-8 mb-8">
+          <div className="bg-va-white border border-va-grey rounded-lg p-8 mb-8">
             <h2 className="text-4xl font-bold text-white mb-6 flex items-center">
               <Plane className="h-10 w-10 mr-4 text-blue-500" />
               Virgin Atlantic Route Risk Assessment Center
@@ -730,15 +726,15 @@ const GeopoliticalRiskCenter = () => {
                 </thead>
                 <tbody>
                   {routes.map((route, index) => (
-                    <tr key={route.id} className={`${index % 2 === 0 ? 'bg-gray-750' : 'bg-gray-800'} hover:bg-gray-700 transition-colors`}>
+                    <tr key={route.id} className={`${index % 2 === 0 ? 'bg-gray-750' : 'bg-gray-800'} hover:bg-aero-blue-light/10 transition-colors`}>
                       <td className="px-6 py-5 text-lg font-bold text-white border-r border-gray-600">
                         {route.id}
                       </td>
                       <td className="px-6 py-5 border-r border-gray-600">
                         <div className="flex items-center space-x-3">
-                          <span className="text-lg font-semibold text-gray-300">{route.origin}</span>
+                          <span className="text-lg font-semibold text-va-gray">{route.origin}</span>
                           <span className="text-blue-400">→</span>
-                          <span className="text-lg font-semibold text-gray-300">{route.destination}</span>
+                          <span className="text-lg font-semibold text-va-gray">{route.destination}</span>
                         </div>
                       </td>
                       <td className="px-6 py-5 border-r border-gray-600">
@@ -759,7 +755,7 @@ const GeopoliticalRiskCenter = () => {
                           <span className="uppercase">{route.riskLevel}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-5 text-lg font-semibold text-gray-300 border-r border-gray-600">
+                      <td className="px-6 py-5 text-lg font-semibold text-va-gray border-r border-gray-600">
                         {route.passengers.toLocaleString()} PAX
                       </td>
                       <td className="px-6 py-5 text-lg font-semibold text-green-400 border-r border-gray-600">
@@ -782,12 +778,12 @@ const GeopoliticalRiskCenter = () => {
                                 setSelectedRoute(route);
                                 setShowRouteOptions(true);
                               }}
-                              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                              className="bg-blue-600 hover:bg-blue-700 text-va-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                             >
                               View Options
                             </button>
                           )}
-                          <button className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                          <button className="bg-gray-600 hover:bg-gray-700 text-va-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                             Details
                           </button>
                         </div>
