@@ -26,7 +26,10 @@ const configSchema = z.object({
   OPENSKY_PASSWORD: z.string().optional(),
 
   // Security Configuration
-  SESSION_SECRET: z.string().default('your-development-secret-key'),
+  SESSION_SECRET: z.string().refine(
+    (value) => process.env.NODE_ENV !== 'production' || value !== 'your-development-secret-key',
+    { message: 'SESSION_SECRET must be explicitly set in production.' }
+  ).default(process.env.NODE_ENV === 'production' ? undefined : 'your-development-secret-key'),
   JWT_SECRET: z.string().refine(
     (value) => process.env.NODE_ENV !== 'production' || value !== 'your-development-jwt-secret',
     { message: 'JWT_SECRET must be explicitly set in production environments.' }
