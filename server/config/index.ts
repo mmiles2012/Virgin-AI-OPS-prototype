@@ -27,8 +27,14 @@ const configSchema = z.object({
 
   // Security Configuration
   SESSION_SECRET: z.string().default('your-development-secret-key'),
-  JWT_SECRET: z.string().default('your-development-jwt-secret'),
-
+  JWT_SECRET: z.string().refine(
+    (value) => process.env.NODE_ENV !== 'production' || value !== 'your-development-jwt-secret',
+    { message: 'JWT_SECRET must be explicitly set in production environments.' }
+  ).default(
+    process.env.NODE_ENV === 'production'
+      ? undefined
+      : require('crypto').randomBytes(32).toString('hex')
+  ),
   // External Service URLs
   VISA_SERVICE_URL: z.string().url().default('http://localhost:8080'),
   AVIATION_NEWS_SERVICE_URL: z.string().url().default('http://localhost:8081'),
