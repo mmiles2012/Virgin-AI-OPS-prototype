@@ -440,639 +440,641 @@ const GeopoliticalRiskCenter = () => {
   };
 
   return (
-    <div className="p-4 space-y-6 min-h-screen h-screen bg-va-white text-va-midnight overflow-y-auto">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-va-midnight mb-2">Geopolitical Risk Center</h1>
-          <p className="text-va-grey text-lg">Real-time global risk assessment for Virgin Atlantic operations</p>
+    <div className="min-h-screen h-screen bg-va-white text-va-midnight overflow-y-auto">
+      <div className="max-w-screen-xl w-full mx-auto px-4 space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-va-midnight mb-2">Geopolitical Risk Center</h1>
+            <p className="text-va-grey text-lg">Real-time global risk assessment for Virgin Atlantic operations</p>
+          </div>
+          <div className="text-sm text-va-grey">
+            Last updated: {currentTime.toLocaleTimeString()}
+          </div>
         </div>
-        <div className="text-sm text-va-grey">
-          Last updated: {currentTime.toLocaleTimeString()}
+
+        {loading && (
+          <div className="flex items-center justify-center h-96">
+            <div className="text-va-midnight text-xl">Loading geopolitical risk data...</div>
+          </div>
+        )}
+
+        {/* Navigation Tabs */}
+        <div className="flex space-x-2 bg-va-white border border-va-grey p-2 rounded-lg">
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`px-6 py-3 rounded-md text-base font-medium transition-colors ${
+              activeTab === 'dashboard' 
+                ? 'bg-va-red-primary text-va-white' 
+                : 'text-va-midnight hover:text-va-red-primary hover:bg-va-white'
+            }`}
+          >
+            Dashboard
+          </button>
+          <button
+            onClick={() => setActiveTab('analysis')}
+            className={`px-6 py-3 rounded-md text-base font-medium transition-colors ${
+              activeTab === 'analysis' 
+                ? 'bg-va-red-primary text-va-white' 
+                : 'text-va-midnight hover:text-va-red-primary hover:bg-va-white'
+            }`}
+          >
+            Risk Analysis
+          </button>
         </div>
-      </div>
 
-      {loading && (
-        <div className="flex items-center justify-center h-96">
-          <div className="text-va-midnight text-xl">Loading geopolitical risk data...</div>
-        </div>
-      )}
-
-      {/* Navigation Tabs */}
-      <div className="flex space-x-2 bg-va-white border border-va-grey p-2 rounded-lg">
-        <button
-          onClick={() => setActiveTab('dashboard')}
-          className={`px-6 py-3 rounded-md text-base font-medium transition-colors ${
-            activeTab === 'dashboard' 
-              ? 'bg-va-red-primary text-va-white' 
-              : 'text-va-midnight hover:text-va-red-primary hover:bg-va-white'
-          }`}
-        >
-          Dashboard
-        </button>
-        <button
-          onClick={() => setActiveTab('analysis')}
-          className={`px-6 py-3 rounded-md text-base font-medium transition-colors ${
-            activeTab === 'analysis' 
-              ? 'bg-va-red-primary text-va-white' 
-              : 'text-va-midnight hover:text-va-red-primary hover:bg-va-white'
-          }`}
-        >
-          Risk Analysis
-        </button>
-      </div>
-
-      {activeTab === 'dashboard' && (
-        <div className="space-y-8">
-          {/* Executive Summary Card - Expanded */}
-          <div className="bg-va-white rounded-lg p-8 mb-8 border border-va-grey">
-            <h2 className="text-4xl font-bold text-va-midnight mb-6">Executive Risk Summary</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-va-red-primary/10 border border-va-red-primary rounded-lg p-6">
-                <div className="text-va-red-primary text-lg font-medium mb-3">CRITICAL ALERTS</div>
-                <div className="text-5xl font-bold text-va-red-primary mb-2">{alerts.filter(a => a.severity === 'critical').length}</div>
-                <div className="text-va-red-primary text-base">Immediate Action Required</div>
+        {activeTab === 'dashboard' && (
+          <div className="space-y-8">
+            {/* Executive Summary Card - Expanded */}
+            <div className="bg-va-white rounded-lg p-8 mb-8 border border-va-grey">
+              <h2 className="text-4xl font-bold text-va-midnight mb-6">Executive Risk Summary</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="bg-va-red-primary/10 border border-va-red-primary rounded-lg p-6">
+                  <div className="text-va-red-primary text-lg font-medium mb-3">CRITICAL ALERTS</div>
+                  <div className="text-5xl font-bold text-va-red-primary mb-2">{alerts.filter(a => a.severity === 'critical').length}</div>
+                  <div className="text-va-red-primary text-base">Immediate Action Required</div>
+                </div>
+                <div className="bg-va-red-rebel/10 border border-va-red-rebel rounded-lg p-6">
+                  <div className="text-va-red-rebel text-lg font-medium mb-3">HIGH RISK</div>
+                  <div className="text-5xl font-bold text-va-red-rebel mb-2">{alerts.filter(a => a.severity === 'high').length}</div>
+                  <div className="text-va-red-rebel text-base">Enhanced Monitoring</div>
+                </div>
+                <div className="bg-aero-amber-light border border-aero-amber-caution rounded-lg p-6">
+                  <div className="text-aero-amber-caution text-lg font-medium mb-3">ROUTES MONITORED</div>
+                  <div className="text-5xl font-bold text-aero-amber-caution mb-2">{routes.length}</div>
+                  <div className="text-aero-amber-caution text-base">Active Virgin Atlantic Routes</div>
+                </div>
+                <div className="bg-aero-blue-light border border-aero-blue-primary rounded-lg p-6">
+                  <div className="text-aero-blue-primary text-lg font-medium mb-3">REGIONS ASSESSED</div>
+                  <div className="text-5xl font-bold text-aero-blue-primary mb-2">{regionalAssessments.length}</div>
+                  <div className="text-aero-blue-primary text-base">Global Risk Coverage</div>
+                </div>
               </div>
-              <div className="bg-va-red-rebel/10 border border-va-red-rebel rounded-lg p-6">
-                <div className="text-va-red-rebel text-lg font-medium mb-3">HIGH RISK</div>
-                <div className="text-5xl font-bold text-va-red-rebel mb-2">{alerts.filter(a => a.severity === 'high').length}</div>
-                <div className="text-va-red-rebel text-base">Enhanced Monitoring</div>
-              </div>
-              <div className="bg-aero-amber-light border border-aero-amber-caution rounded-lg p-6">
-                <div className="text-aero-amber-caution text-lg font-medium mb-3">ROUTES MONITORED</div>
-                <div className="text-5xl font-bold text-aero-amber-caution mb-2">{routes.length}</div>
-                <div className="text-aero-amber-caution text-base">Active Virgin Atlantic Routes</div>
-              </div>
-              <div className="bg-aero-blue-light border border-aero-blue-primary rounded-lg p-6">
-                <div className="text-aero-blue-primary text-lg font-medium mb-3">REGIONS ASSESSED</div>
-                <div className="text-5xl font-bold text-aero-blue-primary mb-2">{regionalAssessments.length}</div>
-                <div className="text-aero-blue-primary text-base">Global Risk Coverage</div>
+              
+              {/* Risk Status Bar */}
+              <div className="bg-va-white rounded-lg p-6 border border-va-grey">
+                <h3 className="text-2xl font-semibold text-va-midnight mb-4">Global Risk Status</h3>
+                <div className="flex items-center space-x-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-aero-green-safe rounded-full"></div>
+                    <span className="text-lg text-va-grey">Normal Operations: {routes.filter(r => r.status === 'normal').length} routes</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-aero-amber-caution rounded-full"></div>
+                    <span className="text-lg text-va-grey">Monitoring: {routes.filter(r => r.status === 'monitoring').length} routes</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-va-red-primary rounded-full"></div>
+                    <span className="text-lg text-va-grey">Disrupted: {routes.filter(r => r.status === 'disrupted').length} routes</span>
+                  </div>
+                </div>
               </div>
             </div>
-            
-            {/* Risk Status Bar */}
-            <div className="bg-va-white rounded-lg p-6 border border-va-grey">
-              <h3 className="text-2xl font-semibold text-va-midnight mb-4">Global Risk Status</h3>
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-aero-green-safe rounded-full"></div>
-                  <span className="text-lg text-va-grey">Normal Operations: {routes.filter(r => r.status === 'normal').length} routes</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-aero-amber-caution rounded-full"></div>
-                  <span className="text-lg text-va-grey">Monitoring: {routes.filter(r => r.status === 'monitoring').length} routes</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-va-red-primary rounded-full"></div>
-                  <span className="text-lg text-va-grey">Disrupted: {routes.filter(r => r.status === 'disrupted').length} routes</span>
-                </div>
-              </div>
+
+            {/* Key Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card className="bg-va-white border-va-grey">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-base text-va-grey mb-1">Active Alerts</p>
+                      <p className="text-4xl font-bold text-va-red-primary">{alerts.length}</p>
+                    </div>
+                    <AlertTriangle className="h-12 w-12 text-va-red-primary" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="bg-va-white border-va-grey">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-base text-va-grey mb-1">Affected Routes</p>
+                      <p className="text-4xl font-bold text-va-red-rebel">
+                        {routes.filter(r => r.status !== 'normal').length}
+                      </p>
+                    </div>
+                    <Navigation className="h-12 w-12 text-va-red-rebel" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="bg-va-white border-va-grey">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-base text-va-grey mb-1">Passengers Impacted</p>
+                      <p className="text-4xl font-bold text-aero-blue-primary">530</p>
+                    </div>
+                    <Users className="h-12 w-12 text-aero-blue-primary" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="bg-va-white border-va-grey">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-base text-va-grey mb-1">Cost Impact</p>
+                      <p className="text-4xl font-bold text-aero-purple-premium">$75K</p>
+                    </div>
+                    <DollarSign className="h-12 w-12 text-aero-purple-premium" />
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </div>
 
-          {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="bg-va-white border-va-grey">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-base text-va-grey mb-1">Active Alerts</p>
-                    <p className="text-4xl font-bold text-va-red-primary">{alerts.length}</p>
-                  </div>
-                  <AlertTriangle className="h-12 w-12 text-va-red-primary" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-va-white border-va-grey">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-base text-va-grey mb-1">Affected Routes</p>
-                    <p className="text-4xl font-bold text-va-red-rebel">
-                      {routes.filter(r => r.status !== 'normal').length}
-                    </p>
-                  </div>
-                  <Navigation className="h-12 w-12 text-va-red-rebel" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-va-white border-va-grey">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-base text-va-grey mb-1">Passengers Impacted</p>
-                    <p className="text-4xl font-bold text-aero-blue-primary">530</p>
-                  </div>
-                  <Users className="h-12 w-12 text-aero-blue-primary" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-va-white border-va-grey">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-base text-va-grey mb-1">Cost Impact</p>
-                    <p className="text-4xl font-bold text-aero-purple-premium">$75K</p>
-                  </div>
-                  <DollarSign className="h-12 w-12 text-aero-purple-premium" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* All Alerts - Expanded */}
-          <div className="bg-va-white rounded-lg p-8 mb-8 border border-va-grey">
-            <h2 className="text-4xl font-bold text-va-midnight mb-6 flex items-center">
-              <AlertTriangle className="h-10 w-10 mr-4 text-va-red-primary" />
-              Global Alert Management Center
-            </h2>
-            
-            <div className="grid grid-cols-1 gap-6">
-              {alerts.map((alert) => (
-                <div
-                  key={alert.id}
-                  className={`p-8 rounded-xl border-2 ${getSeverityColor(alert.severity)} transition-all hover:shadow-va-md bg-va-white`}
-                >
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Alert Header */}
-                    <div className="lg:col-span-2">
-                      <div className="flex items-start space-x-4 mb-4">
-                        <div className={`w-3 h-3 rounded-full mt-2 ${
-                          alert.severity === 'critical' ? 'bg-va-red-primary' :
-                          alert.severity === 'high' ? 'bg-va-red-rebel' :
-                          alert.severity === 'medium' ? 'bg-aero-amber-caution' :
-                          'bg-aero-green-safe'
-                        }`}></div>
-                        <div className="flex-1">
-                          <h3 className="text-3xl font-bold mb-3 text-va-midnight">{alert.title}</h3>
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            <span className={`px-4 py-2 rounded-full text-sm font-bold ${
-                              alert.severity === 'critical' ? 'bg-va-red-primary text-va-white' :
-                              alert.severity === 'high' ? 'bg-va-red-rebel text-va-white' :
-                              alert.severity === 'medium' ? 'bg-aero-amber-caution text-va-midnight' :
-                              'bg-aero-green-safe text-va-midnight'
-                            }`}>
-                              {alert.severity.toUpperCase()} PRIORITY
-                            </span>
-                            <span className="px-4 py-2 rounded-full text-sm font-medium bg-surface-secondary text-va-grey">
-                              {alert.type.replace('_', ' ').toUpperCase()}
-                            </span>
-                            <span className="px-4 py-2 rounded-full text-sm font-medium bg-aero-blue-light text-aero-blue-primary">
-                              {alert.region}
-                            </span>
+            {/* All Alerts - Expanded */}
+            <div className="bg-va-white rounded-lg p-8 mb-8 border border-va-grey">
+              <h2 className="text-4xl font-bold text-va-midnight mb-6 flex items-center">
+                <AlertTriangle className="h-10 w-10 mr-4 text-va-red-primary" />
+                Global Alert Management Center
+              </h2>
+              
+              <div className="grid grid-cols-1 gap-6">
+                {alerts.map((alert) => (
+                  <div
+                    key={alert.id}
+                    className={`p-8 rounded-xl border-2 ${getSeverityColor(alert.severity)} transition-all hover:shadow-va-md bg-va-white`}
+                  >
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      {/* Alert Header */}
+                      <div className="lg:col-span-2">
+                        <div className="flex items-start space-x-4 mb-4">
+                          <div className={`w-3 h-3 rounded-full mt-2 ${
+                            alert.severity === 'critical' ? 'bg-va-red-primary' :
+                            alert.severity === 'high' ? 'bg-va-red-rebel' :
+                            alert.severity === 'medium' ? 'bg-aero-amber-caution' :
+                            'bg-aero-green-safe'
+                          }`}></div>
+                          <div className="flex-1">
+                            <h3 className="text-3xl font-bold mb-3 text-va-midnight">{alert.title}</h3>
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              <span className={`px-4 py-2 rounded-full text-sm font-bold ${
+                                alert.severity === 'critical' ? 'bg-va-red-primary text-va-white' :
+                                alert.severity === 'high' ? 'bg-va-red-rebel text-va-white' :
+                                alert.severity === 'medium' ? 'bg-aero-amber-caution text-va-midnight' :
+                                'bg-aero-green-safe text-va-midnight'
+                              }`}>
+                                {alert.severity.toUpperCase()} PRIORITY
+                              </span>
+                              <span className="px-4 py-2 rounded-full text-sm font-medium bg-surface-secondary text-va-grey">
+                                {alert.type.replace('_', ' ').toUpperCase()}
+                              </span>
+                              <span className="px-4 py-2 rounded-full text-sm font-medium bg-aero-blue-light text-aero-blue-primary">
+                                {alert.region}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <p className="text-xl mb-6 text-va-grey leading-relaxed">{alert.description}</p>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                          <div className="bg-surface-primary rounded-lg p-4 border border-va-grey">
+                            <div className="text-sm font-medium text-va-grey mb-2">Impact Assessment</div>
+                            <div className="text-lg font-semibold text-va-midnight">{alert.impact}</div>
+                          </div>
+                          <div className="bg-surface-primary rounded-lg p-4 border border-va-grey">
+                            <div className="text-sm font-medium text-va-grey mb-2">Time Frame</div>
+                            <div className="text-lg font-semibold text-va-midnight">{alert.timeRemaining}</div>
                           </div>
                         </div>
                       </div>
                       
-                      <p className="text-xl mb-6 text-va-grey leading-relaxed">{alert.description}</p>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      {/* Alert Details */}
+                      <div className="space-y-4">
                         <div className="bg-surface-primary rounded-lg p-4 border border-va-grey">
-                          <div className="text-sm font-medium text-va-grey mb-2">Impact Assessment</div>
-                          <div className="text-lg font-semibold text-va-midnight">{alert.impact}</div>
+                          <div className="text-sm font-medium text-va-grey mb-3">Affected Routes</div>
+                          <div className="space-y-2">
+                            {alert.affectedRoutes.map((route, idx) => (
+                              <div key={idx} className="flex items-center justify-between p-2 bg-aero-blue-light rounded">
+                                <span className="text-aero-blue-primary font-medium">{route}</span>
+                                <span className="text-xs text-va-grey">Active</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
+                        
                         <div className="bg-surface-primary rounded-lg p-4 border border-va-grey">
-                          <div className="text-sm font-medium text-va-grey mb-2">Time Frame</div>
-                          <div className="text-lg font-semibold text-va-midnight">{alert.timeRemaining}</div>
+                          <div className="text-sm font-medium text-va-grey mb-3">Risk Metrics</div>
+                          <div className="space-y-2">
+                            <div className="flex justify-between">
+                              <span className="text-va-grey">Routes Affected:</span>
+                              <span className="text-va-midnight font-bold">{alert.affectedRoutes.length}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-va-grey">Alert Duration:</span>
+                              <span className="text-va-midnight font-bold">{alert.timeRemaining}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-va-grey">Priority Level:</span>
+                              <span className={`font-bold ${
+                                alert.severity === 'critical' ? 'text-va-red-primary' :
+                                alert.severity === 'high' ? 'text-va-red-rebel' :
+                                alert.severity === 'medium' ? 'text-aero-amber-caution' :
+                                'text-aero-green-safe'
+                              }`}>
+                                {alert.severity.toUpperCase()}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                     
-                    {/* Alert Details */}
-                    <div className="space-y-4">
-                      <div className="bg-surface-primary rounded-lg p-4 border border-va-grey">
-                        <div className="text-sm font-medium text-va-grey mb-3">Affected Routes</div>
-                        <div className="space-y-2">
-                          {alert.affectedRoutes.map((route, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-2 bg-aero-blue-light rounded">
-                              <span className="text-aero-blue-primary font-medium">{route}</span>
-                              <span className="text-xs text-va-grey">Active</span>
-                            </div>
-                          ))}
+                    {/* Recommendation Section */}
+                    <div className="mt-6 bg-aero-blue-light border border-aero-blue-primary rounded-lg p-6">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-6 h-6 bg-aero-blue-primary rounded-full flex items-center justify-center mt-1">
+                          <span className="text-va-white text-xs font-bold">!</span>
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-lg font-bold text-aero-blue-primary mb-2">Operational Recommendation</div>
+                          <div className="text-base text-va-grey">{alert.recommendation}</div>
                         </div>
                       </div>
-                      
-                      <div className="bg-surface-primary rounded-lg p-4 border border-va-grey">
-                        <div className="text-sm font-medium text-va-grey mb-3">Risk Metrics</div>
-                        <div className="space-y-2">
-                          <div className="flex justify-between">
-                            <span className="text-va-grey">Routes Affected:</span>
-                            <span className="text-va-midnight font-bold">{alert.affectedRoutes.length}</span>
+                    </div>
+                  </div>
+                ))}
+                {alerts.length === 0 && (
+                  <div className="text-center py-16">
+                    <div className="text-8xl text-va-grey mb-6">🌍</div>
+                    <div className="text-3xl text-va-grey mb-4">No Active Alerts</div>
+                    <div className="text-xl text-va-grey">All regions showing normal operational status</div>
+                    <div className="mt-6 text-lg text-va-grey">System monitoring {routes.length} active Virgin Atlantic routes</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Route Status Overview - Expanded */}
+            <div className="bg-va-white border border-va-grey rounded-lg p-8 mb-8">
+              <h2 className="text-4xl font-bold text-white mb-6 flex items-center">
+                <Plane className="h-10 w-10 mr-4 text-blue-500" />
+                Virgin Atlantic Route Risk Assessment Center
+              </h2>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full border-separate border-spacing-0">
+                  <thead>
+                    <tr className="bg-gray-700">
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Flight Number</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Route</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Operational Status</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Risk Level</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Passenger Count</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Revenue Impact</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Delay Status</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {routes.map((route, index) => (
+                      <tr key={route.id} className={`${index % 2 === 0 ? 'bg-gray-750' : 'bg-gray-800'} hover:bg-aero-blue-light/10 transition-colors`}>
+                        <td className="px-6 py-5 text-lg font-bold text-white border-r border-gray-600">
+                          {route.id}
+                        </td>
+                        <td className="px-6 py-5 border-r border-gray-600">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-lg font-semibold text-va-gray">{route.origin}</span>
+                            <span className="text-blue-400">→</span>
+                            <span className="text-lg font-semibold text-va-gray">{route.destination}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-va-grey">Alert Duration:</span>
-                            <span className="text-va-midnight font-bold">{alert.timeRemaining}</span>
+                        </td>
+                        <td className="px-6 py-5 border-r border-gray-600">
+                          <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase ${getStatusColor(route.status)}`}>
+                            {route.status === 'normal' ? '✓ Normal' : 
+                             route.status === 'monitoring' ? '⚠ Monitoring' : 
+                             '🚨 Disrupted'}
+                          </span>
+                        </td>
+                        <td className={`px-6 py-5 text-lg font-bold border-r border-gray-600 ${getRiskLevelColor(route.riskLevel)}`}>
+                          <div className="flex items-center space-x-2">
+                            <div className={`w-3 h-3 rounded-full ${
+                              route.riskLevel === 'critical' ? 'bg-red-500' :
+                              route.riskLevel === 'high' ? 'bg-orange-500' :
+                              route.riskLevel === 'medium' ? 'bg-yellow-500' :
+                              'bg-green-500'
+                            }`}></div>
+                            <span className="uppercase">{route.riskLevel}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-va-grey">Priority Level:</span>
-                            <span className={`font-bold ${
-                              alert.severity === 'critical' ? 'text-va-red-primary' :
-                              alert.severity === 'high' ? 'text-va-red-rebel' :
-                              alert.severity === 'medium' ? 'text-aero-amber-caution' :
-                              'text-aero-green-safe'
-                            }`}>
-                              {alert.severity.toUpperCase()}
+                        </td>
+                        <td className="px-6 py-5 text-lg font-semibold text-va-gray border-r border-gray-600">
+                          {route.passengers.toLocaleString()} PAX
+                        </td>
+                        <td className="px-6 py-5 text-lg font-semibold text-green-400 border-r border-gray-600">
+                          {route.revenue}
+                        </td>
+                        <td className="px-6 py-5 border-r border-gray-600">
+                          {route.delayMinutes > 0 ? (
+                            <span className="text-orange-400 font-semibold">
+                              +{route.delayMinutes} min
                             </span>
+                          ) : (
+                            <span className="text-green-400 font-semibold">On Time</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-5">
+                          <div className="flex space-x-2">
+                            {route.status !== 'normal' && (
+                              <button 
+                                onClick={() => {
+                                  setSelectedRoute(route);
+                                  setShowRouteOptions(true);
+                                }}
+                                className="bg-blue-600 hover:bg-blue-700 text-va-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                              >
+                                View Options
+                              </button>
+                            )}
+                            <button className="bg-gray-600 hover:bg-gray-700 text-va-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                              Details
+                            </button>
                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Recommendation Section */}
-                  <div className="mt-6 bg-aero-blue-light border border-aero-blue-primary rounded-lg p-6">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-aero-blue-primary rounded-full flex items-center justify-center mt-1">
-                        <span className="text-va-white text-xs font-bold">!</span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-lg font-bold text-aero-blue-primary mb-2">Operational Recommendation</div>
-                        <div className="text-base text-va-grey">{alert.recommendation}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {alerts.length === 0 && (
-                <div className="text-center py-16">
-                  <div className="text-8xl text-va-grey mb-6">🌍</div>
-                  <div className="text-3xl text-va-grey mb-4">No Active Alerts</div>
-                  <div className="text-xl text-va-grey">All regions showing normal operational status</div>
-                  <div className="mt-6 text-lg text-va-grey">System monitoring {routes.length} active Virgin Atlantic routes</div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {routes.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="text-6xl text-gray-600 mb-4">✈️</div>
+                  <div className="text-2xl text-gray-400 mb-2">No Route Data Available</div>
+                  <div className="text-lg text-gray-500">Fetching live Virgin Atlantic flight data...</div>
                 </div>
               )}
             </div>
           </div>
+        )}
 
-          {/* Route Status Overview - Expanded */}
-          <div className="bg-va-white border border-va-grey rounded-lg p-8 mb-8">
-            <h2 className="text-4xl font-bold text-white mb-6 flex items-center">
-              <Plane className="h-10 w-10 mr-4 text-blue-500" />
-              Virgin Atlantic Route Risk Assessment Center
-            </h2>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full border-separate border-spacing-0">
-                <thead>
-                  <tr className="bg-gray-700">
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Flight Number</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Route</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Operational Status</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Risk Level</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Passenger Count</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Revenue Impact</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Delay Status</th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {routes.map((route, index) => (
-                    <tr key={route.id} className={`${index % 2 === 0 ? 'bg-gray-750' : 'bg-gray-800'} hover:bg-aero-blue-light/10 transition-colors`}>
-                      <td className="px-6 py-5 text-lg font-bold text-white border-r border-gray-600">
-                        {route.id}
-                      </td>
-                      <td className="px-6 py-5 border-r border-gray-600">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-lg font-semibold text-va-gray">{route.origin}</span>
-                          <span className="text-blue-400">→</span>
-                          <span className="text-lg font-semibold text-va-gray">{route.destination}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-5 border-r border-gray-600">
-                        <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase ${getStatusColor(route.status)}`}>
-                          {route.status === 'normal' ? '✓ Normal' : 
-                           route.status === 'monitoring' ? '⚠ Monitoring' : 
-                           '🚨 Disrupted'}
-                        </span>
-                      </td>
-                      <td className={`px-6 py-5 text-lg font-bold border-r border-gray-600 ${getRiskLevelColor(route.riskLevel)}`}>
-                        <div className="flex items-center space-x-2">
-                          <div className={`w-3 h-3 rounded-full ${
-                            route.riskLevel === 'critical' ? 'bg-red-500' :
-                            route.riskLevel === 'high' ? 'bg-orange-500' :
-                            route.riskLevel === 'medium' ? 'bg-yellow-500' :
-                            'bg-green-500'
-                          }`}></div>
-                          <span className="uppercase">{route.riskLevel}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-5 text-lg font-semibold text-va-gray border-r border-gray-600">
-                        {route.passengers.toLocaleString()} PAX
-                      </td>
-                      <td className="px-6 py-5 text-lg font-semibold text-green-400 border-r border-gray-600">
-                        {route.revenue}
-                      </td>
-                      <td className="px-6 py-5 border-r border-gray-600">
-                        {route.delayMinutes > 0 ? (
-                          <span className="text-orange-400 font-semibold">
-                            +{route.delayMinutes} min
-                          </span>
-                        ) : (
-                          <span className="text-green-400 font-semibold">On Time</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-5">
-                        <div className="flex space-x-2">
-                          {route.status !== 'normal' && (
-                            <button 
-                              onClick={() => {
-                                setSelectedRoute(route);
-                                setShowRouteOptions(true);
-                              }}
-                              className="bg-blue-600 hover:bg-blue-700 text-va-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                            >
-                              View Options
-                            </button>
-                          )}
-                          <button className="bg-gray-600 hover:bg-gray-700 text-va-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            Details
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            
-            {routes.length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-6xl text-gray-600 mb-4">✈️</div>
-                <div className="text-2xl text-gray-400 mb-2">No Route Data Available</div>
-                <div className="text-lg text-gray-500">Fetching live Virgin Atlantic flight data...</div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'analysis' && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center">
-                  <Globe className="h-5 w-5 mr-2 text-green-500" />
-                  Risk Factors by Region
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {regionalAssessments.map((assessment) => (
-                  <button
-                    key={assessment.region}
-                    onClick={() => {
-                      setSelectedRegion(assessment);
-                      setShowRegionalDetails(true);
-                    }}
-                    className={`w-full flex justify-between items-center p-3 rounded border transition-colors hover:bg-opacity-80 ${getSeverityColor(assessment.overallRisk)}`}
-                  >
-                    <span className="text-gray-300 font-medium">{assessment.region}</span>
-                    <span className={`px-2 py-1 text-white text-xs rounded ${
-                      assessment.overallRisk === 'critical' ? 'bg-red-500' :
-                      assessment.overallRisk === 'high' ? 'bg-orange-500' :
-                      assessment.overallRisk === 'medium' ? 'bg-yellow-500' :
-                      'bg-green-500'
-                    }`}>
-                      {assessment.overallRisk}
-                    </span>
-                  </button>
-                ))}
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2 text-blue-500" />
-                  Predictive Indicators
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="p-3 border border-gray-600 rounded">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-300">Diplomatic Relations Index</span>
-                    <span className="text-sm font-medium text-orange-400">Declining</span>
-                  </div>
-                  <div className="mt-1 w-full bg-gray-600 rounded-full h-2">
-                    <div className="bg-orange-500 h-2 rounded-full" style={{width: '35%'}}></div>
-                  </div>
-                </div>
-                <div className="p-3 border border-gray-600 rounded">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-300">Military Activity Level</span>
-                    <span className="text-sm font-medium text-red-400">High</span>
-                  </div>
-                  <div className="mt-1 w-full bg-gray-600 rounded-full h-2">
-                    <div className="bg-red-500 h-2 rounded-full" style={{width: '80%'}}></div>
-                  </div>
-                </div>
-                <div className="p-3 border border-gray-600 rounded">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-300">Economic Sanctions Risk</span>
-                    <span className="text-sm font-medium text-yellow-400">Medium</span>
-                  </div>
-                  <div className="mt-1 w-full bg-gray-600 rounded-full h-2">
-                    <div className="bg-yellow-500 h-2 rounded-full" style={{width: '60%'}}></div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )}
-
-      {/* Route Options Modal */}
-      {showRouteOptions && selectedRoute && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg border border-gray-600 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-600">
-              <h2 className="text-xl font-bold text-white flex items-center">
-                <Route className="h-6 w-6 mr-2 text-blue-500" />
-                Route Options - {selectedRoute.id} ({selectedRoute.origin} → {selectedRoute.destination})
-              </h2>
-              <button 
-                onClick={() => setShowRouteOptions(false)}
-                className="text-gray-400 hover:text-white"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-            
-            <div className="p-6 space-y-6">
-              {/* Current Status */}
-              <Card className="bg-gray-700 border-gray-600">
+        {activeTab === 'analysis' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="bg-va-white border-va-gray">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center">
-                    <AlertCircle className="h-5 w-5 mr-2 text-orange-500" />
-                    Current Status
+                  <CardTitle className="text-va-deep-space flex items-center">
+                    <Globe className="h-5 w-5 mr-2 text-green-500" />
+                    Risk Factors by Region
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-400">Status</p>
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(selectedRoute.status)}`}>
-                        {selectedRoute.status}
+                  {regionalAssessments.map((assessment) => (
+                    <button
+                      key={assessment.region}
+                      onClick={() => {
+                        setSelectedRegion(assessment);
+                        setShowRegionalDetails(true);
+                      }}
+                      className={`w-full flex justify-between items-center p-3 rounded border transition-colors hover:bg-opacity-80 ${getSeverityColor(assessment.overallRisk)}`}
+                    >
+                      <span className="text-va-deep-space font-medium">{assessment.region}</span>
+                      <span className={`px-2 py-1 text-white text-xs rounded ${
+                        assessment.overallRisk === 'critical' ? 'bg-red-500' :
+                        assessment.overallRisk === 'high' ? 'bg-orange-500' :
+                        assessment.overallRisk === 'medium' ? 'bg-yellow-500' :
+                        'bg-green-500'
+                      }`}>
+                        {assessment.overallRisk}
                       </span>
+                    </button>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-va-white border-va-gray">
+                <CardHeader>
+                  <CardTitle className="text-va-deep-space flex items-center">
+                    <TrendingUp className="h-5 w-5 mr-2 text-blue-500" />
+                    Predictive Indicators
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="p-3 border border-gray-600 rounded">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-va-deep-space">Diplomatic Relations Index</span>
+                      <span className="text-sm font-medium text-aero-amber-caution">Declining</span>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-400">Risk Level</p>
-                      <p className={`font-medium ${getRiskLevelColor(selectedRoute.riskLevel)}`}>
-                        {selectedRoute.riskLevel}
-                      </p>
+                    <div className="mt-1 w-full bg-gray-600 rounded-full h-2">
+                      <div className="bg-aero-amber-caution h-2 rounded-full" style={{width: '35%'}}></div>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-400">Passengers</p>
-                      <p className="text-white font-medium">{selectedRoute.passengers}</p>
+                  </div>
+                  <div className="p-3 border border-gray-600 rounded">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-va-deep-space">Military Activity Level</span>
+                      <span className="text-sm font-medium text-red-400">High</span>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-400">Revenue Impact</p>
-                      <p className="text-white font-medium">{selectedRoute.revenue}</p>
+                    <div className="mt-1 w-full bg-gray-600 rounded-full h-2">
+                      <div className="bg-red-500 h-2 rounded-full" style={{width: '80%'}}></div>
+                    </div>
+                  </div>
+                  <div className="p-3 border border-gray-600 rounded">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-va-deep-space">Economic Sanctions Risk</span>
+                      <span className="text-sm font-medium text-yellow-400">Medium</span>
+                    </div>
+                    <div className="mt-1 w-full bg-gray-600 rounded-full h-2">
+                      <div className="bg-yellow-500 h-2 rounded-full" style={{width: '60%'}}></div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          </div>
+        )}
 
-              {/* Available Options */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Option 1: Continue Current Route */}
+        {/* Route Options Modal */}
+        {showRouteOptions && selectedRoute && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-800 rounded-lg border border-gray-600 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-6 border-b border-gray-600">
+                <h2 className="text-xl font-bold text-white flex items-center">
+                  <Route className="h-6 w-6 mr-2 text-blue-500" />
+                  Route Options - {selectedRoute.id} ({selectedRoute.origin} → {selectedRoute.destination})
+                </h2>
+                <button 
+                  onClick={() => setShowRouteOptions(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                {/* Current Status */}
                 <Card className="bg-gray-700 border-gray-600">
                   <CardHeader>
-                    <CardTitle className="text-white text-lg">Continue Current Route</CardTitle>
-                    <CardDescription className="text-gray-400">
-                      Proceed with original flight path despite risks
-                    </CardDescription>
+                    <CardTitle className="text-white flex items-center">
+                      <AlertCircle className="h-5 w-5 mr-2 text-orange-500" />
+                      Current Status
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Additional Cost:</span>
-                        <span className="text-white">$0</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Delay:</span>
-                        <span className="text-white">0 minutes</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Risk Level:</span>
-                        <span className={getRiskLevelColor(selectedRoute.riskLevel)}>
-                          {selectedRoute.riskLevel}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-400">Status</p>
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(selectedRoute.status)}`}>
+                          {selectedRoute.status}
                         </span>
                       </div>
+                      <div>
+                        <p className="text-sm text-gray-400">Risk Level</p>
+                        <p className={`font-medium ${getRiskLevelColor(selectedRoute.riskLevel)}`}>
+                          {selectedRoute.riskLevel}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-400">Passengers</p>
+                        <p className="text-white font-medium">{selectedRoute.passengers}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-400">Revenue Impact</p>
+                        <p className="text-white font-medium">{selectedRoute.revenue}</p>
+                      </div>
                     </div>
-                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors">
-                      Select This Option
-                    </button>
                   </CardContent>
                 </Card>
 
-                {/* Option 2: Use Alternate Route */}
-                <Card className="bg-gray-700 border-gray-600">
-                  <CardHeader>
-                    <CardTitle className="text-white text-lg">Alternate Route</CardTitle>
-                    <CardDescription className="text-gray-400">
-                      {selectedRoute.alternateRoute}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Additional Cost:</span>
-                        <span className="text-white">{selectedRoute.additionalCost}</span>
+                {/* Available Options */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Option 1: Continue Current Route */}
+                  <Card className="bg-gray-700 border-gray-600">
+                    <CardHeader>
+                      <CardTitle className="text-white text-lg">Continue Current Route</CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Proceed with original flight path despite risks
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Additional Cost:</span>
+                          <span className="text-white">$0</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Delay:</span>
+                          <span className="text-white">0 minutes</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Risk Level:</span>
+                          <span className={getRiskLevelColor(selectedRoute.riskLevel)}>
+                            {selectedRoute.riskLevel}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Delay:</span>
-                        <span className="text-white">{selectedRoute.delayMinutes} minutes</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Risk Level:</span>
-                        <span className="text-green-400">Low</span>
-                      </div>
-                    </div>
-                    <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition-colors">
-                      Select This Option
-                    </button>
-                  </CardContent>
-                </Card>
+                      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors">
+                        Select This Option
+                      </button>
+                    </CardContent>
+                  </Card>
 
-                {/* Option 3: Delay Flight */}
-                <Card className="bg-gray-700 border-gray-600">
-                  <CardHeader>
-                    <CardTitle className="text-white text-lg">Delay Flight</CardTitle>
-                    <CardDescription className="text-gray-400">
-                      Wait for improved conditions
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Additional Cost:</span>
-                        <span className="text-white">$2,500</span>
+                  {/* Option 2: Use Alternate Route */}
+                  <Card className="bg-gray-700 border-gray-600">
+                    <CardHeader>
+                      <CardTitle className="text-white text-lg">Alternate Route</CardTitle>
+                      <CardDescription className="text-gray-400">
+                        {selectedRoute.alternateRoute}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Additional Cost:</span>
+                          <span className="text-white">{selectedRoute.additionalCost}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Delay:</span>
+                          <span className="text-white">{selectedRoute.delayMinutes} minutes</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Risk Level:</span>
+                          <span className="text-green-400">Low</span>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Delay:</span>
-                        <span className="text-white">240 minutes</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Risk Level:</span>
-                        <span className="text-green-400">Low</span>
-                      </div>
-                    </div>
-                    <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded transition-colors">
-                      Select This Option
-                    </button>
-                  </CardContent>
-                </Card>
+                      <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition-colors">
+                        Select This Option
+                      </button>
+                    </CardContent>
+                  </Card>
 
-                {/* Option 4: Cancel Flight */}
-                <Card className="bg-gray-700 border-gray-600">
+                  {/* Option 3: Delay Flight */}
+                  <Card className="bg-gray-700 border-gray-600">
+                    <CardHeader>
+                      <CardTitle className="text-white text-lg">Delay Flight</CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Wait for improved conditions
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Additional Cost:</span>
+                          <span className="text-white">$2,500</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Delay:</span>
+                          <span className="text-white">240 minutes</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Risk Level:</span>
+                          <span className="text-green-400">Low</span>
+                        </div>
+                      </div>
+                      <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded transition-colors">
+                        Select This Option
+                      </button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Option 4: Cancel Flight */}
+                  <Card className="bg-gray-700 border-gray-600">
+                    <CardHeader>
+                      <CardTitle className="text-white text-lg">Cancel Flight</CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Full cancellation with passenger rebooking
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Revenue Loss:</span>
+                          <span className="text-red-400">{selectedRoute.revenue}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Rebooking Cost:</span>
+                          <span className="text-white">$15,000</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Risk Level:</span>
+                          <span className="text-green-400">None</span>
+                        </div>
+                      </div>
+                      <button className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition-colors">
+                        Select This Option
+                      </button>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* AI Recommendation */}
+                <Card className="bg-blue-900/20 border-blue-600">
                   <CardHeader>
-                    <CardTitle className="text-white text-lg">Cancel Flight</CardTitle>
-                    <CardDescription className="text-gray-400">
-                      Full cancellation with passenger rebooking
-                    </CardDescription>
+                    <CardTitle className="text-white flex items-center">
+                      <Shield className="h-5 w-5 mr-2 text-blue-500" />
+                      AI Recommendation
+                    </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Revenue Loss:</span>
-                        <span className="text-red-400">{selectedRoute.revenue}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Rebooking Cost:</span>
-                        <span className="text-white">$15,000</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Risk Level:</span>
-                        <span className="text-green-400">None</span>
-                      </div>
-                    </div>
-                    <button className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition-colors">
-                      Select This Option
-                    </button>
+                  <CardContent>
+                    <p className="text-blue-300">
+                      Based on current risk assessment and operational parameters, we recommend using the 
+                      <strong> alternate route</strong>. This option provides the best balance of safety, 
+                      cost efficiency, and passenger experience with minimal delay.
+                    </p>
                   </CardContent>
                 </Card>
               </div>
-
-              {/* AI Recommendation */}
-              <Card className="bg-blue-900/20 border-blue-600">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center">
-                    <Shield className="h-5 w-5 mr-2 text-blue-500" />
-                    AI Recommendation
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-blue-300">
-                    Based on current risk assessment and operational parameters, we recommend using the 
-                    <strong> alternate route</strong>. This option provides the best balance of safety, 
-                    cost efficiency, and passenger experience with minimal delay.
-                  </p>
-                </CardContent>
-              </Card>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Regional Risk Details Modal */}
       {showRegionalDetails && selectedRegion && (
