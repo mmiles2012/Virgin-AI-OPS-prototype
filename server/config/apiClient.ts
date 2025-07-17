@@ -5,8 +5,14 @@ import { memoryCache, cacheOrFetch } from './cache';
 // Base API client configuration
 const DEFAULT_TIMEOUT = 10000; // 10 seconds
 const DEFAULT_RETRY_ATTEMPTS = 3;
-const DEFAULT_RETRY_DELAY = 1000; // 1 second
+const DEFAULT_RETRY_DELAY = 1000; // 1 second (used as base delay for exponential backoff)
+const MAX_RETRY_DELAY = 32000; // 32 seconds (maximum delay for exponential backoff)
 
+function calculateExponentialBackoffDelay(attempt: number, baseDelay: number = DEFAULT_RETRY_DELAY, maxDelay: number = MAX_RETRY_DELAY): number {
+  const exponentialDelay = Math.min(baseDelay * Math.pow(2, attempt), maxDelay);
+  const jitter = Math.random() * 0.5 * exponentialDelay; // Add up to 50% jitter
+  return exponentialDelay + jitter;
+}
 interface ApiClientOptions {
   baseURL?: string;
   timeout?: number;
