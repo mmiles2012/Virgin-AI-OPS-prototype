@@ -18,6 +18,7 @@ import {
   Navigation,
   Activity
 } from 'lucide-react';
+import { calculateFuelPercentage, calculateFuelAmountKg, getFuelEfficiencyDescription } from '../lib/utils/fuelCalculation';
 
 interface MLDigitalTwinData {
   aircraft_id: string;
@@ -145,7 +146,7 @@ export function MLEnhancedDigitalTwin({
         altitude_ft: 37000 + Math.random() * 4000,
         ground_speed_kt: 480 + Math.random() * 40,
         heading_deg: 270 + (Math.random() - 0.5) * 60,
-        fuel_remaining_kg: Math.round(fuelRemaining),
+        fuel_remaining_kg: calculateFuelAmountKg(flightNumber === 'VS103' ? 'A350-1000' : 'B787-9', 65),
         timestamp: currentTime.toISOString()
       },
       performance_metrics: {
@@ -172,7 +173,7 @@ export function MLEnhancedDigitalTwin({
             icao: 'BIKF',
             name: 'Keflavik International',
             distance_nm: Math.round(380 + Math.random() * 100),
-            fuel_required_kg: Math.round(2500 + Math.random() * 500),
+            fuel_required_kg: calculateFuelAmountKg(flightNumber === 'VS103' ? 'A350-1000' : 'B787-9', 25),
             suitability_score: 0.95,
             runway_length_ft: 10000
           },
@@ -304,7 +305,7 @@ export function MLEnhancedDigitalTwin({
             <div className="text-center p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border">
               <Fuel className="h-5 w-5 text-purple-600 mx-auto mb-1" />
               <div className="text-sm font-medium">
-                {digitalTwinData.current_state?.fuel_remaining_kg?.toLocaleString() || '25,000'} kg
+                {calculateFuelPercentage(digitalTwinData.aircraft_type === 'Airbus A350-1000' ? 'A350-1000' : 'B787-9', 65)}%
               </div>
               <div className="text-xs text-gray-600">Fuel Remaining</div>
             </div>

@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { generateDiversionScenarios, type DiversionOutcome, type ScenarioContext } from '../lib/diversionScenarios';
 import { useFlightState } from '../lib/stores/useFlightState';
+import { calculateFuelPercentage, getFuelEfficiencyDescription, getFuelOptimizationStrategy } from '../lib/utils/fuelCalculation';
 
 export default function DiversionOutcomes() {
   const { position, fuelRemaining, altitude } = useFlightState();
@@ -376,12 +377,13 @@ export default function DiversionOutcomes() {
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-400">Fuel Required:</span>
-                            <span className="text-white">{(selectedOutcome.fuelRequired / 1000).toFixed(1)}k kg</span>
+                            <span className="text-white">{calculateFuelPercentage('A350-1000', 35)}%</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-400">Fuel Remaining:</span>
-                            <span className={selectedOutcome.fuelRemaining < 3000 ? 'text-red-400' : 'text-white'}>
-                              {(selectedOutcome.fuelRemaining / 1000).toFixed(1)}k kg
+                            <span className="text-green-400">
+                              {calculateFuelPercentage('A350-1000', 65)}%
+                              <span className="text-gray-400 text-xs ml-1">({getFuelOptimizationStrategy(65)})</span>
                             </span>
                           </div>
                         </div>

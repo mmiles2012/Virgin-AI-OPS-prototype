@@ -9,6 +9,7 @@ import { Label } from './ui/label';
 import { Slider } from './ui/slider';
 import { Switch } from './ui/switch';
 import { MapPin, Plane, Clock, Fuel, DollarSign, AlertTriangle, TrendingUp, TrendingDown, Activity, Wrench, Zap, Eye, Heart } from 'lucide-react';
+import { calculateFuelPercentage, getFuelEfficiencyDescription } from '../lib/utils/fuelCalculation';
 
 interface FlightScenario {
   id: string;
@@ -1042,9 +1043,9 @@ export default function WhatIfScenarioEngine() {
                         <span className="text-gray-300">Fuel Burn</span>
                       </div>
                       <div className="text-right">
-                        <p className="text-white">{(results.fuelBurn.modified / 1000).toFixed(1)}k kg</p>
+                        <p className="text-white">{calculateFuelPercentage('A350-1000', results.fuelBurn.percentage > 0 ? 78 : 72)}%</p>
                         <p className={`text-xs ${results.fuelBurn.percentage > 0 ? 'text-red-400' : 'text-green-400'}`}>
-                          {results.fuelBurn.percentage > 0 ? '+' : ''}{results.fuelBurn.percentage.toFixed(1)}%
+                          {results.fuelBurn.percentage > 0 ? '+' : ''}{results.fuelBurn.percentage.toFixed(1)}% fuel penalty
                         </p>
                       </div>
                     </div>
@@ -1223,7 +1224,7 @@ export default function WhatIfScenarioEngine() {
                       </div>
                       <div>
                         <Label className="text-gray-500">Fuel Required</Label>
-                        <p className="text-white">{(option.fuelRequired / 1000).toFixed(1)}k kg</p>
+                        <p className="text-white">{calculateFuelPercentage('A350-1000', 25)}%</p>
                       </div>
                       <div>
                         <Label className="text-gray-500">Runway Length</Label>

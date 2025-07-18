@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { calculateFuelPercentage } from '../utils/fuelCalculation';
 
 interface FlightPosition {
   callsign: string;
@@ -62,7 +63,11 @@ export const useSelectedFlight = create<SelectedFlightState>((set, get) => ({
       aircraft: flight.aircraft || flight.aircraft_type || 'UNKNOWN',
       origin: flight.origin || flight.departure_airport,
       destination: flight.destination || flight.arrival_airport,
-      fuel: flight.fuel || 15000,
+      fuel: flight.fuel_remaining || calculateFuelPercentage(
+        flight.aircraft_type || flight.aircraft || 'UNKNOWN', 
+        flight.flight_progress || 50, 
+        flight.route
+      ),
       engineStatus: flight.engineStatus || 'normal',
       systemsStatus: flight.systemsStatus || 'normal',
       // Include authentic data

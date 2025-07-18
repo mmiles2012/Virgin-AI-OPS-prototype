@@ -8,6 +8,7 @@ import SigmetOperationalMonitor from "./SigmetOperationalMonitor";
 import MLOperationalPlanningDashboard from "./MLOperationalPlanningDashboard";
 import StandConflictMonitor from "./StandConflictMonitor";
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
+import { calculateFuelPercentage } from '../lib/utils/fuelCalculation';
 
 
 
@@ -467,7 +468,11 @@ export default function AIOpsDashboard() {
                       velocity: flight.velocity,
                       heading: flight.heading,
                       aircraft: flight.aircraft_type,
-                      fuel: 15000,
+                      fuel: calculateFuelPercentage(
+                        flight.aircraft_type || 'UNKNOWN', 
+                        Math.random() * 40 + 40, // 40-80% progress for realistic flight tracking
+                        flight.route || `${flight.departure_airport}-${flight.arrival_airport}`
+                      ),
                       engineStatus: 'normal',
                       systemsStatus: 'normal',
                       authentic_tracking: flight.authentic_tracking,

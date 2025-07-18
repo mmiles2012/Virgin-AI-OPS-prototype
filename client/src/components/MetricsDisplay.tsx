@@ -3,6 +3,7 @@ import { Progress } from '@/components/ui/progress';
 import CollapsibleCard from '@/components/ui/collapsible-card';
 import { useFlightState } from '../lib/stores/useFlightState';
 import { useScenario } from '../lib/stores/useScenario';
+import { calculateFuelPercentage, getFuelEfficiencyDescription } from '../lib/utils/fuelCalculation';
 import { TrendingUp, Clock, DollarSign, Target } from 'lucide-react';
 
 interface MetricsDisplayProps {
@@ -151,7 +152,7 @@ export default function MetricsDisplay({ draggable = false }: MetricsDisplayProp
             </div>
             <div className="text-center border border-gray-600 rounded p-2">
               <div className="text-blue-300">Fuel</div>
-              <div className="text-white font-mono">{(fuelRemaining / 1000).toFixed(0)}k lbs</div>
+              <div className="text-white font-mono">{calculateFuelPercentage('A350-1000', 68)}%</div>
             </div>
             <div className="text-center border border-gray-600 rounded p-2">
               <div className="text-blue-300">Range</div>
