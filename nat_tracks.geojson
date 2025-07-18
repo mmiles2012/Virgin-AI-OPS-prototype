@@ -1,6 +1,7 @@
 {
   "type": "FeatureCollection",
   "properties": {
+
     "generated_at": "2025-07-16T22:46:09.280956",
     "source": "FAA NOTAM",
     "total_tracks": 14
@@ -468,6 +469,43 @@
           [
             -50.0,
             49.0
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "Z",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-17T15:31:34.276433",
+        "source": "FAA NOTAM",
+        "waypoint_count": 5,
+        "raw_text": "SOORY 44/50 47/40 47/30 47/20 47/15 ETIKI REGHI\nEAST LVLS 360 380 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR NIL-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -50.0,
+            44.0
+          ],
+          [
+            -40.0,
+            47.0
+          ],
+          [
+            -30.0,
+            47.0
+          ],
+          [
+            -20.0,
+            47.0
+          ],
+          [
+            -15.0,
+            47.0
           ]
         ]
       }

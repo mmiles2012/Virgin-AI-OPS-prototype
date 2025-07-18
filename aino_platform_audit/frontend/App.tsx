@@ -169,12 +169,13 @@ function App() {
                 <div className="text-center mb-4">
                   <button
                     onClick={() => setIsNavigationCollapsed(!isNavigationCollapsed)}
-                    className="w-full text-white font-bold text-lg touch-manipulation hover:text-blue-300 transition-colors"
+                    className="w-full text-foreground font-bold text-lg touch-manipulation hover:text-accent-foreground transition-colors"
                   >
                     {isNavigationCollapsed ? '☰' : 'AINO'}
                   </button>
                   {!isNavigationCollapsed && (
                     <p className="text-blue-300 text-xs">Augmented Intelligent Network Operations</p>
+                  <p className="text-muted-foreground text-xs">Augmented Intelligent Network Operations</p>
                   )}
                 </div>
                 
@@ -184,8 +185,8 @@ function App() {
                     onClick={() => setViewMode('overview')}
                     className={`w-full px-3 md:px-4 py-2 rounded transition-colors text-xs md:text-sm touch-manipulation ${
                       viewMode === 'overview' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600 active:bg-gray-600'
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground'
                     }`}
                   >
                     Overview
@@ -197,8 +198,8 @@ function App() {
                     onClick={() => setViewMode('operations')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'operations' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground'
                     }`}
                   >
                     Fleet Operations
@@ -208,8 +209,8 @@ function App() {
                     onClick={() => setViewMode('realtime')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'realtime' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground'
                     }`}
                   >
                     Live Flight Operations
@@ -219,8 +220,8 @@ function App() {
                     onClick={() => setViewMode('otp-dashboard')}
                     className={`w-full px-4 py-2 rounded transition-colors text-sm ${
                       viewMode === 'otp-dashboard' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground'
                     }`}
                   >
                     Network OTP

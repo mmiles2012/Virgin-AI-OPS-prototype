@@ -70,21 +70,21 @@ const HeathrowHoldingMonitor: React.FC = () => {
   };
 
   const getStackColor = (count: number) => {
-    if (count === 0) return 'text-green-400';
-    if (count <= 2) return 'text-yellow-400';
-    return 'text-red-400';
+    if (count === 0) return 'text-green-600';
+    if (count <= 2) return 'text-yellow-600';
+    return 'text-red-600';
   };
 
   const getStackBgColor = (count: number) => {
-    if (count === 0) return 'bg-green-900/20';
-    if (count <= 2) return 'bg-yellow-900/20';
-    return 'bg-red-900/20';
+    if (count === 0) return 'bg-green-50';
+    if (count <= 2) return 'bg-yellow-50';
+    return 'bg-red-50';
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'CRITICAL': return 'text-red-400';
-      case 'HIGH': return 'text-orange-400';
+      case 'CRITICAL': return 'text-red-600';
+      case 'HIGH': return 'text-orange-600';
       case 'MEDIUM': return 'text-yellow-400';
       default: return 'text-blue-400';
     }

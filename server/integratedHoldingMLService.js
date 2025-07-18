@@ -330,14 +330,15 @@ class IntegratedHoldingMLService {
     
     let totalCost = 0;
     
-    if (holdingImpact.estimatedDelay >= 60) {
+    if (holdingImpact.estimatedDelay >= CRITICAL_DELAY_THRESHOLD) {
       // Critical delay - full service recovery
       totalCost = baseCost.rebooking + baseCost.accommodation + 
                   baseCost.meals + baseCost.compensation + baseCost.staff_time;
-    } else if (holdingImpact.estimatedDelay >= 30) {
+    } else if (holdingImpact.estimatedDelay >= HIGH_DELAY_THRESHOLD) {
       // High delay - rebooking and support
       totalCost = baseCost.rebooking + baseCost.meals + baseCost.staff_time;
-    } else if (holdingImpact.estimatedDelay >= 15) {
+    } else if (holdingImpact.estimatedDelay >= MEDIUM_DELAY_THRESHOLD) {
+
       // Medium delay - minimal support
       totalCost = baseCost.staff_time;
     }

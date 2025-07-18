@@ -268,12 +268,12 @@ const FlightAwareNotamDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-900 text-white p-4 overflow-y-auto">
+    <div className="min-h-screen w-full bg-gray-50 text-gray-900 p-4 overflow-y-auto">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
               <Plane className="text-blue-400" />
               FlightAware & FAA NOTAM Integration
             </h1>

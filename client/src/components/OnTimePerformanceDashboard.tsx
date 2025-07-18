@@ -36,6 +36,7 @@ export default function OnTimePerformanceDashboard() {
   const [loading, setLoading] = useState(true);
   const [virginAtlanticFlights, setVirginAtlanticFlights] = useState<any[]>([]);
   const [networkView, setNetworkView] = useState<'overview' | 'detailed'>('overview');
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   // IATA delay codes and their descriptions
   const delayCodes = {
@@ -284,6 +285,17 @@ export default function OnTimePerformanceDashboard() {
     }
   }, [virginAtlanticFlights]);
 
+  // Auto-rotation for hub display
+  useEffect(() => {
+    if (hubData.length > 1) {
+      const rotationInterval = setInterval(() => {
+        setCurrentIndex(prev => (prev + 1) % hubData.length);
+      }, 10000); // Rotate every 10 seconds
+
+      return () => clearInterval(rotationInterval);
+    }
+  }, [hubData.length]);
+
   const handleAirportSelect = (airportCode: string) => {
     setSelectedAirport(selectedAirport === airportCode ? null : airportCode);
   };
@@ -295,10 +307,10 @@ export default function OnTimePerformanceDashboard() {
 
   if (loading || hubData.length === 0) {
     return (
-      <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto mb-4"></div>
-          <div className="text-gray-400">Loading network performance data...</div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <div className="text-gray-600">Loading network performance data...</div>
         </div>
       </div>
     );
@@ -313,23 +325,26 @@ export default function OnTimePerformanceDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'on-time': return 'text-green-400';
-      case 'delayed': return 'text-yellow-400';
-      case 'cancelled': return 'text-red-400';
-      default: return 'text-gray-400';
+      case 'on-time': return 'text-va-green';
+      case 'delayed': return 'text-va-amber';
+      case 'cancelled': return 'text-va-red';
+      default: return 'text-va-gray';
     }
   };
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'improving': return <TrendingUp className="w-4 h-4 text-green-400" />;
-      case 'declining': return <TrendingDown className="w-4 h-4 text-red-400" />;
-      default: return <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>;
+      case 'improving': return <TrendingUp className="w-4 h-4 text-va-green" />;
+      case 'declining': return <TrendingDown className="w-4 h-4 text-va-red" />;
+      default: return <div className="w-4 h-4 bg-va-amber rounded-full"></div>;
     }
   };
 
+  // Get current hub for rotation display
+  const currentHub = hubData.length > 0 ? hubData[currentIndex % hubData.length] : null;
+
   return (
-    <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
+    <div className="bg-gray-50 text-gray-900 border border-gray-200 rounded-lg overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-4">
         <div className="flex items-center justify-between">
@@ -367,66 +382,67 @@ export default function OnTimePerformanceDashboard() {
       </div>
 
       {/* Current Hub Overview */}
-      <div className="p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Hub Summary */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-2xl font-bold text-white">{currentHub.iata}</h3>
-                <p className="text-gray-400">{currentHub.name}</p>
-                <p className="text-gray-500 text-sm">{currentHub.city}</p>
-              </div>
-              <div className="text-right">
+      {currentHub && (
+        <div className="p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Hub Summary */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">{currentHub.iata}</h3>
+                  <p className="text-gray-600">{currentHub.name}</p>
+                  <p className="text-gray-500 text-sm">{currentHub.city}</p>
+                </div>
+                <div className="text-right">
                 <div className="flex items-center gap-2">
                   {getTrendIcon(currentHub.trend)}
                   <span className={`text-2xl font-bold ${
-                    currentHub.onTimeRate >= 85 ? 'text-green-400' : 
-                    currentHub.onTimeRate >= 70 ? 'text-yellow-400' : 'text-red-400'
+                    currentHub.onTimeRate >= 85 ? 'text-green-600' : 
+                    currentHub.onTimeRate >= 70 ? 'text-yellow-600' : 'text-red-600'
                   }`}>
                     {currentHub.onTimeRate.toFixed(1)}%
                   </span>
                 </div>
-                <p className="text-gray-400 text-sm">OTP</p>
+                <p className="text-gray-600 text-sm">OTP</p>
               </div>
             </div>
 
             {/* Performance Metrics */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-800 rounded-lg p-4">
-                <div className="text-2xl font-bold text-white">{currentHub.totalFlights}</div>
-                <div className="text-gray-400 text-sm">Total Flights</div>
+              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <div className="text-2xl font-bold text-gray-900">{currentHub.totalFlights}</div>
+                <div className="text-gray-600 text-sm">Total Flights</div>
               </div>
-              <div className="bg-gray-800 rounded-lg p-4">
-                <div className="text-2xl font-bold text-yellow-400">{currentHub.avgDelayMinutes}m</div>
-                <div className="text-gray-400 text-sm">Avg Delay</div>
+              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <div className="text-2xl font-bold text-yellow-600">{currentHub.avgDelayMinutes}m</div>
+                <div className="text-gray-600 text-sm">Avg Delay</div>
               </div>
-              <div className="bg-gray-800 rounded-lg p-4">
-                <div className="text-2xl font-bold text-green-400">{currentHub.onTimeFlights}</div>
-                <div className="text-gray-400 text-sm">On Time</div>
+              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <div className="text-2xl font-bold text-green-600">{currentHub.onTimeFlights}</div>
+                <div className="text-gray-600 text-sm">On Time</div>
               </div>
-              <div className="bg-gray-800 rounded-lg p-4">
-                <div className="text-2xl font-bold text-red-400">{currentHub.delayedFlights + currentHub.cancelledFlights}</div>
-                <div className="text-gray-400 text-sm">Disrupted</div>
+              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <div className="text-2xl font-bold text-red-600">{currentHub.delayedFlights + currentHub.cancelledFlights}</div>
+                <div className="text-gray-600 text-sm">Disrupted</div>
               </div>
             </div>
           </div>
 
           {/* Recent Flights */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-white">Recent Operations</h4>
+            <h4 className="text-lg font-semibold text-gray-900">Recent Operations</h4>
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {currentHub.recentFlights.map((flight, index) => (
-                <div key={index} className="bg-gray-800 rounded-lg p-3">
+                <div key={index} className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`w-2 h-2 rounded-full ${
-                        flight.status === 'on-time' ? 'bg-green-400' :
-                        flight.status === 'delayed' ? 'bg-yellow-400' : 'bg-red-400'
+                        flight.status === 'on-time' ? 'bg-green-500' :
+                        flight.status === 'delayed' ? 'bg-yellow-500' : 'bg-red-500'
                       }`}></div>
                       <div>
-                        <div className="font-bold text-white">{flight.flightNumber}</div>
-                        <div className="text-gray-400 text-sm">{flight.route}</div>
+                        <div className="font-bold text-gray-900">{flight.flightNumber}</div>
+                        <div className="text-gray-600 text-sm">{flight.route}</div>
                       </div>
                     </div>
                     <div className="text-right">
@@ -471,6 +487,7 @@ export default function OnTimePerformanceDashboard() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Network Summary Footer */}
       <div className="bg-gray-800 px-6 py-3 border-t border-gray-700">

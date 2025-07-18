@@ -201,29 +201,29 @@ export default function LearningSystemDashboard() {
 
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
-      case 'critical': return 'text-red-400';
-      case 'high': return 'text-orange-400';
-      case 'medium': return 'text-yellow-400';
-      case 'low': return 'text-green-400';
-      default: return 'text-gray-400';
+      case 'critical': return 'text-red-600';
+      case 'high': return 'text-orange-600';
+      case 'medium': return 'text-yellow-600';
+      case 'low': return 'text-green-600';
+      default: return 'text-gray-600';
     }
   };
 
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 0.9) return 'text-green-400';
-    if (confidence >= 0.8) return 'text-yellow-400';
-    if (confidence >= 0.7) return 'text-orange-400';
-    return 'text-red-400';
+    if (confidence >= 0.9) return 'text-green-600';
+    if (confidence >= 0.8) return 'text-yellow-600';
+    if (confidence >= 0.7) return 'text-orange-600';
+    return 'text-red-600';
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="min-h-screen bg-gray-50 text-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <Brain className="h-8 w-8 text-purple-400" />
+          <Brain className="h-8 w-8 text-purple-600" />
           <h1 className="text-3xl font-bold">AINO Learning System</h1>
-          <div className="bg-purple-500/20 px-3 py-1 rounded-full text-sm">
+          <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
             Integrated Response Intelligence
           </div>
         </div>
@@ -519,7 +519,7 @@ export default function LearningSystemDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="text-center text-gray-400 py-8">
+              <div className="text-center text-gray-600 py-8">
                 <History className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>No simulation history available yet.</p>
               </div>
@@ -531,15 +531,15 @@ export default function LearningSystemDashboard() {
         {activeTab === 'insights' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* ML System Status */}
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Brain className="h-5 w-5 text-purple-400" />
+                <Brain className="h-5 w-5 text-purple-600" />
                 ML System Status
               </h2>
               
               {learningStatus ? (
                 <div className="space-y-4">
-                  <div className="bg-gray-700 rounded p-4">
+                  <div className="bg-gray-50 rounded p-4">
                     <h4 className="font-medium mb-2">Model Status</h4>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>

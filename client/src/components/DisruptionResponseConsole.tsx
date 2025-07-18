@@ -373,7 +373,7 @@ export default function DisruptionResponseConsole() {
   };
 
   return (
-    <div className="w-full h-screen bg-gray-900 text-white overflow-hidden flex flex-col">
+    <div className="w-full h-screen bg-gray-50 text-gray-900 overflow-hidden flex flex-col">
       <div className="p-6 flex-shrink-0">
         <h1 className="text-2xl font-bold text-white mb-2">Disruption Response Console</h1>
         <p className="text-gray-400">AI-powered disruption management and recovery orchestration</p>
