@@ -719,7 +719,7 @@ export default function WhatIfScenarioEngine() {
                       </Badge>
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-xs text-gray-400">
-                      <div>Fuel: {(flight.originalFuel / 1000).toFixed(1)}k kg</div>
+                      <div>Fuel: {calculateFuelPercentage(flight.type || 'A350-1000', 75)}%</div>
                       <div>Time: {flight.originalTime.toFixed(1)}h</div>
                       <div>Cost: ${(flight.originalCost / 1000).toFixed(0)}k</div>
                     </div>

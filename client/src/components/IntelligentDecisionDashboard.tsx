@@ -13,6 +13,7 @@ import {
   Lightbulb,
   ArrowRight
 } from 'lucide-react';
+import { calculateFuelPercentage } from '../lib/utils/fuelCalculation';
 
 interface DecisionOption {
   id: string;
@@ -381,7 +382,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
                       <div className="mt-2 flex gap-4 text-xs">
                         <span>Cost: ${option.estimated_cost_usd?.toLocaleString()}</span>
                         <span>Delay: {option.estimated_delay_mins}min</span>
-                        <span>Fuel: {option.fuel_required_kg}kg</span>
+                        <span>Fuel: {calculateFuelPercentage('A350-1000', 65)}%</span>
                       </div>
                     </div>
                   ))}
