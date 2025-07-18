@@ -1,8 +1,8 @@
-import rateLimit from 'express-rate-limit';
+import { rateLimit } from 'express-rate-limit';
 import { config } from './index';
 
 // Create rate limiter with configuration
-export const createRateLimiter = (options?: Partial<rateLimit.Options>) => {
+export const createRateLimiter = (options?: Partial<Parameters<typeof rateLimit>[0]>) => {
   return rateLimit({
     windowMs: config.RATE_LIMIT_WINDOW_MS,
     max: config.RATE_LIMIT_MAX_REQUESTS,

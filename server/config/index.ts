@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
+import crypto from 'crypto';
 
 // Load environment variables
 dotenv.config();
@@ -36,7 +37,7 @@ const configSchema = z.object({
   ).default(
     process.env.NODE_ENV === 'production'
       ? undefined
-      : require('crypto').randomBytes(32).toString('hex')
+      : crypto.randomBytes(32).toString('hex')
   ),
   // External Service URLs
   VISA_SERVICE_URL: z.string().url().default('http://localhost:8080'),

@@ -1,10 +1,9 @@
 {
   "type": "FeatureCollection",
   "properties": {
-    "generated_at": "2025-07-18T09:15:27.685470",
-
+    "generated_at": "2025-07-18T13:02:49.403634",
     "source": "FAA NOTAM",
-    "total_tracks": 6
+    "total_tracks": 13
   },
   "features": [
     {
@@ -13,7 +12,7 @@
         "track_id": "A",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-18T09:15:27.684945",
+        "timestamp": "2025-07-18T13:02:49.401975",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "SUNOT 58/20 58/30 56/40 53/50 RIKAL\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N572A N576B-"
@@ -46,7 +45,7 @@
         "track_id": "B",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-18T09:15:27.685074",
+        "timestamp": "2025-07-18T13:02:49.402321",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "PIKIL 57/20 57/30 55/40 52/50 TUDEP\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N526A N532A-"
@@ -79,7 +78,7 @@
         "track_id": "C",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-18T09:15:27.685189",
+        "timestamp": "2025-07-18T13:02:49.402425",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "RESNO 56/20 56/30 54/40 51/50 ALLRY\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N468A N484E-"
@@ -112,7 +111,7 @@
         "track_id": "D",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-18T09:15:27.685271",
+        "timestamp": "2025-07-18T13:02:49.402663",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "DOGAL 55/20 55/30 53/40 50/50 ELSIR\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N398B N412A-"
@@ -145,7 +144,7 @@
         "track_id": "E",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-18T09:15:27.685367",
+        "timestamp": "2025-07-18T13:02:49.402798",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "MALOT 54/20 54/30 52/40 49/50 JOOPY\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N324B N342B-"
@@ -178,7 +177,7 @@
         "track_id": "F",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-18T09:15:27.685444",
+        "timestamp": "2025-07-18T13:02:49.402922",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "LIMRI 53/20 53/30 51/40 48/50 NICSO\nEAST LVLS NIL\nWEST LVLS 350 360 370 390\nEUR RTS WEST NIL\nNAR N254A N268A-"
@@ -201,6 +200,237 @@
           [
             -50.0,
             48.0
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "S",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-18T13:02:49.403015",
+        "source": "FAA NOTAM",
+        "waypoint_count": 4,
+        "raw_text": "TUDEP 52/50 54/40 55/30 55/20 RESNO NETKI\nEAST LVLS 340 350 360 370 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N581A N569B-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -50.0,
+            52.0
+          ],
+          [
+            -40.0,
+            54.0
+          ],
+          [
+            -30.0,
+            55.0
+          ],
+          [
+            -20.0,
+            55.0
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "T",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-18T13:02:49.403125",
+        "source": "FAA NOTAM",
+        "waypoint_count": 4,
+        "raw_text": "ALLRY 51/50 53/40 54/30 54/20 DOGAL BEXET\nEAST LVLS 340 350 360 370 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N519A N505B-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -50.0,
+            51.0
+          ],
+          [
+            -40.0,
+            53.0
+          ],
+          [
+            -30.0,
+            54.0
+          ],
+          [
+            -20.0,
+            54.0
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "U",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-18T13:02:49.403225",
+        "source": "FAA NOTAM",
+        "waypoint_count": 4,
+        "raw_text": "ELSIR 50/50 52/40 53/30 53/20 MALOT GISTI\nEAST LVLS 340 350 360 370 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N441B N431B-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -50.0,
+            50.0
+          ],
+          [
+            -40.0,
+            52.0
+          ],
+          [
+            -30.0,
+            53.0
+          ],
+          [
+            -20.0,
+            53.0
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "V",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-18T13:02:49.403304",
+        "source": "FAA NOTAM",
+        "waypoint_count": 4,
+        "raw_text": "JOOPY 49/50 51/40 52/30 52/20 LIMRI XETBO\nEAST LVLS 340 350 360 370 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N371B N355C-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -50.0,
+            49.0
+          ],
+          [
+            -40.0,
+            51.0
+          ],
+          [
+            -30.0,
+            52.0
+          ],
+          [
+            -20.0,
+            52.0
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "W",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-18T13:02:49.403381",
+        "source": "FAA NOTAM",
+        "waypoint_count": 4,
+        "raw_text": "NICSO 48/50 50/40 51/30 51/20 DINIM ELSOX\nEAST LVLS 340 350 360 370 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N285B N261B-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -50.0,
+            48.0
+          ],
+          [
+            -40.0,
+            50.0
+          ],
+          [
+            -30.0,
+            51.0
+          ],
+          [
+            -20.0,
+            51.0
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "X",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-18T13:02:49.403522",
+        "source": "FAA NOTAM",
+        "waypoint_count": 4,
+        "raw_text": "PORTI 47/50 49/40 50/30 50/20 SOMAX ATSUR\nEAST LVLS 340 350 360 370 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N199B N171E-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -50.0,
+            47.0
+          ],
+          [
+            -40.0,
+            49.0
+          ],
+          [
+            -30.0,
+            50.0
+          ],
+          [
+            -20.0,
+            50.0
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "track_id": "Y",
+        "direction": "Eastbound",
+        "color": "#FFA500",
+        "timestamp": "2025-07-18T13:02:49.403604",
+        "source": "FAA NOTAM",
+        "waypoint_count": 4,
+        "raw_text": "SUPRY 46/50 48/40 49/30 49/20 BEDRA NASBA\nEAST LVLS 350 360 380 390 400\nWEST LVLS NIL\nEUR RTS EAST NIL\nNAR N119B N93B-"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -50.0,
+            46.0
+          ],
+          [
+            -40.0,
+            48.0
+          ],
+          [
+            -30.0,
+            49.0
+          ],
+          [
+            -20.0,
+            49.0
           ]
         ]
       }
