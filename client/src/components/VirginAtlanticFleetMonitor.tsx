@@ -286,7 +286,7 @@ export default function VirginAtlanticFleetMonitor() {
                         aircraft: aircraft.aircraft_type,
                         fuel: calculateFuelPercentage(
                           aircraft.aircraft_type, 
-                          Math.random() * 40 + 40, // 40-80% progress for realistic fleet monitoring
+                          getSeededRandomValue(aircraft.registration, 40, 80), // 40-80% progress for realistic fleet monitoring
                           aircraft.route
                         ),
                         engineStatus: 'normal',
