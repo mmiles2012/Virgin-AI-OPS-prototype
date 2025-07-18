@@ -615,18 +615,18 @@ export default function WhatIfScenarioEngine() {
   };
 
   return (
-    <div className="w-full h-full bg-gray-900 text-white p-6 overflow-y-auto">
+    <div className="w-full h-full bg-va-white text-va-midnight p-6 overflow-y-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white mb-2">What-If Scenario Engine</h1>
-        <p className="text-gray-400">Comprehensive failure modeling and digital twin integration</p>
+        <h1 className="text-2xl font-bold text-va-midnight mb-2">What-If Scenario Engine</h1>
+        <p className="text-va-grey">Comprehensive failure modeling and digital twin integration</p>
         <div className="flex items-center space-x-4 mt-4">
           <Switch
             checked={realTimeComparison}
             onCheckedChange={setRealTimeComparison}
-            className="data-[state=checked]:bg-yellow-600"
+            className="data-[state=checked]:bg-va-red-primary"
           />
-          <label className="text-sm">Real-time Comparison</label>
-          <Badge variant="outline" className="text-yellow-400 border-yellow-400">
+          <label className="text-sm text-va-midnight">Real-time Comparison</label>
+          <Badge variant="default" className=" bg-va-red-primary/60 text-va-white border-va-red-primary">
             Enhanced Digital Twin Integration
           </Badge>
         </div>
@@ -634,24 +634,24 @@ export default function WhatIfScenarioEngine() {
 
       {/* Analysis Control Panel */}
       {selectedFlight && (
-        <Card className="mb-6 bg-gray-800 border-gray-700">
+        <Card className="mb-6 bg-va-white border-va-grey">
           <CardContent className="pt-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="text-left">
-                  <h3 className="text-white font-medium">Selected: {selectedFlight.flightNumber}</h3>
-                  <p className="text-gray-400 text-sm">{selectedFlight.route} • {selectedFlight.aircraft}</p>
+                  <h3 className="text-va-midnight font-medium">Selected: {selectedFlight.flightNumber}</h3>
+                  <p className="text-va-grey text-sm">{selectedFlight.route} • {selectedFlight.aircraft}</p>
                 </div>
                 {selectedFailure && (
                   <div className="text-left">
-                    <Badge variant="outline" className="text-red-400 border-red-400">
+                    <Badge variant="outline" className="text-va-red-primary border-va-red-primary">
                       {selectedFailure.name}
                     </Badge>
                   </div>
                 )}
                 {selectedWeather && (
                   <div className="text-left">
-                    <Badge variant="outline" className="text-blue-400 border-blue-400">
+                    <Badge variant="outline" className="text-va-blue-primary border-va-blue-primary">
                       {selectedWeather.name}
                     </Badge>
                   </div>
@@ -660,7 +660,7 @@ export default function WhatIfScenarioEngine() {
               <Button
                 onClick={calculateScenario}
                 disabled={isCalculating || !selectedFlight}
-                className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2"
+                className="bg-va-red-primary hover:bg-va-red-rebel text-va-white px-6 py-2"
               >
                 {isCalculating ? (
                   <>
@@ -680,20 +680,20 @@ export default function WhatIfScenarioEngine() {
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6 bg-gray-800">
-          <TabsTrigger value="flight-selection">Flight Selection</TabsTrigger>
-          <TabsTrigger value="failure-scenarios">Failure Scenarios</TabsTrigger>
-          <TabsTrigger value="weather-scenarios">Weather Scenarios</TabsTrigger>
-          <TabsTrigger value="analysis">Analysis</TabsTrigger>
-          <TabsTrigger value="diversions">Diversion Options</TabsTrigger>
-          <TabsTrigger value="learning">Learning</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-6 bg-va-cosmic-grey/20 border-va-deep-space rounded-lg p-1">
+          <TabsTrigger value="flight-selection" className="text-va-midnight">Flight Selection</TabsTrigger>
+          <TabsTrigger value="failure-scenarios" className="text-va-midnight">Failure Scenarios</TabsTrigger>
+          <TabsTrigger value="weather-scenarios" className="text-va-midnight">Weather Scenarios</TabsTrigger>
+          <TabsTrigger value="analysis" className="text-va-midnight">Analysis</TabsTrigger>
+          <TabsTrigger value="diversions" className="text-va-midnight">Diversion Options</TabsTrigger>
+          <TabsTrigger value="learning" className="text-va-midnight">Learning</TabsTrigger>
         </TabsList>
 
         <TabsContent value="flight-selection" className="mt-6">
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-va-white border-va-deep-space">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-va-midnight flex items-center gap-2">
                   <Plane className="w-5 h-5" />
                   Flight Selection
                 </CardTitle>
@@ -711,15 +711,15 @@ export default function WhatIfScenarioEngine() {
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <h3 className="font-medium text-white">{flight.flightNumber}</h3>
-                        <p className="text-sm text-gray-400">{flight.route}</p>
+                        <h3 className="font-medium text-va-midnight">{flight.flightNumber}</h3>
+                        <p className="text-sm text-va-midnight">{flight.route}</p>
                       </div>
                       <Badge variant="outline" className="text-xs">
                         {flight.aircraft}
                       </Badge>
                     </div>
-                    <div className="grid grid-cols-3 gap-2 text-xs text-gray-400">
                       <div>Fuel: {calculateFuelPercentage(flight.type || 'A350-1000', 75)}%</div>
+                      <div>Fuel: {(flight.originalFuel / 1000).toFixed(1)}k kg</div>
                       <div>Time: {flight.originalTime.toFixed(1)}h</div>
                       <div>Cost: ${(flight.originalCost / 1000).toFixed(0)}k</div>
                     </div>
@@ -729,9 +729,9 @@ export default function WhatIfScenarioEngine() {
             </Card>
 
             {selectedFlight && (
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-va-white border-va-deep-space">
                 <CardHeader>
-                  <CardTitle className="text-white">Flight Details</CardTitle>
+                  <CardTitle className="text-va-midnight">Flight Details</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -768,9 +768,9 @@ export default function WhatIfScenarioEngine() {
         <TabsContent value="failure-scenarios" className="mt-6">
           <div className="space-y-6">
             {/* Failure Location Selection */}
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-va-white border-va-deep-space">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-va-midnight flex items-center gap-2">
                   <MapPin className="w-5 h-5" />
                   Failure Location
                 </CardTitle>
@@ -778,7 +778,7 @@ export default function WhatIfScenarioEngine() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-white">Location Type</Label>
+                    <Label className="text-va-midnight">Location Type</Label>
                     <Select
                       value={modifications.failureLocation?.type || 'current'}
                       onValueChange={(value: 'waypoint' | 'coordinates' | 'current') =>
@@ -788,20 +788,20 @@ export default function WhatIfScenarioEngine() {
                         }))
                       }
                     >
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectTrigger className="bg-va-white border-va-deep-space text-va-midnight">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600">
-                        <SelectItem value="current" className="text-white hover:bg-gray-600">Current Position</SelectItem>
-                        <SelectItem value="waypoint" className="text-white hover:bg-gray-600">Flight Plan Waypoint</SelectItem>
-                        <SelectItem value="coordinates" className="text-white hover:bg-gray-600">Custom Coordinates</SelectItem>
+                      <SelectContent className="bg-va-white border-va-deep-space">
+                        <SelectItem value="current" className="text-va-midnight hover:bg-gray-600">Current Position</SelectItem>
+                        <SelectItem value="waypoint" className="text-va-midnight hover:bg-gray-600">Flight Plan Waypoint</SelectItem>
+                        <SelectItem value="coordinates" className="text-va-midnight hover:bg-gray-600">Custom Coordinates</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   {modifications.failureLocation?.type === 'waypoint' && (
                     <div className="space-y-2">
-                      <Label className="text-white">Waypoint</Label>
+                      <Label className="text-va-midnight">Waypoint</Label>
                       <Select
                         value={modifications.failureLocation?.waypoint || ''}
                         onValueChange={(waypoint) =>
@@ -815,12 +815,12 @@ export default function WhatIfScenarioEngine() {
                           }))
                         }
                       >
-                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectTrigger className="bg-va-white border-va-deep-space text-va-midnight">
                           <SelectValue placeholder="Select waypoint" />
                         </SelectTrigger>
-                        <SelectContent className="bg-gray-700 border-gray-600">
+                        <SelectContent className="bg-va-white border-va-deep-space">
                           {commonWaypoints.map((wp) => (
-                            <SelectItem key={wp.code} value={wp.code} className="text-white hover:bg-gray-600">
+                            <SelectItem key={wp.code} value={wp.code} className="text-va-midnight hover:bg-gray-600">
                               {wp.code} - {wp.name}
                             </SelectItem>
                           ))}
@@ -832,14 +832,14 @@ export default function WhatIfScenarioEngine() {
                   {modifications.failureLocation?.type === 'coordinates' && (
                     <>
                       <div className="space-y-2">
-                        <Label className="text-white">Latitude</Label>
+                        <Label className="text-va-midnight">Latitude</Label>
                         <Input
                           type="number"
                           step="0.0001"
                           min="-90"
                           max="90"
                           placeholder="51.4706"
-                          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                          className="bg-va-white border-va-deep-space text-va-midnight placeholder-gray-400"
                           value={modifications.failureLocation?.latitude || ''}
                           onChange={(e) =>
                             setModifications(prev => ({
@@ -853,14 +853,14 @@ export default function WhatIfScenarioEngine() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-white">Longitude</Label>
+                        <Label className="text-va-midnight">Longitude</Label>
                         <Input
                           type="number"
                           step="0.0001"
                           min="-180"
                           max="180"
                           placeholder="-0.4619"
-                          className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                          className="bg-va-white border-va-deep-space text-va-midnight placeholder-gray-400"
                           value={modifications.failureLocation?.longitude || ''}
                           onChange={(e) =>
                             setModifications(prev => ({
@@ -878,13 +878,13 @@ export default function WhatIfScenarioEngine() {
                 </div>
 
                 {modifications.failureLocation?.type !== 'current' && (
-                  <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded">
+                  <div className="p-3 bg-aero-blue-light/20 border border-aero-blue-dark rounded mt-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <MapPin className="w-4 h-4 text-blue-400" />
-                      <span className="text-blue-400 font-medium">Selected Location</span>
+                      <MapPin className="w-4 h-4 text-aero-blue-dark" />
+                      <span className="text-aero-blue-dark font-medium">Selected Location</span>
                     </div>
                     {modifications.failureLocation?.type === 'waypoint' && modifications.failureLocation?.waypoint && (
-                      <p className="text-sm text-gray-300">
+                      <p className="text-sm text-va-midnight">
                         {modifications.failureLocation.waypoint} - {modifications.failureLocation.description}
                       </p>
                     )}
@@ -905,35 +905,35 @@ export default function WhatIfScenarioEngine() {
             {failureScenarios.map((scenario) => (
               <Card
                 key={scenario.id}
-                className={`bg-gray-800 border-gray-700 cursor-pointer transition-colors ${
+                className={`bg-va-white border-va-deep-space cursor-pointer transition-colors ${
                   selectedFailure?.id === scenario.id
-                    ? 'border-red-500 bg-red-500/10'
-                    : 'hover:border-gray-500'
+                    ? 'border-va-red-primary bg-va-cosmic-grey'
+                    : 'hover:border-va-deep-space'
                 }`}
                 onClick={() => setSelectedFailure(scenario)}
               >
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-va-midnight flex items-center gap-2">
                     <span className="text-xl">{scenario.icon}</span>
                     {scenario.name}
                   </CardTitle>
                   <Badge
-                    variant="outline"
+                    variant="default"
                     className={`w-fit ${
-                      scenario.severity === 'CRITICAL' ? 'border-red-500 text-red-400' :
-                      scenario.severity === 'HIGH' ? 'border-orange-500 text-orange-400' :
-                      scenario.severity === 'MEDIUM' ? 'border-yellow-500 text-yellow-400' :
-                      'border-green-500 text-green-400'
+                      scenario.severity === 'CRITICAL' ? 'bg-va-red-primary/80 border-va-red-primary text-va-deep-space' :
+                      scenario.severity === 'HIGH' ? 'bg-aero-amber-light/80 border-aero-amber-caution text-va-deep-space' :
+                      scenario.severity === 'MEDIUM' ? 'bg-aero-orange-alert/80 border-aero-orange-alert text-va-deep-space' :
+                      'bg-aero-green-safe/80 border-aero-green-safe text-va-deep-space'
                     }`}
                   >
                     {scenario.severity}
                   </Badge>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-400 text-sm mb-4">{scenario.description}</p>
+                  <p className="text-va-deep-space text-sm mb-4">{scenario.description}</p>
                   <div className="space-y-2">
                     <div>
-                      <Label className="text-xs text-gray-500">Systems Affected</Label>
+                      <Label className="text-xs text-va-cosmic-grey">Systems Affected</Label>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {scenario.systems_affected.map((system, idx) => (
                           <Badge key={idx} variant="secondary" className="text-xs">
@@ -944,15 +944,15 @@ export default function WhatIfScenarioEngine() {
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-xs">
                       <div>
-                        <Label className="text-gray-500">Fuel Impact</Label>
+                        <Label className="text-va-deep-space">Fuel Impact</Label>
                         <p className="text-red-400">+{scenario.fuel_burn_penalty}%</p>
                       </div>
                       <div>
-                        <Label className="text-gray-500">Time Impact</Label>
+                        <Label className="text-va-deep-space">Time Impact</Label>
                         <p className="text-yellow-400">+{scenario.time_penalty}min</p>
                       </div>
                       <div>
-                        <Label className="text-gray-500">Cost Impact</Label>
+                        <Label className="text-va-deep-space">Cost Impact</Label>
                         <p className="text-orange-400">{scenario.cost_multiplier}x</p>
                       </div>
                     </div>
@@ -969,7 +969,7 @@ export default function WhatIfScenarioEngine() {
             {weatherScenarios.map((weather) => (
               <Card
                 key={weather.id}
-                className={`bg-gray-800 border-gray-700 cursor-pointer transition-colors ${
+                className={`bg-va-white border-va-deep-space cursor-pointer transition-colors ${
                   selectedWeather?.id === weather.id
                     ? 'border-blue-500 bg-blue-500/10'
                     : 'hover:border-gray-500'
@@ -977,13 +977,13 @@ export default function WhatIfScenarioEngine() {
                 onClick={() => setSelectedWeather(weather)}
               >
                 <CardHeader>
-                  <CardTitle className="text-white">{weather.name}</CardTitle>
+                  <CardTitle className="text-va-deep-space">{weather.name}</CardTitle>
                   <Badge
-                    variant="outline"
+                    variant="default"
                     className={`w-fit ${
-                      weather.severity === 'EXTREME' ? 'border-red-500 text-red-400' :
-                      weather.severity === 'SEVERE' ? 'border-orange-500 text-orange-400' :
-                      'border-yellow-500 text-yellow-400'
+                      weather.severity === 'EXTREME' ? 'bg-va-red-primary/80 border-va-red-primary text-va-deep-space' :
+                      weather.severity === 'SEVERE' ? 'bg-aero-amber-light/80 border-aero-amber-caution text-va-deep-space' :
+                      'bg-aero-green-safe/80 border-aero-green-safe text-va-deep-space'
                     }`}
                   >
                     {weather.severity}
@@ -992,34 +992,34 @@ export default function WhatIfScenarioEngine() {
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <Label className="text-gray-500">Wind Speed</Label>
-                      <p className="text-white">{weather.wind_speed} kt</p>
+                      <Label className="text-va-cosmic-grey">Wind Speed</Label>
+                      <p className="text-va-midnight">{weather.wind_speed} kt</p>
                     </div>
                     <div>
-                      <Label className="text-gray-500">Visibility</Label>
-                      <p className="text-white">{weather.visibility} miles</p>
+                      <Label className="text-va-cosmic-grey">Visibility</Label>
+                      <p className="text-va-midnight">{weather.visibility} miles</p>
                     </div>
                     <div>
-                      <Label className="text-gray-500">Precipitation</Label>
-                      <p className="text-white">{weather.precipitation}</p>
+                      <Label className="text-va-cosmic-grey">Precipitation</Label>
+                      <p className="text-va-midnight">{weather.precipitation}</p>
                     </div>
                     <div>
-                      <Label className="text-gray-500">Temperature</Label>
-                      <p className="text-white">{weather.temperature}°C</p>
+                      <Label className="text-va-cosmic-grey">Temperature</Label>
+                      <p className="text-va-midnight">{weather.temperature}°C</p>
                     </div>
                   </div>
                   <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
                     <div>
-                      <Label className="text-gray-500">Fuel Penalty</Label>
-                      <p className="text-red-400">+{weather.fuel_penalty}%</p>
+                      <Label className="text-va-cosmic-grey">Fuel Penalty</Label>
+                      <p className="text-va-red-primary">+{weather.fuel_penalty}%</p>
                     </div>
                     <div>
-                      <Label className="text-gray-500">Time Penalty</Label>
-                      <p className="text-yellow-400">+{weather.time_penalty}min</p>
+                      <Label className="text-va-cosmic-grey">Time Penalty</Label>
+                      <p className="text-aero-amber-caution">+{weather.time_penalty}min</p>
                     </div>
                     <div>
-                      <Label className="text-gray-500">Diversion Risk</Label>
-                      <p className="text-orange-400">{(weather.diversion_probability * 100)}%</p>
+                      <Label className="text-va-cosmic-grey">Diversion Risk</Label>
+                      <p className="text-va-red-primary">{(weather.diversion_probability * 100)}%</p>
                     </div>
                   </div>
                 </CardContent>
@@ -1031,44 +1031,44 @@ export default function WhatIfScenarioEngine() {
         <TabsContent value="analysis" className="mt-6">
           {results ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-va-white border-va-deep-space">
                 <CardHeader>
-                  <CardTitle className="text-white">Performance Impact</CardTitle>
+                  <CardTitle className="text-va-midnight">Performance Impact</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center p-3 bg-gray-700 rounded">
+                    <div className="flex justify-between items-center p-3 bg-va-white rounded">
                       <div className="flex items-center gap-2">
-                        <Fuel className="w-4 h-4 text-blue-400" />
-                        <span className="text-gray-300">Fuel Burn</span>
+                        <Fuel className="w-4 h-4 text-aero-blue-dark" />
+                        <span className="text-va-midnight">Fuel Burn</span>
                       </div>
                       <div className="text-right">
-                        <p className="text-white">{calculateFuelPercentage('A350-1000', results.fuelBurn.percentage > 0 ? 78 : 72)}%</p>
-                        <p className={`text-xs ${results.fuelBurn.percentage > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                        <p className="text-va-midnight">{calculateFuelPercentage('A350-1000', results.fuelBurn.percentage > 0 ? 78 : 72)}%</p>
+                        <p className={`text-xs ${results.fuelBurn.percentage > 0 ? 'text-va-red-primary' : 'text-aero-green-safe'}`}>
                           {results.fuelBurn.percentage > 0 ? '+' : ''}{results.fuelBurn.percentage.toFixed(1)}% fuel penalty
                         </p>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-700 rounded">
+                    <div className="flex justify-between items-center p-3 bg-va-white rounded">
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-yellow-400" />
-                        <span className="text-gray-300">Flight Time</span>
+                        <span className="text-va-midnight">Flight Time</span>
                       </div>
                       <div className="text-right">
-                        <p className="text-white">{results.flightTime.modified.toFixed(1)}h</p>
-                        <p className={`text-xs ${results.flightTime.percentage > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                        <p className="text-va-midnight">{results.flightTime.modified.toFixed(1)}h</p>
+                        <p className={`text-xs ${results.flightTime.percentage > 0 ? 'text-va-red-primary' : 'text-aero-green-safe'}`}>
                           {results.flightTime.percentage > 0 ? '+' : ''}{results.flightTime.percentage.toFixed(1)}%
                         </p>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-700 rounded">
+                    <div className="flex justify-between items-center p-3 bg-va-white rounded">
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-green-400" />
-                        <span className="text-gray-300">Operational Cost</span>
+                        <span className="text-va-midnight">Operational Cost</span>
                       </div>
                       <div className="text-right">
-                        <p className="text-white">${(results.operationalCost.modified / 1000).toFixed(0)}k</p>
-                        <p className={`text-xs ${results.operationalCost.percentage > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                        <p className="text-va-midnight">${(results.operationalCost.modified / 1000).toFixed(0)}k</p>
+                        <p className={`text-xs ${results.operationalCost.percentage > 0 ? 'text-va-red-primary' : 'text-aero-green-safe'}`}>
                           {results.operationalCost.percentage > 0 ? '+' : ''}{results.operationalCost.percentage.toFixed(1)}%
                         </p>
                       </div>
@@ -1077,9 +1077,9 @@ export default function WhatIfScenarioEngine() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-va-white border-va-deep-space">
                 <CardHeader>
-                  <CardTitle className="text-white">Risk Assessment</CardTitle>
+                  <CardTitle className="text-va-midnight">Risk Assessment</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Location Information */}
@@ -1106,53 +1106,53 @@ export default function WhatIfScenarioEngine() {
                   )}
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-3 bg-gray-700 rounded">
-                        <Label className="text-gray-400">Weather Risk</Label>
+                      <div className="p-3 bg-va-white rounded">
+                        <Label className="text-va-midnight">Weather Risk</Label>
                         <p className={`font-medium ${
-                          results.riskFactors.weather === 'high' ? 'text-red-400' :
-                          results.riskFactors.weather === 'medium' ? 'text-yellow-400' :
-                          'text-green-400'
+                          results.riskFactors.weather === 'high' ? 'text-va-red-primary' :
+                          results.riskFactors.weather === 'medium' ? 'text-aero-orange-alert/50' :
+                          'text-aero-green-safe'
                         }`}>
                           {results.riskFactors.weather.toUpperCase()}
                         </p>
                       </div>
-                      <div className="p-3 bg-gray-700 rounded">
-                        <Label className="text-gray-400">Fuel Risk</Label>
+                      <div className="p-3 bg-va-white rounded">
+                        <Label className="text-va-midnight">Fuel Risk</Label>
                         <p className={`font-medium ${
-                          results.riskFactors.fuel === 'high' ? 'text-red-400' :
-                          results.riskFactors.fuel === 'medium' ? 'text-yellow-400' :
-                          'text-green-400'
+                          results.riskFactors.fuel === 'high' ? 'text-va-red-primary' :
+                          results.riskFactors.fuel === 'medium' ? 'text-aero-orange-alert/50' :
+                          'text-aero-green-safe'
                         }`}>
                           {results.riskFactors.fuel.toUpperCase()}
                         </p>
                       </div>
-                      <div className="p-3 bg-gray-700 rounded">
-                        <Label className="text-gray-400">Time Risk</Label>
+                      <div className="p-3 bg-va-white rounded">
+                        <Label className="text-va-midnight">Time Risk</Label>
                         <p className={`font-medium ${
-                          results.riskFactors.time === 'high' ? 'text-red-400' :
-                          results.riskFactors.time === 'medium' ? 'text-yellow-400' :
-                          'text-green-400'
+                          results.riskFactors.time === 'high' ? 'text-va-red-primary' :
+                          results.riskFactors.time === 'medium' ? 'text-aero-orange-alert/50' :
+                          'text-aero-green-safe'
                         }`}>
                           {results.riskFactors.time.toUpperCase()}
                         </p>
                       </div>
-                      <div className="p-3 bg-gray-700 rounded">
-                        <Label className="text-gray-400">Overall Risk</Label>
+                      <div className="p-3 bg-va-white rounded">
+                        <Label className="text-va-midnight">Overall Risk</Label>
                         <p className={`font-medium ${
-                          results.riskFactors.overall === 'high' || results.riskFactors.overall === 'critical' ? 'text-red-400' :
-                          results.riskFactors.overall === 'medium' ? 'text-yellow-400' :
-                          'text-green-400'
+                          results.riskFactors.overall === 'high' || results.riskFactors.overall === 'critical' ? 'text-va-red-primary' :
+                          results.riskFactors.overall === 'medium' ? 'text-aero-orange-alert/50' :
+                          'text-aero-green-safe'
                         }`}>
                           {results.riskFactors.overall.toUpperCase()}
                         </p>
                       </div>
                     </div>
                     <div>
-                      <Label className="text-gray-400">Recommendations</Label>
+                      <Label className="text-va-cosmic-grey">Recommendations</Label>
                       <ul className="mt-2 space-y-1">
                         {results.recommendations.map((rec, idx) => (
-                          <li key={idx} className="text-sm text-gray-300 flex items-start gap-2">
-                            <span className="text-yellow-400 mt-1">•</span>
+                          <li key={idx} className="text-sm text-va-cosmic-grey flex items-start gap-2">
+                            <span className="text-aero-orange-alert/50 mt-1">•</span>
                             {rec}
                           </li>
                         ))}
@@ -1164,9 +1164,9 @@ export default function WhatIfScenarioEngine() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Activity className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-white mb-2">No Analysis Available</h3>
-              <p className="text-gray-400 mb-4">
+              <Activity className="w-12 h-12 text-va-cosmic-grey mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-va-midnight mb-2">No Analysis Available</h3>
+              <p className="text-va-cosmic-grey mb-4">
                 {!selectedFlight 
                   ? 'Select a flight and run scenario analysis to see results'
                   : 'Configure scenarios and run analysis to see results'
@@ -1206,9 +1206,9 @@ export default function WhatIfScenarioEngine() {
           {diversionOptions.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {diversionOptions.map((option) => (
-                <Card key={option.icao} className="bg-gray-800 border-gray-700">
+                <Card key={option.icao} className="bg-va-white border-va-cosmic-grey">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
+                    <CardTitle className="text-va-midnight flex items-center gap-2">
                       <MapPin className="w-5 h-5" />
                       {option.name}
                     </CardTitle>
@@ -1219,37 +1219,37 @@ export default function WhatIfScenarioEngine() {
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <Label className="text-gray-500">Distance</Label>
-                        <p className="text-white">{option.distance} nm</p>
+                        <Label className="text-va-cosmic-grey">Distance</Label>
+                        <p className="text-va-midnight">{option.distance} nm</p>
                       </div>
                       <div>
-                        <Label className="text-gray-500">Fuel Required</Label>
+                        <Label className="text-va-cosmic-grey">Fuel Required</Label>
                         <p className="text-white">{calculateFuelPercentage('A350-1000', 25)}%</p>
                       </div>
                       <div>
-                        <Label className="text-gray-500">Runway Length</Label>
-                        <p className="text-white">{option.runwayLength.toLocaleString()} ft</p>
+                        <Label className="text-va-cosmic-grey">Runway Length</Label>
+                        <p className="text-va-midnight">{option.runwayLength.toLocaleString()} ft</p>
                       </div>
                       <div>
-                        <Label className="text-gray-500">Weather</Label>
+                        <Label className="text-va-cosmic-grey">Weather</Label>
                         <p className={`${
-                          option.weatherSuitability === 'Good' ? 'text-green-400' :
-                          option.weatherSuitability === 'Moderate' ? 'text-yellow-400' :
-                          'text-red-400'
+                          option.weatherSuitability === 'Good' ? 'text-aero-green-safe' :
+                          option.weatherSuitability === 'Moderate' ? 'text-aero-orange-alert/50' :
+                          'text-va-red-primary'
                         }`}>
                           {option.weatherSuitability}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between p-3 bg-gray-700 rounded">
-                      <span className="text-gray-300">Virgin Atlantic Support</span>
+                    <div className="flex items-center justify-between p-3 bg-va-white rounded">
+                      <span className="text-va-cosmic-grey">Virgin Atlantic Support</span>
                       <Badge variant={option.virginAtlanticSupport ? "default" : "secondary"}>
                         {option.virginAtlanticSupport ? 'Available' : 'Limited'}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-400">Estimated Cost</span>
-                      <span className="text-white font-medium">${(option.estimatedCost / 1000).toFixed(0)}k</span>
+                      <span className="text-va-cosmic-grey">Estimated Cost</span>
+                      <span className="text-va-midnight font-medium">${(option.estimatedCost / 1000).toFixed(0)}k</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -1257,9 +1257,9 @@ export default function WhatIfScenarioEngine() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <MapPin className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-white mb-2">No Diversion Options Available</h3>
-              <p className="text-gray-400 mb-4">Configure failure scenarios that require diversion to see options</p>
+              <MapPin className="w-12 h-12 text-va-cosmic-grey mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-va-midnight mb-2">No Diversion Options Available</h3>
+              <p className="text-va-cosmic-grey mb-4">Configure failure scenarios that require diversion to see options</p>
               <Button
                 onClick={() => setActiveTab('failure-scenarios')}
                 className="bg-red-600 hover:bg-red-700 text-white"
@@ -1273,9 +1273,9 @@ export default function WhatIfScenarioEngine() {
 
         <TabsContent value="learning" className="mt-6">
           <div className="space-y-6">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-va-white border-va-cosmic-grey">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-va-midnight flex items-center gap-2">
                   <Activity className="w-5 h-5" />
                   Machine Learning System Status
                 </CardTitle>
@@ -1283,45 +1283,45 @@ export default function WhatIfScenarioEngine() {
               <CardContent>
                 {learningStats ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div className="p-4 bg-gray-700 rounded-lg">
-                      <Label className="text-gray-400">Total Scenarios Learned</Label>
-                      <p className="text-2xl font-bold text-white">{learningStats.total_scenarios_learned}</p>
+                    <div className="p-4 bg-va-white rounded-lg">
+                      <Label className="text-va-cosmic-grey">Total Scenarios Learned</Label>
+                      <p className="text-2xl font-bold text-va-midnight">{learningStats.total_scenarios_learned}</p>
                     </div>
-                    <div className="p-4 bg-gray-700 rounded-lg">
-                      <Label className="text-gray-400">Models Trained</Label>
-                      <p className="text-2xl font-bold text-white">{learningStats.models_trained}</p>
+                    <div className="p-4 bg-va-white rounded-lg">
+                      <Label className="text-va-cosmic-grey">Models Trained</Label>
+                      <p className="text-2xl font-bold text-va-midnight">{learningStats.models_trained}</p>
                     </div>
-                    <div className="p-4 bg-gray-700 rounded-lg">
-                      <Label className="text-gray-400">Average Accuracy</Label>
-                      <p className="text-2xl font-bold text-white">{(learningStats.average_accuracy * 100).toFixed(1)}%</p>
+                    <div className="p-4 bg-va-white rounded-lg">
+                      <Label className="text-va-cosmic-grey">Average Accuracy</Label>
+                      <p className="text-2xl font-bold text-va-midnight">{(learningStats.average_accuracy * 100).toFixed(1)}%</p>
                     </div>
-                    <div className="p-4 bg-gray-700 rounded-lg">
-                      <Label className="text-gray-400">Learning Status</Label>
+                    <div className="p-4 bg-va-white rounded-lg">
+                      <Label className="text-va-cosmic-grey">Learning Status</Label>
                       <Badge variant={learningStats.learning_enabled ? "default" : "secondary"}>
                         {learningStats.learning_enabled ? 'ACTIVE' : 'DISABLED'}
                       </Badge>
                     </div>
-                    <div className="p-4 bg-gray-700 rounded-lg">
-                      <Label className="text-gray-400">Improvement Trend</Label>
+                    <div className="p-4 bg-va-white rounded-lg">
+                      <Label className="text-va-cosmic-grey">Improvement Trend</Label>
                       <p className="text-lg font-semibold text-green-400">{learningStats.improvement_trend}</p>
                     </div>
-                    <div className="p-4 bg-gray-700 rounded-lg">
-                      <Label className="text-gray-400">Last Update</Label>
-                      <p className="text-sm text-gray-300">{new Date(learningStats.last_learning_update).toLocaleDateString()}</p>
+                    <div className="p-4 bg-va-white rounded-lg">
+                      <Label className="text-va-cosmic-grey">Last Update</Label>
+                      <p className="text-sm text-va-deep-space">{new Date(learningStats.last_learning_update).toLocaleDateString()}</p>
                     </div>
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <Activity className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-400">Loading learning statistics...</p>
+                    <Activity className="w-12 h-12 text-va-cosmic-grey mx-auto mb-4" />
+                    <p className="text-va-cosmic-grey">Loading learning statistics...</p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-va-white border-va-cosmic-grey">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-va-midnight flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
                   Active Learning Features
                 </CardTitle>
@@ -1330,27 +1330,27 @@ export default function WhatIfScenarioEngine() {
                 {learningStats?.active_features ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {learningStats.active_features.map((feature: string, index: number) => (
-                      <div key={index} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
-                        <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                        <span className="text-gray-300 capitalize">{feature.replace(/_/g, ' ')}</span>
+                      <div key={index} className="flex items-center gap-3 p-3 bg-va-white rounded-lg">
+                        <div className="w-2 h-2 bg-aero-green-light/20 rounded-full"></div>
+                        <span className="text-va-cosmic-grey capitalize">{feature.replace(/_/g, ' ')}</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-400">No active learning features loaded</p>
+                  <p className="text-va-cosmic-grey">No active learning features loaded</p>
                 )}
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-va-white border-va-deep-space">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-va-midnight flex items-center gap-2">
                   <Zap className="w-5 h-5" />
                   Self-Learning Cycle
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-gray-400">
+                <p className="text-va-cosmic-grey">
                   Trigger an automated learning cycle to improve scenario predictions based on historical data and outcomes.
                 </p>
                 <div className="flex items-center gap-4">
@@ -1383,32 +1383,32 @@ export default function WhatIfScenarioEngine() {
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-va-white border-va-cosmic-grey">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="text-va-midnight flex items-center gap-2">
                   <Eye className="w-5 h-5" />
                   Learning Insights
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="p-4 bg-gray-700 rounded-lg">
-                    <h4 className="font-semibold text-white mb-2">Prediction Accuracy</h4>
-                    <p className="text-gray-300 text-sm">
+                  <div className="p-4 bg-va-white rounded-lg">
+                    <h4 className="font-semibold text-va-midnight mb-2">Prediction Accuracy</h4>
+                    <p className="text-va-cosmic-grey text-sm">
                       The system continuously learns from actual flight outcomes to improve future scenario predictions.
                       Current accuracy shows strong performance in fuel burn and cost estimation.
                     </p>
                   </div>
-                  <div className="p-4 bg-gray-700 rounded-lg">
-                    <h4 className="font-semibold text-white mb-2">Pattern Recognition</h4>
-                    <p className="text-gray-300 text-sm">
+                  <div className="p-4 bg-va-white rounded-lg">
+                    <h4 className="font-semibold text-va-midnight mb-2">Pattern Recognition</h4>
+                    <p className="text-va-cosmic-grey text-sm">
                       Machine learning models identify patterns in aircraft performance, weather impacts, and operational costs
                       to provide more accurate what-if scenario analyses.
                     </p>
                   </div>
-                  <div className="p-4 bg-gray-700 rounded-lg">
-                    <h4 className="font-semibold text-white mb-2">Continuous Improvement</h4>
-                    <p className="text-gray-300 text-sm">
+                  <div className="p-4 bg-va-white rounded-lg">
+                    <h4 className="font-semibold text-va-midnight mb-2">Continuous Improvement</h4>
+                    <p className="text-va-cosmic-grey text-sm">
                       The self-learning system automatically archives historical data, retrains models, and updates
                       prediction algorithms to ensure optimal performance over time.
                     </p>

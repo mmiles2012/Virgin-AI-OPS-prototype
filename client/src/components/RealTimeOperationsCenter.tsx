@@ -175,7 +175,7 @@ export default function RealTimeOperationsCenter() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="text-white">Loading operations data...</div>
+        <div className="text-gray-900">Loading operations data...</div>
       </div>
     );
   }

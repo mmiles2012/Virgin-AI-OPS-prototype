@@ -21,7 +21,7 @@ export default function AviationGauge({
   const isDangerous = dangerZone && value >= dangerZone.min && value <= dangerZone.max;
 
   return (
-    <div className="bg-gray-900 rounded-lg p-3 border border-blue-500 text-center">
+    <div className="bg-card rounded-lg p-3 border border-border text-center">
       <div className="text-blue-300 text-xs font-medium mb-1">{label}</div>
       
       {/* Circular gauge */}

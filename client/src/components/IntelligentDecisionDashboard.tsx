@@ -214,24 +214,22 @@ const IntelligentDecisionDashboard: React.FC = () => {
     }
   };
 
-  const getRiskBgColor = (riskLevel: string) => {
-    switch (riskLevel) {
-      case 'LOW': return 'bg-green-900/30 border-green-700';
-      case 'MEDIUM': return 'bg-yellow-900/30 border-yellow-700';
-      case 'HIGH': return 'bg-orange-900/30 border-orange-700';
-      case 'CRITICAL': return 'bg-red-900/30 border-red-700';
-      default: return 'bg-gray-900/30 border-gray-700';
+  const getRiskCardClass = (risk: string) => {
+    switch (risk) {
+      case 'LOW': return 'bg-green-50 border-green-200';
+      case 'MEDIUM': return 'bg-yellow-50 border-yellow-200';
+      case 'HIGH': return 'bg-orange-50 border-orange-200';
+      case 'CRITICAL': return 'bg-red-50 border-red-200';
+      default: return 'bg-gray-50 border-gray-200';
     }
-  };
-
-  const formatNumber = (num: number, prefix: string = '', suffix: string = '') => {
+  };  const formatNumber = (num: number, prefix: string = '', suffix: string = '') => {
     return `${prefix}${num.toLocaleString()}${suffix}`;
   };
 
   return (
-    <div className="w-full h-full bg-gray-900 text-white overflow-y-auto">
+    <div className="w-full h-full bg-gray-50 text-gray-900 overflow-y-auto">
       {/* Header */}
-      <div className="p-6 border-b border-gray-700">
+      <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
             <Brain className="w-6 h-6 text-white" />
@@ -438,7 +436,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
 
                     <div className="space-y-3">
                       {analysis.options_analysis.map((option, index) => (
-                        <div key={option.option_id} className={`rounded-lg p-4 border ${getRiskBgColor(option.risk_level)}`}>
+                        <div key={option.option_id} className={`rounded-lg p-4 border ${getRiskCardClass(option.risk_level)}`}>
                           <div className="flex items-center justify-between mb-2">
                             <div className="font-medium">
                               #{option.recommendation_rank} - {option.option_id}

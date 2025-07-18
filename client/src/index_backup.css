@@ -1,0 +1,177 @@
+/* Import Virgin Atlantic Design System */
+@import './styles/virgin-atlantic-theme.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Virgin Atlantic Brand Colors */
+    --va-red-primary: 14 96% 45%;           /* #E10A17 */
+    --va-red-heritage: 348 81% 47%;         /* #C8102E */
+    --va-red-rebel: 0 100% 50%;             /* #FF0000 */
+    --va-deep-space: 0 0% 11%;              /* #1B1B1B */
+    --va-cosmic-grey: 0 0% 40%;             /* #666666 */
+    --va-cloud-white: 0 0% 100%;            /* #FFFFFF */
+    --va-sky-blue: 212 100% 40%;            /* #0066CC */
+    --va-midnight: 0 0% 0%;                 /* #000000 */
+    
+    /* Aviation Operations Extended Palette */
+    --aero-blue-primary: 212 100% 40%;      /* #0066CC */
+    --aero-blue-light: 215 100% 65%;        /* #4A9EFF */
+    --aero-blue-dark: 212 100% 23%;         /* #003A75 */
+    --aero-green-safe: 158 64% 52%;         /* #10B981 */
+    --aero-amber-caution: 38 92% 50%;       /* #F59E0B */
+    --aero-purple-premium: 250 84% 54%;     /* #8B5CF6 */
+    
+    /* Surface Colors */
+    --surface-primary: var(--va-deep-space);
+    --surface-secondary: 216 19% 16%;       /* #252A35 */
+    --surface-tertiary: 215 25% 27%;        /* #374151 */
+    
+    /* Light Mode Base */
+    --background: var(--va-cloud-white);
+    --foreground: var(--va-deep-space);
+    --card: var(--va-cloud-white);
+    --card-foreground: var(--va-deep-space);
+    --popover: var(--va-cloud-white);
+    --popover-foreground: var(--va-deep-space);
+    --primary: var(--va-red-primary);
+    --primary-foreground: var(--va-cloud-white);
+    --secondary: var(--aero-blue-primary);
+    --secondary-foreground: var(--va-cloud-white);
+    --muted: 210 40% 98%;
+    --muted-foreground: 215 16% 47%;
+    --accent: var(--aero-blue-light);
+    --accent-foreground: var(--va-cloud-white);
+    --destructive: var(--va-red-primary);
+    --destructive-foreground: var(--va-cloud-white);
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: var(--va-red-primary);
+    --radius: 0.75rem;
+    
+    /* Chart Colors */
+    --chart-1: var(--va-red-primary);
+    --chart-2: var(--aero-blue-primary);
+    --chart-3: var(--aero-green-safe);
+    --chart-4: var(--aero-amber-caution);
+    --chart-5: var(--aero-purple-premium);
+    
+    /* Sidebar Colors */
+    --sidebar-background: var(--surface-primary);
+    --sidebar-foreground: var(--va-cloud-white);
+    --sidebar-primary: var(--va-red-primary);
+    --sidebar-primary-foreground: var(--va-cloud-white);
+    --sidebar-accent: var(--surface-secondary);
+    --sidebar-accent-foreground: var(--va-cloud-white);
+    --sidebar-border: var(--surface-tertiary);
+    --sidebar-ring: var(--va-red-primary);
+  }
+
+  .dark {
+    /* Dark Mode - Aviation Operations Theme */
+    --background: var(--va-deep-space);
+    --foreground: var(--va-cloud-white);
+    --card: var(--surface-secondary);
+    --card-foreground: var(--va-cloud-white);
+    --popover: var(--surface-secondary);
+    --popover-foreground: var(--va-cloud-white);
+    --primary: var(--va-red-primary);
+    --primary-foreground: var(--va-cloud-white);
+    --secondary: var(--aero-blue-primary);
+    --secondary-foreground: var(--va-cloud-white);
+    --muted: var(--surface-tertiary);
+    --muted-foreground: 215 20% 65%;
+    --accent: var(--aero-blue-light);
+    --accent-foreground: var(--va-cloud-white);
+    --destructive: var(--va-red-primary);
+    --destructive-foreground: var(--va-cloud-white);
+    --border: var(--surface-tertiary);
+    --input: var(--surface-tertiary);
+    --ring: var(--va-red-primary);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  }
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none;
+}
+
+/* Custom scrollbar styles for better UI */
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.6);
+  border-radius: 4px;
+  border: 1px solid rgba(75, 85, 99, 0.4);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.8);
+}
+
+::-webkit-scrollbar-corner {
+  background: rgba(31, 41, 55, 0.3);
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.6) rgba(31, 41, 55, 0.3);
+}
+
+/* Aviation-specific scrollable elements with minimal scrollbars */
+.aviation-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(59, 130, 246, 0.5) rgba(30, 58, 138, 0.2);
+}
+
+.aviation-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.aviation-scrollable::-webkit-scrollbar-track {
+  background: rgba(30, 58, 138, 0.2);
+  border-radius: 3px;
+}
+
+.aviation-scrollable::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 3px;
+}
+
+.aviation-scrollable::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.7);
+}

@@ -25,6 +25,12 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
   },
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': 'http://localhost:5000',
+    },
+  },
   // Add support for large models and audio files
   assetsInclude: ["**/*.gltf", "**/*.glb", "**/*.mp3", "**/*.ogg", "**/*.wav"],
 });

@@ -2,6 +2,7 @@
   "type": "FeatureCollection",
   "properties": {
     "generated_at": "2025-07-18T09:15:27.685470",
+
     "source": "FAA NOTAM",
     "total_tracks": 6
   },

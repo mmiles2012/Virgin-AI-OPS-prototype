@@ -119,20 +119,20 @@ const PassengerImpactModelingComponent: React.FC = () => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      case 'medium': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'low': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'high': return 'bg-red-100 text-red-800 border-red-200';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'low': return 'bg-green-100 text-green-800 border-green-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   if (loading) {
     return (
-      <Card className="bg-[#1e293b] border-gray-600">
+      <Card className="bg-white border-gray-200">
         <CardContent className="p-6">
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
-            <span className="ml-3 text-gray-400">Loading passenger impact data...</span>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-aero-blue-primary"></div>
+            <span className="ml-3 text-gray-600">Loading passenger impact data...</span>
           </div>
         </CardContent>
       </Card>
@@ -140,22 +140,16 @@ const PassengerImpactModelingComponent: React.FC = () => {
   }
 
   return (
-    <Card className="bg-[#1e293b] border-gray-600">
+    <Card className="bg-white border-gray-200">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-            <Users className="h-6 w-6 text-blue-400" />
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <Users className="w-6 h-6" />
             Passenger Impact Modeling
           </h2>
-          <div className="flex gap-4 text-sm">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-400">{totalPax}</div>
-              <div className="text-gray-400">Total PAX</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-400">£{totalCost.toLocaleString()}</div>
-              <div className="text-gray-400">Est. Cost</div>
-            </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span className="text-sm text-gray-600">Real-time Analysis</span>
           </div>
         </div>
 
@@ -165,7 +159,7 @@ const PassengerImpactModelingComponent: React.FC = () => {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Plane className="h-4 w-4 text-blue-400" />
-                  <h3 className="font-semibold text-white">{impact.flight}</h3>
+                  <h3 className="font-semibold text-gray-900">{impact.flight}</h3>
                   <Badge variant="outline" className="text-xs text-gray-400 border-gray-600">
                     {impact.route}
                   </Badge>
@@ -180,7 +174,7 @@ const PassengerImpactModelingComponent: React.FC = () => {
                   <AlertTriangle className="h-4 w-4 text-orange-400 mt-0.5 flex-shrink-0" />
                   <div>
                     <span className="text-gray-300 font-medium">Issue: </span>
-                    <span className="text-white">{impact.issue}</span>
+                    <span className="text-gray-900">{impact.issue}</span>
                   </div>
                 </div>
 
@@ -188,7 +182,7 @@ const PassengerImpactModelingComponent: React.FC = () => {
                   <Users className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
                   <div>
                     <span className="text-gray-300 font-medium">PAX Affected: </span>
-                    <span className="text-white">{impact.paxAffected}</span>
+                    <span className="text-gray-900">{impact.paxAffected}</span>
                   </div>
                 </div>
 
@@ -196,7 +190,7 @@ const PassengerImpactModelingComponent: React.FC = () => {
                   <Clock className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
                   <div>
                     <span className="text-gray-300 font-medium">Timeline: </span>
-                    <span className="text-white">{impact.timeline}</span>
+                    <span className="text-gray-900">{impact.timeline}</span>
                   </div>
                 </div>
 
@@ -204,7 +198,7 @@ const PassengerImpactModelingComponent: React.FC = () => {
                   <MapPin className="h-4 w-4 text-purple-400 mt-0.5 flex-shrink-0" />
                   <div>
                     <span className="text-gray-300 font-medium">Reaccommodation: </span>
-                    <span className="text-white">{impact.reaccomOptions}</span>
+                    <span className="text-gray-900">{impact.reaccomOptions}</span>
                   </div>
                 </div>
 
@@ -212,7 +206,7 @@ const PassengerImpactModelingComponent: React.FC = () => {
                   <DollarSign className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
                   <div>
                     <span className="text-gray-300 font-medium">Est. Cost: </span>
-                    <span className="text-white">{impact.estimatedCost}</span>
+                    <span className="text-gray-900">{impact.estimatedCost}</span>
                     {impact.compensation && (
                       <div className="text-xs text-gray-400 mt-1">
                         + {impact.compensation}
