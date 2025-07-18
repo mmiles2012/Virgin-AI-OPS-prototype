@@ -28,7 +28,7 @@ function App() {
       <ResponsiveProvider>
         <ToastProvider>
           <ErrorBoundary>
-            <div className="overflow-hidden">
+            <div className="min-h-screen">
               <AppRouter 
                 isNavigationCollapsed={isNavigationCollapsed}
                 setIsNavigationCollapsed={setIsNavigationCollapsed}

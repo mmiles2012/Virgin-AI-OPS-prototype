@@ -272,25 +272,25 @@ export default function AIOpsDashboard() {
   return (
     <div className="bg-gray-50 text-gray-900">
       <div className="flex gap-4 p-4 h-auto">
-        {/* Live Map View - Takes up 3/4 width */}
-        <div className="w-3/4">
-          <Card className="bg-va-white border-va-deep-space">
-            <CardContent className="p-0">
+        {/* Live Map View - Takes up 3/4 width, height matches right column */}
+        <div className="w-3/4 flex">
+          <Card className="bg-va-white border-va-deep-space flex-1 flex flex-col">
+            <CardContent className="p-0 flex-1 flex flex-col">
               <div className="p-4 border-b border-slate-600">
                 <h2 className="text-xl font-bold text-va-midnight flex items-center gap-2">
                   <Plane className="w-5 h-5" />
                   Live Map View
                 </h2>
               </div>
-              <div style={{ height: '600px' }} className="relative">
+              <div className="flex-1 relative">
                 <ProfessionalSatelliteMap />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Right Column - Takes up 1/4 width, allows scrolling */}
-        <div className="w-1/4 space-y-4 overflow-y-auto overflow-x-hidden" style={{ maxHeight: '600px' }}>
+        {/* Right Column - Takes up 1/4 width, natural height */}
+        <div className="w-1/4 space-y-4">
           {/* Network Health */}
           <Card className="bg-va-white border-va-midnight">
           <CardContent className="p-4">

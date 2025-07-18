@@ -125,7 +125,6 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
     const route = routeMap[viewId] || '/ai-operations';
     navigate(route);
   };
-  
   const navigationGroups: NavigationGroup[] = [
     {
       title: 'Core Operations',
@@ -154,6 +153,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
         { id: 'airspace', label: 'Airspace Alerts', icon: Navigation, variant: 'warning', badge: 'ACTIVE', badgeVariant: 'caution' },
         { id: 'faa-status', label: 'FAA NAS Status', icon: Database, variant: 'warning' },
         { id: 'emergency-testing', label: 'Emergency Response', icon: Phone, variant: 'destructive' },
+        { id: 'enhanced-facilities', label: 'Facility Monitoring', icon: Building, variant: 'secondary' },
       ],
     },
     {
@@ -186,6 +186,15 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
     },
   ];
 
+  const getActiveGroup = () => {
+    for (const group of navigationGroups) {
+      if (group.items.some(item => item.id === viewMode)) {
+        return group.title;
+      }
+    }
+    return null;
+  };
+
   return (
     <nav role="navigation" aria-label="Virgin Atlantic AINO Navigation" className="flex-shrink-0 p-4 bg-gray-50">
       <div 
@@ -206,9 +215,10 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  console.log('Toggle button clicked (collapsed), current state:', isNavigationCollapsed);
                   setIsNavigationCollapsed(!isNavigationCollapsed);
                 }}
-                className="bg-va-red-primary text-white hover:bg-va-red-heritage w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer"
+                className="navigation-toggle bg-va-red-primary text-white hover:bg-va-red-heritage w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer"
                 title="Expand Navigation"
                 type="button"
               >
@@ -233,9 +243,10 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  console.log('Toggle button clicked (expanded), current state:', isNavigationCollapsed);
                   setIsNavigationCollapsed(!isNavigationCollapsed);
                 }}
-                className="bg-va-red-primary text-white hover:bg-va-red-heritage flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer"
+                className="navigation-toggle bg-va-red-primary text-white hover:bg-va-red-heritage flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer"
                 title="Collapse Navigation"
                 type="button"
               >
@@ -245,7 +256,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
           )}
         </div>
 
-        {/* Navigation Content - No internal scrolling, flows with main window */}
+        {/* Navigation Content */}
         <div className={`
           transition-all duration-300
           ${isNavigationCollapsed ? 'h-0 opacity-0' : 'h-auto opacity-100'}
@@ -342,7 +353,6 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                 </div>
               </div>
             </div>
-          </div>
         </div>
 
         {/* Collapsed State Content */}

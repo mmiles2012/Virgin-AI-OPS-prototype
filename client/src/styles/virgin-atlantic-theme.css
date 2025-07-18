@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+  /* Ensure html and body allow scrolling */
+  html, body {
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
   :root {
     /* Virgin Atlantic Brand Colors */
     --va-red-primary: 14 96% 45%;           /* #E10A17 */
@@ -169,8 +177,8 @@
 
 #root {
   width: 100%;
-  height: 100%;
-  position: fixed;
+  min-height: 100vh;
+  /* Removed position: fixed to allow natural scrolling */
 }
 
 canvas {
@@ -179,60 +187,8 @@ canvas {
   touch-action: none;
 }
 
-/* Virgin Atlantic Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: hsl(var(--surface-secondary));
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--va-red-primary) / 0.6);
-  border-radius: 4px;
-  border: 1px solid hsl(var(--surface-tertiary));
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--va-red-primary) / 0.8);
-}
-
-::-webkit-scrollbar-corner {
-  background: hsl(var(--surface-secondary));
-}
-
-/* Firefox scrollbar styling */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--va-red-primary) / 0.6) hsl(var(--surface-secondary));
-}
-
-/* Aviation-specific scrollable elements */
-.aviation-scrollable {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--aero-blue-primary) / 0.6) hsl(var(--surface-secondary));
-}
-
-.aviation-scrollable::-webkit-scrollbar {
-  width: 6px;
-}
-
-.aviation-scrollable::-webkit-scrollbar-track {
-  background: hsl(var(--surface-secondary));
-  border-radius: 3px;
-}
-
-.aviation-scrollable::-webkit-scrollbar-thumb {
-  background: hsl(var(--aero-blue-primary) / 0.6);
-  border-radius: 3px;
-}
-
-.aviation-scrollable::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--aero-blue-primary) / 0.8);
-}
+/* Default Browser Scrollbars - Removed custom styling */
+/* No custom scrollbar styling - using browser defaults */
 
 @layer components {
   /* Virgin Atlantic Button Variants */
