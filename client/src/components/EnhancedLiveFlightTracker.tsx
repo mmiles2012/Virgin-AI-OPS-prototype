@@ -194,7 +194,17 @@ export default function EnhancedLiveFlightTracker() {
     
     // Calculate fuel percentage based on route progress when optimization data unavailable
     const routeProgress = flight.flight_progress || 50;
-    const fuelBurnRate = 0.4; // 40% fuel consumption over complete flight
+    const fuelBurnRates: { [key: string]: number } = {
+      'A35K': 0.35, // A350-1000
+      'A350': 0.35,
+      'B789': 0.38, // B787-9
+      'B787': 0.38,
+      'A333': 0.42, // A330-300
+      'A330': 0.42,
+      'A339': 0.40  // A330-900
+    };
+    const aircraftType = flight.aircraft_type || flight.aircraft || 'A35K';
+    const fuelBurnRate = fuelBurnRates[aircraftType] || 0.4; // Default burn rate
     const remainingFuelPercentage = 100 - (routeProgress * fuelBurnRate);
     
     // Ensure realistic fuel percentage (minimum 15%, maximum 95%)
