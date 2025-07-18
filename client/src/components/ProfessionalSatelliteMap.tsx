@@ -858,7 +858,7 @@ function ProfessionalSatelliteMapCore() {
                   <div className="text-gray-600">{flight.aircraft}</div>
                   <div className="text-gray-600">{flight.altitude}ft - {flight.velocity}kts</div>
                   <div className="text-gray-600">{flight.origin} → {flight.destination}</div>
-                  <div className="text-gray-600">Fuel: {Math.round(Math.random() * 30 + 65)}%</div>
+                  <div className="text-gray-600">Fuel: {calculateFuelPercentage(flight)}%</div>
                   <button 
                     onClick={() => selectFlight(flight)}
                     className="mt-2 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
