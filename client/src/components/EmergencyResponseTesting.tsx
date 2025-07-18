@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   AlertTriangle, 
   Activity, 
@@ -224,30 +223,30 @@ const EmergencyResponseTesting: React.FC = () => {
 
   const getEmergencyIcon = (type: string) => {
     switch (type) {
-      case 'medical': return <Activity className="h-5 w-5 text-red-400" />;
-      case 'technical': return <Zap className="h-5 w-5 text-orange-400" />;
-      case 'fuel': return <Fuel className="h-5 w-5 text-yellow-400" />;
-      default: return <Shield className="h-5 w-5 text-gray-400" />;
+      case 'medical': return <Activity className="h-5 w-5 text-danger" />;
+      case 'technical': return <Zap className="h-5 w-5 text-warning" />;
+      case 'fuel': return <Fuel className="h-5 w-5 text-accent" />;
+      default: return <Shield className="h-5 w-5 text-muted-foreground" />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="min-h-screen bg-surface text-foreground p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <AlertTriangle className="h-8 w-8 text-orange-400" />
+          <AlertTriangle className="h-8 w-8 text-warning" />
           <div>
-            <h1 className="text-3xl font-bold">Emergency Response Testing</h1>
-            <p className="text-gray-400">Test Emergency Response Coordinator and DecisionModal Integration</p>
+            <h1 className="text-3xl font-bold text-primary">Emergency Response Testing</h1>
+            <p className="text-muted-foreground">Test Emergency Response Coordinator and DecisionModal Integration</p>
           </div>
         </div>
 
         {/* Quick Test Scenarios */}
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-surface border border-accent">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Timer className="h-5 w-5 text-blue-400" />
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <Timer className="h-5 w-5 text-info" />
               Quick Test Scenarios
             </CardTitle>
           </CardHeader>
@@ -256,7 +255,7 @@ const EmergencyResponseTesting: React.FC = () => {
               <Button
                 onClick={() => triggerEmergency('medical')}
                 disabled={isLoading}
-                className="bg-red-600 hover:bg-red-700 flex items-center gap-2"
+                className="bg-danger hover:bg-danger-dark flex items-center gap-2"
               >
                 <Activity className="h-4 w-4" />
                 Medical Emergency
@@ -264,7 +263,7 @@ const EmergencyResponseTesting: React.FC = () => {
               <Button
                 onClick={() => triggerEmergency('fuel')}
                 disabled={isLoading}
-                className="bg-yellow-600 hover:bg-yellow-700 flex items-center gap-2"
+                className="bg-accent hover:bg-accent-dark flex items-center gap-2"
               >
                 <Fuel className="h-4 w-4" />
                 Fuel Emergency
@@ -272,7 +271,7 @@ const EmergencyResponseTesting: React.FC = () => {
               <Button
                 onClick={() => triggerEmergency('technical')}
                 disabled={isLoading}
-                className="bg-orange-600 hover:bg-orange-700 flex items-center gap-2"
+                className="bg-warning hover:bg-warning-dark flex items-center gap-2"
               >
                 <Zap className="h-4 w-4" />
                 Technical Emergency
@@ -282,21 +281,21 @@ const EmergencyResponseTesting: React.FC = () => {
         </Card>
 
         {/* Custom Emergency Testing */}
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-surface border border-accent">
           <CardHeader>
-            <CardTitle>Custom Emergency Testing</CardTitle>
+            <CardTitle className="text-primary">Custom Emergency Testing</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Textarea
               placeholder="Enter custom flight state JSON..."
               value={customFlightData}
               onChange={(e) => setCustomFlightData(e.target.value)}
-              className="bg-gray-700 border-gray-600 text-white min-h-32"
+              className="bg-muted border border-accent text-foreground min-h-32"
             />
             <Button 
               onClick={triggerCustomEmergency}
               disabled={isLoading || !customFlightData.trim()}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-info hover:bg-info-dark"
             >
               Test Custom Emergency
             </Button>
@@ -304,34 +303,34 @@ const EmergencyResponseTesting: React.FC = () => {
         </Card>
 
         {/* Active Emergencies */}
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-surface border border-accent">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Plane className="h-5 w-5 text-green-400" />
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <Plane className="h-5 w-5 text-success" />
               Active Emergencies ({emergencies.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
             {emergencies.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">
-                <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-500" />
+              <div className="text-center py-8 text-muted-foreground">
+                <CheckCircle className="h-12 w-12 mx-auto mb-4 text-success" />
                 <p>No active emergencies - System ready</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {emergencies.map((emergency) => (
-                  <div key={emergency.id} className="bg-gray-700 rounded-lg p-4 flex items-center justify-between">
+                  <div key={emergency.id} className="bg-muted rounded-lg p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       {getEmergencyIcon(emergency.type)}
                       <div>
-                        <div className="font-medium">{emergency.flightNumber}</div>
-                        <div className="text-sm text-gray-400">{emergency.description}</div>
+                        <div className="font-medium text-primary">{emergency.flightNumber}</div>
+                        <div className="text-sm text-muted-foreground">{emergency.description}</div>
                       </div>
                     </div>
                     <Badge className={
-                      emergency.severity === 'critical' ? 'bg-red-600' :
-                      emergency.severity === 'high' ? 'bg-orange-600' :
-                      'bg-yellow-600'
+                      emergency.severity === 'critical' ? 'bg-danger' :
+                      emergency.severity === 'high' ? 'bg-warning' :
+                      'bg-accent'
                     }>
                       {emergency.severity?.toUpperCase()}
                     </Badge>
@@ -343,27 +342,27 @@ const EmergencyResponseTesting: React.FC = () => {
         </Card>
 
         {/* System Status */}
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-surface border border-accent">
           <CardHeader>
-            <CardTitle>System Status</CardTitle>
+            <CardTitle className="text-primary">System Status</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full" />
-                <span>Emergency Response Coordinator: Online</span>
+                <div className="w-3 h-3 bg-success rounded-full" />
+                <span className="text-foreground">Emergency Response Coordinator: Online</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full" />
-                <span>DecisionModal Component: Ready</span>
+                <div className="w-3 h-3 bg-success rounded-full" />
+                <span className="text-foreground">DecisionModal Component: Ready</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full" />
-                <span>UK CAA Data Integration: Active</span>
+                <div className="w-3 h-3 bg-success rounded-full" />
+                <span className="text-foreground">UK CAA Data Integration: Active</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full" />
-                <span>Mathematical Decision Scoring: Enabled</span>
+                <div className="w-3 h-3 bg-success rounded-full" />
+                <span className="text-foreground">Mathematical Decision Scoring: Enabled</span>
               </div>
             </div>
           </CardContent>

@@ -25,11 +25,11 @@ import {
 
 const getPriorityColors = (priority: string) => {
   switch (priority) {
-    case 'critical': return 'bg-red-100 text-red-800 border-red-200';
-    case 'high': return 'bg-orange-100 text-orange-800 border-orange-200';
-    case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    case 'low': return 'bg-blue-100 text-blue-800 border-blue-200';
-    default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    case 'critical': return 'bg-va-red-primary/80 text-va-white border-va-red-primary';
+    case 'high': return 'bg-aero-orange-alert/40 text-va-deep-space border-aero-orange-alert';
+    case 'medium': return 'bg-aero-amber-light text-va-deep-space border-aero-amber-caution';
+    case 'low': return 'bg-aero-green-light text-va-deep-space border-aero-green-safe';
+    default: return 'bg-va-white text-va-deep-space border-va-deep-space';
   }
 };
 
@@ -331,11 +331,11 @@ const EmergencyCommDashboard: React.FC = () => {
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'bg-red-600 text-white border-red-300';
-      case 'high': return 'bg-orange-600 text-white border-orange-300';
-      case 'medium': return 'bg-yellow-600 text-white border-yellow-300';
-      case 'low': return 'bg-blue-600 text-white border-blue-300';
-      default: return 'bg-gray-600 text-white border-gray-300';
+      case 'critical': return 'bg-va-red-primary/80 text-va-white border-va-red-primary';
+      case 'high': return 'bg-aero-orange-alert/40 text-va-deep-space border-aero-orange-alert';
+      case 'medium': return 'bg-aero-amber-light text-va-deep-space border-aero-amber-caution';
+      case 'low': return 'bg-aero-green-light text-va-deep-space border-aero-green-safe';
+      default: return 'bg-va-white text-va-deep-space border-va-deep-space';
     }
   };
 
@@ -349,28 +349,28 @@ const EmergencyCommDashboard: React.FC = () => {
   };
 
   return (
-    <div className="h-full bg-gradient-to-br from-amber-50 to-orange-50 p-4 overflow-auto">
+    <div className="h-full bg-background p-4 overflow-auto va-theme">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>
-          <h1 className="text-3xl font-bold text-amber-900">Communication Center</h1>
+          <div className="w-3 h-3 bg-aero-green-safe rounded-full animate-pulse"></div>
+          <h1 className="va-heading-lg">Communication Center</h1>
         </div>
         <div className="flex items-center gap-4">
-          <Badge className={isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+          <Badge className={isConnected ? 'bg-aero-green-light text-va-deep-space' : 'bg-va-red-primary/10 text-va-red-primary'}>
             {isConnected ? 'Connected' : 'Disconnected'}
           </Badge>
-          <Badge className="bg-blue-100 text-blue-800">
+          <Badge className="bg-accent/30 text-foreground">
             {activeAlerts.length} Active Alert{activeAlerts.length !== 1 ? 's' : ''}
           </Badge>
         </div>
       </div>
 
       <Tabs defaultValue="active" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4 bg-amber-100 border-amber-200">
-          <TabsTrigger value="active" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">Active Alerts</TabsTrigger>
-          <TabsTrigger value="communication" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">Communication</TabsTrigger>
-          <TabsTrigger value="satcom" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">SATCOM</TabsTrigger>
-          <TabsTrigger value="channels" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">Channels</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 bg-muted border-border">
+          <TabsTrigger value="active" className="data-[state=active]:bg-accent data-[state=active]:text-foreground">Active Alerts</TabsTrigger>
+          <TabsTrigger value="communication" className="data-[state=active]:bg-accent data-[state=active]:text-foreground">Communication</TabsTrigger>
+          <TabsTrigger value="satcom" className="data-[state=active]:bg-accent data-[state=active]:text-foreground">SATCOM</TabsTrigger>
+          <TabsTrigger value="channels" className="data-[state=active]:bg-accent data-[state=active]:text-foreground">Channels</TabsTrigger>
         </TabsList>
 
         <TabsContent value="active" className="space-y-4">
@@ -401,33 +401,33 @@ const EmergencyCommDashboard: React.FC = () => {
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <h4 className="font-semibold mb-2">Aircraft Information</h4>
-                        <p className="text-sm text-white">Type: {alert.aircraft.type}</p>
-                        <p className="text-sm text-white">Registration: {alert.aircraft.registration}</p>
-                        <p className="text-sm text-white">
+                        <h4 className="va-heading-sm mb-2">Aircraft Information</h4>
+                        <p className="va-body-md">Type: {alert.aircraft.type}</p>
+                        <p className="va-body-md">Registration: {alert.aircraft.registration}</p>
+                        <p className="va-body-md">
                           Position: {alert.aircraft.position.lat.toFixed(4)}, {alert.aircraft.position.lon.toFixed(4)}
                         </p>
-                        <p className="text-sm text-white">Altitude: {alert.aircraft.position.alt.toLocaleString()} ft</p>
+                        <p className="va-body-md">Altitude: {alert.aircraft.position.alt.toLocaleString()} ft</p>
                       </div>
                       <div>
-                        <h4 className="font-semibold mb-2">Emergency Details</h4>
-                        <p className="text-sm text-white mb-2">{alert.description}</p>
-                        <p className="text-sm text-white">
-                          <Clock className="inline h-4 w-4 mr-1" />
+                        <h4 className="va-heading-sm mb-2">Emergency Details</h4>
+                        <p className="va-body-md mb-2">{alert.description}</p>
+                        <p className="va-body-md">
+                          <Clock className="inline h-4 w-4 mr-1 text-va-blue" />
                           Estimated Time: {alert.estimatedTime} minutes
                         </p>
-                        <p className="text-sm text-white">
+                        <p className="va-body-md">
                           Declared: {new Date(alert.timestamp).toLocaleTimeString()}
                         </p>
                       </div>
                     </div>
 
                     <div>
-                      <h4 className="font-semibold mb-2">Required Actions</h4>
-                      <ul className="text-sm text-white space-y-1">
+                      <h4 className="va-heading-sm mb-2">Required Actions</h4>
+                      <ul className="va-body-md space-y-1">
                         {alert.requiredActions.map((action, index) => (
                           <li key={index} className="flex items-start gap-2">
-                            <span className="text-blue-600">•</span>
+                            <span className="text-va-sky-blue">•</span>
                             {action}
                           </li>
                         ))}
@@ -495,9 +495,9 @@ const EmergencyCommDashboard: React.FC = () => {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-white">Recipient</label>
+                  <label className="va-label mb-1">Recipient</label>
                   <select 
-                    className="w-full p-2 border rounded-md"
+                    className="w-full p-2 border rounded-md bg-background text-foreground border-border"
                     value={selectedRecipient}
                     onChange={(e) => setSelectedRecipient(e.target.value)}
                   >
@@ -512,9 +512,9 @@ const EmergencyCommDashboard: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1 text-white">Message</label>
+                  <label className="va-label mb-1">Message</label>
                   <textarea
-                    className="w-full p-2 border rounded-md h-24"
+                    className="w-full p-2 border rounded-md h-24 bg-background text-foreground border-border"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     placeholder="Enter emergency communication message..."
@@ -524,7 +524,7 @@ const EmergencyCommDashboard: React.FC = () => {
                 <Button 
                   onClick={sendMessage}
                   disabled={!selectedAlert || !newMessage.trim()}
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white border-amber-600"
+                  className="w-full bg-accent hover:bg-va-red-primary/80 text-white"
                 >
                   <Send className="h-4 w-4 mr-2" />
                   Send Urgent Message
@@ -535,7 +535,7 @@ const EmergencyCommDashboard: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Radio className="h-5 w-5" />
+                  <Radio className="h-5 w-5 text-va-sky-blue" />
                   Communication Log
                 </CardTitle>
               </CardHeader>
@@ -562,34 +562,34 @@ const EmergencyCommDashboard: React.FC = () => {
 
         <TabsContent value="satcom" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <Card className="border-amber-200">
+            <Card className="border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Radio className="h-5 w-5 text-amber-600" />
+                  <Radio className="h-5 w-5 text-va-sky-blue" />
                   SATCOM Direct Call
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-white">Aircraft Callsign</label>
+                    <label className="va-label">Aircraft Callsign</label>
                     <input
                       type="text"
                       placeholder="Enter aircraft callsign (e.g., VS133)"
-                      className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-full mt-1 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-va-blue bg-background text-foreground"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white">Priority Level</label>
-                    <select className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <label className="va-label">Priority Level</label>
+                    <select className="w-full mt-1 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-va-blue bg-background text-foreground">
                       <option value="normal">Normal</option>
                       <option value="urgent">Urgent</option>
                       <option value="emergency">Emergency</option>
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white">Call Recipient</label>
-                    <select className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <label className="va-label">Call Recipient</label>
+                    <select className="w-full mt-1 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-va-blue bg-background text-foreground">
                       <option value="flight-deck">Flight Deck</option>
                       <option value="cabin-crew">Cabin Crew</option>
                       <option value="both">Both Flight Deck & Cabin</option>
@@ -597,17 +597,17 @@ const EmergencyCommDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+                <Button className="w-full va-btn-primary">
                   <Phone className="h-4 w-4 mr-2" />
                   Initiate SATCOM Call
                 </Button>
               </CardContent>
             </Card>
 
-            <Card className="border-amber-200">
+            <Card className="border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Volume2 className="h-5 w-5 text-amber-600" />
+                  <Volume2 className="h-5 w-5 text-gray-700" />
                   SATCOM Status
                 </CardTitle>
               </CardHeader>
@@ -622,7 +622,7 @@ const EmergencyCommDashboard: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <div className="text-sm font-medium text-white">Active SATCOM Connections:</div>
+                    <div className="text-sm font-medium text-gray-900">Active SATCOM Connections:</div>
                     <div className="space-y-2">
                       <div className="flex items-center justify-between p-2 bg-amber-50 rounded">
                         <span className="text-sm">VS133 - Flight Deck</span>
@@ -638,33 +638,33 @@ const EmergencyCommDashboard: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-amber-200">
+            <Card className="border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-red-600" />
+                  <Heart className="h-5 w-5 text-va-red" />
                   ODE-MEDLINk
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="text-sm font-medium text-blue-900 mb-2">Three-Way Medical Conference</div>
-                  <div className="text-xs text-blue-700">
+                <div className="p-3 bg-accent rounded-lg border border-accent">
+                  <div className="va-body-md font-medium text-va-sky-blue mb-2">Three-Way Medical Conference</div>
+                  <div className="va-caption text-va-sky-blue">
                     Operations ↔ Aircraft ↔ MedLink USA
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-white">Aircraft Callsign</label>
+                    <label className="va-label">Aircraft Callsign</label>
                     <input
                       type="text"
                       placeholder="Enter aircraft callsign"
-                      className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-full mt-1 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-va-blue bg-background text-foreground"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-white">Medical Priority</label>
-                    <select className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <label className="va-label">Medical Priority</label>
+                    <select className="w-full mt-1 px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-va-blue bg-background text-foreground">
                       <option value="consultation">Medical Consultation</option>
                       <option value="urgent">Urgent Medical</option>
                       <option value="emergency">Medical Emergency</option>
@@ -672,12 +672,12 @@ const EmergencyCommDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                <Button className="w-full va-btn-primary">
                   <Heart className="h-4 w-4 mr-2" />
                   Connect ODE-MEDLINk
                 </Button>
 
-                <div className="text-xs text-gray-500 text-center">
+                <div className="va-caption text-center text-muted-foreground">
                   Connects: Ops Center + Aircraft + MedLink USA
                 </div>
               </CardContent>

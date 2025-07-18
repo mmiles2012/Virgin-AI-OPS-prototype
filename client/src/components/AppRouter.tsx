@@ -39,13 +39,13 @@ export const AppRouter: React.FC<AppRouterProps> = ({
 }) => {
   return (
     <BrowserRouter>
-      <div className="va-theme min-h-screen bg-gray-50 text-gray-900 flex">
+      <div className="va-theme bg-gray-50 text-gray-900 flex min-h-screen">
         <VirginAtlanticNavigation
           isNavigationCollapsed={isNavigationCollapsed}
           setIsNavigationCollapsed={setIsNavigationCollapsed}
         />
         
-        <div className="flex-1 transition-all duration-300">
+        <div className="flex-1 overflow-y-auto">
           <Routes>
             {/* Default route - show AI Ops Dashboard */}
             <Route path="/" element={<AIOpsDashboard />} />

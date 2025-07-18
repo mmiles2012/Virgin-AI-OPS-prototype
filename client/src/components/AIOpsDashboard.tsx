@@ -39,6 +39,9 @@ interface ADSBFlightData {
   data_source: string;
   authentic_tracking: boolean;
   last_seen?: number;
+  route?: string;
+  departure_airport?: string;
+  arrival_airport?: string;
 }
 
 interface FlightStats {
@@ -267,14 +270,14 @@ export default function AIOpsDashboard() {
   }, [adsbFlightData]);
 
   return (
-    <div className="bg-gray-50 text-gray-900 min-h-screen overflow-y-auto">
-      <div className="flex gap-4 p-4 min-h-screen">
+    <div className="bg-gray-50 text-gray-900">
+      <div className="flex gap-4 p-4 h-auto">
         {/* Live Map View - Takes up 3/4 width */}
         <div className="w-3/4">
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className="bg-va-white border-va-deep-space">
             <CardContent className="p-0">
               <div className="p-4 border-b border-slate-600">
-                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <h2 className="text-xl font-bold text-va-midnight flex items-center gap-2">
                   <Plane className="w-5 h-5" />
                   Live Map View
                 </h2>
@@ -287,11 +290,11 @@ export default function AIOpsDashboard() {
         </div>
 
         {/* Right Column - Takes up 1/4 width, allows scrolling */}
-        <div className="w-1/4 space-y-4 overflow-y-auto max-h-screen">
+        <div className="w-1/4 space-y-4 overflow-y-auto overflow-x-hidden" style={{ maxHeight: '600px' }}>
           {/* Network Health */}
-          <Card className="bg-white border-gray-200">
+          <Card className="bg-va-white border-va-midnight">
           <CardContent className="p-4">
-            <h2 className="text-lg font-bold mb-3 text-gray-900 flex items-center gap-2">
+            <h2 className="text-lg font-bold mb-3 text-va-deep-space flex items-center gap-2">
               <Activity className="w-4 h-4" />
               Network Health
             </h2>
@@ -505,12 +508,12 @@ export default function AIOpsDashboard() {
             </div>
           </CardContent>
         </Card>
-
-          {/* SIGMET Operational Monitor */}
-          <SigmetOperationalMonitor />
-          
-          {/* Weather data now integrated directly into satellite map */}
         </div>
+      </div>
+      
+      {/* SIGMET Operational Monitor - Full Width Section */}
+      <div className="p-4 pt-0">
+        <SigmetOperationalMonitor />
       </div>
       
       {/* Heathrow Holding Areas - Full Width Section */}

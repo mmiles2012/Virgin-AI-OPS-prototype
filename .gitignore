@@ -138,3 +138,12 @@ temp/
 *.sqlite
 *.sqlite3
 /aviation_news.db
+
+
+# Flight data files
+/flights/*.json
+/flights/*.geojson
+*.geojson
+
+# Local CoPilot Configurations, Instructions, and Settings
+.github/instructions/comprehensive-best-practices-guide_Version2.instructions.md
