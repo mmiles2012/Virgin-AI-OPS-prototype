@@ -16,6 +16,7 @@ import {
   Activity
 } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
+import { calculateFuelPercentage } from '../lib/utils/fuelCalculation';
 
 interface FleetData {
   registration: string;
@@ -283,7 +284,11 @@ export default function VirginAtlanticFleetMonitor() {
                         velocity: aircraft.real_time_data?.position?.speed || 450,
                         heading: 270,
                         aircraft: aircraft.aircraft_type,
-                        fuel: 15000,
+                        fuel: calculateFuelPercentage(
+                          aircraft.aircraft_type, 
+                          getSeededRandomValue(aircraft.registration, 40, 80), // 40-80% progress for realistic fleet monitoring
+                          aircraft.route
+                        ),
                         engineStatus: 'normal',
                         systemsStatus: 'normal',
                         status: aircraft.status,

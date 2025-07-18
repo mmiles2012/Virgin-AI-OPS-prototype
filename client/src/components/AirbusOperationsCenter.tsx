@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Alert, AlertDescription } from './ui/alert';
+import { calculateFuelPercentage } from '../lib/utils/fuelCalculation';
 // Local Airbus fleet specifications to avoid circular imports
 const AIRBUS_FLEET_SPECS = {
   'A330-300': {
@@ -632,6 +633,7 @@ export default function AirbusOperationsCenter() {
                   <div className="mt-4 pt-4 border-t border-muted">
                     <div className="text-sm text-muted-foreground mb-2">Current Flight Data</div>
                     <div className="grid grid-cols-2 gap-2 text-xs">
+
                       <div>Flight: <span className="text-accent">{flightData.flightId}</span></div>
                       <div>Alt: <span className="text-success">{flightData.altitude || 'N/A'} ft</span></div>
                       <div>Speed: <span className="text-success">{flightData.speed || 'N/A'} kts</span></div>

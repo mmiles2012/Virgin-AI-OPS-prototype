@@ -9,6 +9,7 @@ import { Label } from './ui/label';
 import { Slider } from './ui/slider';
 import { Switch } from './ui/switch';
 import { MapPin, Plane, Clock, Fuel, DollarSign, AlertTriangle, TrendingUp, TrendingDown, Activity, Wrench, Zap, Eye, Heart } from 'lucide-react';
+import { calculateFuelPercentage, getFuelEfficiencyDescription } from '../lib/utils/fuelCalculation';
 
 interface FlightScenario {
   id: string;
@@ -717,8 +718,8 @@ export default function WhatIfScenarioEngine() {
                         {flight.aircraft}
                       </Badge>
                     </div>
-                    <div className="grid grid-cols-3 gap-2 text-xs text-va-midnight">
-                      <div>Fuel: {(flight.originalFuel / 1000).toFixed(1)}k kg</div>
+                    <div className="text-sm text-va-midnight space-y-1">
+                      <div>Fuel: {calculateFuelPercentage(flight.type || 'A350-1000', 75)}%</div>
                       <div>Time: {flight.originalTime.toFixed(1)}h</div>
                       <div>Cost: ${(flight.originalCost / 1000).toFixed(0)}k</div>
                     </div>
@@ -1042,9 +1043,9 @@ export default function WhatIfScenarioEngine() {
                         <span className="text-va-midnight">Fuel Burn</span>
                       </div>
                       <div className="text-right">
-                        <p className="text-va-midnight">{(results.fuelBurn.modified / 1000).toFixed(1)}k kg</p>
+                        <p className="text-va-midnight">{calculateFuelPercentage('A350-1000', results.fuelBurn.percentage > 0 ? 78 : 72)}%</p>
                         <p className={`text-xs ${results.fuelBurn.percentage > 0 ? 'text-va-red-primary' : 'text-aero-green-safe'}`}>
-                          {results.fuelBurn.percentage > 0 ? '+' : ''}{results.fuelBurn.percentage.toFixed(1)}%
+                          {results.fuelBurn.percentage > 0 ? '+' : ''}{results.fuelBurn.percentage.toFixed(1)}% fuel penalty
                         </p>
                       </div>
                     </div>
@@ -1223,7 +1224,7 @@ export default function WhatIfScenarioEngine() {
                       </div>
                       <div>
                         <Label className="text-va-cosmic-grey">Fuel Required</Label>
-                        <p className="text-va-midnight">{(option.fuelRequired / 1000).toFixed(1)}k kg</p>
+                        <p className="text-white">{calculateFuelPercentage('A350-1000', 25)}%</p>
                       </div>
                       <div>
                         <Label className="text-va-cosmic-grey">Runway Length</Label>

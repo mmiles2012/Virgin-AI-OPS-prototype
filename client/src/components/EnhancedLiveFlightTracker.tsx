@@ -184,12 +184,31 @@ export default function EnhancedLiveFlightTracker() {
   };
   
   const calculateFuelPercentage = (flight: any) => {
+    // Check for optimization data first
     const fuelData = flight.fuel_optimization?.fuel_requirements;
-    if (!fuelData) return 75; // Default percentage
+    if (fuelData) {
+      const maxCapacity = fuelData.max_fuel_capacity || 100000;
+      const currentFuel = fuelData.total_fuel_required || 75000;
+      return Math.round((currentFuel / maxCapacity) * 100);
+    }
     
-    const maxCapacity = fuelData.max_fuel_capacity || 100000;
-    const currentFuel = fuelData.total_fuel_required || 75000;
-    return Math.round((currentFuel / maxCapacity) * 100);
+    // Calculate fuel percentage based on route progress when optimization data unavailable
+    const routeProgress = flight.flight_progress || 50;
+    const fuelBurnRates: { [key: string]: number } = {
+      'A35K': 0.35, // A350-1000
+      'A350': 0.35,
+      'B789': 0.38, // B787-9
+      'B787': 0.38,
+      'A333': 0.42, // A330-300
+      'A330': 0.42,
+      'A339': 0.40  // A330-900
+    };
+    const aircraftType = flight.aircraft_type || flight.aircraft || 'A35K';
+    const fuelBurnRate = fuelBurnRates[aircraftType] || 0.4; // Default burn rate
+    const remainingFuelPercentage = 100 - (routeProgress * fuelBurnRate);
+    
+    // Ensure realistic fuel percentage (minimum 15%, maximum 95%)
+    return Math.max(15, Math.min(95, Math.round(remainingFuelPercentage)));
   };
 
   const calculateFuelAmountKg = (flight: any) => {
@@ -374,10 +393,10 @@ export default function EnhancedLiveFlightTracker() {
                     </div>
                     <div className="text-center">
                       <div className="text-gray-400">Fuel</div>
-                      <div className="text-white font-mono">
-                        {fuelOptimizationData[flight.callsign]?.fuel_amount_kg || calculateFuelAmountKg(flight)} kg
+                      <div className="text-blue-400 font-mono font-bold text-lg">
+                        {fuelOptimizationData[flight.callsign]?.fuel_percentage || calculateFuelPercentage(flight)}%
                       </div>
-                      <div className="text-xs text-blue-400">
+                      <div className="text-xs text-white">
                         {fuelOptimizationData[flight.callsign]?.fuel_efficiency || 85}% eff
                       </div>
                       <div className="text-xs text-gray-500">

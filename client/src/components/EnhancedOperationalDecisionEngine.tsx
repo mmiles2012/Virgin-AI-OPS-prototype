@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Clock, DollarSign, Users, Plane, MapPin, TrendingUp, Brain, Gauge, Zap, Shield, Wind, Eye, Fuel, Building, Wrench, FileText, BarChart3, CheckCircle, Target, Activity } from 'lucide-react';
 import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 import { useEnhancedFlightData, useAviationData } from '../hooks/useAviationData';
+import { calculateFuelPercentage, getFuelEfficiencyDescription, getFuelOptimizationStrategy } from '../lib/utils/fuelCalculation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -402,7 +403,7 @@ export default function EnhancedOperationalDecisionEngine() {
                               </div>
                               <div className="text-center bg-gray-700/50 p-3 rounded">
                                 <div className="text-gray-400 text-xs uppercase">Fuel Required</div>
-                                <div className="text-white font-semibold">2,400 kg</div>
+                                <div className="text-white font-semibold">{calculateFuelPercentage(flightData?.aircraft || 'A350-1000', 35)}%</div>
                               </div>
                             </div>
                             
@@ -506,19 +507,23 @@ export default function EnhancedOperationalDecisionEngine() {
                             <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
                               <span className="text-gray-300">Current Burn Rate:</span>
                               <span className="text-white font-medium">
-                                {enhancedData.fuelAnalysis ? `${(enhancedData.fuelAnalysis.fuelBurnKg / (enhancedData.fuelAnalysis.distanceNm / 500)).toFixed(0)} kg/hr` : '2,400 kg/hr'}
+                                {enhancedData.fuelAnalysis ? 
+                                  `${calculateFuelPercentage(flightData?.aircraft || 'A350-1000', 8)}%/hr (${getFuelEfficiencyDescription(8)})` : 
+                                  `${calculateFuelPercentage(flightData?.aircraft || 'A350-1000', 7)}%/hr (${getFuelEfficiencyDescription(7)})`}
                               </span>
                             </div>
                             <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
                               <span className="text-gray-300">Route Fuel Estimate:</span>
                               <span className="text-white font-medium">
-                                {enhancedData.fuelAnalysis ? `${enhancedData.fuelAnalysis.fuelBurnKg.toLocaleString()} kg` : '15,600 kg'}
+                                {calculateFuelPercentage(flightData?.aircraft || 'A350-1000', 45)}%
+                                <span className="text-gray-400 text-xs ml-1">({getFuelEfficiencyDescription(calculateFuelPercentage(flightData?.aircraft || 'A350-1000', 45))})</span>
                               </span>
                             </div>
                             <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
                               <span className="text-gray-300">Reserve Fuel:</span>
                               <span className="text-green-400 font-medium">
-                                {flightData ? `${(flightData.fuelRemaining - (enhancedData.fuelAnalysis?.fuelBurnKg || 15600)).toLocaleString()} kg` : '6,800 kg'}
+                                {calculateFuelPercentage(flightData?.aircraft || 'A350-1000', 65)}%
+                                <span className="text-gray-400 text-xs ml-1">({getFuelOptimizationStrategy(calculateFuelPercentage(flightData?.aircraft || 'A350-1000', 65))})</span>
                               </span>
                             </div>
                             <div className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
