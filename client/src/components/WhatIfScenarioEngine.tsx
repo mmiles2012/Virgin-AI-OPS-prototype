@@ -615,7 +615,7 @@ export default function WhatIfScenarioEngine() {
   };
 
   return (
-    <div className="w-full h-full bg-va-white text-va-midnight p-6 overflow-y-auto">
+    <div className="w-full min-h-screen bg-va-white text-va-midnight p-6 overflow-y-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-va-midnight mb-2">What-If Scenario Engine</h1>
         <p className="text-va-grey">Comprehensive failure modeling and digital twin integration</p>

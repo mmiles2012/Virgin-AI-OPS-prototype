@@ -404,7 +404,7 @@ function OperationalCostCalculator() {
 
 export default function FinancialAnalyticsDashboard() {
   return (
-    <div className="w-full h-full bg-gray-50 p-6">
+    <div className="w-full min-h-screen bg-gray-50 p-6 overflow-y-auto">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Financial Analytics Dashboard</h1>
         <p className="text-gray-600">

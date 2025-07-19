@@ -199,7 +199,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
     <nav role="navigation" aria-label="Virgin Atlantic AINO Navigation" className="flex-shrink-0 h-screen p-4 bg-gray-50">
       <div className={`
         bg-white shadow-lg border border-gray-200 rounded-lg
-        transition-all duration-300 ease-in-out overflow-hidden h-full flex flex-col
+        transition-all duration-300 ease-in-out h-full flex flex-col
         ${isNavigationCollapsed ? 'w-16' : 'w-72'}
       `}
       role="complementary"

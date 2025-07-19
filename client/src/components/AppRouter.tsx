@@ -45,7 +45,7 @@ export const AppRouter: React.FC<AppRouterProps> = ({
           setIsNavigationCollapsed={setIsNavigationCollapsed}
         />
         
-        <div className="flex-1 transition-all duration-300">
+        <div className="flex-1 transition-all duration-300 overflow-y-auto">
           <Routes>
             {/* Default route - show AI Ops Dashboard */}
             <Route path="/" element={<AIOpsDashboard />} />

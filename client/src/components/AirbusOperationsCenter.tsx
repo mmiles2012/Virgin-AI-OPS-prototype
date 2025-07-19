@@ -480,7 +480,7 @@ export default function AirbusOperationsCenter() {
   };
 
   return (
-    <div className="w-full h-full bg-background text-foreground overflow-hidden">
+    <div className="w-full min-h-screen bg-background text-foreground overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between p-4 bg-black/20 backdrop-blur-sm border-b border-blue-500/30">
         <div>
