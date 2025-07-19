@@ -227,7 +227,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full bg-gray-50 text-gray-900 overflow-y-auto">
+    <div className="w-full min-h-screen bg-gray-50 text-gray-900 overflow-y-auto">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3 mb-4">

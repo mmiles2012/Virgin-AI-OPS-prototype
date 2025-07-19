@@ -191,7 +191,7 @@ export default function EnhancedOperationalDecisionEngine() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900/20 via-gray-900 to-gray-800 text-white overflow-y-auto">
-      <div className="flex h-full gap-4 p-4">
+      <div className="flex gap-4 p-4">
         {/* Left Sidebar */}
         <div className="w-64 flex-shrink-0 overflow-y-auto">
           <ActiveFlightsList />

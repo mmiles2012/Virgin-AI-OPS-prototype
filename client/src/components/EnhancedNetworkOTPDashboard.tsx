@@ -544,8 +544,8 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-full bg-gray-900 text-white overflow-y-auto">
-        <div className="h-full w-full bg-gray-900 p-4">
+      <div className="min-h-screen bg-gray-900 text-white overflow-y-auto">
+        <div className="w-full bg-gray-900 p-4">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
             <div className="ml-4 text-gray-400">Loading network performance data...</div>
@@ -556,8 +556,8 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
   }
 
   return (
-    <div className="h-full bg-gray-900 text-white overflow-y-auto">
-      <div className="h-full w-full bg-gray-900 p-4">
+    <div className="min-h-screen bg-gray-900 text-white overflow-y-auto">
+      <div className="w-full bg-gray-900 p-4">
         {/* Header */}
         <div className="mb-4">
           <h1 className="text-2xl font-bold text-white mb-1">Network OTP Performance Dashboard</h1>

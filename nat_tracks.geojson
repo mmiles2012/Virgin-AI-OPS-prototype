@@ -1,7 +1,7 @@
 {
   "type": "FeatureCollection",
   "properties": {
-    "generated_at": "2025-07-19T08:13:53.672897",
+    "generated_at": "2025-07-19T08:25:45.727902",
     "source": "FAA NOTAM",
     "total_tracks": 5
   },
@@ -12,7 +12,7 @@
         "track_id": "A",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-19T08:13:53.672441",
+        "timestamp": "2025-07-19T08:25:45.727372",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "GOMUP 59/20 60/30 59/40 58/50 DORYY\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N790A-"
@@ -45,7 +45,7 @@
         "track_id": "B",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-19T08:13:53.672587",
+        "timestamp": "2025-07-19T08:25:45.727533",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "SUNOT 58/20 59/30 58/40 57/50 HOIST\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N750B N754B-"
@@ -78,7 +78,7 @@
         "track_id": "C",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-19T08:13:53.672683",
+        "timestamp": "2025-07-19T08:25:45.727646",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "PIKIL 57/20 58/30 57/40 56/50 JANJO\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N712B N714B-"
@@ -111,7 +111,7 @@
         "track_id": "D",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-19T08:13:53.672771",
+        "timestamp": "2025-07-19T08:25:45.727752",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "RESNO 56/20 57/30 56/40 55/50 LOMSI\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N668A N672A-"
@@ -144,7 +144,7 @@
         "track_id": "E",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-19T08:13:53.672864",
+        "timestamp": "2025-07-19T08:25:45.727862",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
         "raw_text": "DOGAL 55/20 56/30 55/40 54/50 NEEKO\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N622E N624C-"

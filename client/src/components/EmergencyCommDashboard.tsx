@@ -349,7 +349,7 @@ const EmergencyCommDashboard: React.FC = () => {
   };
 
   return (
-    <div className="h-full bg-gradient-to-br from-amber-50 to-orange-50 p-4 overflow-auto">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 p-4 overflow-y-auto">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-3 h-3 bg-amber-500 rounded-full animate-pulse"></div>

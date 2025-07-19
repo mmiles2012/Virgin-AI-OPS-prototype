@@ -507,8 +507,8 @@ export default function DiversionSupportDashboard() {
 
 
   return (
-    <div className="h-full bg-gradient-to-br from-blue-50 to-slate-100 p-6">
-      <div className="max-w-7xl mx-auto pb-8 h-full">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 p-6 overflow-y-auto">
+      <div className="max-w-7xl mx-auto pb-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             🤖 ML-Enhanced Diversion Support Operations

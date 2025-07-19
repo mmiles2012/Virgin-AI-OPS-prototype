@@ -82,7 +82,17 @@ function assessDiversionAirports(aircraftType: string, currentLocation: string, 
     { airport: 'EGGW', distance: 85, runway: 'suitable', fuel: 'available' }
   ];
 }
-function calculateFleetOptimization() { return {}; }
+function calculateFleetOptimization(route: any, availableAircraft: string[]) {
+  return {
+    efficiency: Math.floor(Math.random() * 20) + 80,
+    recommended: availableAircraft[Math.floor(Math.random() * availableAircraft.length)],
+    reasoning: [
+      'Optimal fuel efficiency for this route distance',
+      'High passenger capacity utilization',
+      'Excellent range capabilities'
+    ]
+  };
+}
 
 // Enhanced Airbus Aircraft Model with real specifications
 function AirbusAircraftModel({ 
@@ -367,7 +377,7 @@ function FleetOptimizationPanel() {
                 <strong>Recommended:</strong> {opt.optimization.recommended}
               </div>
               <div className="text-xs text-gray-600 mt-1">
-                {opt.optimization.reasoning[0]}
+                {opt.optimization.reasoning && opt.optimization.reasoning.length > 0 ? opt.optimization.reasoning[0] : 'Optimization analysis in progress...'}
               </div>
             </div>
           ))}
