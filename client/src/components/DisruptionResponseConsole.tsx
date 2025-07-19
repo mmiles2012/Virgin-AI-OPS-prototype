@@ -373,14 +373,14 @@ export default function DisruptionResponseConsole() {
   };
 
   return (
-    <div className="w-full h-screen bg-gray-50 text-gray-900 overflow-hidden flex flex-col">
+    <div className="w-full min-h-screen bg-gray-50 text-gray-900 overflow-y-auto flex flex-col">
       <div className="p-6 flex-shrink-0">
         <h1 className="text-2xl font-bold text-white mb-2">Disruption Response Console</h1>
         <p className="text-gray-400">AI-powered disruption management and recovery orchestration</p>
       </div>
 
-      <div className="flex-1 overflow-hidden">
-        <Tabs defaultValue="active" className="w-full h-full flex flex-col">
+      <div className="flex-1">
+        <Tabs defaultValue="active" className="w-full flex flex-col">
           <div className="px-6 flex-shrink-0">
             <TabsList className="grid w-full grid-cols-4 bg-gray-800">
               <TabsTrigger value="active">Active Disruptions</TabsTrigger>
@@ -390,8 +390,8 @@ export default function DisruptionResponseConsole() {
             </TabsList>
           </div>
 
-          <TabsContent value="active" className="flex-1 overflow-hidden p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+          <TabsContent value="active" className="flex-1 p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Disruption List */}
               <Card className="bg-gray-800 border-gray-700 flex flex-col">
                 <CardHeader className="flex-shrink-0">

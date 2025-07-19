@@ -236,7 +236,7 @@ export default function SimpleDigitalTwin({
   console.log('Current aircraft data:', currentAircraft);
   console.log('Fleet data:', fleetData);
   return (
-    <div className="h-full w-full bg-white p-6 overflow-y-auto">
+    <div className="min-h-screen w-full bg-white p-6 overflow-y-auto">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
