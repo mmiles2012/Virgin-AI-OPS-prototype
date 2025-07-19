@@ -272,7 +272,7 @@ export default function IntelligenceDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-900 overflow-y-auto">
-      <div className="h-full flex flex-col p-6 space-y-6">
+      <div className="flex flex-col p-6 space-y-6">
         <div className="flex-shrink-0">
           <div className="flex items-center gap-3 mb-6">
             <Brain className="h-8 w-8 text-blue-400" />
@@ -284,7 +284,7 @@ export default function IntelligenceDashboard() {
         </div>
         
         <div className="flex-1 overflow-y-auto">
-          <Card className="aviation-panel h-full">
+          <Card className="aviation-panel">
         <CardHeader>
           <CardTitle className="text-white flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -304,7 +304,7 @@ export default function IntelligenceDashboard() {
           </CardTitle>
         </CardHeader>
         <CardContent className="min-h-screen flex flex-col overflow-y-auto">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col">
             <TabsList className="grid w-full grid-cols-4 bg-gray-800/50 flex-shrink-0 mb-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="news">Intelligence Feed</TabsTrigger>
