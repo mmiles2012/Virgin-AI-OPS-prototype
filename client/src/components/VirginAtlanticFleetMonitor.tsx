@@ -57,6 +57,14 @@ export default function VirginAtlanticFleetMonitor() {
   // Use centralized flight selection for cross-dashboard synchronization
   const { selectedFlight, selectedFlightRegistration, selectFlight, selectFlightByRegistration, selectFlightByCallsign, clearSelection } = useSelectedFlight();
 
+  // Auto-select first aircraft if none selected and data is available
+  useEffect(() => {
+    if (!selectedFlightRegistration && fleetData.length > 0) {
+      const firstAircraft = fleetData[0];
+      selectFlightByRegistration(firstAircraft.registration);
+    }
+  }, [fleetData, selectedFlightRegistration, selectFlightByRegistration]);
+
   // Fetch authentic ADS-B Exchange Virgin Atlantic fleet data
   useEffect(() => {
     const fetchFleetData = async (): Promise<FleetData[]> => {
@@ -207,9 +215,19 @@ export default function VirginAtlanticFleetMonitor() {
     <div className="space-y-6">
       <Card className="aviation-panel">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <Plane className="h-5 w-5" />
-            Virgin Atlantic Fleet Intelligence
+          <CardTitle className="text-white flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Plane className="h-5 w-5" />
+              Virgin Atlantic Fleet Intelligence
+            </div>
+            {selectedFlightRegistration && (
+              <button
+                onClick={clearSelection}
+                className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"
+              >
+                Clear Selection
+              </button>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -320,7 +338,7 @@ export default function VirginAtlanticFleetMonitor() {
             </TabsContent>
 
             <TabsContent value="health" className="space-y-4">
-              {selectedAircraftData && (
+              {selectedAircraftData ? (
                 <div className="space-y-4">
                   <div className="bg-gray-800/50 rounded p-4">
                     <h3 className="text-white font-medium mb-3">
@@ -388,11 +406,17 @@ export default function VirginAtlanticFleetMonitor() {
                     )}
                   </div>
                 </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <Plane className="h-12 w-12 text-gray-400 mb-4" />
+                  <h3 className="text-white text-lg font-medium mb-2">No Aircraft Selected</h3>
+                  <p className="text-gray-300 text-sm">Select an aircraft from the Fleet Overview tab to view health monitoring data</p>
+                </div>
               )}
             </TabsContent>
 
             <TabsContent value="maintenance" className="space-y-4">
-              {selectedAircraftData && (
+              {selectedAircraftData ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <Card className="bg-gray-800/30">
@@ -441,6 +465,12 @@ export default function VirginAtlanticFleetMonitor() {
                       </CardContent>
                     </Card>
                   </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <Wrench className="h-12 w-12 text-gray-400 mb-4" />
+                  <h3 className="text-white text-lg font-medium mb-2">No Aircraft Selected</h3>
+                  <p className="text-gray-300 text-sm">Select an aircraft from the Fleet Overview tab to view maintenance data</p>
                 </div>
               )}
             </TabsContent>

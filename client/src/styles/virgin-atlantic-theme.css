@@ -430,6 +430,16 @@ canvas {
   .va-theme [class*="bg-gray-800"] * {
     color: hsl(var(--va-cloud-white)) !important; /* Force white text in Fleet Operations */
   }
+
+  /* TabsContent fallback content fixes */
+  .va-theme [data-state="active"] {
+    background-color: transparent !important;
+    color: hsl(var(--va-cloud-white)) !important;
+  }
+  
+  .va-theme [data-state="active"] * {
+    color: hsl(var(--va-cloud-white)) !important;
+  }
   
   /* Border consistency */
   .va-theme .border-gray-700,
