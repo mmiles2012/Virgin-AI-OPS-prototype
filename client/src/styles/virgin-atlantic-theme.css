@@ -360,31 +360,32 @@ canvas {
     border-color: hsl(var(--surface-tertiary)) !important;
   }
   
-  /* Override any dark backgrounds in components */
+  /* Override any dark backgrounds in components - FLEET OPERATIONS FIX */
   .va-theme .bg-gray-900,
   .va-theme .bg-gray-800,
   .va-theme .bg-slate-900,
   .va-theme .bg-slate-800 {
-    background-color: hsl(var(--va-cloud-white)) !important;
-    color: hsl(var(--va-deep-space)) !important;
+    background-color: hsl(var(--surface-primary)) !important; /* Keep dark backgrounds */
+    color: hsl(var(--va-cloud-white)) !important; /* Force white text */
   }
   
-  /* Override dark text on dark backgrounds */
+  /* Override dark text on dark backgrounds - FLEET OPERATIONS FIX */
   .va-theme .text-white,
   .va-theme .text-gray-50,
   .va-theme .text-gray-100,
   .va-theme .text-slate-50,
   .va-theme .text-slate-100 {
-    color: hsl(var(--va-deep-space)) !important;
+    color: hsl(var(--va-cloud-white)) !important; /* Force white text for dark backgrounds */
   }
   
-  /* Ensure good contrast for muted text on light background */
+  /* Ensure good contrast for muted text - FLEET OPERATIONS FIX */
   .va-theme .text-gray-600,
   .va-theme .text-gray-500,
+  .va-theme .text-gray-400,
   .va-theme .text-slate-600,
   .va-theme .text-slate-500,
   .va-theme .text-muted-foreground {
-    color: hsl(0 0% 40%) !important; /* Darker gray for good contrast */
+    color: hsl(var(--va-cloud-white)) !important; /* Force white text for visibility on dark backgrounds */
   }
   
   /* Status colors with proper contrast */
@@ -413,12 +414,21 @@ canvas {
     color: hsl(var(--aero-blue-light)) !important;
   }
   
-  /* Card and panel backgrounds */
+  /* Card and panel backgrounds - FLEET OPERATIONS FIX */
   .va-theme .bg-gray-900,
   .va-theme .bg-gray-800,
   .va-theme .bg-slate-900,
   .va-theme .bg-slate-800 {
     background-color: hsl(var(--surface-secondary)) !important;
+    color: hsl(var(--va-cloud-white)) !important; /* Ensure white text on dark panels */
+  }
+  
+  /* Fleet Operations specific fixes */
+  .va-theme .aviation-panel,
+  .va-theme .aviation-panel *,
+  .va-theme [class*="bg-gray-800"],
+  .va-theme [class*="bg-gray-800"] * {
+    color: hsl(var(--va-cloud-white)) !important; /* Force white text in Fleet Operations */
   }
   
   /* Border consistency */
