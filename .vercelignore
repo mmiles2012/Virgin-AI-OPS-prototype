@@ -1,0 +1,74 @@
+# Development files
+.env*
+.vscode/
+.replit
+replit.md
+replit.nix
+
+# Build artifacts (these will be rebuilt on Vercel)
+node_modules/
+dist/
+__pycache__/
+
+# Python files and ML models (server-side only, not needed for frontend)
+*.py
+*.pkl
+*.keras
+*.db
+*.csv
+*.json
+!package*.json
+!tsconfig.json
+!tailwind.config.ts
+!vite.config.ts
+!drizzle.config.ts
+!vercel.json
+
+# Temporary and cache files
+*.log
+*.cache
+.streamlit/
+.git/
+.github/
+
+# Documentation and demo files
+*.md
+!README.md
+*.pdf
+*.svg
+*.png
+!client/public/**/*.png
+!client/public/**/*.svg
+
+# Test files
+test_*.py
+test_*.js
+test_*.ts
+*_test.py
+*_test.js
+*_test.ts
+
+# Scenario and data files
+scenario_*.json
+eurocontrol_flow_data_*.json
+weather_*.csv
+*_dataset.csv
+*_results.csv
+*_data.csv
+
+# Backup files
+*_backup.*
+*_broken.*
+index_backup.html
+index_broken.html
+
+# Large data directories
+airport_facility_data/
+digital_twin_profiles/
+weather_analysis/
+data/
+aino_platform_audit/
+
+# Specific large files
+virgin_atlantic_flight_schedule.pdf
+nat_tracks.geojson
