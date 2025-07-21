@@ -128,39 +128,42 @@ const PassengerImpactModelingComponent: React.FC = () => {
 
   if (loading) {
     return (
-      <Card className="bg-white border-gray-200">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-aero-blue-primary"></div>
-            <span className="ml-3 text-gray-600">Loading passenger impact data...</span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="va-theme bg-background text-foreground">
+        <Card className="va-card bg-card border-border">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-va-blue"></div>
+              <span className="ml-3 text-muted-foreground">Loading passenger impact data...</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Card className="bg-white border-gray-200">
-      <CardContent className="p-6">
+    <div className="va-theme bg-background text-foreground">
+      <Card className="va-card bg-card border-border">
+        <CardContent className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-card-foreground flex items-center gap-2">
             <Users className="w-6 h-6" />
             Passenger Impact Modeling
           </h2>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-sm text-gray-600">Real-time Analysis</span>
+            <div className="w-3 h-3 bg-va-green rounded-full"></div>
+            <span className="text-sm text-muted-foreground">Real-time Analysis</span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {impacts.map((impact) => (
-            <div key={impact.id} className="bg-slate-800/50 border border-gray-700 rounded-xl p-4">
+            <div key={impact.id} className="bg-muted border rounded-xl p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Plane className="h-4 w-4 text-blue-400" />
-                  <h3 className="font-semibold text-gray-900">{impact.flight}</h3>
-                  <Badge variant="outline" className="text-xs text-gray-400 border-gray-600">
+                  <Plane className="h-4 w-4 text-va-blue" />
+                  <h3 className="font-semibold text-card-foreground">{impact.flight}</h3>
+                  <Badge variant="outline" className="text-xs text-muted-foreground border-border">
                     {impact.route}
                   </Badge>
                 </div>
@@ -171,44 +174,44 @@ const PassengerImpactModelingComponent: React.FC = () => {
 
               <div className="space-y-2 text-sm">
                 <div className="flex items-start gap-2">
-                  <AlertTriangle className="h-4 w-4 text-orange-400 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-va-amber mt-0.5 flex-shrink-0" />
                   <div>
-                    <span className="text-gray-300 font-medium">Issue: </span>
-                    <span className="text-gray-900">{impact.issue}</span>
+                    <span className="text-muted-foreground font-medium">Issue: </span>
+                    <span className="text-card-foreground">{impact.issue}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2">
-                  <Users className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                  <Users className="h-4 w-4 text-va-blue mt-0.5 flex-shrink-0" />
                   <div>
-                    <span className="text-gray-300 font-medium">PAX Affected: </span>
-                    <span className="text-gray-900">{impact.paxAffected}</span>
+                    <span className="text-muted-foreground font-medium">PAX Affected: </span>
+                    <span className="text-card-foreground">{impact.paxAffected}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2">
-                  <Clock className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
+                  <Clock className="h-4 w-4 text-va-green mt-0.5 flex-shrink-0" />
                   <div>
-                    <span className="text-gray-300 font-medium">Timeline: </span>
-                    <span className="text-gray-900">{impact.timeline}</span>
+                    <span className="text-muted-foreground font-medium">Timeline: </span>
+                    <span className="text-card-foreground">{impact.timeline}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2">
-                  <MapPin className="h-4 w-4 text-purple-400 mt-0.5 flex-shrink-0" />
+                  <MapPin className="h-4 w-4 text-va-blue mt-0.5 flex-shrink-0" />
                   <div>
-                    <span className="text-gray-300 font-medium">Reaccommodation: </span>
-                    <span className="text-gray-900">{impact.reaccomOptions}</span>
+                    <span className="text-muted-foreground font-medium">Reaccommodation: </span>
+                    <span className="text-card-foreground">{impact.reaccomOptions}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2">
-                  <DollarSign className="h-4 w-4 text-red-400 mt-0.5 flex-shrink-0" />
+                  <DollarSign className="h-4 w-4 text-va-red mt-0.5 flex-shrink-0" />
                   <div>
-                    <span className="text-gray-300 font-medium">Est. Cost: </span>
-                    <span className="text-gray-900">{impact.estimatedCost}</span>
+                    <span className="text-muted-foreground font-medium">Est. Cost: </span>
+                    <span className="text-card-foreground">{impact.estimatedCost}</span>
                     {impact.compensation && (
-                      <div className="text-xs text-gray-400 mt-1">
+                      <div className="text-xs text-muted-foreground mt-1">
                         + {impact.compensation}
                       </div>
                     )}
@@ -216,11 +219,11 @@ const PassengerImpactModelingComponent: React.FC = () => {
                 </div>
 
                 {/* Rebooking Options */}
-                <div className="mt-3 pt-3 border-t border-gray-700">
-                  <div className="text-xs text-gray-400 mb-2">Alternative Options:</div>
+                <div className="mt-3 pt-3 border-t">
+                  <div className="text-xs text-muted-foreground mb-2">Alternative Options:</div>
                   <div className="flex flex-wrap gap-1">
                     {impact.rebookingOptions.map((option, idx) => (
-                      <Badge key={idx} variant="secondary" className="text-xs bg-gray-700 text-gray-300">
+                      <Badge key={idx} variant="secondary" className="text-xs">
                         {option}
                       </Badge>
                     ))}
@@ -230,17 +233,17 @@ const PassengerImpactModelingComponent: React.FC = () => {
                 {/* Services Required */}
                 <div className="flex gap-2 mt-2">
                   {impact.hotel && (
-                    <Badge variant="outline" className="text-xs text-blue-400 border-blue-500/30">
+                    <Badge variant="outline" className="text-xs text-va-blue border-va-blue">
                       Hotel
                     </Badge>
                   )}
                   {impact.mealVouchers && (
-                    <Badge variant="outline" className="text-xs text-green-400 border-green-500/30">
+                    <Badge variant="outline" className="text-xs text-va-green border-va-green">
                       Meals
                     </Badge>
                   )}
                   {impact.groundTransport && (
-                    <Badge variant="outline" className="text-xs text-purple-400 border-purple-500/30">
+                    <Badge variant="outline" className="text-xs text-va-blue border-va-blue">
                       Transport
                     </Badge>
                   )}
@@ -251,15 +254,16 @@ const PassengerImpactModelingComponent: React.FC = () => {
         </div>
 
         {/* Summary Alert */}
-        <Alert className="mt-6 bg-blue-500/10 border-blue-500/30">
-          <AlertTriangle className="h-4 w-4 text-blue-400" />
-          <AlertDescription className="text-blue-300">
+        <Alert className="mt-6 bg-muted border">
+          <AlertTriangle className="h-4 w-4 text-va-blue" />
+          <AlertDescription className="text-card-foreground">
             <strong>{impacts.filter(i => i.priority === 'high').length} high priority impacts</strong> requiring immediate attention. 
             Total passenger services cost estimated at £{totalCost.toLocaleString()} affecting {totalPax} passengers.
           </AlertDescription>
         </Alert>
       </CardContent>
     </Card>
+    </div>
   );
 };
 

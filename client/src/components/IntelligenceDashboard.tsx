@@ -271,41 +271,41 @@ export default function IntelligenceDashboard() {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-900 overflow-hidden">
+    <div className="va-theme bg-background text-foreground fixed inset-0 overflow-hidden">
       <div className="h-full flex flex-col p-6 space-y-6">
         <div className="flex-shrink-0">
           <div className="flex items-center gap-3 mb-6">
-            <Brain className="h-8 w-8 text-blue-400" />
+            <Brain className="h-8 w-8 text-va-blue" />
             <div>
-              <h1 className="text-3xl font-bold text-white">Intelligence Center</h1>
-              <p className="text-gray-400">Real-time geopolitical risk assessment powered by comprehensive news intelligence</p>
+              <h1 className="text-3xl font-bold text-card-foreground">Intelligence Center</h1>
+              <p className="text-muted-foreground">Real-time geopolitical risk assessment powered by comprehensive news intelligence</p>
             </div>
           </div>
         </div>
         
         <div className="flex-1 overflow-hidden">
-          <Card className="aviation-panel h-full">
+          <Card className="va-card bg-card border-border h-full">
         <CardHeader>
-          <CardTitle className="text-white flex items-center justify-between">
+          <CardTitle className="text-card-foreground flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Brain className="h-5 w-5" />
               Aviation Intelligence Dashboard
             </div>
             <div className="flex items-center gap-3 text-sm">
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                <span className="text-blue-300">ML ACTIVE</span>
+                <div className="w-2 h-2 bg-va-blue rounded-full animate-pulse"></div>
+                <span className="text-va-blue">ML ACTIVE</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-green-300">LIVE NEWS</span>
+                <div className="w-2 h-2 bg-va-green rounded-full animate-pulse"></div>
+                <span className="text-va-green">LIVE NEWS</span>
               </div>
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent className="h-full flex flex-col overflow-hidden">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
-            <TabsList className="grid w-full grid-cols-4 bg-gray-800/50 flex-shrink-0 mb-4">
+            <TabsList className="grid w-full grid-cols-4 bg-muted flex-shrink-0 mb-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="news">Intelligence Feed</TabsTrigger>
               <TabsTrigger value="alerts">Operational Alerts</TabsTrigger>
@@ -315,9 +315,9 @@ export default function IntelligenceDashboard() {
             <TabsContent value="overview" className="flex-1 overflow-y-auto space-y-4">
               {summaryData && (
                 <>
-                  <div className="bg-gray-800/50 rounded p-4 mb-4">
-                    <h3 className="text-white font-medium mb-2">Executive Summary</h3>
-                    <p className="text-gray-300 text-sm leading-relaxed">
+                  <div className="bg-muted rounded p-4 mb-4">
+                    <h3 className="text-card-foreground font-medium mb-2">Executive Summary</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
                       {summaryData.executive_summary}
                     </p>
                   </div>
