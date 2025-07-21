@@ -123,13 +123,103 @@ const IntelligentDecisionDashboard: React.FC = () => {
   } | null>(null);
   const [locationSearchTerm, setLocationSearchTerm] = useState('');
   const [availableLocations, setAvailableLocations] = useState<any[]>([]);
+  
+  // Flight plan upload state
+  const [uploadedFlightPlans, setUploadedFlightPlans] = useState<any[]>([]);
+  const [selectedFlightPlan, setSelectedFlightPlan] = useState<any>(null);
+  const [diversionAnalysis, setDiversionAnalysis] = useState<any>(null);
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [flightPlanContent, setFlightPlanContent] = useState('');
+  const [flightPlanFilename, setFlightPlanFilename] = useState('');
 
   useEffect(() => {
     fetchInsights();
     loadSampleScenario();
     fetchAvailableFlights();
     loadSampleLocations();
+    fetchUploadedFlightPlans();
   }, []);
+
+  const fetchUploadedFlightPlans = async () => {
+    try {
+      const response = await fetch('/api/flight-plans');
+      const data = await response.json();
+      if (data.success) {
+        setUploadedFlightPlans(data.flightPlans || []);
+        console.log('📋 Loaded', data.flightPlans?.length || 0, 'uploaded flight plans');
+      }
+    } catch (error) {
+      console.error('Failed to fetch flight plans:', error);
+    }
+  };
+
+  const uploadFlightPlan = async () => {
+    if (!flightPlanContent.trim() || !flightPlanFilename.trim()) {
+      alert('Please provide both filename and flight plan content');
+      return;
+    }
+
+    setUploadLoading(true);
+    try {
+      const response = await fetch('/api/flight-plans/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename: flightPlanFilename,
+          content: flightPlanContent,
+          format: 'auto'
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        console.log('✈️ Flight plan uploaded successfully:', data.flightPlan.callsign);
+        setFlightPlanContent('');
+        setFlightPlanFilename('');
+        fetchUploadedFlightPlans(); // Refresh list
+        alert(`Flight plan uploaded successfully for ${data.flightPlan.callsign}`);
+      } else {
+        alert(`Upload failed: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload flight plan');
+    } finally {
+      setUploadLoading(false);
+    }
+  };
+
+  const performDiversionAnalysis = async () => {
+    if (!selectedFlightPlan || !selectedFlight) {
+      alert('Please select both a flight plan and current flight position');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/flight-plans/${selectedFlightPlan.callsign}/diversion-analysis`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPosition: {
+            lat: selectedFlight.latitude,
+            lon: selectedFlight.longitude
+          },
+          emergencyType: 'engine_failure'
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setDiversionAnalysis(data.diversionAnalysis);
+        console.log('🛠️ Diversion analysis completed for', selectedFlightPlan.callsign);
+      } else {
+        alert(`Analysis failed: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Diversion analysis error:', error);
+      alert('Failed to perform diversion analysis');
+    }
+  };
 
   const fetchAvailableFlights = async () => {
     try {
@@ -509,6 +599,137 @@ const IntelligentDecisionDashboard: React.FC = () => {
                   >
                     Clear Location
                   </button>
+                </div>
+              )}
+            </div>
+
+            {/* Flight Plan Upload */}
+            <div className="lg:col-span-2 bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
+                <Target className="w-5 h-5 text-orange-400" />
+                Flight Plan Upload for Enroute Diversion Analysis
+              </h3>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Upload Interface */}
+                <div>
+                  <h4 className="font-medium text-orange-300 mb-3">Upload Flight Plan</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium mb-1 text-gray-300">Filename</label>
+                      <input
+                        type="text"
+                        placeholder="e.g., VIR3N_LHR_JFK_Plan.txt"
+                        value={flightPlanFilename}
+                        onChange={(e) => setFlightPlanFilename(e.target.value)}
+                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1 text-gray-300">Flight Plan Content</label>
+                      <textarea
+                        placeholder="Paste flight plan here (supports ICAO, JSON, XML, or text format)"
+                        value={flightPlanContent}
+                        onChange={(e) => setFlightPlanContent(e.target.value)}
+                        rows={8}
+                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 font-mono text-sm"
+                      />
+                    </div>
+                    <button
+                      onClick={uploadFlightPlan}
+                      disabled={uploadLoading || !flightPlanContent.trim() || !flightPlanFilename.trim()}
+                      className="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                    >
+                      {uploadLoading ? 'Uploading...' : 'Upload Flight Plan'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Uploaded Flight Plans */}
+                <div>
+                  <h4 className="font-medium text-orange-300 mb-3">Uploaded Flight Plans ({uploadedFlightPlans.length})</h4>
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {uploadedFlightPlans.map((plan, index) => (
+                      <div 
+                        key={plan.callsign || index}
+                        onClick={() => setSelectedFlightPlan(plan)}
+                        className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                          selectedFlightPlan?.callsign === plan.callsign 
+                            ? 'bg-orange-900/30 border-orange-600' 
+                            : 'bg-gray-700 border-gray-600 hover:bg-gray-600'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="font-medium text-white">{plan.callsign || plan.flightNumber}</div>
+                            <div className="text-sm text-gray-400">{plan.route || `${plan.departure}-${plan.destination}`}</div>
+                            <div className="text-xs text-gray-500">
+                              {plan.waypointCount} waypoints • {plan.format} format • {new Date(plan.uploadedAt).toLocaleDateString()}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {uploadedFlightPlans.length === 0 && (
+                      <div className="text-center py-8 text-gray-400">
+                        <Target className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p>No flight plans uploaded yet</p>
+                        <p className="text-sm">Upload actual flight plans for enroute diversion analysis</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Diversion Analysis Trigger */}
+              {selectedFlightPlan && selectedFlight && (
+                <div className="mt-6 p-4 bg-orange-900/20 border border-orange-700 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-orange-300">Ready for Enroute Diversion Analysis</h4>
+                      <p className="text-sm text-gray-400">
+                        Flight Plan: {selectedFlightPlan.callsign} • Current Flight: {selectedFlight.callsign}
+                      </p>
+                    </div>
+                    <button
+                      onClick={performDiversionAnalysis}
+                      className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors"
+                    >
+                      Analyze Diversions
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Diversion Analysis Results */}
+              {diversionAnalysis && (
+                <div className="mt-6 p-4 bg-purple-900/20 border border-purple-700 rounded-lg">
+                  <h4 className="font-medium text-purple-300 mb-3">Enroute Diversion Analysis Results</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <h5 className="font-medium text-white mb-2">Analysis Summary</h5>
+                      <div className="space-y-1">
+                        <div><span className="text-gray-400">Flight:</span> <span className="text-white">{diversionAnalysis.flightPlan.callsign}</span></div>
+                        <div><span className="text-gray-400">Current Position:</span> <span className="text-white">{diversionAnalysis.currentPosition.lat.toFixed(2)}, {diversionAnalysis.currentPosition.lon.toFixed(2)}</span></div>
+                        <div><span className="text-gray-400">Emergency Type:</span> <span className="text-white">{diversionAnalysis.emergencyType}</span></div>
+                        <div><span className="text-gray-400">Options Found:</span> <span className="text-white">{diversionAnalysis.summary.totalOptions}</span></div>
+                        <div><span className="text-gray-400">Recommended:</span> <span className="text-white">{diversionAnalysis.summary.recommendedOption}</span></div>
+                      </div>
+                    </div>
+                    <div>
+                      <h5 className="font-medium text-white mb-2">Top Diversion Options</h5>
+                      <div className="space-y-2">
+                        {diversionAnalysis.diversionOptions.slice(0, 3).map((option: any, idx: number) => (
+                          <div key={idx} className="p-2 bg-gray-800 rounded border">
+                            <div className="font-medium text-purple-300">{option.airport.name} ({option.airport.icao})</div>
+                            <div className="text-xs text-gray-400">
+                              {option.distance}nm • {option.estimatedFlightTime}min • Score: {option.suitabilityScore}/100
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

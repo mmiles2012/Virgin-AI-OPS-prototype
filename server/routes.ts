@@ -53,6 +53,7 @@ import { virginAtlanticFlightTracker } from "./routeMatcher";
 import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
 import mlOtpRoutes from "./mlOtpRoutes";
 import visaRoutes from "./visaRoutes";
+import FlightPlanService from './flightPlanService.js';
 import fuelOptimizationRoutes from "./fuelOptimizationRoutes";
 import FAAStatusService from "./faaStatusService.js";
 
@@ -4524,6 +4525,155 @@ print(json.dumps(weather))
         message: 'Failed to retrieve model performance',
         error: error.message,
         timestamp: new Date().toISOString()
+      });
+    }
+  });
+
+  // Flight Plan Service for Enroute Diversion Analysis
+  const flightPlanService = new FlightPlanService();
+
+  // Flight plan upload endpoint
+  app.post('/api/flight-plans/upload', async (req, res) => {
+    try {
+      const { filename, content, format = 'auto' } = req.body;
+      
+      if (!filename || !content) {
+        return res.status(400).json({
+          success: false,
+          error: 'Filename and content are required'
+        });
+      }
+
+      const parsedPlan = flightPlanService.parseFlightPlan(content, filename, format);
+      
+      res.json({
+        success: true,
+        message: 'Flight plan uploaded and parsed successfully',
+        flightPlan: {
+          callsign: parsedPlan.callsign,
+          route: parsedPlan.route,
+          waypoints: parsedPlan.waypoints,
+          departure: parsedPlan.departure,
+          destination: parsedPlan.destination,
+          uploadedAt: parsedPlan.uploadedAt,
+          format: parsedPlan.format
+        }
+      });
+    } catch (error) {
+      console.error('Flight plan upload error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to parse flight plan'
+      });
+    }
+  });
+
+  // Get uploaded flight plans
+  app.get('/api/flight-plans', async (req, res) => {
+    try {
+      const flightPlans = flightPlanService.getUploadedFlightPlans();
+      
+      res.json({
+        success: true,
+        flightPlans: flightPlans.map(plan => ({
+          callsign: plan.callsign,
+          flightNumber: plan.flightNumber,
+          route: plan.route,
+          departure: plan.departure,
+          destination: plan.destination,
+          waypoints: plan.waypoints,
+          uploadedAt: plan.uploadedAt,
+          format: plan.format,
+          waypointCount: plan.waypoints?.length || 0
+        }))
+      });
+    } catch (error) {
+      console.error('Get flight plans error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve flight plans'
+      });
+    }
+  });
+
+  // Get specific flight plan
+  app.get('/api/flight-plans/:callsign', async (req, res) => {
+    try {
+      const { callsign } = req.params;
+      const flightPlan = flightPlanService.getFlightPlan(callsign);
+      
+      if (!flightPlan) {
+        return res.status(404).json({
+          success: false,
+          error: 'Flight plan not found'
+        });
+      }
+      
+      res.json({
+        success: true,
+        flightPlan
+      });
+    } catch (error) {
+      console.error('Get flight plan error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve flight plan'
+      });
+    }
+  });
+
+  // Enroute diversion analysis
+  app.post('/api/flight-plans/:callsign/diversion-analysis', async (req, res) => {
+    try {
+      const { callsign } = req.params;
+      const { currentPosition, emergencyType = 'engine_failure' } = req.body;
+      
+      const flightPlan = flightPlanService.getFlightPlan(callsign);
+      if (!flightPlan) {
+        return res.status(404).json({
+          success: false,
+          error: 'Flight plan not found for diversion analysis'
+        });
+      }
+      
+      if (!currentPosition || !currentPosition.lat || !currentPosition.lon) {
+        return res.status(400).json({
+          success: false,
+          error: 'Current position (lat, lon) required for diversion analysis'
+        });
+      }
+      
+      const diversionOptions = flightPlanService.calculateEnrouteDiversions(
+        flightPlan,
+        currentPosition,
+        emergencyType
+      );
+      
+      res.json({
+        success: true,
+        diversionAnalysis: {
+          flightPlan: {
+            callsign: flightPlan.callsign,
+            route: flightPlan.route,
+            departure: flightPlan.departure,
+            destination: flightPlan.destination
+          },
+          currentPosition,
+          emergencyType,
+          analysisTime: new Date().toISOString(),
+          diversionOptions: diversionOptions.slice(0, 5), // Top 5 options
+          summary: {
+            totalOptions: diversionOptions.length,
+            nearestOption: diversionOptions[0]?.airport?.name || 'None available',
+            recommendedOption: diversionOptions.find(d => d.suitabilityScore > 80)?.airport?.name || diversionOptions[0]?.airport?.name
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Diversion analysis error:', error);
+      res.status(500).json({
+        success: false,
+        error: error.message || 'Failed to perform diversion analysis'
       });
     }
   });
