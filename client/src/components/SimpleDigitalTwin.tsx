@@ -419,28 +419,28 @@ export default function SimpleDigitalTwin({
             <button
               onClick={() => handleGenerateScenario('technical')}
               disabled={scenarioLoading}
-              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-va-red-primary hover:bg-va-red-heritage'} text-foreground font-medium py-3 px-4 rounded-lg transition-colors`}
+              className={`${scenarioLoading ? 'bg-muted' : 'bg-va-red-primary hover:bg-va-red-heritage'} text-foreground font-medium py-3 px-4 rounded-lg transition-colors`}
             >
               {scenarioLoading ? 'Loading...' : 'Technical Emergency'}
             </button>
             <button
               onClick={() => handleGenerateScenario('medical')}
               disabled={scenarioLoading}
-              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-orange-600 hover:bg-orange-700'} text-foreground font-medium py-3 px-4 rounded-lg transition-colors`}
+              className={`${scenarioLoading ? 'bg-muted' : 'bg-aero-amber-caution hover:bg-aero-amber-dark'} text-foreground font-medium py-3 px-4 rounded-lg transition-colors`}
             >
               {scenarioLoading ? 'Loading...' : 'Medical Emergency'}
             </button>
             <button
               onClick={() => handleGenerateScenario('weather')}
               disabled={scenarioLoading}
-              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-yellow-600 hover:bg-yellow-700'} text-foreground font-medium py-3 px-4 rounded-lg transition-colors`}
+              className={`${scenarioLoading ? 'bg-muted' : 'bg-aero-blue-primary hover:bg-aero-blue-light'} text-foreground font-medium py-3 px-4 rounded-lg transition-colors`}
             >
               {scenarioLoading ? 'Loading...' : 'Weather Emergency'}
             </button>
             <button
               onClick={() => handleGenerateScenario('security')}
               disabled={scenarioLoading}
-              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-purple-600 hover:bg-purple-700'} text-foreground font-medium py-3 px-4 rounded-lg transition-colors`}
+              className={`${scenarioLoading ? 'bg-muted' : 'bg-va-deep-space hover:bg-va-midnight'} text-va-white font-medium py-3 px-4 rounded-lg transition-colors`}
             >
               {scenarioLoading ? 'Loading...' : 'Security Emergency'}
             </button>
@@ -519,13 +519,13 @@ export default function SimpleDigitalTwin({
                 <button
                   onClick={handleAnalyzeScenario}
                   disabled={scenarioLoading}
-                  className={`${scenarioLoading ? 'bg-gray-400' : 'bg-aero-blue-primary hover:bg-aero-blue-light'} text-foreground font-medium py-2 px-4 rounded transition-colors`}
+                  className={`${scenarioLoading ? 'bg-muted' : 'bg-aero-blue-primary hover:bg-aero-blue-light'} text-foreground font-medium py-2 px-4 rounded transition-colors`}
                 >
                   {scenarioLoading ? 'Analyzing...' : 'Analyze What-If Outcomes'}
                 </button>
                 <button
                   onClick={() => setScenarioData(null)}
-                  className="bg-gray-600 hover:bg-muted text-foreground font-medium py-2 px-4 rounded transition-colors"
+                  className="bg-va-neutral-dark hover:bg-va-neutral text-va-white font-medium py-2 px-4 rounded transition-colors"
                 >
                   Clear Scenario
                 </button>
