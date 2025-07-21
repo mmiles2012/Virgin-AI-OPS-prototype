@@ -11,9 +11,15 @@ import {
   Settings,
   Activity,
   Lightbulb,
-  ArrowRight
+  ArrowRight,
+  Plane,
+  MapPin,
+  Search,
+  Navigation,
+  Crosshair
 } from 'lucide-react';
 import { calculateFuelPercentage } from '../lib/utils/fuelCalculation';
+import { useSelectedFlight } from '../lib/stores/useSelectedFlight';
 
 interface DecisionOption {
   id: string;
@@ -85,7 +91,7 @@ interface DecisionInsights {
 }
 
 const IntelligentDecisionDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'analyzer' | 'insights' | 'scenarios'>('analyzer');
+  const [activeTab, setActiveTab] = useState<'flight_selection' | 'analyzer' | 'insights' | 'scenarios'>('flight_selection');
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<DecisionAnalysis | null>(null);
   const [insights, setInsights] = useState<DecisionInsights | null>(null);
@@ -103,10 +109,60 @@ const IntelligentDecisionDashboard: React.FC = () => {
     options: []
   });
 
+  // Flight selection state
+  const { selectedFlight, selectFlightByCallsign, clearSelection } = useSelectedFlight();
+  const [availableFlights, setAvailableFlights] = useState<any[]>([]);
+  const [flightSearchTerm, setFlightSearchTerm] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState<{
+    name: string;
+    icao: string;
+    iata: string;
+    coordinates: { lat: number; lon: number };
+    country: string;
+    region: string;
+  } | null>(null);
+  const [locationSearchTerm, setLocationSearchTerm] = useState('');
+  const [availableLocations, setAvailableLocations] = useState<any[]>([]);
+
   useEffect(() => {
     fetchInsights();
     loadSampleScenario();
+    fetchAvailableFlights();
+    loadSampleLocations();
   }, []);
+
+  const fetchAvailableFlights = async () => {
+    try {
+      const response = await fetch('/api/aviation/virgin-atlantic-flights');
+      const data = await response.json();
+      if (data.success) {
+        setAvailableFlights(data.flights || []);
+        console.log('✈️ Loaded', data.flights?.length || 0, 'Virgin Atlantic flights for selection');
+      }
+    } catch (error) {
+      console.error('Failed to fetch flights:', error);
+    }
+  };
+
+  const loadSampleLocations = () => {
+    const virginAtlanticHubs = [
+      { name: 'London Heathrow', icao: 'EGLL', iata: 'LHR', coordinates: { lat: 51.4700, lon: -0.4543 }, country: 'United Kingdom', region: 'Europe' },
+      { name: 'Manchester', icao: 'EGCC', iata: 'MAN', coordinates: { lat: 53.3537, lon: -2.2750 }, country: 'United Kingdom', region: 'Europe' },
+      { name: 'John F Kennedy Intl', icao: 'KJFK', iata: 'JFK', coordinates: { lat: 40.6413, lon: -73.7781 }, country: 'United States', region: 'North America' },
+      { name: 'Los Angeles Intl', icao: 'KLAX', iata: 'LAX', coordinates: { lat: 33.9425, lon: -118.4081 }, country: 'United States', region: 'North America' },
+      { name: 'Boston Logan Intl', icao: 'KBOS', iata: 'BOS', coordinates: { lat: 42.3656, lon: -71.0096 }, country: 'United States', region: 'North America' },
+      { name: 'Atlanta Hartsfield', icao: 'KATL', iata: 'ATL', coordinates: { lat: 33.6407, lon: -84.4277 }, country: 'United States', region: 'North America' },
+      { name: 'Orlando Intl', icao: 'KMCO', iata: 'MCO', coordinates: { lat: 28.4312, lon: -81.3081 }, country: 'United States', region: 'North America' },
+      { name: 'Delhi Indira Gandhi', icao: 'VIDP', iata: 'DEL', coordinates: { lat: 28.5665, lon: 77.1030 }, country: 'India', region: 'Asia' },
+      { name: 'Mumbai Chhatrapati', icao: 'VABB', iata: 'BOM', coordinates: { lat: 19.0896, lon: 72.8656 }, country: 'India', region: 'Asia' },
+      { name: 'Riyadh King Khalid', icao: 'OERK', iata: 'RUH', coordinates: { lat: 24.9576, lon: 46.6988 }, country: 'Saudi Arabia', region: 'Middle East' },
+      // Diversion alternates
+      { name: 'Shannon Airport', icao: 'EINN', iata: 'SNN', coordinates: { lat: 52.7019, lon: -8.9247 }, country: 'Ireland', region: 'Europe' },
+      { name: 'Keflavik Intl', icao: 'BIKF', iata: 'KEF', coordinates: { lat: 63.9850, lon: -22.6056 }, country: 'Iceland', region: 'Europe' },
+      { name: 'Gander Intl', icao: 'CYQX', iata: 'YQX', coordinates: { lat: 48.9369, lon: -54.5681 }, country: 'Canada', region: 'North America' }
+    ];
+    setAvailableLocations(virginAtlanticHubs);
+  };
 
   const fetchInsights = async () => {
     try {
@@ -243,6 +299,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
         {/* Tab Navigation */}
         <div className="flex gap-2">
           {[
+            { key: 'flight_selection', label: 'Flight & Location Selection', icon: Crosshair },
             { key: 'analyzer', label: 'Decision Analyzer', icon: Target },
             { key: 'insights', label: 'Decision Insights', icon: BarChart3 },
             { key: 'scenarios', label: 'Scenario Library', icon: Settings }
@@ -265,6 +322,261 @@ const IntelligentDecisionDashboard: React.FC = () => {
 
       {/* Content */}
       <div className="p-6">
+        {activeTab === 'flight_selection' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Flight Selection */}
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
+                <Plane className="w-5 h-5 text-blue-400" />
+                Flight Selection
+              </h3>
+
+              {/* Flight Search */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2 text-gray-300">Search Flights</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search by callsign, route, or registration..."
+                    value={flightSearchTerm}
+                    onChange={(e) => setFlightSearchTerm(e.target.value)}
+                    className="w-full bg-gray-700 border border-gray-600 rounded-lg pl-10 pr-3 py-2 text-white placeholder-gray-400"
+                  />
+                </div>
+              </div>
+
+              {/* Flight List */}
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {availableFlights
+                  .filter(flight => 
+                    !flightSearchTerm || 
+                    flight.callsign?.toLowerCase().includes(flightSearchTerm.toLowerCase()) ||
+                    flight.flight_number?.toLowerCase().includes(flightSearchTerm.toLowerCase()) ||
+                    flight.route?.toLowerCase().includes(flightSearchTerm.toLowerCase()) ||
+                    flight.registration?.toLowerCase().includes(flightSearchTerm.toLowerCase())
+                  )
+                  .map((flight, index) => (
+                    <div 
+                      key={flight.callsign || index}
+                      onClick={() => selectFlightByCallsign(flight.callsign || flight.flight_number)}
+                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                        selectedFlight?.callsign === flight.callsign 
+                          ? 'bg-blue-900/30 border-blue-600' 
+                          : 'bg-gray-700 border-gray-600 hover:bg-gray-600'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-medium text-white">{flight.callsign || flight.flight_number}</div>
+                          <div className="text-sm text-gray-400">{flight.route || `${flight.departure_airport}-${flight.arrival_airport}`}</div>
+                          <div className="text-xs text-gray-500">
+                            {flight.aircraft_type} • {flight.registration} • {flight.authentic_tracking ? 'Live ADS-B' : 'Estimated'}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-gray-300">{flight.altitude}ft</div>
+                          <div className="text-xs text-gray-400">{flight.velocity}kt</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+
+              {/* Selected Flight Summary */}
+              {selectedFlight && (
+                <div className="mt-4 p-4 bg-blue-900/20 border border-blue-700 rounded-lg">
+                  <h4 className="font-medium text-blue-300 mb-2">Selected Flight</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <span className="text-gray-400">Callsign:</span>
+                      <span className="text-white ml-2">{selectedFlight.callsign}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Aircraft:</span>
+                      <span className="text-white ml-2">{selectedFlight.aircraft_type || selectedFlight.aircraft}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Route:</span>
+                      <span className="text-white ml-2">{selectedFlight.route || `${selectedFlight.origin}-${selectedFlight.destination}`}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Position:</span>
+                      <span className="text-white ml-2">{selectedFlight.latitude?.toFixed(2)}, {selectedFlight.longitude?.toFixed(2)}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={clearSelection}
+                    className="mt-3 px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition-colors"
+                  >
+                    Clear Selection
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Geographic Location Selection */}
+            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
+                <MapPin className="w-5 h-5 text-green-400" />
+                Geographic Location Selection
+              </h3>
+
+              {/* Location Search */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2 text-gray-300">Search Locations</label>
+                <div className="relative">
+                  <Navigation className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search by airport name, ICAO, or country..."
+                    value={locationSearchTerm}
+                    onChange={(e) => setLocationSearchTerm(e.target.value)}
+                    className="w-full bg-gray-700 border border-gray-600 rounded-lg pl-10 pr-3 py-2 text-white placeholder-gray-400"
+                  />
+                </div>
+              </div>
+
+              {/* Location Categories */}
+              <div className="mb-4">
+                <div className="flex gap-2 text-xs">
+                  <span className="px-2 py-1 bg-blue-600 text-white rounded">Virgin Atlantic Hubs</span>
+                  <span className="px-2 py-1 bg-orange-600 text-white rounded">Diversion Alternates</span>
+                </div>
+              </div>
+
+              {/* Location List */}
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {availableLocations
+                  .filter(location => 
+                    !locationSearchTerm || 
+                    location.name?.toLowerCase().includes(locationSearchTerm.toLowerCase()) ||
+                    location.icao?.toLowerCase().includes(locationSearchTerm.toLowerCase()) ||
+                    location.iata?.toLowerCase().includes(locationSearchTerm.toLowerCase()) ||
+                    location.country?.toLowerCase().includes(locationSearchTerm.toLowerCase())
+                  )
+                  .map((location, index) => (
+                    <div 
+                      key={location.icao || index}
+                      onClick={() => setSelectedLocation(location)}
+                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                        selectedLocation?.icao === location.icao 
+                          ? 'bg-green-900/30 border-green-600' 
+                          : 'bg-gray-700 border-gray-600 hover:bg-gray-600'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-medium text-white">{location.name}</div>
+                          <div className="text-sm text-gray-400">{location.icao} / {location.iata}</div>
+                          <div className="text-xs text-gray-500">{location.country} • {location.region}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs text-gray-400">
+                            {location.coordinates.lat.toFixed(2)}°, {location.coordinates.lon.toFixed(2)}°
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+
+              {/* Selected Location Summary */}
+              {selectedLocation && (
+                <div className="mt-4 p-4 bg-green-900/20 border border-green-700 rounded-lg">
+                  <h4 className="font-medium text-green-300 mb-2">Selected Location</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <span className="text-gray-400">Airport:</span>
+                      <span className="text-white ml-2">{selectedLocation.name}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Codes:</span>
+                      <span className="text-white ml-2">{selectedLocation.icao} / {selectedLocation.iata}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Country:</span>
+                      <span className="text-white ml-2">{selectedLocation.country}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">Coordinates:</span>
+                      <span className="text-white ml-2">{selectedLocation.coordinates.lat.toFixed(4)}, {selectedLocation.coordinates.lon.toFixed(4)}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setSelectedLocation(null)}
+                    className="mt-3 px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition-colors"
+                  >
+                    Clear Location
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Analysis Integration */}
+            <div className="lg:col-span-2 bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-white">
+                <Brain className="w-5 h-5 text-purple-400" />
+                Decision Context Integration
+              </h3>
+
+              {selectedFlight && selectedLocation ? (
+                <div className="bg-purple-900/20 border border-purple-700 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                    <span className="font-medium text-white">Ready for Intelligent Analysis</span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <h4 className="font-medium text-purple-300 mb-2">Selected Flight</h4>
+                      <div className="space-y-1">
+                        <div><span className="text-gray-400">Flight:</span> <span className="text-white">{selectedFlight.callsign}</span></div>
+                        <div><span className="text-gray-400">Aircraft:</span> <span className="text-white">{selectedFlight.aircraft_type || selectedFlight.aircraft}</span></div>
+                        <div><span className="text-gray-400">Route:</span> <span className="text-white">{selectedFlight.route}</span></div>
+                        <div><span className="text-gray-400">Current Position:</span> <span className="text-white">{selectedFlight.latitude?.toFixed(2)}, {selectedFlight.longitude?.toFixed(2)}</span></div>
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-purple-300 mb-2">Target Location</h4>
+                      <div className="space-y-1">
+                        <div><span className="text-gray-400">Airport:</span> <span className="text-white">{selectedLocation.name}</span></div>
+                        <div><span className="text-gray-400">Codes:</span> <span className="text-white">{selectedLocation.icao} / {selectedLocation.iata}</span></div>
+                        <div><span className="text-gray-400">Location:</span> <span className="text-white">{selectedLocation.coordinates.lat.toFixed(2)}, {selectedLocation.coordinates.lon.toFixed(2)}</span></div>
+                        <div><span className="text-gray-400">Region:</span> <span className="text-white">{selectedLocation.region}</span></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex gap-3">
+                    <button
+                      onClick={() => setActiveTab('analyzer')}
+                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium flex items-center gap-2 transition-colors"
+                    >
+                      <ArrowRight className="w-4 h-4" />
+                      Proceed to Decision Analysis
+                    </button>
+                    <button
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium flex items-center gap-2 transition-colors"
+                    >
+                      <Zap className="w-4 h-4" />
+                      Generate Scenario
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-gray-700 rounded-lg p-4 text-center">
+                  <AlertTriangle className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
+                  <p className="text-gray-300 mb-1">Flight and Location Selection Required</p>
+                  <p className="text-sm text-gray-400">
+                    {!selectedFlight && !selectedLocation && "Please select both a flight and geographic location to proceed with intelligent decision analysis."}
+                    {selectedFlight && !selectedLocation && "Please select a geographic location to complete the context."}
+                    {!selectedFlight && selectedLocation && "Please select a flight to complete the context."}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {activeTab === 'analyzer' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Scenario Configuration */}
