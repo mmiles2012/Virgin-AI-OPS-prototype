@@ -73,6 +73,7 @@ import intelligentOpsRoutes from './intelligentOpsRoutes.js';
 import heathrowHoldingService from "./heathrowHoldingService";
 import heathrowLiveDataService from "./heathrowLiveDataService";
 import integratedHoldingMLService from "./integratedHoldingMLService.js";
+import NetworkOTPLearningService from "./networkOTPLearningService.js";
 import { flightAwareService } from "./flightAwareService";
 import eurocontrolFlowService from "./eurocontrolFlowService.js";
 import { faaNotamService } from "./faaNotamService";
@@ -2112,6 +2113,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
       });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Network OTP Learning System endpoints
+  const networkOTPLearner = new NetworkOTPLearningService();
+
+  // Initialize Network OTP Learning System
+  app.get('/api/network-otp/learning/status', async (req, res) => {
+    try {
+      const status = networkOTPLearner.getSystemStatus();
+      res.json({
+        success: true,
+        learningSystem: {
+          status: 'operational',
+          isLearning: status.isLearning,
+          lastTraining: status.lastTraining,
+          modelsAvailable: status.modelsAvailable,
+          cacheSize: status.cacheSize,
+          capabilities: [
+            'Hub performance pattern learning',
+            'Delay prediction modeling',
+            'Seasonal pattern analysis',
+            'Operational recommendations'
+          ]
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Log hub performance for learning
+  app.post('/api/network-otp/learning/log-performance', async (req, res) => {
+    try {
+      const { hubData } = req.body;
+      const result = await networkOTPLearner.logHubPerformance(hubData);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Train models on accumulated data
+  app.post('/api/network-otp/learning/train', async (req, res) => {
+    try {
+      const result = await networkOTPLearner.trainModels();
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Get performance prediction
+  app.get('/api/network-otp/learning/predict/:hub/:hour/:dayOfWeek', async (req, res) => {
+    try {
+      const { hub, hour, dayOfWeek } = req.params;
+      const weatherImpact = parseFloat(req.query.weatherImpact as string) || 0;
+      
+      const prediction = await networkOTPLearner.predictHubPerformance(
+        hub, 
+        parseInt(hour), 
+        parseInt(dayOfWeek), 
+        weatherImpact
+      );
+      res.json(prediction);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Get hub insights and recommendations
+  app.get('/api/network-otp/learning/insights/:hub', async (req, res) => {
+    try {
+      const { hub } = req.params;
+      const insights = await networkOTPLearner.getHubInsights(hub);
+      res.json(insights);
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Analyze seasonal patterns
+  app.get('/api/network-otp/learning/seasonal-analysis', async (req, res) => {
+    try {
+      const patterns = await networkOTPLearner.analyzeSeasonalPatterns();
+      res.json(patterns);
     } catch (error) {
       res.status(500).json({
         success: false,
