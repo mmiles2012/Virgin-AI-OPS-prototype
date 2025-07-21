@@ -344,20 +344,20 @@ export default function OnTimePerformanceDashboard() {
   const currentHub = hubData.length > 0 ? hubData[currentIndex % hubData.length] : null;
 
   return (
-    <div className="bg-gray-50 text-gray-900 border border-gray-200 rounded-lg overflow-hidden">
+    <div className="va-theme bg-background text-foreground border border-border rounded-lg overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-4">
+      <div className="bg-gradient-va-red px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Plane className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-bold text-white">Virgin Atlantic Network Operations</h2>
+            <Plane className="w-6 h-6 text-primary-foreground" />
+            <h2 className="text-xl font-bold text-primary-foreground">Virgin Atlantic Network Operations</h2>
           </div>
-          <div className="flex items-center gap-4 text-white/80">
+          <div className="flex items-center gap-4 text-primary-foreground/80">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setNetworkView('overview')}
                 className={`px-3 py-1 rounded text-sm ${
-                  networkView === 'overview' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'
+                  networkView === 'overview' ? 'bg-white/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground'
                 }`}
               >
                 Network Overview
@@ -365,14 +365,14 @@ export default function OnTimePerformanceDashboard() {
               <button
                 onClick={() => setNetworkView('detailed')}
                 className={`px-3 py-1 rounded text-sm ${
-                  networkView === 'detailed' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'
+                  networkView === 'detailed' ? 'bg-white/20 text-primary-foreground' : 'text-primary-foreground/70 hover:text-primary-foreground'
                 }`}
               >
                 Detailed View
               </button>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-va-green rounded-full animate-pulse"></div>
               <span className="text-xs">LIVE DATA</span>
             </div>
             <Clock className="w-4 h-4" />
@@ -389,60 +389,60 @@ export default function OnTimePerformanceDashboard() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900">{currentHub.iata}</h3>
-                  <p className="text-gray-600">{currentHub.name}</p>
-                  <p className="text-gray-500 text-sm">{currentHub.city}</p>
+                  <h3 className="text-2xl font-bold text-card-foreground">{currentHub.iata}</h3>
+                  <p className="text-muted-foreground">{currentHub.name}</p>
+                  <p className="text-muted-foreground text-sm">{currentHub.city}</p>
                 </div>
                 <div className="text-right">
                 <div className="flex items-center gap-2">
                   {getTrendIcon(currentHub.trend)}
                   <span className={`text-2xl font-bold ${
-                    currentHub.onTimeRate >= 85 ? 'text-green-600' : 
-                    currentHub.onTimeRate >= 70 ? 'text-yellow-600' : 'text-red-600'
+                    currentHub.onTimeRate >= 85 ? 'text-va-green' : 
+                    currentHub.onTimeRate >= 70 ? 'text-va-amber' : 'text-va-red'
                   }`}>
                     {currentHub.onTimeRate.toFixed(1)}%
                   </span>
                 </div>
-                <p className="text-gray-600 text-sm">OTP</p>
+                <p className="text-muted-foreground text-sm">OTP</p>
               </div>
             </div>
 
             {/* Performance Metrics */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                <div className="text-2xl font-bold text-gray-900">{currentHub.totalFlights}</div>
-                <div className="text-gray-600 text-sm">Total Flights</div>
+              <div className="bg-va-card bg-card border border-border rounded-lg p-4 shadow-sm">
+                <div className="text-2xl font-bold text-card-foreground">{currentHub.totalFlights}</div>
+                <div className="text-muted-foreground text-sm">Total Flights</div>
               </div>
-              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                <div className="text-2xl font-bold text-yellow-600">{currentHub.avgDelayMinutes}m</div>
-                <div className="text-gray-600 text-sm">Avg Delay</div>
+              <div className="bg-va-card bg-card border border-border rounded-lg p-4 shadow-sm">
+                <div className="text-2xl font-bold text-va-amber">{currentHub.avgDelayMinutes}m</div>
+                <div className="text-muted-foreground text-sm">Avg Delay</div>
               </div>
-              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                <div className="text-2xl font-bold text-green-600">{currentHub.onTimeFlights}</div>
-                <div className="text-gray-600 text-sm">On Time</div>
+              <div className="bg-va-card bg-card border border-border rounded-lg p-4 shadow-sm">
+                <div className="text-2xl font-bold text-va-green">{currentHub.onTimeFlights}</div>
+                <div className="text-muted-foreground text-sm">On Time</div>
               </div>
-              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                <div className="text-2xl font-bold text-red-600">{currentHub.delayedFlights + currentHub.cancelledFlights}</div>
-                <div className="text-gray-600 text-sm">Disrupted</div>
+              <div className="bg-va-card bg-card border border-border rounded-lg p-4 shadow-sm">
+                <div className="text-2xl font-bold text-va-red">{currentHub.delayedFlights + currentHub.cancelledFlights}</div>
+                <div className="text-muted-foreground text-sm">Disrupted</div>
               </div>
             </div>
           </div>
 
           {/* Recent Flights */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-gray-900">Recent Operations</h4>
+            <h4 className="text-lg font-semibold text-card-foreground">Recent Operations</h4>
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {currentHub.recentFlights.map((flight, index) => (
-                <div key={index} className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                <div key={index} className="va-card bg-card border border-border rounded-lg p-3 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`w-2 h-2 rounded-full ${
-                        flight.status === 'on-time' ? 'bg-green-500' :
-                        flight.status === 'delayed' ? 'bg-yellow-500' : 'bg-red-500'
+                        flight.status === 'on-time' ? 'bg-va-green' :
+                        flight.status === 'delayed' ? 'bg-va-amber' : 'bg-va-red'
                       }`}></div>
                       <div>
-                        <div className="font-bold text-gray-900">{flight.flightNumber}</div>
-                        <div className="text-gray-600 text-sm">{flight.route}</div>
+                        <div className="font-bold text-card-foreground">{flight.flightNumber}</div>
+                        <div className="text-muted-foreground text-sm">{flight.route}</div>
                       </div>
                     </div>
                     <div className="text-right">
@@ -451,17 +451,17 @@ export default function OnTimePerformanceDashboard() {
                          flight.status === 'cancelled' ? 'CANCELLED' :
                          `${flight.actualTime} (+${flight.delayMinutes}m)`}
                       </div>
-                      <div className="text-gray-500 text-xs">{flight.aircraft}</div>
+                      <div className="text-muted-foreground text-xs">{flight.aircraft}</div>
                     </div>
                   </div>
                   <div className="flex items-center justify-between mt-2">
                     {flight.gate && (
-                      <div className="text-gray-500 text-xs">Gate {flight.gate}</div>
+                      <div className="text-muted-foreground text-xs">Gate {flight.gate}</div>
                     )}
                     {flight.delayCode && flight.delayReason && (
                       <div className="text-right">
-                        <div className="text-yellow-400 text-xs font-mono">Code: {flight.delayCode}</div>
-                        <div className="text-gray-400 text-xs max-w-48 truncate" title={flight.delayReason}>
+                        <div className="text-va-amber text-xs font-mono">Code: {flight.delayCode}</div>
+                        <div className="text-muted-foreground text-xs max-w-48 truncate" title={flight.delayReason}>
                           {flight.delayReason}
                         </div>
                       </div>

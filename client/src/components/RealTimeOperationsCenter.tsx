@@ -183,27 +183,27 @@ export default function RealTimeOperationsCenter() {
   // Show API configuration needed state
   if (!loading && flights.length === 0) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="va-theme p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-white">Virgin Atlantic Operations Center</h1>
-            <p className="text-gray-300">Real-time operational status and alerts</p>
+            <h1 className="text-2xl font-bold text-card-foreground">Virgin Atlantic Operations Center</h1>
+            <p className="text-muted-foreground">Real-time operational status and alerts</p>
           </div>
         </div>
         
         <div className="flex items-center justify-center h-96">
-          <Card className="bg-gray-800 border-gray-700 max-w-md">
+          <Card className="va-card bg-card border-border max-w-md">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-card-foreground flex items-center gap-2">
                 <span>⚠️</span>
                 Aviation Data Not Available
               </CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardDescription className="text-muted-foreground">
                 Real-time flight data requires valid Aviation Stack API credentials
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="text-sm text-gray-300">
+              <div className="text-sm text-card-foreground">
                 <p>Current API has reached monthly usage limit. To continue with live Virgin Atlantic flight data:</p>
                 <ol className="list-decimal list-inside mt-2 space-y-1">
                   <li>Visit aviationstack.com</li>
@@ -211,12 +211,12 @@ export default function RealTimeOperationsCenter() {
                   <li>Get your new API access key</li>
                   <li>Provide the key using the API Setup button</li>
                 </ol>
-                <div className="mt-3 p-2 bg-blue-900/20 rounded text-xs text-blue-300">
+                <div className="mt-3 p-2 aero-status-info rounded text-xs">
                   System now filters to show only Virgin Atlantic operated flights (VS callsigns), excluding codeshare flights from other operators.
                 </div>
               </div>
-              <Alert className="bg-blue-900/20 border-blue-600">
-                <AlertDescription className="text-blue-300">
+              <Alert className="aero-status-info">
+                <AlertDescription className="text-card-foreground">
                   Once configured, this dashboard will display real-time Virgin Atlantic flight positions, 
                   operational alerts, and airport status information.
                 </AlertDescription>
@@ -229,99 +229,99 @@ export default function RealTimeOperationsCenter() {
   }
 
   return (
-    <div className="p-6 space-y-6 max-h-full overflow-y-auto">
+    <div className="va-theme p-6 space-y-6 max-h-full overflow-y-auto">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-white">Virgin Atlantic Operations Center</h1>
-          <p className="text-gray-300">Real-time operational status and alerts</p>
+          <h1 className="text-2xl font-bold text-card-foreground">Virgin Atlantic Operations Center</h1>
+          <p className="text-muted-foreground">Real-time operational status and alerts</p>
         </div>
-        <div className="text-sm text-gray-400">
+        <div className="text-sm text-muted-foreground">
           Last updated: {lastUpdate.toLocaleTimeString()}
         </div>
       </div>
 
       {/* Key Metrics */}
       <div className="grid grid-cols-4 gap-4">
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="va-card bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-gray-300">Active Flights</CardTitle>
+            <CardTitle className="text-sm text-va-blue">Active Flights</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{flights.length}</div>
-            <p className="text-xs text-gray-400">Virgin Atlantic aircraft</p>
+            <div className="text-2xl font-bold text-card-foreground">{flights.length}</div>
+            <p className="text-xs text-muted-foreground">Virgin Atlantic aircraft</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="va-card bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-gray-300">Active Alerts</CardTitle>
+            <CardTitle className="text-sm text-va-blue">Active Alerts</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-400">{alerts.length}</div>
-            <p className="text-xs text-gray-400">Operational disruptions</p>
+            <div className="text-2xl font-bold text-va-amber">{alerts.length}</div>
+            <p className="text-xs text-muted-foreground">Operational disruptions</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="va-card bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-gray-300">Hub Airports</CardTitle>
+            <CardTitle className="text-sm text-va-blue">Hub Airports</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-400">
+            <div className="text-2xl font-bold text-va-green">
               {airports.filter(a => a.status === 'operational').length}
             </div>
-            <p className="text-xs text-gray-400">Operational status</p>
+            <p className="text-xs text-muted-foreground">Operational status</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="va-card bg-card border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-gray-300">On-Time Performance</CardTitle>
+            <CardTitle className="text-sm text-va-blue">On-Time Performance</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-400">87%</div>
-            <p className="text-xs text-gray-400">Last 24 hours</p>
+            <div className="text-2xl font-bold text-va-blue">87%</div>
+            <p className="text-xs text-muted-foreground">Last 24 hours</p>
           </CardContent>
         </Card>
       </div>
 
       <Tabs defaultValue="alerts" className="space-y-4">
-        <TabsList className="bg-gray-800 border-gray-700">
-          <TabsTrigger value="alerts" className="data-[state=active]:bg-gray-700">Active Alerts</TabsTrigger>
-          <TabsTrigger value="flights" className="data-[state=active]:bg-gray-700">Live Flights</TabsTrigger>
-          <TabsTrigger value="airports" className="data-[state=active]:bg-gray-700">Airport Status</TabsTrigger>
+        <TabsList className="bg-muted border-border">
+          <TabsTrigger value="alerts" className="data-[state=active]:bg-background">Active Alerts</TabsTrigger>
+          <TabsTrigger value="flights" className="data-[state=active]:bg-background">Live Flights</TabsTrigger>
+          <TabsTrigger value="airports" className="data-[state=active]:bg-background">Airport Status</TabsTrigger>
         </TabsList>
 
         <TabsContent value="alerts" className="space-y-4">
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="va-card bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white">Operational Alerts</CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardTitle className="text-card-foreground">Operational Alerts</CardTitle>
+              <CardDescription className="text-muted-foreground">
                 Current disruptions and operational issues
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {alerts.map((alert) => (
-                <Alert key={alert.id} className="bg-gray-700 border-gray-600">
+                <Alert key={alert.id} className="va-card bg-card border-border">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge className={getSeverityColor(alert.severity)}>
                           {alert.severity.toUpperCase()}
                         </Badge>
-                        <Badge variant="outline" className="text-gray-300 border-gray-500">
+                        <Badge variant="outline" className="text-muted-foreground border-border">
                           {alert.type.toUpperCase()}
                         </Badge>
                       </div>
-                      <h4 className="font-semibold text-white">{alert.title}</h4>
-                      <AlertDescription className="text-gray-300 mt-1">
+                      <h4 className="font-semibold text-card-foreground">{alert.title}</h4>
+                      <AlertDescription className="text-card-foreground mt-1">
                         {alert.description}
                       </AlertDescription>
-                      <p className="text-xs text-gray-400 mt-2">
+                      <p className="text-xs text-muted-foreground mt-2">
                         Affected flights: {alert.affectedFlights.length}
                       </p>
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-muted-foreground">
                       {new Date(alert.timestamp).toLocaleTimeString()}
                     </div>
                   </div>
@@ -332,27 +332,27 @@ export default function RealTimeOperationsCenter() {
         </TabsContent>
 
         <TabsContent value="flights" className="space-y-4">
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="va-card bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white">Live Flight Tracking</CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardTitle className="text-card-foreground">Live Flight Tracking</CardTitle>
+              <CardDescription className="text-muted-foreground">
                 Real-time Virgin Atlantic fleet positions
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-3">
                 {flights.slice(0, 10).map((flight) => (
-                  <div key={flight.callsign} className="flex justify-between items-center p-3 bg-gray-700 rounded-lg">
+                  <div key={flight.callsign} className="flex justify-between items-center p-3 bg-muted rounded-lg">
                     <div className="flex items-center gap-4">
-                      <div className="font-mono text-white font-bold">{flight.callsign}</div>
-                      <div className="text-gray-300">
+                      <div className="font-mono text-card-foreground font-bold">{flight.callsign}</div>
+                      <div className="text-card-foreground">
                         {flight.origin} → {flight.destination}
                       </div>
                       <Badge className={getStatusColor('active')}>
                         {flight.status || 'EN ROUTE'}
                       </Badge>
                     </div>
-                    <div className="text-right text-sm text-gray-400">
+                    <div className="text-right text-sm text-muted-foreground">
                       <div>Alt: {flight.altitude.toLocaleString()}ft</div>
                       <div>Speed: {flight.velocity}kts</div>
                     </div>
@@ -364,48 +364,48 @@ export default function RealTimeOperationsCenter() {
         </TabsContent>
 
         <TabsContent value="airports" className="space-y-4">
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="va-card bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white">Hub Airport Status</CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardTitle className="text-card-foreground">Hub Airport Status</CardTitle>
+              <CardDescription className="text-muted-foreground">
                 Operational status at Virgin Atlantic hub airports
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
                 {airports.map((airport) => (
-                  <div key={airport.code} className="p-4 bg-gray-700 rounded-lg">
+                  <div key={airport.code} className="p-4 bg-muted rounded-lg">
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-bold text-white">{airport.code}</h3>
+                          <h3 className="font-bold text-card-foreground">{airport.code}</h3>
                           <Badge className={getStatusColor(airport.status)}>
                             {airport.status.toUpperCase()}
                           </Badge>
                         </div>
-                        <p className="text-gray-300 text-sm">{airport.name}</p>
-                        <div className="mt-2 text-xs text-gray-400">
+                        <p className="text-card-foreground text-sm">{airport.name}</p>
+                        <div className="mt-2 text-xs text-muted-foreground">
                           <div>Runways: {airport.activeRunways}/{airport.totalRunways} active</div>
                           <div>Weather: {airport.weather.condition}</div>
                           <div>Visibility: {airport.weather.visibility}km</div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm text-gray-300">
+                        <div className="text-sm text-card-foreground">
                           {airport.weather.temperature}°C
                         </div>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-muted-foreground">
                           Wind: {airport.weather.windSpeed}kt
                         </div>
                         {airport.status === 'delayed' && (
-                          <div className="text-xs text-orange-400 mt-1">
+                          <div className="text-xs text-va-amber mt-1">
                             Avg delay: {airport.delayMinutes}min
                           </div>
                         )}
                       </div>
                     </div>
                     <div className="mt-3">
-                      <div className="flex justify-between text-xs text-gray-400 mb-1">
+                      <div className="flex justify-between text-xs text-muted-foreground mb-1">
                         <span>Runway Capacity</span>
                         <span>{Math.round((airport.activeRunways / airport.totalRunways) * 100)}%</span>
                       </div>
