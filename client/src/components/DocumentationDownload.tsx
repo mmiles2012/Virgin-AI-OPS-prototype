@@ -87,9 +87,9 @@ const DocumentationDownload: React.FC = () => {
 
   if (loading) {
     return (
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className="bg-card border-border">
         <CardContent className="flex items-center justify-center p-8">
-          <div className="text-gray-300">Loading documentation files...</div>
+          <div className="text-muted-foreground">Loading documentation files...</div>
         </CardContent>
       </Card>
     );
@@ -97,32 +97,32 @@ const DocumentationDownload: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <Package className="w-5 h-5" />
             AINO Documentation Package
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+            <div className="bg-aero-blue-primary/10 border border-blue-500/30 rounded-lg p-4">
               <h3 className="text-blue-300 font-medium mb-2">Complete Documentation Package</h3>
-              <p className="text-gray-300 text-sm mb-3">
+              <p className="text-muted-foreground text-sm mb-3">
                 Download the complete AINO Documentation Package (43.6 KB) containing all manuals, 
                 TRI Command Centre files, and installation guides.
               </p>
               <Button 
                 onClick={downloadPackage}
                 disabled={downloading === 'package'}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-aero-blue-primary hover:bg-aero-blue-light text-foreground"
               >
                 <Download className="w-4 h-4 mr-2" />
                 {downloading === 'package' ? 'Downloading...' : 'Download Complete Package'}
               </Button>
             </div>
             
-            <div className="text-gray-400 text-sm">
+            <div className="text-muted-foreground text-sm">
               <strong>Package Contents:</strong>
               <ul className="mt-1 ml-4 list-disc">
                 <li>AINO Operators Manual (Version 2.2)</li>
@@ -136,9 +136,9 @@ const DocumentationDownload: React.FC = () => {
         </CardContent>
       </Card>
 
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <FileText className="w-5 h-5" />
             Individual Files
           </CardTitle>
@@ -148,9 +148,9 @@ const DocumentationDownload: React.FC = () => {
             {files.map((file, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
                 <div className="flex-1">
-                  <div className="text-white font-medium">{file.name}</div>
-                  <div className="text-gray-400 text-sm">{file.description}</div>
-                  <div className="text-gray-500 text-xs">{file.size}</div>
+                  <div className="text-foreground font-medium">{file.name}</div>
+                  <div className="text-muted-foreground text-sm">{file.description}</div>
+                  <div className="text-foreground0 text-xs">{file.size}</div>
                 </div>
                 <div className="flex gap-2">
                   {file.name.endsWith('.md') && (
@@ -158,7 +158,7 @@ const DocumentationDownload: React.FC = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => viewFile(file.name)}
-                      className="border-gray-600 text-gray-300 hover:bg-gray-600"
+                      className="border-border text-muted-foreground hover:bg-gray-600"
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
@@ -167,7 +167,7 @@ const DocumentationDownload: React.FC = () => {
                     size="sm"
                     onClick={() => downloadFile(file.name)}
                     disabled={downloading === file.name}
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className="bg-green-600 hover:bg-green-700 text-foreground"
                   >
                     <Download className="w-4 h-4" />
                   </Button>
@@ -178,9 +178,9 @@ const DocumentationDownload: React.FC = () => {
         </CardContent>
       </Card>
 
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className="bg-card border-border">
         <CardContent className="p-4">
-          <div className="text-center text-gray-400 text-sm">
+          <div className="text-center text-muted-foreground text-sm">
             <strong>TRI Command Centre Quick Start:</strong><br />
             Extract package → Run "streamlit run enhanced_tri_command_centre.py --server.port 8502"
           </div>

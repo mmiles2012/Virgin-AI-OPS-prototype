@@ -121,40 +121,40 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
 
   const getStatusIcon = (result: ApiTestResult | undefined, isLoading: boolean) => {
     if (isLoading) {
-      return <RefreshCw className="w-5 h-5 text-blue-400 animate-spin" />;
+      return <RefreshCw className="w-5 h-5 text-aero-blue-primary animate-spin" />;
     }
     
     if (!result) {
-      return <AlertTriangle className="w-5 h-5 text-gray-400" />;
+      return <AlertTriangle className="w-5 h-5 text-muted-foreground" />;
     }
     
     return result.success 
-      ? <CheckCircle className="w-5 h-5 text-green-400" />
-      : <XCircle className="w-5 h-5 text-red-400" />;
+      ? <CheckCircle className="w-5 h-5 text-aero-green-safe" />
+      : <XCircle className="w-5 h-5 text-va-red-primary" />;
   };
 
   const getStatusColor = (result: ApiTestResult | undefined, isLoading: boolean) => {
-    if (isLoading) return 'border-blue-500/50 bg-blue-900/20';
-    if (!result) return 'border-gray-600/50 bg-gray-900/20';
+    if (isLoading) return 'border-blue-500/50 bg-aero-blue-primary/10';
+    if (!result) return 'border-border/50 bg-card/20';
     return result.success 
-      ? 'border-green-500/50 bg-green-900/20'
-      : 'border-red-500/50 bg-red-900/20';
+      ? 'border-green-500/50 bg-aero-green-safe/10'
+      : 'border-red-500/50 bg-va-red-primary/10';
   };
 
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-white mb-2">Aviation API Testing Center</h2>
-          <p className="text-gray-300 text-sm">
+          <h2 className="text-xl font-bold text-foreground mb-2">Aviation API Testing Center</h2>
+          <p className="text-muted-foreground text-sm">
             Test and verify all aviation data sources for the AINO platform
           </p>
         </div>
         <button
           onClick={testAllApis}
           disabled={isTestingAll}
-          className={`flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 
-                     text-white rounded-lg transition-colors ${isTestingAll ? 'cursor-not-allowed' : ''}`}
+          className={`flex items-center gap-2 px-4 py-2 bg-aero-blue-primary hover:bg-aero-blue-light disabled:bg-blue-800 
+                     text-foreground rounded-lg transition-colors ${isTestingAll ? 'cursor-not-allowed' : ''}`}
         >
           <Zap className={`w-4 h-4 ${isTestingAll ? 'animate-pulse' : ''}`} />
           {isTestingAll ? 'Testing All APIs...' : 'Test All APIs'}
@@ -175,15 +175,15 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
                 <div className="flex items-center gap-3">
                   {getStatusIcon(result, isLoading)}
                   <div>
-                    <h3 className="font-semibold text-white">{api.name}</h3>
-                    <p className="text-sm text-gray-300">{api.description}</p>
+                    <h3 className="font-semibold text-foreground">{api.name}</h3>
+                    <p className="text-sm text-muted-foreground">{api.description}</p>
                   </div>
                 </div>
                 <button
                   onClick={() => testApi(api.endpoint, api.key)}
                   disabled={isLoading}
                   className={`flex items-center gap-2 px-3 py-1 bg-gray-700 hover:bg-gray-600 
-                             disabled:bg-gray-800 text-white rounded text-sm transition-colors
+                             disabled:bg-card text-foreground rounded text-sm transition-colors
                              ${isLoading ? 'cursor-not-allowed' : ''}`}
                 >
                   <RefreshCw className={`w-3 h-3 ${isLoading ? 'animate-spin' : ''}`} />
@@ -192,18 +192,18 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
               </div>
 
               {result && (
-                <div className="mt-3 p-3 bg-black/30 rounded border border-gray-700/50">
+                <div className="mt-3 p-3 bg-black/30 rounded border border-border/50">
                   <div className="flex items-center gap-2 mb-2">
                     <span className={`text-sm font-medium ${
-                      result.success ? 'text-green-400' : 'text-red-400'
+                      result.success ? 'text-aero-green-safe' : 'text-va-red-primary'
                     }`}>
                       {result.success ? 'SUCCESS' : 'FAILED'}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-300 mb-2">{result.message}</p>
+                  <p className="text-sm text-muted-foreground mb-2">{result.message}</p>
                   
                   {result.data && (
-                    <div className="text-xs text-gray-400 space-y-1">
+                    <div className="text-xs text-muted-foreground space-y-1">
                       {result.data.flights_found && (
                         <div>✈️ Flights Found: {result.data.flights_found}</div>
                       )}
@@ -211,8 +211,8 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
                         <div>📊 API Credits Used: {result.data.api_credits_used}</div>
                       )}
                       {result.data.sample_flight && (
-                        <div className="mt-2 p-2 bg-gray-800/50 rounded">
-                          <div className="text-gray-300 font-medium">Sample Flight:</div>
+                        <div className="mt-2 p-2 bg-card/50 rounded">
+                          <div className="text-muted-foreground font-medium">Sample Flight:</div>
                           <div>Flight: {result.data.sample_flight.flight_number}</div>
                           <div>Aircraft: {result.data.sample_flight.aircraft}</div>
                           <div>Route: {result.data.sample_flight.departure} → {result.data.sample_flight.arrival}</div>
@@ -229,17 +229,17 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
       </div>
 
       {cacheStats && (
-        <div className="mt-6 p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
+        <div className="mt-6 p-4 bg-aero-green-safe/10 border border-green-500/30 rounded-lg">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Database className="w-4 h-4 text-green-400" />
-              <span className="text-sm font-medium text-green-400">Flight Data Cache</span>
+              <Database className="w-4 h-4 text-aero-green-safe" />
+              <span className="text-sm font-medium text-aero-green-safe">Flight Data Cache</span>
             </div>
             <button
               onClick={clearCache}
               disabled={isClearingCache}
-              className={`flex items-center gap-1 px-2 py-1 bg-red-600 hover:bg-red-700 disabled:bg-red-800 
-                         text-white rounded text-xs transition-colors ${isClearingCache ? 'cursor-not-allowed' : ''}`}
+              className={`flex items-center gap-1 px-2 py-1 bg-va-red-primary hover:bg-va-red-heritage disabled:bg-red-800 
+                         text-foreground rounded text-xs transition-colors ${isClearingCache ? 'cursor-not-allowed' : ''}`}
             >
               <Trash2 className={`w-3 h-3 ${isClearingCache ? 'animate-pulse' : ''}`} />
               {isClearingCache ? 'Clearing...' : 'Clear'}
@@ -247,33 +247,33 @@ export const ApiTestingCenter: React.FC<ApiTestingCenterProps> = () => {
           </div>
           <div className="grid grid-cols-2 gap-4 text-xs">
             <div>
-              <div className="text-gray-300">Total Requests: <span className="text-white">{cacheStats.totalRequests}</span></div>
-              <div className="text-gray-300">Cache Hits: <span className="text-green-400">{cacheStats.cacheHits}</span></div>
-              <div className="text-gray-300">Cache Misses: <span className="text-red-400">{cacheStats.cacheMisses}</span></div>
+              <div className="text-muted-foreground">Total Requests: <span className="text-foreground">{cacheStats.totalRequests}</span></div>
+              <div className="text-muted-foreground">Cache Hits: <span className="text-aero-green-safe">{cacheStats.cacheHits}</span></div>
+              <div className="text-muted-foreground">Cache Misses: <span className="text-va-red-primary">{cacheStats.cacheMisses}</span></div>
             </div>
             <div>
-              <div className="text-gray-300">Hit Rate: <span className="text-blue-400">{cacheStats.hitRate}%</span></div>
-              <div className="text-gray-300">Cache Size: <span className="text-white">{cacheStats.cacheSize}</span></div>
-              <div className="text-gray-300">API Calls Today: <span className="text-yellow-400">{cacheStats.apiCallsToday}</span></div>
+              <div className="text-muted-foreground">Hit Rate: <span className="text-aero-blue-primary">{cacheStats.hitRate}%</span></div>
+              <div className="text-muted-foreground">Cache Size: <span className="text-foreground">{cacheStats.cacheSize}</span></div>
+              <div className="text-muted-foreground">API Calls Today: <span className="text-aero-amber-caution">{cacheStats.apiCallsToday}</span></div>
             </div>
           </div>
         </div>
       )}
 
-      <div className="mt-6 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+      <div className="mt-6 p-4 bg-aero-blue-primary/10 border border-blue-500/30 rounded-lg">
         <div className="flex items-center gap-2 mb-2">
-          <Plane className="w-4 h-4 text-blue-400" />
-          <span className="text-sm font-medium text-blue-400">Aviation Data Sources</span>
+          <Plane className="w-4 h-4 text-aero-blue-primary" />
+          <span className="text-sm font-medium text-aero-blue-primary">Aviation Data Sources</span>
         </div>
-        <p className="text-xs text-gray-300">
+        <p className="text-xs text-muted-foreground">
           AINO uses OpenSky Network as the primary source for real-time Virgin Atlantic flight tracking, 
           with Aviation Stack as backup. The intelligent caching system ensures continuous data availability 
           even when APIs reach usage limits. Mapbox provides satellite imagery for precise flight visualization.
         </p>
         {(testResults.opensky?.success === false && testResults.aviationStack?.success === false) && (
           <div className="mt-3 p-2 bg-yellow-900/30 border border-yellow-500/50 rounded text-xs">
-            <div className="text-yellow-400 font-medium mb-1">⚠️ API Rate Limits Detected</div>
-            <div className="text-gray-300">
+            <div className="text-aero-amber-caution font-medium mb-1">⚠️ API Rate Limits Detected</div>
+            <div className="text-muted-foreground">
               Both aviation APIs are currently rate-limited. The system is serving cached Virgin Atlantic 
               flight data to maintain training continuity. Fresh data will resume when API limits reset.
             </div>

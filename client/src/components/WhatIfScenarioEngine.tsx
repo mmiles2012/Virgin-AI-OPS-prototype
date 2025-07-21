@@ -705,7 +705,7 @@ export default function WhatIfScenarioEngine() {
                     className={`p-4 rounded-lg border cursor-pointer transition-colors ${
                       selectedFlight?.id === flight.id
                         ? 'border-yellow-500 bg-yellow-500/10'
-                        : 'border-gray-600 hover:border-gray-500'
+                        : 'border-border hover:border-gray-500'
                     }`}
                     onClick={() => setSelectedFlight(flight)}
                   >
@@ -736,26 +736,26 @@ export default function WhatIfScenarioEngine() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-gray-400">Flight Number</Label>
-                      <p className="text-white">{selectedFlight.flightNumber}</p>
+                      <Label className="text-muted-foreground">Flight Number</Label>
+                      <p className="text-foreground">{selectedFlight.flightNumber}</p>
                     </div>
                     <div>
-                      <Label className="text-gray-400">Aircraft</Label>
-                      <p className="text-white">{selectedFlight.aircraft}</p>
+                      <Label className="text-muted-foreground">Aircraft</Label>
+                      <p className="text-foreground">{selectedFlight.aircraft}</p>
                     </div>
                     <div>
-                      <Label className="text-gray-400">Route</Label>
-                      <p className="text-white">{selectedFlight.route}</p>
+                      <Label className="text-muted-foreground">Route</Label>
+                      <p className="text-foreground">{selectedFlight.route}</p>
                     </div>
                     <div>
-                      <Label className="text-gray-400">Altitude</Label>
-                      <p className="text-white">{selectedFlight.altitude.toLocaleString()} ft</p>
+                      <Label className="text-muted-foreground">Altitude</Label>
+                      <p className="text-foreground">{selectedFlight.altitude.toLocaleString()} ft</p>
                     </div>
                   </div>
                   <Button
                     onClick={calculateScenario}
                     disabled={isCalculating}
-                    className="w-full bg-yellow-600 hover:bg-yellow-700 text-white"
+                    className="w-full bg-yellow-600 hover:bg-yellow-700 text-foreground"
                   >
                     {isCalculating ? 'Calculating...' : 'Run Scenario Analysis'}
                   </Button>
@@ -891,7 +891,7 @@ export default function WhatIfScenarioEngine() {
                     {modifications.failureLocation?.type === 'coordinates' && 
                      modifications.failureLocation?.latitude && 
                      modifications.failureLocation?.longitude && (
-                      <p className="text-sm text-gray-300">
+                      <p className="text-sm text-muted-foreground">
                         {modifications.failureLocation.latitude.toFixed(4)}°N, {Math.abs(modifications.failureLocation.longitude).toFixed(4)}°{modifications.failureLocation.longitude < 0 ? 'W' : 'E'}
                       </p>
                     )}
@@ -945,15 +945,15 @@ export default function WhatIfScenarioEngine() {
                     <div className="grid grid-cols-3 gap-2 text-xs">
                       <div>
                         <Label className="text-va-deep-space">Fuel Impact</Label>
-                        <p className="text-red-400">+{scenario.fuel_burn_penalty}%</p>
+                        <p className="text-va-red-primary">+{scenario.fuel_burn_penalty}%</p>
                       </div>
                       <div>
                         <Label className="text-va-deep-space">Time Impact</Label>
-                        <p className="text-yellow-400">+{scenario.time_penalty}min</p>
+                        <p className="text-aero-amber-caution">+{scenario.time_penalty}min</p>
                       </div>
                       <div>
                         <Label className="text-va-deep-space">Cost Impact</Label>
-                        <p className="text-orange-400">{scenario.cost_multiplier}x</p>
+                        <p className="text-aero-orange-alert">{scenario.cost_multiplier}x</p>
                       </div>
                     </div>
                   </div>
@@ -1051,7 +1051,7 @@ export default function WhatIfScenarioEngine() {
                     </div>
                     <div className="flex justify-between items-center p-3 bg-va-white rounded">
                       <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-yellow-400" />
+                        <Clock className="w-4 h-4 text-aero-amber-caution" />
                         <span className="text-va-midnight">Flight Time</span>
                       </div>
                       <div className="text-right">
@@ -1063,7 +1063,7 @@ export default function WhatIfScenarioEngine() {
                     </div>
                     <div className="flex justify-between items-center p-3 bg-va-white rounded">
                       <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-green-400" />
+                        <DollarSign className="w-4 h-4 text-aero-green-safe" />
                         <span className="text-va-midnight">Operational Cost</span>
                       </div>
                       <div className="text-right">
@@ -1086,19 +1086,19 @@ export default function WhatIfScenarioEngine() {
                   {modifications.failureLocation?.type !== 'current' && (
                     <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded">
                       <div className="flex items-center gap-2 mb-2">
-                        <MapPin className="w-4 h-4 text-blue-400" />
-                        <span className="text-blue-400 font-medium">Failure Location</span>
+                        <MapPin className="w-4 h-4 text-aero-blue-primary" />
+                        <span className="text-aero-blue-primary font-medium">Failure Location</span>
                       </div>
-                      <p className="text-sm text-gray-300">
+                      <p className="text-sm text-muted-foreground">
                         {getLocationInfo(modifications.failureLocation)}
                       </p>
                       {modifications.failureLocation?.type === 'waypoint' && (
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Flight plan waypoint - consider impact on route and fuel planning
                         </p>
                       )}
                       {modifications.failureLocation?.type === 'coordinates' && (
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Custom coordinates - verify proximity to alternate airports
                         </p>
                       )}
@@ -1175,7 +1175,7 @@ export default function WhatIfScenarioEngine() {
               {!selectedFlight ? (
                 <Button
                   onClick={() => setActiveTab('flight-selection')}
-                  className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                  className="bg-yellow-600 hover:bg-yellow-700 text-foreground"
                 >
                   Select Flight
                 </Button>
@@ -1183,7 +1183,7 @@ export default function WhatIfScenarioEngine() {
                 <Button
                   onClick={calculateScenario}
                   disabled={isCalculating}
-                  className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                  className="bg-yellow-600 hover:bg-yellow-700 text-foreground"
                 >
                   {isCalculating ? (
                     <>
@@ -1224,7 +1224,7 @@ export default function WhatIfScenarioEngine() {
                       </div>
                       <div>
                         <Label className="text-va-cosmic-grey">Fuel Required</Label>
-                        <p className="text-white">{calculateFuelPercentage('A350-1000', 25)}%</p>
+                        <p className="text-foreground">{calculateFuelPercentage('A350-1000', 25)}%</p>
                       </div>
                       <div>
                         <Label className="text-va-cosmic-grey">Runway Length</Label>
@@ -1262,7 +1262,7 @@ export default function WhatIfScenarioEngine() {
               <p className="text-va-cosmic-grey mb-4">Configure failure scenarios that require diversion to see options</p>
               <Button
                 onClick={() => setActiveTab('failure-scenarios')}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-va-red-primary hover:bg-va-red-heritage text-foreground"
               >
                 <AlertTriangle className="w-4 h-4 mr-2" />
                 Configure Failures
@@ -1303,7 +1303,7 @@ export default function WhatIfScenarioEngine() {
                     </div>
                     <div className="p-4 bg-va-white rounded-lg">
                       <Label className="text-va-cosmic-grey">Improvement Trend</Label>
-                      <p className="text-lg font-semibold text-green-400">{learningStats.improvement_trend}</p>
+                      <p className="text-lg font-semibold text-aero-green-safe">{learningStats.improvement_trend}</p>
                     </div>
                     <div className="p-4 bg-va-white rounded-lg">
                       <Label className="text-va-cosmic-grey">Last Update</Label>
@@ -1357,7 +1357,7 @@ export default function WhatIfScenarioEngine() {
                   <Button
                     onClick={triggerSelfLearningCycle}
                     disabled={learningActive}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="bg-aero-blue-primary hover:bg-aero-blue-light text-foreground"
                   >
                     {learningActive ? (
                       <>
@@ -1374,7 +1374,7 @@ export default function WhatIfScenarioEngine() {
                   <Button
                     onClick={fetchLearningStats}
                     variant="outline"
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                    className="border-border text-muted-foreground hover:bg-muted"
                   >
                     <Activity className="w-4 h-4 mr-2" />
                     Refresh Stats

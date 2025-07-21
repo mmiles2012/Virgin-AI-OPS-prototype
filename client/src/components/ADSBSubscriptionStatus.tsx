@@ -38,7 +38,7 @@ export default function ADSBSubscriptionStatus() {
 
   if (isLoading) {
     return (
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className="bg-card border-border">
         <CardContent className="p-4">
           <div className="flex items-center gap-2 text-slate-300">
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -52,16 +52,16 @@ export default function ADSBSubscriptionStatus() {
   if (!status) return null;
 
   return (
-    <Card className="bg-slate-800 border-slate-700">
+    <Card className="bg-card border-border">
       <CardContent className="p-4">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             {status.subscription_active ? (
-              <CheckCircle className="w-5 h-5 text-green-400" />
+              <CheckCircle className="w-5 h-5 text-aero-green-safe" />
             ) : (
-              <AlertTriangle className="w-5 h-5 text-orange-400" />
+              <AlertTriangle className="w-5 h-5 text-aero-orange-alert" />
             )}
-            <h3 className="text-white font-semibold">
+            <h3 className="text-foreground font-semibold">
               ADS-B Exchange Status
             </h3>
           </div>
@@ -73,13 +73,13 @@ export default function ADSBSubscriptionStatus() {
           </p>
           
           {status.subscription_active && (
-            <div className="text-xs text-green-400 mt-1">
+            <div className="text-xs text-aero-green-safe mt-1">
               ✓ Subscription confirmed working - authentic flight data integration active
             </div>
           )}
 
           {!status.subscription_active && (
-            <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-3">
+            <div className="bg-aero-green-safe/10 border border-green-500/30 rounded-lg p-3">
               <p className="text-green-200 text-sm mb-3">
                 ADS-B Exchange Integration Status:
               </p>
@@ -103,7 +103,7 @@ export default function ADSBSubscriptionStatus() {
           
           <button
             onClick={checkSubscriptionStatus}
-            className="text-slate-300 hover:text-white text-xs underline"
+            className="text-slate-300 hover:text-foreground text-xs underline"
           >
             Refresh Status
           </button>

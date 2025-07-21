@@ -143,9 +143,9 @@ export default function VirginAtlanticFleetMonitor() {
   const selectedAircraftData = fleetData.find(a => a.registration === selectedFlightRegistration);
 
   const getHealthColor = (score: number) => {
-    if (score >= 90) return 'text-green-400';
-    if (score >= 75) return 'text-yellow-400';
-    return 'text-red-400';
+    if (score >= 90) return 'text-aero-green-safe';
+    if (score >= 75) return 'text-aero-amber-caution';
+    return 'text-va-red-primary';
   };
 
   const getStatusBadge = (status: string) => {
@@ -168,8 +168,8 @@ export default function VirginAtlanticFleetMonitor() {
     return (
       <Card className="aviation-panel">
         <CardContent className="flex items-center justify-center py-8">
-          <Activity className="h-8 w-8 animate-spin text-blue-400" />
-          <span className="ml-2 text-white">Loading Virgin Atlantic Fleet Data...</span>
+          <Activity className="h-8 w-8 animate-spin text-aero-blue-primary" />
+          <span className="ml-2 text-foreground">Loading Virgin Atlantic Fleet Data...</span>
         </CardContent>
       </Card>
     );
@@ -179,11 +179,11 @@ export default function VirginAtlanticFleetMonitor() {
     return (
       <Card className="aviation-panel">
         <CardContent className="flex flex-col items-center justify-center py-8">
-          <AlertTriangle className="h-8 w-8 text-red-400 mb-2" />
-          <span className="text-red-400 text-center">{error}</span>
+          <AlertTriangle className="h-8 w-8 text-va-red-primary mb-2" />
+          <span className="text-va-red-primary text-center">{error}</span>
           <button 
             onClick={() => window.location.reload()} 
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="mt-4 px-4 py-2 bg-aero-blue-primary text-foreground rounded hover:bg-aero-blue-light"
           >
             Retry
           </button>
@@ -196,8 +196,8 @@ export default function VirginAtlanticFleetMonitor() {
     return (
       <Card className="aviation-panel">
         <CardContent className="flex flex-col items-center justify-center py-8">
-          <Plane className="h-8 w-8 text-gray-400 mb-2" />
-          <span className="text-gray-400">No fleet data available</span>
+          <Plane className="h-8 w-8 text-muted-foreground mb-2" />
+          <span className="text-muted-foreground">No fleet data available</span>
         </CardContent>
       </Card>
     );
@@ -207,14 +207,14 @@ export default function VirginAtlanticFleetMonitor() {
     <div className="space-y-6">
       <Card className="aviation-panel">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <Plane className="h-5 w-5" />
             Virgin Atlantic Fleet Intelligence
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4 bg-gray-800/50">
+            <TabsList className="grid w-full grid-cols-4 bg-card/50">
               <TabsTrigger value="overview">Fleet Overview</TabsTrigger>
               <TabsTrigger value="health">Health Monitor</TabsTrigger>
               <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
@@ -223,25 +223,25 @@ export default function VirginAtlanticFleetMonitor() {
 
             <TabsContent value="overview" className="space-y-4">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-gray-800/50 rounded p-3">
+                <div className="bg-card/50 rounded p-3">
                   <div className="text-blue-300 text-sm">Total Aircraft</div>
-                  <div className="text-2xl font-bold text-white">{fleetData.length}</div>
+                  <div className="text-2xl font-bold text-foreground">{fleetData.length}</div>
                 </div>
-                <div className="bg-gray-800/50 rounded p-3">
+                <div className="bg-card/50 rounded p-3">
                   <div className="text-blue-300 text-sm">Operational</div>
-                  <div className="text-2xl font-bold text-green-400">
+                  <div className="text-2xl font-bold text-aero-green-safe">
                     {fleetData.filter(a => a.status === 'Operational').length}
                   </div>
                 </div>
-                <div className="bg-gray-800/50 rounded p-3">
+                <div className="bg-card/50 rounded p-3">
                   <div className="text-blue-300 text-sm">Avg Health Score</div>
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-2xl font-bold text-foreground">
                     {fleetData.length > 0 ? Math.round(fleetData.reduce((sum, a) => sum + a.health_score, 0) / fleetData.length) : 0}%
                   </div>
                 </div>
-                <div className="bg-gray-800/50 rounded p-3">
+                <div className="bg-card/50 rounded p-3">
                   <div className="text-blue-300 text-sm">Active Warnings</div>
-                  <div className="text-2xl font-bold text-yellow-400">
+                  <div className="text-2xl font-bold text-aero-amber-caution">
                     {fleetData.reduce((sum, a) => sum + (a.real_time_data?.current_warnings?.length || 0), 0)}
                   </div>
                 </div>
@@ -249,7 +249,7 @@ export default function VirginAtlanticFleetMonitor() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-white font-medium">Fleet Status</h3>
+                  <h3 className="text-foreground font-medium">Fleet Status</h3>
                   {selectedFlightRegistration && (
                     <div className="flex items-center gap-2">
                       <div className="text-xs text-blue-300">
@@ -257,7 +257,7 @@ export default function VirginAtlanticFleetMonitor() {
                       </div>
                       <button
                         onClick={clearSelection}
-                        className="text-gray-400 hover:text-white transition-colors text-xs underline"
+                        className="text-muted-foreground hover:text-foreground transition-colors text-xs underline"
                       >
                         Clear Selection
                       </button>
@@ -267,8 +267,8 @@ export default function VirginAtlanticFleetMonitor() {
                 {fleetData.map(aircraft => (
                   <div 
                     key={aircraft.registration}
-                    className={`bg-gray-800/30 rounded p-3 cursor-pointer transition-colors ${
-                      selectedFlightRegistration === aircraft.registration ? 'bg-blue-900/50 border border-blue-600' : 'hover:bg-gray-800/50'
+                    className={`bg-card/30 rounded p-3 cursor-pointer transition-colors ${
+                      selectedFlightRegistration === aircraft.registration ? 'bg-blue-900/50 border border-aero-blue-primary/30' : 'hover:bg-card/50'
                     }`}
                     onClick={() => {
                       // Use centralized flight selection for cross-dashboard synchronization
@@ -302,8 +302,8 @@ export default function VirginAtlanticFleetMonitor() {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="text-white font-mono">{aircraft.registration}</div>
-                        <div className="text-gray-400">{aircraft.aircraft_type}</div>
+                        <div className="text-foreground font-mono">{aircraft.registration}</div>
+                        <div className="text-muted-foreground">{aircraft.aircraft_type}</div>
                         <div className="text-blue-300 text-sm">{aircraft.current_flight}</div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -313,7 +313,7 @@ export default function VirginAtlanticFleetMonitor() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-gray-400 text-sm mt-1">{aircraft.route}</div>
+                    <div className="text-muted-foreground text-sm mt-1">{aircraft.route}</div>
                   </div>
                 ))}
               </div>
@@ -322,8 +322,8 @@ export default function VirginAtlanticFleetMonitor() {
             <TabsContent value="health" className="space-y-4">
               {selectedAircraftData && (
                 <div className="space-y-4">
-                  <div className="bg-gray-800/50 rounded p-4">
-                    <h3 className="text-white font-medium mb-3">
+                  <div className="bg-card/50 rounded p-4">
+                    <h3 className="text-foreground font-medium mb-3">
                       {selectedAircraftData.registration} - {selectedAircraftData.aircraft_type}
                     </h3>
                     
@@ -344,7 +344,7 @@ export default function VirginAtlanticFleetMonitor() {
                           value={selectedAircraftData.fuel_efficiency} 
                           className="mt-1"
                         />
-                        <div className="text-sm mt-1 text-green-400">
+                        <div className="text-sm mt-1 text-aero-green-safe">
                           {selectedAircraftData.fuel_efficiency}%
                         </div>
                       </div>
@@ -357,7 +357,7 @@ export default function VirginAtlanticFleetMonitor() {
                           value={selectedAircraftData.engine_health.engine1_health} 
                           className="mt-1"
                         />
-                        <div className="text-sm mt-1 text-white">
+                        <div className="text-sm mt-1 text-foreground">
                           {selectedAircraftData.engine_health.engine1_health}%
                         </div>
                       </div>
@@ -367,7 +367,7 @@ export default function VirginAtlanticFleetMonitor() {
                           value={selectedAircraftData.engine_health.engine2_health} 
                           className="mt-1"
                         />
-                        <div className="text-sm mt-1 text-white">
+                        <div className="text-sm mt-1 text-foreground">
                           {selectedAircraftData.engine_health.engine2_health}%
                         </div>
                       </div>
@@ -375,10 +375,10 @@ export default function VirginAtlanticFleetMonitor() {
 
                     {selectedAircraftData.real_time_data?.current_warnings && selectedAircraftData.real_time_data.current_warnings.length > 0 && (
                       <div className="mt-4">
-                        <h4 className="text-yellow-400 text-sm font-medium mb-2">Active Warnings</h4>
+                        <h4 className="text-aero-amber-caution text-sm font-medium mb-2">Active Warnings</h4>
                         {selectedAircraftData.real_time_data.current_warnings.map((warning, index) => (
-                          <Alert key={index} className="border-yellow-600/50 bg-yellow-900/20 mb-2">
-                            <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                          <Alert key={index} className="border-aero-amber-caution/30/50 bg-aero-amber-caution/10 mb-2">
+                            <AlertTriangle className="h-4 w-4 text-aero-amber-caution" />
                             <AlertDescription className="text-yellow-300">
                               {warning}
                             </AlertDescription>
@@ -395,47 +395,47 @@ export default function VirginAtlanticFleetMonitor() {
               {selectedAircraftData && (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <Card className="bg-gray-800/30">
+                    <Card className="bg-card/30">
                       <CardContent className="pt-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <Wrench className="h-4 w-4 text-blue-400" />
+                          <Wrench className="h-4 w-4 text-aero-blue-primary" />
                           <span className="text-blue-300 text-sm">Maintenance Schedule</span>
                         </div>
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Days until next maintenance:</span>
-                            <span className="text-white">{selectedAircraftData.maintenance_due_days}</span>
+                            <span className="text-muted-foreground text-sm">Days until next maintenance:</span>
+                            <span className="text-foreground">{selectedAircraftData.maintenance_due_days}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Last inspection:</span>
-                            <span className="text-white">{selectedAircraftData.last_inspection}</span>
+                            <span className="text-muted-foreground text-sm">Last inspection:</span>
+                            <span className="text-foreground">{selectedAircraftData.last_inspection}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Next maintenance:</span>
-                            <span className="text-white">{selectedAircraftData.next_maintenance}</span>
+                            <span className="text-muted-foreground text-sm">Next maintenance:</span>
+                            <span className="text-foreground">{selectedAircraftData.next_maintenance}</span>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
 
-                    <Card className="bg-gray-800/30">
+                    <Card className="bg-card/30">
                       <CardContent className="pt-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <Clock className="h-4 w-4 text-blue-400" />
+                          <Clock className="h-4 w-4 text-aero-blue-primary" />
                           <span className="text-blue-300 text-sm">Utilization Data</span>
                         </div>
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Flight hours:</span>
-                            <span className="text-white">{selectedAircraftData.flight_hours.toLocaleString()}</span>
+                            <span className="text-muted-foreground text-sm">Flight hours:</span>
+                            <span className="text-foreground">{selectedAircraftData.flight_hours.toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Flight cycles:</span>
-                            <span className="text-white">{selectedAircraftData.cycles.toLocaleString()}</span>
+                            <span className="text-muted-foreground text-sm">Flight cycles:</span>
+                            <span className="text-foreground">{selectedAircraftData.cycles.toLocaleString()}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Engine hours:</span>
-                            <span className="text-white">{selectedAircraftData.engine_health.total_hours.toLocaleString()}</span>
+                            <span className="text-muted-foreground text-sm">Engine hours:</span>
+                            <span className="text-foreground">{selectedAircraftData.engine_health.total_hours.toLocaleString()}</span>
                           </div>
                         </div>
                       </CardContent>
@@ -447,38 +447,38 @@ export default function VirginAtlanticFleetMonitor() {
 
             <TabsContent value="analytics" className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
-                <Card className="bg-gray-800/30">
+                <Card className="bg-card/30">
                   <CardContent className="pt-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="h-4 w-4 text-green-400" />
+                      <TrendingUp className="h-4 w-4 text-aero-green-safe" />
                       <span className="text-blue-300 text-sm">Fleet Efficiency</span>
                     </div>
-                    <div className="text-2xl font-bold text-green-400 mb-1">
+                    <div className="text-2xl font-bold text-aero-green-safe mb-1">
                       {fleetData.length > 0 ? Math.round(fleetData.reduce((sum, a) => sum + a.fuel_efficiency, 0) / fleetData.length) : 0}%
                     </div>
-                    <div className="text-gray-400 text-xs">Average fuel efficiency</div>
+                    <div className="text-muted-foreground text-xs">Average fuel efficiency</div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gray-800/30">
+                <Card className="bg-card/30">
                   <CardContent className="pt-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle className="h-4 w-4 text-blue-400" />
+                      <CheckCircle className="h-4 w-4 text-aero-blue-primary" />
                       <span className="text-blue-300 text-sm">Reliability</span>
                     </div>
-                    <div className="text-2xl font-bold text-white mb-1">97.8%</div>
-                    <div className="text-gray-400 text-xs">On-time performance</div>
+                    <div className="text-2xl font-bold text-foreground mb-1">97.8%</div>
+                    <div className="text-muted-foreground text-xs">On-time performance</div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gray-800/30">
+                <Card className="bg-card/30">
                   <CardContent className="pt-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Fuel className="h-4 w-4 text-yellow-400" />
+                      <Fuel className="h-4 w-4 text-aero-amber-caution" />
                       <span className="text-blue-300 text-sm">Cost Savings</span>
                     </div>
-                    <div className="text-2xl font-bold text-yellow-400 mb-1">£2.4M</div>
-                    <div className="text-gray-400 text-xs">This quarter</div>
+                    <div className="text-2xl font-bold text-aero-amber-caution mb-1">£2.4M</div>
+                    <div className="text-muted-foreground text-xs">This quarter</div>
                   </CardContent>
                 </Card>
               </div>

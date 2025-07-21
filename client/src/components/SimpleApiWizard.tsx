@@ -143,30 +143,30 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Settings className="h-12 w-12 text-blue-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">Aviation API Services</h3>
-              <p className="text-gray-300">
+              <Settings className="h-12 w-12 text-aero-blue-primary mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">Aviation API Services</h3>
+              <p className="text-muted-foreground">
                 Connect to real-time aviation data sources for live flight tracking and operational intelligence
               </p>
             </div>
 
             <div className="grid gap-4">
               {apiServices.map((service) => (
-                <div key={service.id} className="bg-gray-800/50 border border-gray-600 rounded-lg p-6">
+                <div key={service.id} className="bg-card/50 border border-border rounded-lg p-6">
                   <div className="flex items-start gap-4">
-                    <div className="text-blue-400">{service.icon}</div>
+                    <div className="text-aero-blue-primary">{service.icon}</div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-white">{service.name}</h4>
+                        <h4 className="font-semibold text-foreground">{service.name}</h4>
                         <div className="flex items-center gap-2">
-                          {service.status === 'connected' && <CheckCircle className="h-5 w-5 text-green-500" />}
-                          {service.status === 'error' && <XCircle className="h-5 w-5 text-red-500" />}
-                          {service.status === 'testing' && <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />}
+                          {service.status === 'connected' && <CheckCircle className="h-5 w-5 text-aero-green-safe" />}
+                          {service.status === 'error' && <XCircle className="h-5 w-5 text-va-red-primary" />}
+                          {service.status === 'testing' && <Loader2 className="h-5 w-5 text-aero-blue-primary animate-spin" />}
                           <span className={`text-sm ${
-                            service.status === 'connected' ? 'text-green-400' :
-                            service.status === 'error' ? 'text-red-400' :
-                            service.status === 'testing' ? 'text-blue-400' :
-                            'text-gray-400'
+                            service.status === 'connected' ? 'text-aero-green-safe' :
+                            service.status === 'error' ? 'text-va-red-primary' :
+                            service.status === 'testing' ? 'text-aero-blue-primary' :
+                            'text-muted-foreground'
                           }`}>
                             {service.status === 'connected' ? 'Connected' :
                              service.status === 'error' ? 'Error' :
@@ -175,7 +175,7 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
                           </span>
                         </div>
                       </div>
-                      <p className="text-gray-300 text-sm mb-3">{service.description}</p>
+                      <p className="text-muted-foreground text-sm mb-3">{service.description}</p>
                       <div className="flex flex-wrap gap-2 mb-4">
                         {service.features.map((feature, index) => (
                           <span
@@ -192,7 +192,7 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
                           testApiConnection(service);
                         }}
                         disabled={service.status === 'testing'}
-                        className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="w-full px-4 py-2 bg-aero-blue-primary text-foreground rounded hover:bg-aero-blue-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
                         {service.status === 'testing' ? (
                           <span className="flex items-center justify-center gap-2">
@@ -215,9 +215,9 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Globe className="h-12 w-12 text-blue-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">Test API Connections</h3>
-              <p className="text-gray-300">
+              <Globe className="h-12 w-12 text-aero-blue-primary mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">Test API Connections</h3>
+              <p className="text-muted-foreground">
                 Verify API connections and test data retrieval capabilities
               </p>
             </div>
@@ -229,7 +229,7 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
                   testAllConnections();
                 }}
                 disabled={isTestingAll}
-                className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-6 py-3 bg-aero-blue-primary text-foreground rounded hover:bg-aero-blue-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isTestingAll ? (
                   <span className="flex items-center gap-2">
@@ -244,21 +244,21 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
 
             <div className="space-y-4">
               {testResults.map((result, index) => (
-                <div key={index} className="bg-gray-800/50 border border-gray-600 rounded-lg p-4">
+                <div key={index} className="bg-card/50 border border-border rounded-lg p-4">
                   <div className="flex items-center gap-3 mb-2">
                     {result.success ? (
-                      <CheckCircle className="h-5 w-5 text-green-500" />
+                      <CheckCircle className="h-5 w-5 text-aero-green-safe" />
                     ) : (
-                      <XCircle className="h-5 w-5 text-red-500" />
+                      <XCircle className="h-5 w-5 text-va-red-primary" />
                     )}
-                    <h4 className="font-semibold text-white">{result.service}</h4>
+                    <h4 className="font-semibold text-foreground">{result.service}</h4>
                   </div>
-                  <p className={`text-sm ${result.success ? 'text-green-400' : 'text-red-400'}`}>
+                  <p className={`text-sm ${result.success ? 'text-aero-green-safe' : 'text-va-red-primary'}`}>
                     {result.message}
                   </p>
                   {result.data && (
-                    <div className="mt-3 p-3 bg-gray-900/50 rounded text-xs">
-                      <pre className="text-gray-300 overflow-x-auto">
+                    <div className="mt-3 p-3 bg-card/50 rounded text-xs">
+                      <pre className="text-muted-foreground overflow-x-auto">
                         {JSON.stringify(result.data, null, 2)}
                       </pre>
                     </div>
@@ -274,52 +274,52 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">Integration Complete</h3>
-              <p className="text-gray-300">
+              <CheckCircle className="h-12 w-12 text-aero-green-safe mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">Integration Complete</h3>
+              <p className="text-muted-foreground">
                 Successfully connected {connectedServices.length} of {apiServices.length} aviation data services
               </p>
             </div>
 
-            <div className="bg-green-900/20 border border-green-600 rounded-lg p-6">
+            <div className="bg-aero-green-safe/10 border border-aero-green-safe/30 rounded-lg p-6">
               <h4 className="font-semibold text-green-300 mb-4">Active Services:</h4>
               <div className="space-y-3">
                 {connectedServices.map((service) => (
                   <div key={service.id} className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-green-500" />
-                    <div className="text-green-400">{service.icon}</div>
-                    <span className="text-white">{service.name}</span>
+                    <CheckCircle className="h-5 w-5 text-aero-green-safe" />
+                    <div className="text-aero-green-safe">{service.icon}</div>
+                    <span className="text-foreground">{service.name}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="bg-blue-900/20 border border-blue-600 rounded-lg p-6">
+            <div className="bg-aero-blue-primary/10 border border-aero-blue-primary/30 rounded-lg p-6">
               <h4 className="font-semibold text-blue-300 mb-4">Available Features:</h4>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-white">Real-time Flight Tracking</span>
+                  <CheckCircle className="h-4 w-4 text-aero-green-safe" />
+                  <span className="text-sm text-foreground">Real-time Flight Tracking</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-white">Live Aircraft Positions</span>
+                  <CheckCircle className="h-4 w-4 text-aero-green-safe" />
+                  <span className="text-sm text-foreground">Live Aircraft Positions</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-white">Airport Information</span>
+                  <CheckCircle className="h-4 w-4 text-aero-green-safe" />
+                  <span className="text-sm text-foreground">Airport Information</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-white">Weather Data</span>
+                  <CheckCircle className="h-4 w-4 text-aero-green-safe" />
+                  <span className="text-sm text-foreground">Weather Data</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-white">Satellite Imagery</span>
+                  <CheckCircle className="h-4 w-4 text-aero-green-safe" />
+                  <span className="text-sm text-foreground">Satellite Imagery</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <span className="text-sm text-white">Flight Path Tracking</span>
+                  <CheckCircle className="h-4 w-4 text-aero-green-safe" />
+                  <span className="text-sm text-foreground">Flight Path Tracking</span>
                 </div>
               </div>
             </div>
@@ -333,19 +333,19 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-gray-900 border border-gray-700 rounded-xl">
-        <div className="border-b border-gray-700 p-6">
+      <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-card border border-border rounded-xl">
+        <div className="border-b border-border p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-white">API Integration Wizard</h2>
-              <p className="text-gray-400 mt-1">{steps[currentStep].description}</p>
+              <h2 className="text-2xl font-bold text-foreground">API Integration Wizard</h2>
+              <p className="text-muted-foreground mt-1">{steps[currentStep].description}</p>
             </div>
             <button 
               onClick={() => {
                 console.log('Close (X) button clicked');
                 onClose();
               }}
-              className="text-gray-400 hover:text-white p-2 hover:bg-gray-800 rounded transition-colors"
+              className="text-muted-foreground hover:text-foreground p-2 hover:bg-card rounded transition-colors"
             >
               ✕
             </button>
@@ -358,15 +358,15 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                     index <= currentStep
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-700 text-gray-300'
+                      ? 'bg-aero-blue-primary text-foreground'
+                      : 'bg-gray-700 text-muted-foreground'
                   }`}
                 >
                   {index + 1}
                 </div>
                 <div className="ml-2 text-sm">
                   <div className={`font-medium ${
-                    index <= currentStep ? 'text-white' : 'text-gray-400'
+                    index <= currentStep ? 'text-foreground' : 'text-muted-foreground'
                   }`}>
                     {step.title}
                   </div>
@@ -374,7 +374,7 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
                 {index < steps.length - 1 && (
                   <div
                     className={`w-12 h-0.5 mx-2 ${
-                      index < currentStep ? 'bg-blue-600' : 'bg-gray-700'
+                      index < currentStep ? 'bg-aero-blue-primary' : 'bg-gray-700'
                     }`}
                   />
                 )}
@@ -387,14 +387,14 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
           {renderStep()}
         </div>
 
-        <div className="border-t border-gray-700 p-6 flex justify-between">
+        <div className="border-t border-border p-6 flex justify-between">
           <button
             onClick={() => {
               console.log('Previous button clicked, currentStep:', currentStep);
               setCurrentStep(Math.max(0, currentStep - 1));
             }}
             disabled={currentStep === 0}
-            className="px-4 py-2 border border-gray-600 text-gray-300 rounded hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 border border-border text-muted-foreground rounded hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Previous
           </button>
@@ -405,7 +405,7 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
                 console.log('Next button clicked, currentStep:', currentStep);
                 setCurrentStep(Math.min(steps.length - 1, currentStep + 1));
               }}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-aero-blue-primary text-foreground rounded hover:bg-aero-blue-light transition-colors"
             >
               Next
             </button>
@@ -415,7 +415,7 @@ export default function SimpleApiWizard({ onClose }: { onClose: () => void }) {
                 console.log('Complete Integration button clicked');
                 onClose();
               }}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+              className="px-4 py-2 bg-green-600 text-foreground rounded hover:bg-green-700 transition-colors"
             >
               Complete Integration
             </button>

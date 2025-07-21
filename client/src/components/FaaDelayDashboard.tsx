@@ -104,15 +104,15 @@ export default function FaaDelayDashboard() {
   const formatDelay = (value: number) => `${(value / 60).toFixed(1)} mins`;
   const getDelayColor = (delayMinutes: number) => {
     if (delayMinutes < 2) return "bg-green-100 text-green-800";
-    if (delayMinutes < 5) return "bg-yellow-500 text-white";
-    return "bg-red-500 text-white";
+    if (delayMinutes < 5) return "bg-yellow-500 text-foreground";
+    return "bg-red-500 text-foreground";
   };
 
   const getCorrelationColor = (correlation: number) => {
     const abs = Math.abs(correlation);
     if (abs > 0.8) return "bg-purple-100 text-purple-800";
     if (abs > 0.6) return "bg-blue-100 text-blue-800";
-    if (abs > 0.4) return "bg-orange-500 text-white";
+    if (abs > 0.4) return "bg-orange-500 text-foreground";
     return "bg-gray-100 text-gray-800";
   };
 
@@ -171,7 +171,7 @@ export default function FaaDelayDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-gray-600">Loading US Aviation Data...</div>
+        <div className="text-lg text-muted-foreground">Loading US Aviation Data...</div>
       </div>
     );
   }
@@ -182,7 +182,7 @@ export default function FaaDelayDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">US Aviation Intelligence Dashboard</h2>
-        <Badge variant="outline" className="text-blue-600 border-blue-200">
+        <Badge variant="outline" className="text-aero-blue-dark border-blue-200">
           FAA Bureau of Transportation Statistics
         </Badge>
       </div>
@@ -234,7 +234,7 @@ export default function FaaDelayDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Total Operations</span>
+                    <span className="text-sm text-muted-foreground">Total Operations</span>
                     <span className="font-semibold">{record.total_ops.toLocaleString()}</span>
                   </div>
                   
@@ -313,7 +313,7 @@ export default function FaaDelayDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {Object.entries(correlationData.correlations).map(([key, value]) => (
                       <div key={key} className="p-3 border rounded-lg">
-                        <div className="text-sm text-gray-600 mb-1">
+                        <div className="text-sm text-muted-foreground mb-1">
                           {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </div>
                         <Badge className={getCorrelationColor(value)}>
@@ -337,13 +337,13 @@ export default function FaaDelayDashboard() {
                         <div className="flex items-center space-x-4">
                           <Badge variant="outline">Month {month.month}</Badge>
                           <div className="text-sm">
-                            <span className="text-blue-600 font-medium">US: {month.us_avg_delay_minutes} mins</span>
+                            <span className="text-aero-blue-dark font-medium">US: {month.us_avg_delay_minutes} mins</span>
                             <span className="mx-2">|</span>
                             <span className="text-purple-600 font-medium">UK: {month.uk_avg_delay_minutes} mins</span>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-600">Correlation:</span>
+                          <span className="text-sm text-muted-foreground">Correlation:</span>
                           <Badge className={getCorrelationColor(month.correlation_strength)}>
                             {month.correlation_strength.toFixed(3)}
                           </Badge>
@@ -371,19 +371,19 @@ export default function FaaDelayDashboard() {
                       <div className="text-2xl font-bold text-purple-600">
                         {correlationData.operational_insights.network_impact.transatlantic_correlation_strength}
                       </div>
-                      <div className="text-sm text-gray-600">Trans-Atlantic Correlation</div>
+                      <div className="text-sm text-muted-foreground">Trans-Atlantic Correlation</div>
                     </div>
                     <div className="text-center p-4 border rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">
+                      <div className="text-2xl font-bold text-aero-blue-dark">
                         {correlationData.operational_insights.network_impact.weather_pattern_correlation}
                       </div>
-                      <div className="text-sm text-gray-600">Weather Pattern Correlation</div>
+                      <div className="text-sm text-muted-foreground">Weather Pattern Correlation</div>
                     </div>
                     <div className="text-center p-4 border rounded-lg">
                       <div className="text-2xl font-bold text-green-600">
                         {correlationData.operational_insights.network_impact.operational_interdependence}
                       </div>
-                      <div className="text-sm text-gray-600">Operational Interdependence</div>
+                      <div className="text-sm text-muted-foreground">Operational Interdependence</div>
                     </div>
                   </div>
                 </CardContent>
@@ -405,7 +405,7 @@ export default function FaaDelayDashboard() {
                           <Badge variant="outline">{rec.category}</Badge>
                         </div>
                         <h4 className="font-semibold mb-2">{rec.recommendation}</h4>
-                        <p className="text-sm text-gray-600">{rec.implementation}</p>
+                        <p className="text-sm text-muted-foreground">{rec.implementation}</p>
                       </div>
                     ))}
                   </div>
@@ -420,20 +420,20 @@ export default function FaaDelayDashboard() {
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div className="p-3 border rounded">
-                      <div className="text-2xl font-bold text-blue-600">{correlationData.data_coverage.us_airports}</div>
-                      <div className="text-sm text-gray-600">US Airports</div>
+                      <div className="text-2xl font-bold text-aero-blue-dark">{correlationData.data_coverage.us_airports}</div>
+                      <div className="text-sm text-muted-foreground">US Airports</div>
                     </div>
                     <div className="p-3 border rounded">
                       <div className="text-2xl font-bold text-purple-600">{correlationData.data_coverage.uk_airports}</div>
-                      <div className="text-sm text-gray-600">UK Airports</div>
+                      <div className="text-sm text-muted-foreground">UK Airports</div>
                     </div>
                     <div className="p-3 border rounded">
                       <div className="text-2xl font-bold text-green-600">{correlationData.data_coverage.total_us_records}</div>
-                      <div className="text-sm text-gray-600">US Records</div>
+                      <div className="text-sm text-muted-foreground">US Records</div>
                     </div>
                     <div className="p-3 border rounded">
                       <div className="text-2xl font-bold text-orange-600">{correlationData.statistics.transatlantic_routes.length}</div>
-                      <div className="text-sm text-gray-600">Trans-Atlantic Routes</div>
+                      <div className="text-sm text-muted-foreground">Trans-Atlantic Routes</div>
                     </div>
                   </div>
                 </CardContent>
@@ -452,10 +452,10 @@ export default function FaaDelayDashboard() {
                     <button
                       onClick={handleTrainModel}
                       disabled={isTraining}
-                      className={`px-4 py-2 rounded-md text-white font-medium ${
+                      className={`px-4 py-2 rounded-md text-foreground font-medium ${
                         isTraining 
                           ? 'bg-gray-400 cursor-not-allowed' 
-                          : 'bg-blue-600 hover:bg-blue-700'
+                          : 'bg-aero-blue-primary hover:bg-aero-blue-light'
                       }`}
                     >
                       {isTraining ? 'Training...' : 'Train XGBoost Models'}
@@ -465,23 +465,23 @@ export default function FaaDelayDashboard() {
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="p-3 border rounded">
-                      <div className="text-2xl font-bold text-blue-600">{mlTrainingData.metadata?.total_records || 0}</div>
-                      <div className="text-sm text-gray-600">Training Records</div>
+                      <div className="text-2xl font-bold text-aero-blue-dark">{mlTrainingData.metadata?.total_records || 0}</div>
+                      <div className="text-sm text-muted-foreground">Training Records</div>
                     </div>
                     <div className="p-3 border rounded">
                       <div className="text-2xl font-bold text-green-600">{mlTrainingData.metadata?.airports?.length || 0}</div>
-                      <div className="text-sm text-gray-600">US Airports</div>
+                      <div className="text-sm text-muted-foreground">US Airports</div>
                     </div>
                     <div className="p-3 border rounded">
                       <div className="text-2xl font-bold text-purple-600">{mlTrainingData.metadata?.features?.length || 0}</div>
-                      <div className="text-sm text-gray-600">ML Features</div>
+                      <div className="text-sm text-muted-foreground">ML Features</div>
                     </div>
                     <div className="p-3 border rounded">
                       <div className="text-2xl font-bold text-orange-600">
                         {mlTrainingData.metadata?.risk_distribution ? 
                           Object.values(mlTrainingData.metadata.risk_distribution).reduce((a: number, b: number) => a + b, 0) : 0}
                       </div>
-                      <div className="text-sm text-gray-600">Risk Categories</div>
+                      <div className="text-sm text-muted-foreground">Risk Categories</div>
                     </div>
                   </div>
                 </CardContent>
@@ -506,25 +506,25 @@ export default function FaaDelayDashboard() {
                             <div className="text-3xl font-bold text-green-600">
                               {trainingResult.metrics?.["MAE: Total Delay (min)"]}
                             </div>
-                            <div className="text-sm text-gray-600 mt-1">Total Delay MAE (minutes)</div>
-                            <div className="text-xs text-gray-500 mt-1">Lower is better</div>
+                            <div className="text-sm text-muted-foreground mt-1">Total Delay MAE (minutes)</div>
+                            <div className="text-xs text-foreground0 mt-1">Lower is better</div>
                           </div>
                           <div className="text-center p-4 bg-white rounded-lg border">
-                            <div className="text-3xl font-bold text-blue-600">
+                            <div className="text-3xl font-bold text-aero-blue-dark">
                               {trainingResult.metrics?.["MAE: OTP %"]}%
                             </div>
-                            <div className="text-sm text-gray-600 mt-1">On-Time Performance MAE</div>
-                            <div className="text-xs text-gray-500 mt-1">Prediction accuracy</div>
+                            <div className="text-sm text-muted-foreground mt-1">On-Time Performance MAE</div>
+                            <div className="text-xs text-foreground0 mt-1">Prediction accuracy</div>
                           </div>
                           <div className="text-center p-4 bg-white rounded-lg border">
                             <div className="text-3xl font-bold text-purple-600">
                               {Math.round((trainingResult.metrics?.["Accuracy: Risk Category"] || 0) * 100)}%
                             </div>
-                            <div className="text-sm text-gray-600 mt-1">Risk Classification Accuracy</div>
-                            <div className="text-xs text-gray-500 mt-1">Green/Amber/Red categories</div>
+                            <div className="text-sm text-muted-foreground mt-1">Risk Classification Accuracy</div>
+                            <div className="text-xs text-foreground0 mt-1">Green/Amber/Red categories</div>
                           </div>
                         </div>
-                        <div className="mt-4 text-xs text-gray-500">
+                        <div className="mt-4 text-xs text-foreground0">
                           Training completed at {new Date(trainingResult.timestamp).toLocaleString()}
                         </div>
                       </div>
@@ -555,7 +555,7 @@ export default function FaaDelayDashboard() {
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <Badge className="bg-yellow-500 text-white">Amber Risk</Badge>
+                          <Badge className="bg-yellow-500 text-foreground">Amber Risk</Badge>
                           <span className="text-sm">Medium delay risk (15-25%)</span>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -568,7 +568,7 @@ export default function FaaDelayDashboard() {
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <Badge className="bg-red-500 text-white">Red Risk</Badge>
+                          <Badge className="bg-red-500 text-foreground">Red Risk</Badge>
                           <span className="text-sm">High delay risk (&gt; 25%)</span>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -595,31 +595,31 @@ export default function FaaDelayDashboard() {
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-3">
                             <Badge variant="outline">{record.airport}</Badge>
-                            <span className="text-sm text-gray-600">{record.month}/{record.year}</span>
+                            <span className="text-sm text-muted-foreground">{record.month}/{record.year}</span>
                           </div>
                           <Badge className={
                             record.delay_risk_category === 'Green' ? 'bg-green-100 text-green-800' :
-                            record.delay_risk_category === 'Amber' ? 'bg-yellow-500 text-white' :
-                            'bg-red-500 text-white'
+                            record.delay_risk_category === 'Amber' ? 'bg-yellow-500 text-foreground' :
+                            'bg-red-500 text-foreground'
                           }>
                             {record.delay_risk_category}
                           </Badge>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                           <div>
-                            <span className="text-gray-600">Total Ops:</span>
+                            <span className="text-muted-foreground">Total Ops:</span>
                             <span className="ml-1 font-medium">{record.total_ops?.toLocaleString()}</span>
                           </div>
                           <div>
-                            <span className="text-gray-600">OTP%:</span>
+                            <span className="text-muted-foreground">OTP%:</span>
                             <span className="ml-1 font-medium">{record.otp_percent}%</span>
                           </div>
                           <div>
-                            <span className="text-gray-600">Weather Delay:</span>
+                            <span className="text-muted-foreground">Weather Delay:</span>
                             <span className="ml-1 font-medium">{formatDelay(record.weather_delay)}</span>
                           </div>
                           <div>
-                            <span className="text-gray-600">Total Delay:</span>
+                            <span className="text-muted-foreground">Total Delay:</span>
                             <span className="ml-1 font-medium">{formatDelay(record.total_delay)}</span>
                           </div>
                         </div>
@@ -668,7 +668,7 @@ export default function FaaDelayDashboard() {
                     <button
                       onClick={handleWeatherTrainModel}
                       disabled={isWeatherTraining}
-                      className={`px-4 py-2 rounded-md text-white font-medium ${
+                      className={`px-4 py-2 rounded-md text-foreground font-medium ${
                         isWeatherTraining 
                           ? 'bg-gray-400 cursor-not-allowed' 
                           : 'bg-orange-600 hover:bg-orange-700'
@@ -681,7 +681,7 @@ export default function FaaDelayDashboard() {
                 <CardContent className="pt-4">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                     <div className="p-3 border rounded bg-blue-50">
-                      <div className="text-lg font-bold text-blue-600">9</div>
+                      <div className="text-lg font-bold text-aero-blue-dark">9</div>
                       <div className="text-xs text-blue-700">Airports with OGIMET</div>
                     </div>
                     <div className="p-3 border rounded bg-green-50">
@@ -742,14 +742,14 @@ export default function FaaDelayDashboard() {
                               <div className="text-2xl font-bold text-orange-600">
                                 {weatherTrainingResult.metrics ? weatherTrainingResult.metrics["MAE: Total Delay (min)"] : "892.4"}
                               </div>
-                              <div className="text-sm text-gray-600">Delay MAE (minutes)</div>
+                              <div className="text-sm text-muted-foreground">Delay MAE (minutes)</div>
                               <div className="text-xs text-green-600 mt-1">17.8% improvement</div>
                             </div>
                             <div className="text-center p-4 bg-white rounded-lg border">
-                              <div className="text-2xl font-bold text-blue-600">
+                              <div className="text-2xl font-bold text-aero-blue-dark">
                                 {weatherTrainingResult.metrics ? weatherTrainingResult.metrics["MAE: OTP %"] : "4.12"}
                               </div>
-                              <div className="text-sm text-gray-600">OTP MAE (%)</div>
+                              <div className="text-sm text-muted-foreground">OTP MAE (%)</div>
                               <div className="text-xs text-green-600 mt-1">21.8% improvement</div>
                             </div>
                             <div className="text-center p-4 bg-white rounded-lg border">
@@ -758,7 +758,7 @@ export default function FaaDelayDashboard() {
                                   (parseFloat(String(weatherTrainingResult.metrics["Accuracy: Risk Category"])) * 100).toFixed(1) + "%" 
                                   : "92.3%"}
                               </div>
-                              <div className="text-sm text-gray-600">Risk Classification</div>
+                              <div className="text-sm text-muted-foreground">Risk Classification</div>
                               <div className="text-xs text-green-600 mt-1">4.9% improvement</div>
                             </div>
                           </div>
@@ -769,19 +769,19 @@ export default function FaaDelayDashboard() {
                             <h4 className="text-blue-800 font-medium mb-3">Weather Impact Analysis</h4>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                               <div>
-                                <span className="text-blue-600">Weather Severity Avg:</span>
+                                <span className="text-aero-blue-dark">Weather Severity Avg:</span>
                                 <span className="ml-1 font-medium">{weatherTrainingResult.weather_analysis.weather_severity_avg?.toFixed(2)}</span>
                               </div>
                               <div>
-                                <span className="text-blue-600">High Impact Days:</span>
+                                <span className="text-aero-blue-dark">High Impact Days:</span>
                                 <span className="ml-1 font-medium">{weatherTrainingResult.weather_analysis.high_weather_impact_days}</span>
                               </div>
                               <div>
-                                <span className="text-blue-600">Weather-Delay Correlation:</span>
+                                <span className="text-aero-blue-dark">Weather-Delay Correlation:</span>
                                 <span className="ml-1 font-medium">{weatherTrainingResult.weather_analysis.weather_delay_correlation?.toFixed(3)}</span>
                               </div>
                               <div>
-                                <span className="text-blue-600">Precipitation Correlation:</span>
+                                <span className="text-aero-blue-dark">Precipitation Correlation:</span>
                                 <span className="ml-1 font-medium">{weatherTrainingResult.weather_analysis.precip_delay_correlation?.toFixed(3)}</span>
                               </div>
                             </div>
@@ -835,7 +835,7 @@ export default function FaaDelayDashboard() {
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
-                <div className="text-gray-500">Loading ML training data...</div>
+                <div className="text-foreground0">Loading ML training data...</div>
               </CardContent>
             </Card>
           )}

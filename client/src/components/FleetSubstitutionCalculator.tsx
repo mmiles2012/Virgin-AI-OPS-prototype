@@ -123,23 +123,23 @@ export default function FleetSubstitutionCalculator() {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 0.9) return 'text-green-500';
-    if (score >= 0.7) return 'text-yellow-500';
-    return 'text-red-500';
+    if (score >= 0.9) return 'text-aero-green-safe';
+    if (score >= 0.7) return 'text-aero-amber-caution';
+    return 'text-va-red-primary';
   };
 
   const getCostImpactColor = (percent: number) => {
-    if (percent < -5) return 'text-green-500';
-    if (percent > 10) return 'text-red-500';
-    return 'text-yellow-500';
+    if (percent < -5) return 'text-aero-green-safe';
+    if (percent > 10) return 'text-va-red-primary';
+    return 'text-aero-amber-caution';
   };
 
   if (!fleetData) {
     return (
       <div className="p-6">
         <div className="text-center">
-          <Plane className="mx-auto h-12 w-12 text-blue-500 animate-pulse" />
-          <p className="mt-4 text-gray-400">Loading Virgin Atlantic fleet data...</p>
+          <Plane className="mx-auto h-12 w-12 text-aero-blue-primary animate-pulse" />
+          <p className="mt-4 text-muted-foreground">Loading Virgin Atlantic fleet data...</p>
         </div>
       </div>
     );
@@ -149,14 +149,14 @@ export default function FleetSubstitutionCalculator() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Aircraft Substitution Calculator</h1>
-        <p className="text-gray-400">Analyze operational and financial impact when substituting aircraft types</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Aircraft Substitution Calculator</h1>
+        <p className="text-muted-foreground">Analyze operational and financial impact when substituting aircraft types</p>
       </div>
 
       {/* Configuration Panel */}
-      <Card className="bg-gray-800/50 border-gray-700">
+      <Card className="bg-card/50 border-border">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <Calculator className="h-5 w-5" />
             Substitution Parameters
           </CardTitle>
@@ -165,13 +165,13 @@ export default function FleetSubstitutionCalculator() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Aircraft Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Unavailable Aircraft
               </label>
               <select
                 value={selectedAircraft}
                 onChange={(e) => setSelectedAircraft(e.target.value)}
-                className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
+                className="w-full p-2 bg-gray-700 border border-border rounded text-foreground"
               >
                 {Object.entries(fleetData.fleet_specifications).map(([code, spec]) => (
                   <option key={code} value={code}>
@@ -183,7 +183,7 @@ export default function FleetSubstitutionCalculator() {
 
             {/* Load Factor */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Load Factor ({loadFactor}%)
               </label>
               <input
@@ -198,14 +198,14 @@ export default function FleetSubstitutionCalculator() {
 
             {/* Cargo Load */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Cargo Load (kg)
               </label>
               <input
                 type="number"
                 value={cargoLoad}
                 onChange={(e) => setCargoLoad(Number(e.target.value))}
-                className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
+                className="w-full p-2 bg-gray-700 border border-border rounded text-foreground"
                 min="0"
                 step="500"
               />
@@ -213,14 +213,14 @@ export default function FleetSubstitutionCalculator() {
 
             {/* Flight Duration */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-muted-foreground mb-2">
                 Flight Duration (hours)
               </label>
               <input
                 type="number"
                 value={flightDuration}
                 onChange={(e) => setFlightDuration(Number(e.target.value))}
-                className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
+                className="w-full p-2 bg-gray-700 border border-border rounded text-foreground"
                 min="1"
                 max="16"
                 step="0.5"
@@ -231,7 +231,7 @@ export default function FleetSubstitutionCalculator() {
           <Button
             onClick={analyzeSubstitution}
             disabled={loading || !selectedAircraft}
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            className="w-full bg-aero-blue-primary hover:bg-aero-blue-light"
           >
             {loading ? 'Analyzing...' : 'Calculate Substitution Options'}
           </Button>
@@ -240,41 +240,41 @@ export default function FleetSubstitutionCalculator() {
 
       {/* Error Display */}
       {error && (
-        <Alert className="border-red-500 bg-red-900/20">
+        <Alert className="border-red-500 bg-va-red-primary/10">
           <AlertTriangle className="h-4 w-4" />
-          <AlertDescription className="text-red-400">{error}</AlertDescription>
+          <AlertDescription className="text-va-red-primary">{error}</AlertDescription>
         </Alert>
       )}
 
       {/* Original Aircraft Info */}
       {selectedAircraft && fleetData.fleet_specifications[selectedAircraft] && (
-        <Card className="bg-gray-800/50 border-gray-700">
+        <Card className="bg-card/50 border-border">
           <CardHeader>
-            <CardTitle className="text-white">Original Aircraft Configuration</CardTitle>
+            <CardTitle className="text-foreground">Original Aircraft Configuration</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <p className="text-gray-400">Aircraft</p>
-                <p className="text-white font-semibold">
+                <p className="text-muted-foreground">Aircraft</p>
+                <p className="text-foreground font-semibold">
                   {fleetData.fleet_specifications[selectedAircraft].name}
                 </p>
               </div>
               <div>
-                <p className="text-gray-400">Total Seats</p>
-                <p className="text-white font-semibold">
+                <p className="text-muted-foreground">Total Seats</p>
+                <p className="text-foreground font-semibold">
                   {fleetData.fleet_specifications[selectedAircraft].total_pax}
                 </p>
               </div>
               <div>
-                <p className="text-gray-400">Operating Cost</p>
-                <p className="text-white font-semibold">
+                <p className="text-muted-foreground">Operating Cost</p>
+                <p className="text-foreground font-semibold">
                   ${fleetData.fleet_specifications[selectedAircraft].operating_cost_per_hour.toLocaleString()}/hr
                 </p>
               </div>
               <div>
-                <p className="text-gray-400">Cargo Capacity</p>
-                <p className="text-white font-semibold">
+                <p className="text-muted-foreground">Cargo Capacity</p>
+                <p className="text-foreground font-semibold">
                   {fleetData.fleet_specifications[selectedAircraft].cargo_capacity.toLocaleString()} kg
                 </p>
               </div>
@@ -286,14 +286,14 @@ export default function FleetSubstitutionCalculator() {
       {/* Analysis Results */}
       {analysis && (
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-white">Substitution Recommendations</h2>
+          <h2 className="text-2xl font-bold text-foreground">Substitution Recommendations</h2>
           
           {analysis.recommendations.map((rec, index) => (
-            <Card key={rec.aircraft_code} className="bg-gray-800/50 border-gray-700">
+            <Card key={rec.aircraft_code} className="bg-card/50 border-border">
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <span className="bg-blue-600 text-white px-2 py-1 rounded text-sm">
+                  <CardTitle className="text-foreground flex items-center gap-2">
+                    <span className="bg-aero-blue-primary text-foreground px-2 py-1 rounded text-sm">
                       #{index + 1}
                     </span>
                     {rec.aircraft_name} ({rec.aircraft_code})
@@ -309,11 +309,11 @@ export default function FleetSubstitutionCalculator() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Cost Impact */}
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-white flex items-center gap-2">
+                    <h4 className="font-semibold text-foreground flex items-center gap-2">
                       {rec.cost_impact.difference_usd >= 0 ? (
-                        <TrendingUp className="h-4 w-4 text-red-400" />
+                        <TrendingUp className="h-4 w-4 text-va-red-primary" />
                       ) : (
-                        <TrendingDown className="h-4 w-4 text-green-400" />
+                        <TrendingDown className="h-4 w-4 text-aero-green-safe" />
                       )}
                       Cost Impact
                     </h4>
@@ -323,7 +323,7 @@ export default function FleetSubstitutionCalculator() {
                         ${rec.cost_impact.difference_usd.toLocaleString()} 
                         ({rec.cost_impact.difference_percent > 0 ? '+' : ''}{rec.cost_impact.difference_percent.toFixed(1)}%)
                       </p>
-                      <p className="text-gray-400">
+                      <p className="text-muted-foreground">
                         ${rec.cost_impact.cost_per_passenger.toFixed(1)} per passenger per hour
                       </p>
                     </div>
@@ -331,27 +331,27 @@ export default function FleetSubstitutionCalculator() {
 
                   {/* Passenger Impact */}
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-white flex items-center gap-2">
+                    <h4 className="font-semibold text-foreground flex items-center gap-2">
                       {rec.passenger_impact.total_overflow > 0 ? (
-                        <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                        <AlertTriangle className="h-4 w-4 text-aero-amber-caution" />
                       ) : (
-                        <CheckCircle className="h-4 w-4 text-green-400" />
+                        <CheckCircle className="h-4 w-4 text-aero-green-safe" />
                       )}
                       Passenger Impact
                     </h4>
                     <div className="text-sm space-y-1">
                       {rec.passenger_impact.total_overflow > 0 ? (
-                        <p className="text-yellow-400">
+                        <p className="text-aero-amber-caution">
                           {rec.passenger_impact.total_overflow} passengers need rebooking
                         </p>
                       ) : rec.passenger_impact.total_underload > 0 ? (
-                        <p className="text-green-400">
+                        <p className="text-aero-green-safe">
                           {rec.passenger_impact.total_underload} spare seats available
                         </p>
                       ) : (
-                        <p className="text-green-400">Perfect capacity match</p>
+                        <p className="text-aero-green-safe">Perfect capacity match</p>
                       )}
-                      <p className="text-gray-400">
+                      <p className="text-muted-foreground">
                         Utilization: {(rec.passenger_impact.capacity_utilization * 100).toFixed(1)}%
                       </p>
                     </div>
@@ -359,25 +359,25 @@ export default function FleetSubstitutionCalculator() {
 
                   {/* Cargo Impact */}
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-white flex items-center gap-2">
+                    <h4 className="font-semibold text-foreground flex items-center gap-2">
                       {rec.cargo_impact.capacity_difference_kg >= 0 ? (
-                        <CheckCircle className="h-4 w-4 text-green-400" />
+                        <CheckCircle className="h-4 w-4 text-aero-green-safe" />
                       ) : (
-                        <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                        <AlertTriangle className="h-4 w-4 text-aero-amber-caution" />
                       )}
                       Cargo Impact
                     </h4>
                     <div className="text-sm space-y-1">
-                      <p className={rec.cargo_impact.capacity_difference_kg >= 0 ? 'text-green-400' : 'text-yellow-400'}>
+                      <p className={rec.cargo_impact.capacity_difference_kg >= 0 ? 'text-aero-green-safe' : 'text-aero-amber-caution'}>
                         {rec.cargo_impact.capacity_difference_kg >= 0 ? '+' : ''}
                         {rec.cargo_impact.capacity_difference_kg.toLocaleString()} kg capacity
                       </p>
                       {rec.cargo_impact.cargo_overflow > 0 && (
-                        <p className="text-red-400">
+                        <p className="text-va-red-primary">
                           {rec.cargo_impact.cargo_overflow.toLocaleString()} kg overflow
                         </p>
                       )}
-                      <p className="text-gray-400">
+                      <p className="text-muted-foreground">
                         Efficiency: {(rec.cargo_impact.cargo_efficiency * 100).toFixed(1)}%
                       </p>
                     </div>
@@ -386,14 +386,14 @@ export default function FleetSubstitutionCalculator() {
 
                 {/* Class Breakdown */}
                 {rec.passenger_impact.total_overflow > 0 && (
-                  <div className="mt-4 p-3 bg-yellow-900/20 border border-yellow-600 rounded">
-                    <h5 className="text-yellow-400 font-semibold mb-2">Class-wise Overflow</h5>
+                  <div className="mt-4 p-3 bg-aero-amber-caution/10 border border-aero-amber-caution/30 rounded">
+                    <h5 className="text-aero-amber-caution font-semibold mb-2">Class-wise Overflow</h5>
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       {Object.entries(rec.passenger_impact.class_breakdown).map(([className, impact]) => (
                         impact.overflow > 0 && (
                           <div key={className}>
-                            <p className="text-gray-300 capitalize">{className.replace('_', ' ')}</p>
-                            <p className="text-yellow-400">{impact.overflow} passengers</p>
+                            <p className="text-muted-foreground capitalize">{className.replace('_', ' ')}</p>
+                            <p className="text-aero-amber-caution">{impact.overflow} passengers</p>
                           </div>
                         )
                       ))}

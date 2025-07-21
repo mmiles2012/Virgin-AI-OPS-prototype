@@ -211,9 +211,9 @@ const AIOperationsCenter: React.FC = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle className="w-4 h-4 text-green-400" />;
-      case 'processing': return <Loader className="w-4 h-4 text-yellow-400 animate-spin" />;
-      default: return <Clock className="w-4 h-4 text-gray-400" />;
+      case 'completed': return <CheckCircle className="w-4 h-4 text-aero-green-safe" />;
+      case 'processing': return <Loader className="w-4 h-4 text-aero-amber-caution animate-spin" />;
+      default: return <Clock className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
@@ -230,7 +230,7 @@ const AIOperationsCenter: React.FC = () => {
             <Plane className="w-8 h-8 text-va-red-primary" />
             AI Aircraft Diversion Operations Center
           </h1>
-          <p className="text-gray-600">Automated Hotel Booking System for Emergency Diversions</p>
+          <p className="text-muted-foreground">Automated Hotel Booking System for Emergency Diversions</p>
           <div className="text-sm text-green-600 font-medium mt-2">🟢 Integrated with AINO Platform</div>
         </div>
 
@@ -247,7 +247,7 @@ const AIOperationsCenter: React.FC = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-2">Flight Number</label>
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">Flight Number</label>
                   <input
                     type="text"
                     value={flightNumber}
@@ -261,7 +261,7 @@ const AIOperationsCenter: React.FC = () => {
                   <select
                     value={aircraft}
                     onChange={(e) => setAircraft(e.target.value)}
-                    className="w-full p-3 bg-white/20 border border-white/30 rounded-lg text-white"
+                    className="w-full p-3 bg-white/20 border border-white/30 rounded-lg text-foreground"
                   >
                     <option value="A330">Airbus A330 (310 pax)</option>
                     <option value="A350">Airbus A350 (331 pax)</option>
@@ -274,7 +274,7 @@ const AIOperationsCenter: React.FC = () => {
                   <select
                     value={diversionAirport}
                     onChange={(e) => setDiversionAirport(e.target.value)}
-                    className="w-full p-3 bg-white/20 border border-white/30 rounded-lg text-white"
+                    className="w-full p-3 bg-white/20 border border-white/30 rounded-lg text-foreground"
                   >
                     <option value="SNN">Shannon (SNN)</option>
                     <option value="MAN">Manchester (MAN)</option>
@@ -287,7 +287,7 @@ const AIOperationsCenter: React.FC = () => {
                   <select
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    className="w-full p-3 bg-white/20 border border-white/30 rounded-lg text-white"
+                    className="w-full p-3 bg-white/20 border border-white/30 rounded-lg text-foreground"
                   >
                     <option value="technical">Technical Issue</option>
                     <option value="medical">Medical Emergency</option>
@@ -299,7 +299,7 @@ const AIOperationsCenter: React.FC = () => {
               <Button
                 onClick={initiateDiversion}
                 disabled={isProcessing}
-                className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
+                className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-foreground font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
               >
                 {isProcessing ? (
                   <>
@@ -319,7 +319,7 @@ const AIOperationsCenter: React.FC = () => {
           {/* System Status & Timeline */}
           <Card className="bg-white/10 backdrop-blur-lg border-white/20">
             <CardHeader>
-              <CardTitle className="text-yellow-400 flex items-center gap-2">
+              <CardTitle className="text-aero-amber-caution flex items-center gap-2">
                 <CheckCircle className="w-5 h-5" />
                 System Status & Progress
               </CardTitle>
@@ -369,7 +369,7 @@ const AIOperationsCenter: React.FC = () => {
         {bookingResults.length > 0 && (
           <Card className="bg-white/10 backdrop-blur-lg border-white/20">
             <CardHeader>
-              <CardTitle className="text-yellow-400 flex items-center gap-2">
+              <CardTitle className="text-aero-amber-caution flex items-center gap-2">
                 <Bed className="w-5 h-5" />
                 Automated Hotel Booking Results
               </CardTitle>
@@ -377,24 +377,24 @@ const AIOperationsCenter: React.FC = () => {
             <CardContent>
               {bookingResults.map((booking, index) => (
                 <div key={index} className="bg-white/10 rounded-lg p-6 border-l-4 border-yellow-400">
-                  <h4 className="text-xl font-semibold text-yellow-400 mb-4">{booking.hotel.name}</h4>
+                  <h4 className="text-xl font-semibold text-aero-amber-caution mb-4">{booking.hotel.name}</h4>
                   
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div className="text-center p-3 bg-white/10 rounded-lg">
                       <div className="text-xs text-blue-200 mb-1">Passenger Rooms</div>
-                      <div className="font-semibold text-white">{booking.passengerRooms}</div>
+                      <div className="font-semibold text-foreground">{booking.passengerRooms}</div>
                     </div>
                     <div className="text-center p-3 bg-white/10 rounded-lg">
                       <div className="text-xs text-blue-200 mb-1">Crew Rooms</div>
-                      <div className="font-semibold text-white">{booking.crewRooms}</div>
+                      <div className="font-semibold text-foreground">{booking.crewRooms}</div>
                     </div>
                     <div className="text-center p-3 bg-white/10 rounded-lg">
                       <div className="text-xs text-blue-200 mb-1">Total Cost</div>
-                      <div className="font-semibold text-white">£{booking.totalCost.toLocaleString()}</div>
+                      <div className="font-semibold text-foreground">£{booking.totalCost.toLocaleString()}</div>
                     </div>
                     <div className="text-center p-3 bg-white/10 rounded-lg">
                       <div className="text-xs text-blue-200 mb-1">Confirmation</div>
-                      <div className="font-semibold text-white">{booking.confirmationNumber}</div>
+                      <div className="font-semibold text-foreground">{booking.confirmationNumber}</div>
                     </div>
                   </div>
                   

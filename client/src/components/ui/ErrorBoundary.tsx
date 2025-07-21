@@ -68,7 +68,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       // Default error UI based on level
       if (this.props.level === 'component') {
         return (
-          <div className="border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800 rounded-lg p-4 m-4">
+          <div className="border border-red-200 bg-red-50 dark:bg-va-red-primary/10 dark:border-red-800 rounded-lg p-4 m-4">
             <div className="flex items-center space-x-2 text-red-800 dark:text-red-200">
               <AlertTriangle className="h-5 w-5" />
               <h3 className="text-sm font-medium">Component Error</h3>
@@ -89,11 +89,11 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
       // Full page error UI
       return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 to-blue-900 text-white flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 to-blue-900 text-foreground flex items-center justify-center p-4">
           <div className="max-w-md w-full text-center space-y-6">
             <div className="space-y-2">
               <div className="mx-auto w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center">
-                <AlertTriangle className="h-8 w-8 text-red-400" />
+                <AlertTriangle className="h-8 w-8 text-va-red-primary" />
               </div>
               <h1 className="text-2xl font-bold">AINO Platform Error</h1>
               <p className="text-slate-300">
@@ -101,13 +101,13 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
               </p>
             </div>
 
-            <div className="bg-slate-800/50 rounded-lg p-4 text-left">
+            <div className="bg-card/50 rounded-lg p-4 text-left">
               <div className="flex items-center space-x-2 text-slate-400 mb-2">
                 <Bug className="h-4 w-4" />
                 <span className="text-sm font-mono">Error ID: {this.state.errorId}</span>
               </div>
               {this.state.error && (
-                <div className="text-sm text-slate-300 font-mono bg-slate-900/50 p-2 rounded">
+                <div className="text-sm text-slate-300 font-mono bg-card/50 p-2 rounded">
                   {this.state.error.message}
                 </div>
               )}
@@ -116,14 +116,14 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={this.retry}
-                className="flex-1 inline-flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-medium transition-colors"
+                className="flex-1 inline-flex items-center justify-center space-x-2 bg-aero-blue-primary hover:bg-aero-blue-light px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 <RefreshCw className="h-4 w-4" />
                 <span>Try Again</span>
               </button>
               <button
                 onClick={() => window.location.href = '/'}
-                className="flex-1 inline-flex items-center justify-center space-x-2 bg-slate-600 hover:bg-slate-700 px-4 py-2 rounded-lg font-medium transition-colors"
+                className="flex-1 inline-flex items-center justify-center space-x-2 bg-slate-600 hover:bg-muted px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 <Home className="h-4 w-4" />
                 <span>Go Home</span>
@@ -134,7 +134,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
               <summary className="cursor-pointer hover:text-slate-300">
                 Technical Details
               </summary>
-              <div className="mt-2 p-3 bg-slate-900/50 rounded text-xs font-mono overflow-auto">
+              <div className="mt-2 p-3 bg-card/50 rounded text-xs font-mono overflow-auto">
                 <div><strong>Timestamp:</strong> {new Date().toISOString()}</div>
                 <div><strong>User Agent:</strong> {navigator.userAgent}</div>
                 <div><strong>URL:</strong> {window.location.href}</div>

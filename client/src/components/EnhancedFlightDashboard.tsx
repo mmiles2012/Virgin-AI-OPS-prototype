@@ -93,7 +93,7 @@ const EnhancedFlightDashboard: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">Enhanced Flight Dashboard</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Enhanced Flight Dashboard</h1>
             <p className="text-slate-300 mt-1">Modern UI patterns demonstration</p>
           </div>
           <div className="flex items-center gap-2">
@@ -108,7 +108,7 @@ const EnhancedFlightDashboard: React.FC = () => {
             </LoadingButton>
             <button
               onClick={handleTestError}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm"
+              className="px-4 py-2 bg-va-red-primary hover:bg-va-red-heritage text-foreground rounded-lg text-sm"
             >
               Test Error
             </button>
@@ -163,23 +163,23 @@ const EnhancedFlightDashboard: React.FC = () => {
         <ComponentErrorBoundary>
           <LoadingState loading={weatherData.loading} fallback={<CardSkeleton />}>
             {weatherData.data && (
-              <div className="bg-white dark:bg-slate-800 rounded-lg p-6">
+              <div className="bg-white dark:bg-card rounded-lg p-6">
                 <h3 className="text-lg font-semibold mb-4">Weather Conditions</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">Temperature</p>
+                    <p className="text-sm text-foreground0">Temperature</p>
                     <p className="text-xl font-bold">{weatherData.data.temperature}°C</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Condition</p>
+                    <p className="text-sm text-foreground0">Condition</p>
                     <p className="text-lg">{weatherData.data.condition}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Visibility</p>
+                    <p className="text-sm text-foreground0">Visibility</p>
                     <p className="text-lg">{weatherData.data.visibility}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Wind</p>
+                    <p className="text-sm text-foreground0">Wind</p>
                     <p className="text-lg">{weatherData.data.wind}</p>
                   </div>
                 </div>
@@ -190,10 +190,10 @@ const EnhancedFlightDashboard: React.FC = () => {
 
         {/* Flight List with Pagination */}
         <ComponentErrorBoundary>
-          <div className="bg-white dark:bg-slate-800 rounded-lg p-6">
+          <div className="bg-white dark:bg-card rounded-lg p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Recent Flights</h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-foreground0">
                 {paginatedFlights.totalItems} total flights
               </p>
             </div>
@@ -214,11 +214,11 @@ const EnhancedFlightDashboard: React.FC = () => {
               {paginatedFlights.data && (
                 <div className="space-y-2">
                   {paginatedFlights.data.map((flight) => (
-                    <div key={flight.id} className="flex justify-between items-center p-3 border rounded hover:bg-gray-50 dark:hover:bg-slate-700">
+                    <div key={flight.id} className="flex justify-between items-center p-3 border rounded hover:bg-gray-50 dark:hover:bg-muted">
                       <div className="flex items-center space-x-4">
                         <span className="font-mono text-sm font-medium">{flight.id}</span>
                         <span className="text-sm">{flight.origin} → {flight.destination}</span>
-                        <span className="text-sm text-gray-500">{flight.departure}</span>
+                        <span className="text-sm text-foreground0">{flight.departure}</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <span className={`px-2 py-1 rounded text-xs font-medium ${
@@ -241,7 +241,7 @@ const EnhancedFlightDashboard: React.FC = () => {
             {/* Pagination */}
             {paginatedFlights.totalPages > 1 && (
               <div className="flex justify-between items-center mt-6 pt-4 border-t">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-foreground0">
                   Page {paginatedFlights.currentPage} of {paginatedFlights.totalPages}
                 </p>
                 <div className="flex gap-2">
@@ -291,7 +291,7 @@ const StatCard: React.FC<StatCardProps> = ({ icon, title, value, color }) => {
       <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${colorClasses[color]}`}>
         {icon}
       </div>
-      <p className="text-sm text-gray-500 mb-1">{title}</p>
+      <p className="text-sm text-foreground0 mb-1">{title}</p>
       <p className="text-2xl font-bold text-gray-900">{value}</p>
     </div>
   );

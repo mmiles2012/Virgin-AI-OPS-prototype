@@ -185,7 +185,7 @@ export default function MLTrainingDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Model Accuracy</p>
+                <p className="text-sm font-medium text-muted-foreground">Model Accuracy</p>
                 <p className="text-2xl font-bold text-green-600">
                   {modelPerformance?.current_metrics?.accuracy ? 
                     (modelPerformance.current_metrics.accuracy * 100).toFixed(1) + '%' : 
@@ -201,10 +201,10 @@ export default function MLTrainingDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Your Contributions</p>
-                <p className="text-2xl font-bold text-blue-600">{userProgress.total_contributions}</p>
+                <p className="text-sm font-medium text-muted-foreground">Your Contributions</p>
+                <p className="text-2xl font-bold text-aero-blue-dark">{userProgress.total_contributions}</p>
               </div>
-              <Users className="h-8 w-8 text-blue-600" />
+              <Users className="h-8 w-8 text-aero-blue-dark" />
             </div>
           </CardContent>
         </Card>
@@ -213,7 +213,7 @@ export default function MLTrainingDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Expertise Level</p>
+                <p className="text-sm font-medium text-muted-foreground">Expertise Level</p>
                 <p className="text-lg font-bold text-purple-600 capitalize">{userProgress.expertise_rating}</p>
               </div>
               <Award className="h-8 w-8 text-purple-600" />
@@ -230,25 +230,25 @@ export default function MLTrainingDashboard() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <p className="text-sm text-gray-600">Accuracy Trend</p>
+                <p className="text-sm text-muted-foreground">Accuracy Trend</p>
                 <p className="text-lg font-semibold text-green-600">
                   {modelPerformance.recent_improvements.accuracy_trend}
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="text-sm text-gray-600">User Contributions</p>
-                <p className="text-lg font-semibold text-blue-600">
+                <p className="text-sm text-muted-foreground">User Contributions</p>
+                <p className="text-lg font-semibold text-aero-blue-dark">
                   {modelPerformance.recent_improvements.user_contributions}
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="text-sm text-gray-600">Expert Annotations</p>
+                <p className="text-sm text-muted-foreground">Expert Annotations</p>
                 <p className="text-lg font-semibold text-purple-600">
                   {modelPerformance.recent_improvements.expert_annotations}
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="text-sm text-gray-600">Model Stability</p>
+                <p className="text-sm text-muted-foreground">Model Stability</p>
                 <Badge className="bg-green-100 text-green-800 border-green-200">
                   {modelPerformance.recent_improvements.model_stability}
                 </Badge>
@@ -297,7 +297,7 @@ export default function MLTrainingDashboard() {
       <Card>
         <CardHeader>
           <CardTitle>News Intelligence Training</CardTitle>
-          <p className="text-gray-600">Help improve news analysis models by providing expert assessments</p>
+          <p className="text-muted-foreground">Help improve news analysis models by providing expert assessments</p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -444,7 +444,7 @@ export default function MLTrainingDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
-                  <BookOpen className="h-5 w-5 text-blue-600" />
+                  <BookOpen className="h-5 w-5 text-aero-blue-dark" />
                   <h4 className="text-lg font-semibold capitalize">{scenario.type.replace('_', ' ')}</h4>
                 </div>
                 <div className="flex space-x-2">
@@ -455,7 +455,7 @@ export default function MLTrainingDashboard() {
               
               <p className="text-gray-700 mb-4">{scenario.content}</p>
               
-              <div className="text-sm text-gray-600 mb-4">
+              <div className="text-sm text-muted-foreground mb-4">
                 <p><strong>Questions:</strong> {scenario.questions.length}</p>
                 <p><strong>Focus:</strong> {scenario.focus}</p>
               </div>
@@ -496,7 +496,7 @@ export default function MLTrainingDashboard() {
                 <Card key={index}>
                   <CardContent className="p-4">
                     <p className="font-medium mb-2">{question.question}</p>
-                    <p className="text-sm text-gray-600 mb-4">{question.context}</p>
+                    <p className="text-sm text-muted-foreground mb-4">{question.context}</p>
                     
                     {question.options ? (
                       <div className="space-y-2">
@@ -567,7 +567,7 @@ export default function MLTrainingDashboard() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">ML Model Training Dashboard</h1>
-        <p className="text-gray-600">Help improve aviation intelligence models with your expertise</p>
+        <p className="text-muted-foreground">Help improve aviation intelligence models with your expertise</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">

@@ -94,7 +94,7 @@ const NATTracksOverlay: React.FC<NATTracksOverlayProps> = ({ showNATTracks }) =>
             }}
           >
             <Popup>
-              <div className="bg-gray-900 text-white p-3 rounded-lg border border-gray-600 min-w-[200px]">
+              <div className="bg-card text-foreground p-3 rounded-lg border border-border min-w-[200px]">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-lg font-bold text-blue-300">
                     NAT Track {track.track_id}
@@ -107,25 +107,25 @@ const NATTracksOverlay: React.FC<NATTracksOverlayProps> = ({ showNATTracks }) =>
                 
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-300">Direction:</span>
-                    <span className="font-medium text-white">{track.direction}</span>
+                    <span className="text-muted-foreground">Direction:</span>
+                    <span className="font-medium text-foreground">{track.direction}</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-gray-300">Waypoints:</span>
-                    <span className="font-medium text-white">{track.waypoint_count}</span>
+                    <span className="text-muted-foreground">Waypoints:</span>
+                    <span className="font-medium text-foreground">{track.waypoint_count}</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-gray-300">Status:</span>
-                    <span className="font-medium text-green-400">Active</span>
+                    <span className="text-muted-foreground">Status:</span>
+                    <span className="font-medium text-aero-green-safe">Active</span>
                   </div>
                   
-                  <div className="mt-2 pt-2 border-t border-gray-600">
-                    <div className="text-xs text-gray-400">
+                  <div className="mt-2 pt-2 border-t border-border">
+                    <div className="text-xs text-muted-foreground">
                       Source: FAA NOTAM (Shanwick/Gander)
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-muted-foreground">
                       Updated: {new Date(track.timestamp).toLocaleTimeString()}
                     </div>
                   </div>
@@ -138,17 +138,17 @@ const NATTracksOverlay: React.FC<NATTracksOverlayProps> = ({ showNATTracks }) =>
       
       {/* NAT Tracks Status Indicator - Disabled to prevent black overlay issue */}
       {false && showNATTracks && (
-        <div className="absolute top-20 left-4 bg-gray-900/90 text-white p-2 rounded-lg border border-gray-600 z-[1000] text-xs">
+        <div className="absolute top-20 left-4 bg-card/90 text-foreground p-2 rounded-lg border border-border z-[1000] text-xs">
           <div className="flex items-center space-x-2">
             <div className="flex space-x-1">
               <div className="w-3 h-1 bg-orange-500 rounded"></div>
               <div className="w-3 h-1 bg-purple-500 rounded"></div>
             </div>
             <span>NAT Tracks: {natTracks.length} active</span>
-            {loading && <span className="text-blue-400">⟳</span>}
+            {loading && <span className="text-aero-blue-primary">⟳</span>}
           </div>
           {lastUpdate && (
-            <div className="text-gray-400 mt-1">
+            <div className="text-muted-foreground mt-1">
               Last: {new Date(lastUpdate).toLocaleTimeString()}
             </div>
           )}

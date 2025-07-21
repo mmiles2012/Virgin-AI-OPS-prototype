@@ -517,16 +517,16 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'improving': return <TrendingUp className="w-4 h-4 text-green-400" />;
-      case 'declining': return <TrendingDown className="w-4 h-4 text-red-400" />;
+      case 'improving': return <TrendingUp className="w-4 h-4 text-aero-green-safe" />;
+      case 'declining': return <TrendingDown className="w-4 h-4 text-va-red-primary" />;
       default: return <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>;
     }
   };
 
   const getPerformanceColor = (onTimeRate: number) => {
-    if (onTimeRate >= 85) return 'text-green-400';
-    if (onTimeRate >= 70) return 'text-yellow-400';
-    return 'text-red-400';
+    if (onTimeRate >= 85) return 'text-aero-green-safe';
+    if (onTimeRate >= 70) return 'text-aero-amber-caution';
+    return 'text-va-red-primary';
   };
 
   const getStatusBadge = (onTimeRate: number) => {
@@ -544,11 +544,11 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-full bg-gray-900 text-white overflow-y-auto">
-        <div className="h-full w-full bg-gray-900 p-4">
+      <div className="h-full bg-card text-foreground overflow-y-auto">
+        <div className="h-full w-full bg-card p-4">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
-            <div className="ml-4 text-gray-400">Loading network performance data...</div>
+            <div className="ml-4 text-muted-foreground">Loading network performance data...</div>
           </div>
         </div>
       </div>
@@ -556,70 +556,70 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
   }
 
   return (
-    <div className="h-full bg-gray-900 text-white overflow-y-auto">
-      <div className="h-full w-full bg-gray-900 p-4">
+    <div className="h-full bg-card text-foreground overflow-y-auto">
+      <div className="h-full w-full bg-card p-4">
         {/* Header */}
         <div className="mb-4">
-          <h1 className="text-2xl font-bold text-white mb-1">Network OTP Performance Dashboard</h1>
-          <p className="text-gray-400 text-sm">Virgin Atlantic Global Network Operations Monitoring</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Network OTP Performance Dashboard</h1>
+          <p className="text-muted-foreground text-sm">Virgin Atlantic Global Network Operations Monitoring</p>
         </div>
 
         {/* Network Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-card rounded-lg p-6 border border-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-400">Network On-Time Rate</p>
+                <p className="text-sm font-medium text-muted-foreground">Network On-Time Rate</p>
                 <p className={`text-2xl font-bold ${getPerformanceColor(networkOnTimeRate)}`}>
                   {networkOnTimeRate.toFixed(1)}%
                 </p>
               </div>
               <div className="p-3 bg-blue-500/20 rounded-lg">
-                <Clock className="w-6 h-6 text-blue-400" />
+                <Clock className="w-6 h-6 text-aero-blue-primary" />
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-card rounded-lg p-6 border border-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-400">Total Flights</p>
-                <p className="text-2xl font-bold text-white">{totalNetworkFlights}</p>
+                <p className="text-sm font-medium text-muted-foreground">Total Flights</p>
+                <p className="text-2xl font-bold text-foreground">{totalNetworkFlights}</p>
               </div>
               <div className="p-3 bg-green-500/20 rounded-lg">
-                <Plane className="w-6 h-6 text-green-400" />
+                <Plane className="w-6 h-6 text-aero-green-safe" />
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-card rounded-lg p-6 border border-border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-400">Delayed Flights</p>
-                <p className="text-2xl font-bold text-yellow-400">{totalNetworkDelays}</p>
+                <p className="text-sm font-medium text-muted-foreground">Delayed Flights</p>
+                <p className="text-2xl font-bold text-aero-amber-caution">{totalNetworkDelays}</p>
               </div>
               <div className="p-3 bg-yellow-500/20 rounded-lg">
-                <AlertTriangle className="w-6 h-6 text-yellow-400" />
+                <AlertTriangle className="w-6 h-6 text-aero-amber-caution" />
               </div>
             </div>
           </div>
 
           {/* FAA Risk Intelligence Summary */}
           {faaData && (
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <div className="bg-card rounded-lg p-6 border border-border">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-400">FAA Events</p>
-                  <p className="text-2xl font-bold text-red-400">{faaData.summary.totalEvents}</p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-sm font-medium text-muted-foreground">FAA Events</p>
+                  <p className="text-2xl font-bold text-va-red-primary">{faaData.summary.totalEvents}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
                     {faaData.summary.virginAtlanticAffected} Virgin Atlantic affected
                   </p>
                 </div>
                 <div className="p-3 bg-red-500/20 rounded-lg">
-                  <AlertCircle className="w-6 h-6 text-red-400" />
+                  <AlertCircle className="w-6 h-6 text-va-red-primary" />
                 </div>
               </div>
-              <div className="mt-2 text-xs text-gray-400">
+              <div className="mt-2 text-xs text-muted-foreground">
                 ML Accuracy: {faaData.summary.modelAccuracy}%
               </div>
             </div>
@@ -628,7 +628,7 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
 
         {/* Navigation Tabs */}
         <div className="mb-4">
-          <div className="flex space-x-1 bg-gray-800 rounded-lg p-1">
+          <div className="flex space-x-1 bg-card rounded-lg p-1">
             {[
               { id: 'overview', label: 'Network Overview', icon: <Plane className="w-4 h-4" /> },
               { id: 'detailed', label: 'Hub Details', icon: <MapPin className="w-4 h-4" /> },
@@ -640,8 +640,8 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                 onClick={() => setNetworkView(tab.id as any)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   networkView === tab.id
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                    ? 'bg-aero-blue-primary text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >
                 {tab.icon}
@@ -653,93 +653,93 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
 
         {/* Hub Performance Grid */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold text-white mb-3">Virgin Atlantic Hub Performance</h2>
+          <h2 className="text-lg font-bold text-foreground mb-3">Virgin Atlantic Hub Performance</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {hubData.map((hub) => (
               <div
                 key={hub.icao}
-                className={`bg-gray-800 rounded-lg p-4 border cursor-pointer transition-all hover:border-gray-600 ${
-                  selectedAirport === hub.iata ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700'
+                className={`bg-card rounded-lg p-4 border cursor-pointer transition-all hover:border-border ${
+                  selectedAirport === hub.iata ? 'border-blue-500 bg-blue-500/10' : 'border-border'
                 }`}
                 onClick={() => setSelectedAirport(selectedAirport === hub.iata ? null : hub.iata)}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <h3 className="text-lg font-bold text-white">{hub.iata}</h3>
-                    <p className="text-sm text-gray-400">{hub.city}</p>
+                    <h3 className="text-lg font-bold text-foreground">{hub.iata}</h3>
+                    <p className="text-sm text-muted-foreground">{hub.city}</p>
                   </div>
-                  <Plane className="w-5 h-5 text-gray-400" />
+                  <Plane className="w-5 h-5 text-muted-foreground" />
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">On-Time Rate:</span>
+                    <span className="text-sm text-muted-foreground">On-Time Rate:</span>
                     <span className={`font-bold ${getPerformanceColor(hub.onTimeRate)}`}>
                       {hub.onTimeRate.toFixed(1)}%
                     </span>
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">Flights:</span>
-                    <span className="text-white font-medium">{hub.totalFlights}</span>
+                    <span className="text-sm text-muted-foreground">Flights:</span>
+                    <span className="text-foreground font-medium">{hub.totalFlights}</span>
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">Avg Delay:</span>
-                    <span className="text-yellow-400 font-medium">{hub.avgDelayMinutes}m</span>
+                    <span className="text-sm text-muted-foreground">Avg Delay:</span>
+                    <span className="text-aero-amber-caution font-medium">{hub.avgDelayMinutes}m</span>
                   </div>
 
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">Status:</span>
+                    <span className="text-sm text-muted-foreground">Status:</span>
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      hub.onTimeRate >= 85 ? 'bg-green-500/20 text-green-400' :
-                      hub.onTimeRate >= 70 ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-red-500/20 text-red-400'
+                      hub.onTimeRate >= 85 ? 'bg-green-500/20 text-aero-green-safe' :
+                      hub.onTimeRate >= 70 ? 'bg-yellow-500/20 text-aero-amber-caution' :
+                      'bg-red-500/20 text-va-red-primary'
                     }`}>
                       {getStatusBadge(hub.onTimeRate)}
                     </span>
                   </div>
 
                   <div className="flex justify-between items-center pt-2">
-                    <span className="text-sm text-gray-400">Trend:</span>
+                    <span className="text-sm text-muted-foreground">Trend:</span>
                     <div className="flex items-center gap-1">
                       {getTrendIcon(hub.trend)}
-                      <span className="text-xs capitalize text-gray-400">{hub.trend}</span>
+                      <span className="text-xs capitalize text-muted-foreground">{hub.trend}</span>
                     </div>
                   </div>
 
                   {/* FAA Risk Intelligence for US Airports */}
                   {faaData && ['JFK', 'LAX', 'BOS', 'ATL', 'MCO', 'ORD', 'IAD', 'SFO', 'MIA', 'TPA', 'LAS'].includes(hub.iata) && (
-                    <div className="mt-3 pt-3 border-t border-gray-700">
+                    <div className="mt-3 pt-3 border-t border-border">
                       {(() => {
                         const faaEvent = faaData.events.find(event => event.airport === hub.iata);
                         if (faaEvent) {
                           return (
                             <div className="space-y-1">
                               <div className="flex items-center justify-between">
-                                <span className="text-xs text-gray-400">FAA Status:</span>
+                                <span className="text-xs text-muted-foreground">FAA Status:</span>
                                 <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                                  faaEvent.severity === 'HIGH' ? 'bg-red-500/20 text-red-400' :
-                                  faaEvent.severity === 'MEDIUM' ? 'bg-yellow-500/20 text-yellow-400' :
-                                  'bg-green-500/20 text-green-400'
+                                  faaEvent.severity === 'HIGH' ? 'bg-red-500/20 text-va-red-primary' :
+                                  faaEvent.severity === 'MEDIUM' ? 'bg-yellow-500/20 text-aero-amber-caution' :
+                                  'bg-green-500/20 text-aero-green-safe'
                                 }`}>
                                   {faaEvent.eventType}
                                 </span>
                               </div>
                               {faaEvent.mlPrediction && (
                                 <div className="flex items-center justify-between">
-                                  <span className="text-xs text-gray-400">Ground Stop Risk:</span>
+                                  <span className="text-xs text-muted-foreground">Ground Stop Risk:</span>
                                   <span className={`text-xs font-medium ${
-                                    faaEvent.mlPrediction.groundStopProbability > 0.7 ? 'text-red-400' :
-                                    faaEvent.mlPrediction.groundStopProbability > 0.4 ? 'text-yellow-400' :
-                                    'text-green-400'
+                                    faaEvent.mlPrediction.groundStopProbability > 0.7 ? 'text-va-red-primary' :
+                                    faaEvent.mlPrediction.groundStopProbability > 0.4 ? 'text-aero-amber-caution' :
+                                    'text-aero-green-safe'
                                   }`}>
                                     {(faaEvent.mlPrediction.groundStopProbability * 100).toFixed(0)}%
                                   </span>
                                 </div>
                               )}
                               {faaEvent.isVirginAtlanticDestination && (
-                                <div className="text-xs text-blue-400 font-medium">
+                                <div className="text-xs text-aero-blue-primary font-medium">
                                   ✈️ Virgin Atlantic Hub
                                 </div>
                               )}
@@ -748,8 +748,8 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                         } else {
                           return (
                             <div className="flex items-center justify-between">
-                              <span className="text-xs text-gray-400">FAA Status:</span>
-                              <span className="text-xs px-2 py-1 rounded-full font-medium bg-green-500/20 text-green-400">
+                              <span className="text-xs text-muted-foreground">FAA Status:</span>
+                              <span className="text-xs px-2 py-1 rounded-full font-medium bg-green-500/20 text-aero-green-safe">
                                 Normal Ops
                               </span>
                             </div>
@@ -779,8 +779,8 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
 
         {/* Selected Airport Details */}
         {selectedAirport && networkView !== 'delay-analysis' && (
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <h2 className="text-xl font-bold text-white mb-6">
+          <div className="bg-card rounded-lg p-6 border border-border">
+            <h2 className="text-xl font-bold text-foreground mb-6">
               {hubData.find(h => h.iata === selectedAirport)?.name} - Detailed Performance
             </h2>
             {(() => {
@@ -792,61 +792,61 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                   {/* Performance Metrics Grid */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     <div className="text-center">
-                      <div className="text-sm text-gray-400 mb-1">ICAO Code</div>
-                      <div className="text-white font-bold">{hub.icao}</div>
+                      <div className="text-sm text-muted-foreground mb-1">ICAO Code</div>
+                      <div className="text-foreground font-bold">{hub.icao}</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-sm text-gray-400 mb-1">On-Time Flights</div>
-                      <div className="text-green-400 font-bold">{hub.onTimeFlights}</div>
+                      <div className="text-sm text-muted-foreground mb-1">On-Time Flights</div>
+                      <div className="text-aero-green-safe font-bold">{hub.onTimeFlights}</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-sm text-gray-400 mb-1">Delayed Flights</div>
-                      <div className="text-red-400 font-bold">{hub.delayedFlights}</div>
+                      <div className="text-sm text-muted-foreground mb-1">Delayed Flights</div>
+                      <div className="text-va-red-primary font-bold">{hub.delayedFlights}</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-sm text-gray-400 mb-1">Performance Trend</div>
+                      <div className="text-sm text-muted-foreground mb-1">Performance Trend</div>
                       <div className="flex items-center justify-center gap-1">
                         {getTrendIcon(hub.trend)}
-                        <span className="text-white font-medium capitalize">{hub.trend}</span>
+                        <span className="text-foreground font-medium capitalize">{hub.trend}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Recent Flights Table */}
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-4">Recent Flights</h3>
+                    <h3 className="text-lg font-bold text-foreground mb-4">Recent Flights</h3>
                     <div className="overflow-x-auto">
                       <table className="w-full">
                         <thead>
-                          <tr className="border-b border-gray-700">
-                            <th className="text-left text-gray-400 p-2">Flight</th>
-                            <th className="text-left text-gray-400 p-2">Route</th>
-                            <th className="text-left text-gray-400 p-2">Aircraft</th>
-                            <th className="text-left text-gray-400 p-2">Scheduled</th>
-                            <th className="text-left text-gray-400 p-2">Actual</th>
-                            <th className="text-left text-gray-400 p-2">Status</th>
-                            <th className="text-left text-gray-400 p-2">Gate</th>
+                          <tr className="border-b border-border">
+                            <th className="text-left text-muted-foreground p-2">Flight</th>
+                            <th className="text-left text-muted-foreground p-2">Route</th>
+                            <th className="text-left text-muted-foreground p-2">Aircraft</th>
+                            <th className="text-left text-muted-foreground p-2">Scheduled</th>
+                            <th className="text-left text-muted-foreground p-2">Actual</th>
+                            <th className="text-left text-muted-foreground p-2">Status</th>
+                            <th className="text-left text-muted-foreground p-2">Gate</th>
                           </tr>
                         </thead>
                         <tbody>
                           {hub.recentFlights.slice(0, 8).map((flight, index) => (
-                            <tr key={index} className="border-b border-gray-800 hover:bg-gray-700/50">
-                              <td className="text-white p-2 font-medium">{flight.flightNumber}</td>
-                              <td className="text-gray-300 p-2">{flight.route}</td>
-                              <td className="text-gray-300 p-2 text-xs">{flight.aircraft}</td>
-                              <td className="text-gray-300 p-2">{flight.scheduledTime}</td>
-                              <td className="text-gray-300 p-2">{flight.actualTime}</td>
+                            <tr key={index} className="border-b border-gray-800 hover:bg-muted/50">
+                              <td className="text-foreground p-2 font-medium">{flight.flightNumber}</td>
+                              <td className="text-muted-foreground p-2">{flight.route}</td>
+                              <td className="text-muted-foreground p-2 text-xs">{flight.aircraft}</td>
+                              <td className="text-muted-foreground p-2">{flight.scheduledTime}</td>
+                              <td className="text-muted-foreground p-2">{flight.actualTime}</td>
                               <td className="p-2">
                                 <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                                  flight.status === 'on-time' ? 'bg-green-500/20 text-green-400' :
-                                  flight.status === 'delayed' ? 'bg-yellow-500/20 text-yellow-400' :
-                                  'bg-red-500/20 text-red-400'
+                                  flight.status === 'on-time' ? 'bg-green-500/20 text-aero-green-safe' :
+                                  flight.status === 'delayed' ? 'bg-yellow-500/20 text-aero-amber-caution' :
+                                  'bg-red-500/20 text-va-red-primary'
                                 }`}>
                                   {flight.status === 'on-time' ? 'On Time' : 
                                    flight.status === 'delayed' ? `+${flight.delayMinutes}m` : 'Cancelled'}
                                 </span>
                               </td>
-                              <td className="text-gray-300 p-2">{flight.gate}</td>
+                              <td className="text-muted-foreground p-2">{flight.gate}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -857,7 +857,7 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                   {/* Airport Contact Information */}
                   {airportContacts.find(contact => contact.icao === hub.icao) && (
                     <div>
-                      <h3 className="text-lg font-bold text-white mb-4">Operations Contact</h3>
+                      <h3 className="text-lg font-bold text-foreground mb-4">Operations Contact</h3>
                       <div className="bg-gray-700 rounded-lg p-4">
                         {(() => {
                           const contact = airportContacts.find(c => c.icao === hub.icao);
@@ -865,16 +865,16 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                           return (
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                               <div>
-                                <div className="text-sm text-gray-400 mb-1">Operations Center</div>
-                                <div className="text-white font-medium">{contact.name}</div>
+                                <div className="text-sm text-muted-foreground mb-1">Operations Center</div>
+                                <div className="text-foreground font-medium">{contact.name}</div>
                               </div>
                               <div>
-                                <div className="text-sm text-gray-400 mb-1">Phone</div>
-                                <div className="text-blue-400 font-medium">{contact.phone}</div>
+                                <div className="text-sm text-muted-foreground mb-1">Phone</div>
+                                <div className="text-aero-blue-primary font-medium">{contact.phone}</div>
                               </div>
                               <div>
-                                <div className="text-sm text-gray-400 mb-1">Type</div>
-                                <div className="text-gray-300">{contact.type}</div>
+                                <div className="text-sm text-muted-foreground mb-1">Type</div>
+                                <div className="text-muted-foreground">{contact.type}</div>
                               </div>
                             </div>
                           );
@@ -886,7 +886,7 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                   {/* FAA Risk Intelligence Details for US Airports */}
                   {faaData && ['JFK', 'LAX', 'BOS', 'ATL', 'MCO', 'ORD', 'IAD', 'SFO', 'MIA', 'TPA', 'LAS'].includes(hub.iata) && (
                     <div>
-                      <h3 className="text-lg font-bold text-white mb-4">FAA Risk Intelligence</h3>
+                      <h3 className="text-lg font-bold text-foreground mb-4">FAA Risk Intelligence</h3>
                       <div className="bg-gray-700 rounded-lg p-4">
                         {(() => {
                           const faaEvent = faaData.events.find(event => event.airport === hub.iata);
@@ -895,59 +895,59 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                               <div className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   <div>
-                                    <div className="text-sm text-gray-400 mb-1">Event Type</div>
-                                    <div className="text-white font-medium">{faaEvent.eventType}</div>
+                                    <div className="text-sm text-muted-foreground mb-1">Event Type</div>
+                                    <div className="text-foreground font-medium">{faaEvent.eventType}</div>
                                   </div>
                                   <div>
-                                    <div className="text-sm text-gray-400 mb-1">Severity</div>
+                                    <div className="text-sm text-muted-foreground mb-1">Severity</div>
                                     <div className={`font-medium ${
-                                      faaEvent.severity === 'HIGH' ? 'text-red-400' :
-                                      faaEvent.severity === 'MEDIUM' ? 'text-yellow-400' :
-                                      'text-green-400'
+                                      faaEvent.severity === 'HIGH' ? 'text-va-red-primary' :
+                                      faaEvent.severity === 'MEDIUM' ? 'text-aero-amber-caution' :
+                                      'text-aero-green-safe'
                                     }`}>
                                       {faaEvent.severity}
                                     </div>
                                   </div>
                                 </div>
                                 <div>
-                                  <div className="text-sm text-gray-400 mb-1">Reason</div>
-                                  <div className="text-gray-300">{faaEvent.reason}</div>
+                                  <div className="text-sm text-muted-foreground mb-1">Reason</div>
+                                  <div className="text-muted-foreground">{faaEvent.reason}</div>
                                 </div>
                                 {faaEvent.mlPrediction && (
                                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
-                                      <div className="text-sm text-gray-400 mb-1">Ground Stop Risk</div>
+                                      <div className="text-sm text-muted-foreground mb-1">Ground Stop Risk</div>
                                       <div className={`font-bold ${
-                                        faaEvent.mlPrediction.groundStopProbability > 0.7 ? 'text-red-400' :
-                                        faaEvent.mlPrediction.groundStopProbability > 0.4 ? 'text-yellow-400' :
-                                        'text-green-400'
+                                        faaEvent.mlPrediction.groundStopProbability > 0.7 ? 'text-va-red-primary' :
+                                        faaEvent.mlPrediction.groundStopProbability > 0.4 ? 'text-aero-amber-caution' :
+                                        'text-aero-green-safe'
                                       }`}>
                                         {(faaEvent.mlPrediction.groundStopProbability * 100).toFixed(1)}%
                                       </div>
                                     </div>
                                     <div>
-                                      <div className="text-sm text-gray-400 mb-1">Delay Risk</div>
+                                      <div className="text-sm text-muted-foreground mb-1">Delay Risk</div>
                                       <div className={`font-medium ${
-                                        faaEvent.mlPrediction.delayRisk === 'HIGH' ? 'text-red-400' :
-                                        faaEvent.mlPrediction.delayRisk === 'MEDIUM' ? 'text-yellow-400' :
-                                        'text-green-400'
+                                        faaEvent.mlPrediction.delayRisk === 'HIGH' ? 'text-va-red-primary' :
+                                        faaEvent.mlPrediction.delayRisk === 'MEDIUM' ? 'text-aero-amber-caution' :
+                                        'text-aero-green-safe'
                                       }`}>
                                         {faaEvent.mlPrediction.delayRisk}
                                       </div>
                                     </div>
                                     <div>
-                                      <div className="text-sm text-gray-400 mb-1">ML Confidence</div>
-                                      <div className="text-blue-400 font-medium">{faaEvent.mlPrediction.confidence}%</div>
+                                      <div className="text-sm text-muted-foreground mb-1">ML Confidence</div>
+                                      <div className="text-aero-blue-primary font-medium">{faaEvent.mlPrediction.confidence}%</div>
                                     </div>
                                   </div>
                                 )}
                                 <div>
-                                  <div className="text-sm text-gray-400 mb-1">Impact Assessment</div>
-                                  <div className="text-gray-300">{faaEvent.impact.description}</div>
+                                  <div className="text-sm text-muted-foreground mb-1">Impact Assessment</div>
+                                  <div className="text-muted-foreground">{faaEvent.impact.description}</div>
                                 </div>
                                 {faaEvent.isVirginAtlanticDestination && (
                                   <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3">
-                                    <div className="text-blue-400 font-medium">✈️ Virgin Atlantic Hub Airport</div>
+                                    <div className="text-aero-blue-primary font-medium">✈️ Virgin Atlantic Hub Airport</div>
                                     <div className="text-sm text-blue-300 mt-1">This event directly impacts Virgin Atlantic operations</div>
                                   </div>
                                 )}
@@ -956,9 +956,9 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                           } else {
                             return (
                               <div className="text-center py-4">
-                                <div className="text-green-400 font-medium mb-2">✅ Normal Operations</div>
-                                <div className="text-sm text-gray-400">No FAA events or restrictions detected</div>
-                                <div className="text-sm text-gray-400 mt-1">
+                                <div className="text-aero-green-safe font-medium mb-2">✅ Normal Operations</div>
+                                <div className="text-sm text-muted-foreground">No FAA events or restrictions detected</div>
+                                <div className="text-sm text-muted-foreground mt-1">
                                   Data source: FAA NAS Status (https://nasstatus.faa.gov/)
                                 </div>
                               </div>
@@ -976,20 +976,20 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
 
         {/* Delay Analysis View */}
         {networkView === 'delay-analysis' && (
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <h2 className="text-xl font-bold text-white mb-6">Network Delay Analysis</h2>
+          <div className="bg-card rounded-lg p-6 border border-border">
+            <h2 className="text-xl font-bold text-foreground mb-6">Network Delay Analysis</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Top Delay Reasons */}
               <div>
-                <h3 className="text-lg font-bold text-white mb-4">Top Delay Reasons</h3>
+                <h3 className="text-lg font-bold text-foreground mb-4">Top Delay Reasons</h3>
                 <div className="space-y-3">
                   {Object.entries(delayCodes).slice(0, 8).map(([code, reason]) => (
                     <div key={code} className="flex items-center justify-between bg-gray-700 rounded-lg p-3">
                       <div>
-                        <div className="text-white font-medium">{reason}</div>
-                        <div className="text-gray-400 text-sm">Code: {code}</div>
+                        <div className="text-foreground font-medium">{reason}</div>
+                        <div className="text-muted-foreground text-sm">Code: {code}</div>
                       </div>
-                      <div className="text-yellow-400 font-bold">
+                      <div className="text-aero-amber-caution font-bold">
                         {Math.floor(Math.random() * 25) + 5}%
                       </div>
                     </div>
@@ -999,19 +999,19 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
 
               {/* Cost Impact */}
               <div>
-                <h3 className="text-lg font-bold text-white mb-4">Financial Impact</h3>
+                <h3 className="text-lg font-bold text-foreground mb-4">Financial Impact</h3>
                 <div className="space-y-4">
                   <div className="bg-gray-700 rounded-lg p-4">
-                    <div className="text-sm text-gray-400 mb-1">Daily Delay Cost</div>
-                    <div className="text-2xl font-bold text-red-400">£{(Math.random() * 500000 + 250000).toLocaleString('en-GB', { maximumFractionDigits: 0 })}</div>
+                    <div className="text-sm text-muted-foreground mb-1">Daily Delay Cost</div>
+                    <div className="text-2xl font-bold text-va-red-primary">£{(Math.random() * 500000 + 250000).toLocaleString('en-GB', { maximumFractionDigits: 0 })}</div>
                   </div>
                   <div className="bg-gray-700 rounded-lg p-4">
-                    <div className="text-sm text-gray-400 mb-1">EU261 Compensation</div>
-                    <div className="text-2xl font-bold text-yellow-400">£{(Math.random() * 100000 + 50000).toLocaleString('en-GB', { maximumFractionDigits: 0 })}</div>
+                    <div className="text-sm text-muted-foreground mb-1">EU261 Compensation</div>
+                    <div className="text-2xl font-bold text-aero-amber-caution">£{(Math.random() * 100000 + 50000).toLocaleString('en-GB', { maximumFractionDigits: 0 })}</div>
                   </div>
                   <div className="bg-gray-700 rounded-lg p-4">
-                    <div className="text-sm text-gray-400 mb-1">Fuel Cost Impact</div>
-                    <div className="text-2xl font-bold text-orange-400">£{(Math.random() * 75000 + 25000).toLocaleString('en-GB', { maximumFractionDigits: 0 })}</div>
+                    <div className="text-sm text-muted-foreground mb-1">Fuel Cost Impact</div>
+                    <div className="text-2xl font-bold text-aero-orange-alert">£{(Math.random() * 75000 + 25000).toLocaleString('en-GB', { maximumFractionDigits: 0 })}</div>
                   </div>
                 </div>
               </div>
@@ -1023,16 +1023,16 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
         {networkView === 'ml-training' && (
           <div className="space-y-6">
             {/* Training Controls */}
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <h2 className="text-xl font-bold text-white mb-4">ML Training Analytics - OTP Prediction</h2>
+            <div className="bg-card rounded-lg p-6 border border-border">
+              <h2 className="text-xl font-bold text-foreground mb-4">ML Training Analytics - OTP Prediction</h2>
               <div className="flex items-center gap-4 mb-6">
                 <button
                   onClick={runMLTraining}
                   disabled={trainingInProgress}
                   className={`px-6 py-2 rounded-lg font-medium transition-all ${
                     trainingInProgress
-                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                      ? 'bg-gray-600 text-muted-foreground cursor-not-allowed'
+                      : 'bg-aero-blue-primary hover:bg-aero-blue-light text-foreground'
                   }`}
                 >
                   {trainingInProgress ? (
@@ -1042,11 +1042,11 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                     </div>
                   ) : 'Start ML Training'}
                 </button>
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-muted-foreground">
                   Train XGBoost models for delay prediction, OTP classification, and risk assessment
                 </div>
                 {mlTrainingData && !trainingInProgress && (
-                  <div className="text-sm text-green-400 font-medium">
+                  <div className="text-sm text-aero-green-safe font-medium">
                     ✓ Training Complete - MAE: {mlTrainingData.otp_model?.mae?.toFixed(2)} minutes
                   </div>
                 )}
@@ -1057,9 +1057,9 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                 <div className="bg-gray-700 rounded-lg p-4 mb-6">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-white font-medium">Training in Progress</span>
+                    <span className="text-foreground font-medium">Training in Progress</span>
                   </div>
-                  <div className="text-sm text-gray-400 space-y-1">
+                  <div className="text-sm text-muted-foreground space-y-1">
                     <div>• Loading Virgin Atlantic operational data...</div>
                     <div>• Integrating AVWX weather features...</div>
                     <div>• Training XGBoost ensemble models...</div>
@@ -1073,23 +1073,23 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
             {mlTrainingData && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Model Performance Metrics */}
-                <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                  <h3 className="text-lg font-bold text-white mb-4">Model Performance</h3>
+                <div className="bg-card rounded-lg p-6 border border-border">
+                  <h3 className="text-lg font-bold text-foreground mb-4">Model Performance</h3>
                   <div className="space-y-4">
                     {/* Dual-Track OTP Data Sources */}
                     <div className="bg-gray-700 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white font-medium">Dual-Track Data Sources</span>
-                        <span className="text-blue-400 text-sm font-bold">Real-time + Historical</span>
+                        <span className="text-foreground font-medium">Dual-Track Data Sources</span>
+                        <span className="text-aero-blue-primary text-sm font-bold">Real-time + Historical</span>
                       </div>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <div className="text-gray-400">EUROCONTROL European Data</div>
-                          <div className="text-white font-bold">2018-2023 (2,000+ daily)</div>
+                          <div className="text-muted-foreground">EUROCONTROL European Data</div>
+                          <div className="text-foreground font-bold">2018-2023 (2,000+ daily)</div>
                         </div>
                         <div>
-                          <div className="text-gray-400">US BTS Historical Data</div>
-                          <div className="text-white font-bold">1987-present (6M+ monthly)</div>
+                          <div className="text-muted-foreground">US BTS Historical Data</div>
+                          <div className="text-foreground font-bold">1987-present (6M+ monthly)</div>
                         </div>
                       </div>
                     </div>
@@ -1097,17 +1097,17 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                     {/* OTP Prediction Model */}
                     <div className="bg-gray-700 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white font-medium">OTP Prediction Model</span>
-                        <span className="text-green-400 text-sm font-bold">XGBoost</span>
+                        <span className="text-foreground font-medium">OTP Prediction Model</span>
+                        <span className="text-aero-green-safe text-sm font-bold">XGBoost</span>
                       </div>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <div className="text-gray-400">Mean Absolute Error</div>
-                          <div className="text-white font-bold">{mlTrainingData.otp_model?.mae || '4.23'} minutes</div>
+                          <div className="text-muted-foreground">Mean Absolute Error</div>
+                          <div className="text-foreground font-bold">{mlTrainingData.otp_model?.mae || '4.23'} minutes</div>
                         </div>
                         <div>
-                          <div className="text-gray-400">Improvement vs Baseline</div>
-                          <div className="text-green-400 font-bold">{mlTrainingData.otp_model?.improvement || '19.7%'}</div>
+                          <div className="text-muted-foreground">Improvement vs Baseline</div>
+                          <div className="text-aero-green-safe font-bold">{mlTrainingData.otp_model?.improvement || '19.7%'}</div>
                         </div>
                       </div>
                     </div>
@@ -1115,17 +1115,17 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                     {/* Delay Prediction Model */}
                     <div className="bg-gray-700 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white font-medium">Delay Prediction Model</span>
-                        <span className="text-blue-400 text-sm font-bold">Enhanced RF</span>
+                        <span className="text-foreground font-medium">Delay Prediction Model</span>
+                        <span className="text-aero-blue-primary text-sm font-bold">Enhanced RF</span>
                       </div>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <div className="text-gray-400">Mean Absolute Error</div>
-                          <div className="text-white font-bold">{mlTrainingData.delay_model?.mae || '8.7'} minutes</div>
+                          <div className="text-muted-foreground">Mean Absolute Error</div>
+                          <div className="text-foreground font-bold">{mlTrainingData.delay_model?.mae || '8.7'} minutes</div>
                         </div>
                         <div>
-                          <div className="text-gray-400">Weather Enhancement</div>
-                          <div className="text-yellow-400 font-bold">+12.3% accuracy</div>
+                          <div className="text-muted-foreground">Weather Enhancement</div>
+                          <div className="text-aero-amber-caution font-bold">+12.3% accuracy</div>
                         </div>
                       </div>
                     </div>
@@ -1133,17 +1133,17 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                     {/* Risk Classification */}
                     <div className="bg-gray-700 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white font-medium">Risk Classification</span>
+                        <span className="text-foreground font-medium">Risk Classification</span>
                         <span className="text-purple-400 text-sm font-bold">Ensemble</span>
                       </div>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <div className="text-gray-400">Classification Accuracy</div>
-                          <div className="text-white font-bold">{mlTrainingData.risk_model?.accuracy || '89.4'}%</div>
+                          <div className="text-muted-foreground">Classification Accuracy</div>
+                          <div className="text-foreground font-bold">{mlTrainingData.risk_model?.accuracy || '89.4'}%</div>
                         </div>
                         <div>
-                          <div className="text-gray-400">F1 Score</div>
-                          <div className="text-green-400 font-bold">{mlTrainingData.risk_model?.f1_score || '0.876'}</div>
+                          <div className="text-muted-foreground">F1 Score</div>
+                          <div className="text-aero-green-safe font-bold">{mlTrainingData.risk_model?.f1_score || '0.876'}</div>
                         </div>
                       </div>
                     </div>
@@ -1151,24 +1151,24 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                 </div>
 
                 {/* US BTS Data Integration */}
-                <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                  <h3 className="text-lg font-bold text-white mb-4">US BTS Historical Data Integration</h3>
+                <div className="bg-card rounded-lg p-6 border border-border">
+                  <h3 className="text-lg font-bold text-foreground mb-4">US BTS Historical Data Integration</h3>
                   {dualTrackOTPData?.historicalMLTraining?.usBTSData ? (
                     <div className="space-y-4">
                       <div className="bg-gray-700 rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-white font-medium">Data Coverage</span>
-                          <span className="text-green-400 text-sm font-bold">1987-Present</span>
+                          <span className="text-foreground font-medium">Data Coverage</span>
+                          <span className="text-aero-green-safe text-sm font-bold">1987-Present</span>
                         </div>
-                        <div className="text-sm text-gray-300">
+                        <div className="text-sm text-muted-foreground">
                           <p className="mb-2">📊 {dualTrackOTPData.historicalMLTraining.usBTSData.recordCount}</p>
                           <p className="mb-2">🌍 {dualTrackOTPData.historicalMLTraining.usBTSData.coverage}</p>
                           <p>🔄 {dualTrackOTPData.historicalMLTraining.usBTSData.updateFrequency}</p>
                         </div>
                       </div>
                       <div className="bg-gray-700 rounded-lg p-4">
-                        <div className="text-white font-medium mb-2">Key Metrics Available</div>
-                        <div className="text-sm text-gray-300 space-y-1">
+                        <div className="text-foreground font-medium mb-2">Key Metrics Available</div>
+                        <div className="text-sm text-muted-foreground space-y-1">
                           {dualTrackOTPData.historicalMLTraining.usBTSData.keyMetrics.map((metric, index) => (
                             <div key={index}>• {metric}</div>
                           ))}
@@ -1176,13 +1176,13 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="text-gray-400">Loading US BTS data integration...</div>
+                    <div className="text-muted-foreground">Loading US BTS data integration...</div>
                   )}
                 </div>
 
                 {/* Feature Importance */}
-                <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                  <h3 className="text-lg font-bold text-white mb-4">Top Predictive Features</h3>
+                <div className="bg-card rounded-lg p-6 border border-border">
+                  <h3 className="text-lg font-bold text-foreground mb-4">Top Predictive Features</h3>
                   <div className="space-y-3">
                     {[
                       { feature: 'Weather Severity Score', importance: 0.284, type: 'weather' },
@@ -1196,18 +1196,18 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                     ].map((item, index) => (
                       <div key={index} className="flex items-center justify-between bg-gray-700 rounded-lg p-3">
                         <div>
-                          <div className="text-white font-medium text-sm">{item.feature}</div>
+                          <div className="text-foreground font-medium text-sm">{item.feature}</div>
                           <div className={`text-xs ${
-                            item.type === 'weather' ? 'text-blue-400' :
-                            item.type === 'historical' ? 'text-green-400' :
-                            item.type === 'temporal' ? 'text-yellow-400' :
+                            item.type === 'weather' ? 'text-aero-blue-primary' :
+                            item.type === 'historical' ? 'text-aero-green-safe' :
+                            item.type === 'temporal' ? 'text-aero-amber-caution' :
                             'text-purple-400'
                           }`}>
                             {item.type}
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-white font-bold">{(item.importance * 100).toFixed(1)}%</div>
+                          <div className="text-foreground font-bold">{(item.importance * 100).toFixed(1)}%</div>
                           <div className="w-16 h-2 bg-gray-600 rounded-full overflow-hidden">
                             <div
                               className="h-full bg-gradient-to-r from-blue-400 to-green-400"
@@ -1221,31 +1221,31 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                 </div>
 
                 {/* Training Dataset Summary */}
-                <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                  <h3 className="text-lg font-bold text-white mb-4">Training Dataset</h3>
+                <div className="bg-card rounded-lg p-6 border border-border">
+                  <h3 className="text-lg font-bold text-foreground mb-4">Training Dataset</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gray-700 rounded-lg p-3">
-                      <div className="text-sm text-gray-400 mb-1">Total Records</div>
-                      <div className="text-xl font-bold text-white">{mlTrainingData.dataset?.total_records || '2,847'}</div>
+                      <div className="text-sm text-muted-foreground mb-1">Total Records</div>
+                      <div className="text-xl font-bold text-foreground">{mlTrainingData.dataset?.total_records || '2,847'}</div>
                     </div>
                     <div className="bg-gray-700 rounded-lg p-3">
-                      <div className="text-sm text-gray-400 mb-1">Weather Enhanced</div>
-                      <div className="text-xl font-bold text-blue-400">{mlTrainingData.dataset?.weather_enhanced || '1,923'}</div>
+                      <div className="text-sm text-muted-foreground mb-1">Weather Enhanced</div>
+                      <div className="text-xl font-bold text-aero-blue-primary">{mlTrainingData.dataset?.weather_enhanced || '1,923'}</div>
                     </div>
                     <div className="bg-gray-700 rounded-lg p-3">
-                      <div className="text-sm text-gray-400 mb-1">Virgin Atlantic</div>
-                      <div className="text-xl font-bold text-red-400">{mlTrainingData.dataset?.virgin_atlantic || '892'}</div>
+                      <div className="text-sm text-muted-foreground mb-1">Virgin Atlantic</div>
+                      <div className="text-xl font-bold text-va-red-primary">{mlTrainingData.dataset?.virgin_atlantic || '892'}</div>
                     </div>
                     <div className="bg-gray-700 rounded-lg p-3">
-                      <div className="text-sm text-gray-400 mb-1">Features</div>
-                      <div className="text-xl font-bold text-green-400">{mlTrainingData.dataset?.features || '47'}</div>
+                      <div className="text-sm text-muted-foreground mb-1">Features</div>
+                      <div className="text-xl font-bold text-aero-green-safe">{mlTrainingData.dataset?.features || '47'}</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Prediction Accuracy by Airport */}
-                <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-                  <h3 className="text-lg font-bold text-white mb-4">Hub-Specific Accuracy</h3>
+                <div className="bg-card rounded-lg p-6 border border-border">
+                  <h3 className="text-lg font-bold text-foreground mb-4">Hub-Specific Accuracy</h3>
                   <div className="space-y-3">
                     {primaryHubs.map((hub, index) => {
                       const accuracy = [94.7, 91.3, 85.7, 88.2, 82.4][index] || 85.0;
@@ -1253,11 +1253,11 @@ const EnhancedNetworkOTPDashboard: React.FC = () => {
                       return (
                         <div key={hub} className="flex items-center justify-between bg-gray-700 rounded-lg p-3">
                           <div>
-                            <div className="text-white font-medium">{hub}</div>
-                            <div className="text-gray-400 text-sm">MAE: {mae} minutes</div>
+                            <div className="text-foreground font-medium">{hub}</div>
+                            <div className="text-muted-foreground text-sm">MAE: {mae} minutes</div>
                           </div>
                           <div className="text-right">
-                            <div className="text-white font-bold">{accuracy}%</div>
+                            <div className="text-foreground font-bold">{accuracy}%</div>
                             <div className="w-16 h-2 bg-gray-600 rounded-full overflow-hidden">
                               <div
                                 className={`h-full ${accuracy > 90 ? 'bg-green-400' : accuracy > 85 ? 'bg-yellow-400' : 'bg-red-400'}`}

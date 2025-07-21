@@ -140,11 +140,11 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'connected':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
+        return <CheckCircle className="h-5 w-5 text-aero-green-safe" />;
       case 'testing':
-        return <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />;
+        return <Loader2 className="h-5 w-5 text-aero-blue-primary animate-spin" />;
       case 'error':
-        return <XCircle className="h-5 w-5 text-red-500" />;
+        return <XCircle className="h-5 w-5 text-va-red-primary" />;
       default:
         return <div className="h-5 w-5 rounded-full border-2 border-gray-400" />;
     }
@@ -156,23 +156,23 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Settings className="h-12 w-12 text-blue-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">Aviation API Services</h3>
-              <p className="text-gray-300">
+              <Settings className="h-12 w-12 text-aero-blue-primary mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">Aviation API Services</h3>
+              <p className="text-muted-foreground">
                 Connect to real-time aviation data sources for enhanced flight tracking and decision support
               </p>
             </div>
 
             <div className="grid gap-4">
               {apiServices.map((service) => (
-                <Card key={service.id} className="bg-gray-800/50 border-gray-600">
+                <Card key={service.id} className="bg-card/50 border-border">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="text-blue-400">{service.icon}</div>
+                        <div className="text-aero-blue-primary">{service.icon}</div>
                         <div>
-                          <CardTitle className="text-white text-lg">{service.name}</CardTitle>
-                          <p className="text-gray-400 text-sm">{service.description}</p>
+                          <CardTitle className="text-foreground text-lg">{service.name}</CardTitle>
+                          <p className="text-muted-foreground text-sm">{service.description}</p>
                         </div>
                       </div>
                       {getStatusIcon(service.status)}
@@ -181,7 +181,7 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
                   <CardContent>
                     <div className="space-y-3">
                       <div>
-                        <h4 className="text-sm font-medium text-gray-300 mb-2">Features:</h4>
+                        <h4 className="text-sm font-medium text-muted-foreground mb-2">Features:</h4>
                         <div className="flex flex-wrap gap-2">
                           {service.features.map((feature, index) => (
                             <span
@@ -200,7 +200,7 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
                           testApiConnection(service);
                         }}
                         disabled={service.status === 'testing'}
-                        className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full px-4 py-2 bg-aero-blue-primary text-foreground rounded hover:bg-aero-blue-light disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {service.status === 'testing' ? (
                           <>
@@ -223,9 +223,9 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <Globe className="h-12 w-12 text-green-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">Connection Testing</h3>
-              <p className="text-gray-300">
+              <Globe className="h-12 w-12 text-aero-green-safe mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">Connection Testing</h3>
+              <p className="text-muted-foreground">
                 Verify API connections and test data retrieval capabilities
               </p>
             </div>
@@ -238,7 +238,7 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
                   testAllConnections();
                 }}
                 disabled={isTestingAll}
-                className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-aero-blue-primary text-foreground rounded hover:bg-aero-blue-light disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isTestingAll ? (
                   <>
@@ -253,18 +253,18 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
 
             <div className="space-y-4">
               {testResults.map((result, index) => (
-                <Card key={index} className="bg-gray-800/50 border-gray-600">
+                <Card key={index} className="bg-card/50 border-border">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {result.success ? (
-                          <CheckCircle className="h-5 w-5 text-green-500" />
+                          <CheckCircle className="h-5 w-5 text-aero-green-safe" />
                         ) : (
-                          <XCircle className="h-5 w-5 text-red-500" />
+                          <XCircle className="h-5 w-5 text-va-red-primary" />
                         )}
                         <div>
-                          <h4 className="font-medium text-white">{result.service}</h4>
-                          <p className="text-sm text-gray-400">{result.message}</p>
+                          <h4 className="font-medium text-foreground">{result.service}</h4>
+                          <p className="text-sm text-muted-foreground">{result.message}</p>
                         </div>
                       </div>
                       <span
@@ -278,8 +278,8 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
                       </span>
                     </div>
                     {result.data && (
-                      <div className="mt-3 p-3 bg-gray-900/50 rounded text-xs">
-                        <pre className="text-gray-300 overflow-x-auto">
+                      <div className="mt-3 p-3 bg-card/50 rounded text-xs">
+                        <pre className="text-muted-foreground overflow-x-auto">
                           {JSON.stringify(result.data, null, 2)}
                         </pre>
                       </div>
@@ -296,58 +296,58 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">Integration Complete</h3>
-              <p className="text-gray-300">
+              <CheckCircle className="h-12 w-12 text-aero-green-safe mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">Integration Complete</h3>
+              <p className="text-muted-foreground">
                 Successfully connected {connectedServices.length} of {apiServices.length} aviation data services
               </p>
             </div>
 
-            <Card className="bg-green-900/20 border-green-600">
+            <Card className="bg-aero-green-safe/10 border-aero-green-safe/30">
               <CardContent className="p-6">
                 <h4 className="font-semibold text-green-300 mb-4">Active Services:</h4>
                 <div className="space-y-3">
                   {connectedServices.map((service) => (
                     <div key={service.id} className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <div className="text-green-400">{service.icon}</div>
-                      <span className="text-white">{service.name}</span>
+                      <CheckCircle className="h-5 w-5 text-aero-green-safe" />
+                      <div className="text-aero-green-safe">{service.icon}</div>
+                      <span className="text-foreground">{service.name}</span>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-blue-900/20 border-blue-600">
+            <Card className="bg-aero-blue-primary/10 border-aero-blue-primary/30">
               <CardContent className="p-6">
                 <h4 className="font-semibold text-blue-300 mb-4">Available Features:</h4>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-white">Real-time Flight Tracking</span>
+                      <CheckCircle className="h-4 w-4 text-aero-green-safe" />
+                      <span className="text-sm text-foreground">Real-time Flight Tracking</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-white">Live Aircraft Positions</span>
+                      <CheckCircle className="h-4 w-4 text-aero-green-safe" />
+                      <span className="text-sm text-foreground">Live Aircraft Positions</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-white">Airport Information</span>
+                      <CheckCircle className="h-4 w-4 text-aero-green-safe" />
+                      <span className="text-sm text-foreground">Airport Information</span>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-white">Satellite Imagery</span>
+                      <CheckCircle className="h-4 w-4 text-aero-green-safe" />
+                      <span className="text-sm text-foreground">Satellite Imagery</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-white">Flight Path Tracking</span>
+                      <CheckCircle className="h-4 w-4 text-aero-green-safe" />
+                      <span className="text-sm text-foreground">Flight Path Tracking</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-white">Emergency Notifications</span>
+                      <CheckCircle className="h-4 w-4 text-aero-green-safe" />
+                      <span className="text-sm text-foreground">Emergency Notifications</span>
                     </div>
                   </div>
                 </div>
@@ -363,12 +363,12 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-gray-900 border-gray-700">
-        <CardHeader className="border-b border-gray-700">
+      <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-card border-border">
+        <CardHeader className="border-b border-border">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-2xl text-white">API Integration Wizard</CardTitle>
-              <p className="text-gray-400 mt-1">{steps[currentStep].description}</p>
+              <CardTitle className="text-2xl text-foreground">API Integration Wizard</CardTitle>
+              <p className="text-muted-foreground mt-1">{steps[currentStep].description}</p>
             </div>
             <button 
               onClick={(e) => {
@@ -376,7 +376,7 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
                 console.log('Close (X) button clicked');
                 onClose();
               }}
-              className="text-gray-400 hover:text-white p-1"
+              className="text-muted-foreground hover:text-foreground p-1"
             >
               ✕
             </button>
@@ -389,8 +389,8 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                     index <= currentStep
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-700 text-gray-400'
+                      ? 'bg-aero-blue-primary text-foreground'
+                      : 'bg-gray-700 text-muted-foreground'
                   }`}
                 >
                   {index + 1}
@@ -398,7 +398,7 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
                 {index < steps.length - 1 && (
                   <div
                     className={`w-12 h-0.5 ${
-                      index < currentStep ? 'bg-blue-600' : 'bg-gray-700'
+                      index < currentStep ? 'bg-aero-blue-primary' : 'bg-gray-700'
                     }`}
                   />
                 )}
@@ -411,7 +411,7 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
           {renderStep()}
         </CardContent>
 
-        <div className="border-t border-gray-700 p-6 flex justify-between">
+        <div className="border-t border-border p-6 flex justify-between">
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -419,7 +419,7 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
               setCurrentStep(Math.max(0, currentStep - 1));
             }}
             disabled={currentStep === 0}
-            className="px-4 py-2 border border-gray-600 text-gray-300 rounded hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 border border-border text-muted-foreground rounded hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
@@ -431,7 +431,7 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
                 console.log('Next button clicked, currentStep:', currentStep);
                 setCurrentStep(Math.min(steps.length - 1, currentStep + 1));
               }}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="px-4 py-2 bg-aero-blue-primary text-foreground rounded hover:bg-aero-blue-light"
             >
               Next
             </button>
@@ -442,7 +442,7 @@ export default function ApiIntegrationWizard({ onClose }: { onClose: () => void 
                 console.log('Complete Integration button clicked');
                 onClose();
               }}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              className="px-4 py-2 bg-green-600 text-foreground rounded hover:bg-green-700"
             >
               Complete Integration
             </button>

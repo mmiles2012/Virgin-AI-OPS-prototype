@@ -124,9 +124,9 @@ export default function ConsolidatedFaaDashboard() {
 
   const getRiskColor = (risk: string) => {
     switch (risk?.toLowerCase()) {
-      case "green": return "bg-green-100 border-green-300 text-green-800";
-      case "amber": return "bg-amber-100 border-amber-300 text-amber-800";
-      case "red": return "bg-red-100 border-red-300 text-red-800";
+      case "green": return "bg-aero-green-safe/10 border-aero-green-safe/30 text-aero-green-dark";
+      case "amber": return "bg-aero-amber-caution/10 border-aero-amber-caution/30 text-aero-amber-dark";
+      case "red": return "bg-va-red-primary/10 border-va-red-primary/30 text-va-red-primary";
       default: return "bg-gray-100 border-gray-300 text-gray-800";
     }
   };
@@ -141,9 +141,9 @@ export default function ConsolidatedFaaDashboard() {
   };
 
   const getWeatherIcon = (airport: ConsolidatedAirportData) => {
-    if (airport.snow_days > 0) return <Snowflake className="w-4 h-4 text-blue-600" />;
-    if (airport.storm_days > 3) return <Zap className="w-4 h-4 text-yellow-600" />;
-    if (airport.precip_mm > 100) return <Cloud className="w-4 h-4 text-gray-600" />;
+    if (airport.snow_days > 0) return <Snowflake className="w-4 h-4 text-aero-blue-dark" />;
+    if (airport.storm_days > 3) return <Zap className="w-4 h-4 text-aero-amber-caution" />;
+    if (airport.precip_mm > 100) return <Cloud className="w-4 h-4 text-muted-foreground" />;
     return null;
   };
 
@@ -151,8 +151,8 @@ export default function ConsolidatedFaaDashboard() {
     const difference = predicted - actual;
     if (Math.abs(difference) < 5) return null;
     return difference > 0 ? 
-      <TrendingUp className="w-4 h-4 text-red-500" /> : 
-      <TrendingDown className="w-4 h-4 text-green-500" />;
+      <TrendingUp className="w-4 h-4 text-va-red-primary" /> : 
+      <TrendingDown className="w-4 h-4 text-aero-green-safe" />;
   };
 
   const formatDelay = (minutes: number): string => {
@@ -166,7 +166,7 @@ export default function ConsolidatedFaaDashboard() {
     return (
       <div className="p-6">
         <div className="flex items-center justify-center h-40">
-          <div className="text-gray-500">Loading consolidated aviation intelligence...</div>
+          <div className="text-foreground0">Loading consolidated aviation intelligence...</div>
         </div>
       </div>
     );
@@ -187,15 +187,15 @@ export default function ConsolidatedFaaDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">US Aviation Intelligence</h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Consolidated real-time delay prediction and weather analysis
           </p>
         </div>
         <div className="text-right">
-          <div className="text-sm text-gray-500">Last updated: {lastUpdate}</div>
+          <div className="text-sm text-foreground0">Last updated: {lastUpdate}</div>
           <div className="flex items-center space-x-2 mt-1">
             <Badge variant="outline">{airportData.length} airports monitored</Badge>
-            <Badge className={highPriorityAirports.length > 0 ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}>
+            <Badge className={highPriorityAirports.length > 0 ? "bg-va-red-primary/10 text-va-red-primary" : "bg-aero-green-safe/10 text-aero-green-dark"}>
               {highPriorityAirports.length} alerts
             </Badge>
           </div>
@@ -213,9 +213,9 @@ export default function ConsolidatedFaaDashboard() {
         <TabsContent value="overview" className="space-y-6">
           {/* Critical Alerts Banner */}
           {highPriorityAirports.length > 0 && (
-            <Card className="border-red-200 bg-red-50">
+            <Card className="border-va-red-primary/30 bg-va-red-primary/5">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-red-800">
+                <CardTitle className="flex items-center space-x-2 text-va-red-primary">
                   <AlertTriangle className="w-5 h-5" />
                   <span>High Priority Alerts ({highPriorityAirports.length})</span>
                 </CardTitle>
@@ -233,7 +233,7 @@ export default function ConsolidatedFaaDashboard() {
                           {getRiskIcon(airport.actual_risk)}
                           {airport.actual_risk}
                         </Badge>
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-muted-foreground">
                           {formatDelay(airport.actual_delay)}
                         </span>
                       </div>
@@ -261,7 +261,7 @@ export default function ConsolidatedFaaDashboard() {
                     <div className="flex items-center space-x-3">
                       <div className="text-right">
                         <div className="font-semibold">{formatDelay(airport.actual_delay)}</div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-foreground0">
                           NAS: {airport.nas_delay_status || 'Normal'}
                         </div>
                       </div>
@@ -296,7 +296,7 @@ export default function ConsolidatedFaaDashboard() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Current Delay</span>
+                    <span className="text-sm text-muted-foreground">Current Delay</span>
                     <div className="flex items-center space-x-1">
                       <span className="font-semibold">{formatDelay(airport.actual_delay)}</span>
                       {getTrendIcon(airport.actual_delay, airport.predicted_delay)}
@@ -304,21 +304,21 @@ export default function ConsolidatedFaaDashboard() {
                   </div>
                   
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">On-Time Performance</span>
+                    <span className="text-sm text-muted-foreground">On-Time Performance</span>
                     <span className="font-semibold">{airport.actual_otp.toFixed(1)}%</span>
                   </div>
 
                   {airport.nas_delay_status && airport.nas_delay_status !== 'Normal' && (
-                    <div className="p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
-                      <div className="font-medium text-yellow-800">FAA Status: {airport.nas_delay_status}</div>
+                    <div className="p-2 bg-aero-amber-caution/10 border border-aero-amber-caution/30 rounded text-xs">
+                      <div className="font-medium text-aero-amber-dark">FAA Status: {airport.nas_delay_status}</div>
                       {airport.nas_reason && (
-                        <div className="text-yellow-700">Reason: {airport.nas_reason}</div>
+                        <div className="text-aero-amber-dark">Reason: {airport.nas_reason}</div>
                       )}
                     </div>
                   )}
 
                   {(airport.storm_days > 0 || airport.snow_days > 0 || airport.precip_mm > 50) && (
-                    <div className="flex justify-between text-xs text-gray-600">
+                    <div className="flex justify-between text-xs text-muted-foreground">
                       <span>Weather: {airport.storm_days}⛈️ {airport.snow_days}❄️</span>
                       <span>{Math.round(airport.precip_mm)}mm</span>
                     </div>
@@ -360,9 +360,9 @@ export default function ConsolidatedFaaDashboard() {
                         </div>
                         <div className="flex justify-between">
                           <span>Accuracy:</span>
-                          <Badge className={delayAccuracy < 10 ? "bg-green-100 text-green-800" : 
-                                           delayAccuracy < 20 ? "bg-yellow-500 text-white" : 
-                                           "bg-red-100 text-red-800"}>
+                          <Badge className={delayAccuracy < 10 ? "bg-aero-green-safe/10 text-aero-green-dark" : 
+                                           delayAccuracy < 20 ? "bg-aero-amber-caution/10 text-aero-amber-dark" : 
+                                           "bg-va-red-primary/10 text-va-red-primary"}>
                             ±{formatDelay(delayAccuracy)}
                           </Badge>
                         </div>
@@ -397,11 +397,11 @@ export default function ConsolidatedFaaDashboard() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {Object.entries(correlationData.correlations).map(([key, value]) => (
                       <div key={key} className="p-3 border rounded-lg">
-                        <div className="text-sm text-gray-600 mb-1">
+                        <div className="text-sm text-muted-foreground mb-1">
                           {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </div>
-                        <Badge className={Math.abs(value) > 0.7 ? "bg-blue-100 text-blue-800" : 
-                                         Math.abs(value) > 0.4 ? "bg-yellow-500 text-white" : 
+                        <Badge className={Math.abs(value) > 0.7 ? "bg-aero-blue-primary/10 text-aero-blue-dark" : 
+                                         Math.abs(value) > 0.4 ? "bg-aero-amber-caution/10 text-aero-amber-dark" : 
                                          "bg-gray-100 text-gray-800"}>
                           {value > 0 ? '+' : ''}{value.toFixed(4)}
                         </Badge>
@@ -422,13 +422,13 @@ export default function ConsolidatedFaaDashboard() {
                         <div className="flex items-center space-x-4">
                           <Badge variant="outline">Month {month.month}</Badge>
                           <div className="text-sm">
-                            <span className="text-blue-600 font-medium">US: {month.us_avg_delay_minutes} mins</span>
+                            <span className="text-aero-blue-dark font-medium">US: {month.us_avg_delay_minutes} mins</span>
                             <span className="mx-2">|</span>
                             <span className="text-purple-600 font-medium">UK: {month.uk_avg_delay_minutes} mins</span>
                           </div>
                         </div>
-                        <Badge className={Math.abs(month.correlation_strength) > 0.7 ? "bg-blue-100 text-blue-800" : 
-                                         Math.abs(month.correlation_strength) > 0.4 ? "bg-yellow-500 text-white" : 
+                        <Badge className={Math.abs(month.correlation_strength) > 0.7 ? "bg-aero-blue-primary/10 text-aero-blue-dark" : 
+                                         Math.abs(month.correlation_strength) > 0.4 ? "bg-aero-amber-caution/10 text-aero-amber-dark" : 
                                          "bg-gray-100 text-gray-800"}>
                           {month.correlation_strength.toFixed(3)}
                         </Badge>
@@ -461,7 +461,7 @@ export default function ConsolidatedFaaDashboard() {
                       <CardContent className="space-y-2">
                         <div className="flex justify-between">
                           <span className="text-sm">Storm Days:</span>
-                          <Badge className={airport.storm_days > 5 ? "bg-red-500 text-white" : "bg-yellow-500 text-white"}>
+                          <Badge className={airport.storm_days > 5 ? "bg-va-red-primary text-white" : "bg-aero-amber-caution text-white"}>
                             {airport.storm_days}
                           </Badge>
                         </div>

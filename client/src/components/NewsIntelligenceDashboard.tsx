@@ -123,18 +123,18 @@ export function NewsIntelligenceDashboard() {
 
   const getRiskLevelColor = (level: string) => {
     switch (level) {
-      case 'critical': return 'bg-red-600 text-white';
-      case 'high': return 'bg-red-500 text-white';
-      case 'medium': return 'bg-yellow-500 text-white';
-      case 'low': return 'bg-green-500 text-white';
-      default: return 'bg-gray-500 text-white';
+      case 'critical': return 'bg-va-red-primary text-foreground';
+      case 'high': return 'bg-red-500 text-foreground';
+      case 'medium': return 'bg-yellow-500 text-foreground';
+      case 'low': return 'bg-green-500 text-foreground';
+      default: return 'bg-gray-500 text-foreground';
     }
   };
 
   const getImpactColor = (impact: string) => {
     switch (impact) {
       case 'high': return 'bg-red-100 text-red-800 border-red-200';
-      case 'medium': return 'bg-yellow-500 text-white border-yellow-400';
+      case 'medium': return 'bg-yellow-500 text-foreground border-yellow-400';
       case 'low': return 'bg-green-100 text-green-800 border-green-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
@@ -153,10 +153,10 @@ export function NewsIntelligenceDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Globe className="h-8 w-8 text-blue-600" />
+            <Globe className="h-8 w-8 text-aero-blue-dark" />
             Geopolitical Intelligence Dashboard
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             Real-time geopolitical risk assessment powered by comprehensive news intelligence
           </p>
         </div>
@@ -203,7 +203,7 @@ export function NewsIntelligenceDashboard() {
                         {getConnectionIcon(status.success)}
                         <div>
                           <div className="font-medium capitalize">{api.replace(/([A-Z])/g, ' $1')}</div>
-                          <div className="text-sm text-gray-600">{status.message}</div>
+                          <div className="text-sm text-muted-foreground">{status.message}</div>
                         </div>
                       </div>
                       <Badge 
@@ -217,7 +217,7 @@ export function NewsIntelligenceDashboard() {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-gray-600">Click "Test APIs" to check news service connections</p>
+                  <p className="text-muted-foreground">Click "Test APIs" to check news service connections</p>
                 </div>
               )}
             </CardContent>
@@ -246,7 +246,7 @@ export function NewsIntelligenceDashboard() {
                       <div className="space-y-4">
                         <div>
                           <h4 className="font-medium mb-2">Risk Summary</h4>
-                          <p className="text-sm text-gray-600">{analysis.summary}</p>
+                          <p className="text-sm text-muted-foreground">{analysis.summary}</p>
                         </div>
 
                         <div>
@@ -262,7 +262,7 @@ export function NewsIntelligenceDashboard() {
                                 </Badge>
                                 <div className="flex-1">
                                   <div className="font-medium text-sm">{factor.category}</div>
-                                  <div className="text-xs text-gray-600">{factor.description}</div>
+                                  <div className="text-xs text-muted-foreground">{factor.description}</div>
                                 </div>
                               </div>
                             ))}
@@ -273,7 +273,7 @@ export function NewsIntelligenceDashboard() {
                           <h4 className="font-medium mb-2">Operational Recommendations</h4>
                           <ul className="space-y-1">
                             {analysis.recommendations.slice(0, 3).map((rec, index) => (
-                              <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                              <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
                                 <AlertTriangle className="h-3 w-3 mt-0.5 flex-shrink-0" />
                                 {rec}
                               </li>
@@ -281,7 +281,7 @@ export function NewsIntelligenceDashboard() {
                           </ul>
                         </div>
 
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <div className="flex items-center gap-2 text-xs text-foreground0">
                           <Clock className="h-3 w-3" />
                           {analysis.articles.length} articles analyzed
                         </div>
@@ -329,9 +329,9 @@ export function NewsIntelligenceDashboard() {
                       {analysis.articles.slice(0, 4).map((article, index) => (
                         <div key={index} className="bg-gray-50 p-3 rounded border">
                           <h5 className="font-medium text-sm mb-1">{article.title}</h5>
-                          <p className="text-xs text-gray-600 mb-2">{article.description}</p>
+                          <p className="text-xs text-muted-foreground mb-2">{article.description}</p>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">{article.source}</span>
+                            <span className="text-xs text-foreground0">{article.source}</span>
                             <Badge variant="outline" className="text-xs">
                               {article.category}
                             </Badge>
@@ -344,7 +344,7 @@ export function NewsIntelligenceDashboard() {
                 
                 {Object.keys(geopoliticalData).length === 0 && (
                   <div className="text-center py-8">
-                    <p className="text-gray-600">Load geopolitical analysis to view live intelligence feed</p>
+                    <p className="text-muted-foreground">Load geopolitical analysis to view live intelligence feed</p>
                   </div>
                 )}
                 </div>

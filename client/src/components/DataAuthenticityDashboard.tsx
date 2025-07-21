@@ -151,13 +151,13 @@ const DataAuthenticityDashboard: React.FC = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'authentic':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
+        return <CheckCircle className="w-5 h-5 text-aero-green-safe" />;
       case 'simulated':
-        return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+        return <AlertTriangle className="w-5 h-5 text-aero-amber-caution" />;
       case 'partial':
-        return <Clock className="w-5 h-5 text-blue-500" />;
+        return <Clock className="w-5 h-5 text-aero-blue-primary" />;
       default:
-        return <Database className="w-5 h-5 text-gray-500" />;
+        return <Database className="w-5 h-5 text-foreground0" />;
     }
   };
 
@@ -177,64 +177,64 @@ const DataAuthenticityDashboard: React.FC = () => {
   const authenticityPercentage = Math.round((overallStats.authentic / overallStats.total) * 100);
 
   return (
-    <div className="p-6 bg-black text-white min-h-screen overflow-y-auto max-h-screen">
+    <div className="p-6 bg-black text-foreground min-h-screen overflow-y-auto max-h-screen">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">AINO Platform Data Authenticity Report</h1>
-          <p className="text-gray-300">Real-time assessment of authentic vs simulated data sources</p>
+          <p className="text-muted-foreground">Real-time assessment of authentic vs simulated data sources</p>
         </div>
 
         {/* Overall Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-green-900/20 border-green-600">
+          <Card className="bg-aero-green-safe/10 border-aero-green-safe/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-green-400 flex items-center">
+              <CardTitle className="text-aero-green-safe flex items-center">
                 <CheckCircle className="w-5 h-5 mr-2" />
                 Authentic Data
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-400">{overallStats.authentic}</div>
+              <div className="text-2xl font-bold text-aero-green-safe">{overallStats.authentic}</div>
               <p className="text-sm text-green-300">Real API sources</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-yellow-900/20 border-yellow-600">
+          <Card className="bg-aero-amber-caution/10 border-aero-amber-caution/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-yellow-400 flex items-center">
+              <CardTitle className="text-aero-amber-caution flex items-center">
                 <AlertTriangle className="w-5 h-5 mr-2" />
                 Simulated Data
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-yellow-400">{overallStats.simulated}</div>
+              <div className="text-2xl font-bold text-aero-amber-caution">{overallStats.simulated}</div>
               <p className="text-sm text-yellow-300">Network restrictions</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-blue-900/20 border-blue-600">
+          <Card className="bg-aero-blue-primary/10 border-aero-blue-primary/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-blue-400 flex items-center">
+              <CardTitle className="text-aero-blue-primary flex items-center">
                 <Globe className="w-5 h-5 mr-2" />
                 Authenticity Rate
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-400">{authenticityPercentage}%</div>
+              <div className="text-2xl font-bold text-aero-blue-primary">{authenticityPercentage}%</div>
               <p className="text-sm text-blue-300">Overall authentic</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900/20 border-gray-600">
+          <Card className="bg-card/20 border-border">
             <CardHeader className="pb-3">
-              <CardTitle className="text-gray-400 flex items-center">
+              <CardTitle className="text-muted-foreground flex items-center">
                 <Database className="w-5 h-5 mr-2" />
                 Total Sources
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-400">{overallStats.total}</div>
-              <p className="text-sm text-gray-300">Data sources</p>
+              <div className="text-2xl font-bold text-muted-foreground">{overallStats.total}</div>
+              <p className="text-sm text-muted-foreground">Data sources</p>
             </CardContent>
           </Card>
         </div>
@@ -242,9 +242,9 @@ const DataAuthenticityDashboard: React.FC = () => {
         {/* Detailed Categories */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {authenticityData.map((category, categoryIndex) => (
-            <Card key={categoryIndex} className="bg-gray-900/50 border-gray-600">
+            <Card key={categoryIndex} className="bg-card/50 border-border">
               <CardHeader>
-                <CardTitle className="text-xl text-white flex items-center">
+                <CardTitle className="text-xl text-foreground flex items-center">
                   <Wifi className="w-5 h-5 mr-2" />
                   {category.category}
                 </CardTitle>
@@ -252,18 +252,18 @@ const DataAuthenticityDashboard: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   {category.items.map((item, itemIndex) => (
-                    <div key={itemIndex} className="border border-gray-700 rounded-lg p-4">
+                    <div key={itemIndex} className="border border-border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center">
                           {getStatusIcon(item.status)}
-                          <h3 className="font-semibold text-white ml-2">{item.name}</h3>
+                          <h3 className="font-semibold text-foreground ml-2">{item.name}</h3>
                         </div>
                         <span className={`px-2 py-1 rounded text-xs font-medium border ${getStatusColor(item.status)}`}>
                           {item.status.toUpperCase()}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-300 mb-2">{item.description}</p>
-                      <div className="flex justify-between text-xs text-gray-400">
+                      <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
+                      <div className="flex justify-between text-xs text-muted-foreground">
                         <span>Source: {item.source}</span>
                         <span>Updated: {item.lastUpdated}</span>
                       </div>
@@ -276,9 +276,9 @@ const DataAuthenticityDashboard: React.FC = () => {
         </div>
 
         {/* Enhancement Recommendations */}
-        <Card className="mt-8 bg-blue-900/20 border-blue-600">
+        <Card className="mt-8 bg-aero-blue-primary/10 border-aero-blue-primary/30">
           <CardHeader>
-            <CardTitle className="text-blue-400">Enhancement Opportunities</CardTitle>
+            <CardTitle className="text-aero-blue-primary">Enhancement Opportunities</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

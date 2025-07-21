@@ -91,7 +91,7 @@ export default function CockpitInterface({ onEmergencyToggle }: CockpitInterface
             </div>
 
             {/* Attitude Indicator */}
-            <div className="bg-gray-900 rounded-lg p-4 border border-blue-500">
+            <div className="bg-card rounded-lg p-4 border border-blue-500">
               <h4 className="text-blue-300 text-sm mb-2">Attitude Indicator</h4>
               <div className="w-full h-32 bg-gradient-to-b from-blue-500 to-green-600 rounded relative overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -149,15 +149,15 @@ export default function CockpitInterface({ onEmergencyToggle }: CockpitInterface
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-blue-200">Engine 1 Temp</span>
-                      <span className="text-green-400">{engineTemps[0]}°C</span>
+                      <span className="text-aero-green-safe">{engineTemps[0]}°C</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-blue-200">Engine 2 Temp</span>
-                      <span className="text-green-400">{engineTemps[1]}°C</span>
+                      <span className="text-aero-green-safe">{engineTemps[1]}°C</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-blue-200">Fuel Remaining</span>
-                      <span className="text-yellow-400">{fuelRemaining.toFixed(0)} lbs</span>
+                      <span className="text-aero-amber-caution">{fuelRemaining.toFixed(0)} lbs</span>
                     </div>
                   </div>
                 </div>
@@ -184,7 +184,7 @@ export default function CockpitInterface({ onEmergencyToggle }: CockpitInterface
 
                     <Button
                       onClick={handleEmergencyResponse}
-                      className="w-full bg-red-600 hover:bg-red-700"
+                      className="w-full bg-va-red-primary hover:bg-va-red-heritage"
                     >
                       Declare Emergency
                     </Button>
@@ -245,11 +245,11 @@ export default function CockpitInterface({ onEmergencyToggle }: CockpitInterface
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center">
                   <div className="text-blue-300 text-sm">Engine 1</div>
-                  <div className="text-2xl font-mono text-green-400">{(throttle * 0.95).toFixed(0)}%</div>
+                  <div className="text-2xl font-mono text-aero-green-safe">{(throttle * 0.95).toFixed(0)}%</div>
                 </div>
                 <div className="text-center">
                   <div className="text-blue-300 text-sm">Engine 2</div>
-                  <div className="text-2xl font-mono text-green-400">{(throttle * 1.02).toFixed(0)}%</div>
+                  <div className="text-2xl font-mono text-aero-green-safe">{(throttle * 1.02).toFixed(0)}%</div>
                 </div>
               </div>
 
@@ -260,15 +260,15 @@ export default function CockpitInterface({ onEmergencyToggle }: CockpitInterface
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-blue-200">Mach Number</span>
-                    <span className="text-white font-mono">{(airspeed / 661.47).toFixed(3)}</span>
+                    <span className="text-foreground font-mono">{(airspeed / 661.47).toFixed(3)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-blue-200">Ground Speed</span>
-                    <span className="text-white font-mono">{airspeed} kts</span>
+                    <span className="text-foreground font-mono">{airspeed} kts</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-blue-200">Range</span>
-                    <span className="text-white font-mono">{(fuelRemaining / 3.5).toFixed(0)} nm</span>
+                    <span className="text-foreground font-mono">{(fuelRemaining / 3.5).toFixed(0)} nm</span>
                   </div>
                 </div>
               </div>

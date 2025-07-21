@@ -31,12 +31,12 @@ export const NetworkHeader: React.FC<NetworkHeaderProps> = ({
     <div className={`px-6 py-4 ${getHeaderStyle()}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Plane className="w-6 h-6 text-white" />
-          <h2 className="text-xl font-bold text-white">
+          <Plane className="w-6 h-6 text-foreground" />
+          <h2 className="text-xl font-bold text-foreground">
             Virgin Atlantic Enhanced Network Operations
           </h2>
         </div>
-        <div className="flex items-center gap-4 text-white/80">
+        <div className="flex items-center gap-4 text-foreground/80">
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
             <span className="text-xs">LIVE DATA</span>
@@ -67,7 +67,7 @@ export const NetworkStatsBar: React.FC<NetworkStatsBarProps> = ({
       <div className="grid grid-cols-4 gap-6">
         <div className="text-center">
           <div className="text-2xl font-bold text-gray-900">{totalFlights}</div>
-          <div className="text-sm text-gray-500">Total Flights</div>
+          <div className="text-sm text-foreground0">Total Flights</div>
         </div>
         <div className="text-center">
           <div className={`text-2xl font-bold ${
@@ -76,15 +76,15 @@ export const NetworkStatsBar: React.FC<NetworkStatsBarProps> = ({
           }`}>
             {delayRate.toFixed(1)}%
           </div>
-          <div className="text-sm text-gray-500">Network Delay Rate</div>
+          <div className="text-sm text-foreground0">Network Delay Rate</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-blue-600">{avgDelay.toFixed(0)}min</div>
-          <div className="text-sm text-gray-500">Avg Delay Time</div>
+          <div className="text-2xl font-bold text-aero-blue-dark">{avgDelay.toFixed(0)}min</div>
+          <div className="text-sm text-foreground0">Avg Delay Time</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-purple-600">{hubCount}</div>
-          <div className="text-sm text-gray-500">Monitored Hubs</div>
+          <div className="text-sm text-foreground0">Monitored Hubs</div>
         </div>
       </div>
     </div>

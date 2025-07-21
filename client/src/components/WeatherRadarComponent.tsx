@@ -76,7 +76,7 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
                 onClick={() => fetchWeatherRadar(selectedSource)}
                 disabled={radarLoading}
                 size="sm"
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-va-red-primary hover:bg-va-red-heritage text-foreground"
               >
                 <RefreshCw className={`w-3 h-3 ${radarLoading ? 'animate-spin' : ''}`} />
               </Button>
@@ -99,11 +99,11 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
                       alt="Weather Radar" 
                       className="w-full h-full object-cover rounded-lg"
                     />
-                    <div className="absolute top-2 right-2 bg-gray-900/50 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Expand className="w-4 h-4 text-white" />
+                    <div className="absolute top-2 right-2 bg-card/50 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Expand className="w-4 h-4 text-foreground" />
                     </div>
-                    <div className="absolute bottom-2 left-2 bg-gray-900/50 rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="text-white text-xs">Click to enlarge</span>
+                    <div className="absolute bottom-2 left-2 bg-card/50 rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-foreground text-xs">Click to enlarge</span>
                     </div>
                   </>
                 ) : (
@@ -124,7 +124,7 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
               
               <div className="flex-1 bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden">
                 {radarLoading ? (
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className="flex items-center gap-2 text-muted-foreground">
                     <RefreshCw className="w-6 h-6 animate-spin" />
                     Loading radar...
                   </div>
@@ -157,7 +157,7 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
                   <Button
                     onClick={() => fetchWeatherRadar(selectedSource)}
                     disabled={radarLoading}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-aero-blue-primary hover:bg-aero-blue-light"
                   >
                     <RefreshCw className={`w-4 h-4 ${radarLoading ? 'animate-spin' : ''}`} />
                     Refresh
@@ -168,7 +168,7 @@ export default function WeatherRadarComponent({ className }: WeatherRadarCompone
           </Dialog>
           
           {/* Last Updated */}
-          <div className="text-xs text-gray-600 mt-2 text-center">
+          <div className="text-xs text-muted-foreground mt-2 text-center">
             Last updated: {lastUpdated.toLocaleTimeString()}
           </div>
         </CardContent>

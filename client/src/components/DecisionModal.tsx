@@ -97,18 +97,18 @@ const DecisionModal: React.FC<DecisionModalProps> = ({
       case 'low': return 'bg-green-600';
       case 'medium': return 'bg-yellow-600';
       case 'high': return 'bg-orange-600';
-      case 'critical': return 'bg-red-600';
+      case 'critical': return 'bg-va-red-primary';
       default: return 'bg-gray-600';
     }
   };
 
   const getEmergencyIcon = () => {
     switch (emergencyType) {
-      case 'medical': return <Activity className="h-5 w-5 text-red-400" />;
-      case 'technical': return <Zap className="h-5 w-5 text-orange-400" />;
-      case 'fuel': return <Fuel className="h-5 w-5 text-yellow-400" />;
-      case 'weather': return <AlertTriangle className="h-5 w-5 text-blue-400" />;
-      default: return <Shield className="h-5 w-5 text-gray-400" />;
+      case 'medical': return <Activity className="h-5 w-5 text-va-red-primary" />;
+      case 'technical': return <Zap className="h-5 w-5 text-aero-orange-alert" />;
+      case 'fuel': return <Fuel className="h-5 w-5 text-aero-amber-caution" />;
+      case 'weather': return <AlertTriangle className="h-5 w-5 text-aero-blue-primary" />;
+      default: return <Shield className="h-5 w-5 text-muted-foreground" />;
     }
   };
 
@@ -137,26 +137,26 @@ const DecisionModal: React.FC<DecisionModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gray-900 border-gray-700">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-card border-border">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-3 text-white">
+          <DialogTitle className="flex items-center gap-3 text-foreground">
             {getEmergencyIcon()}
             Decision Required - {flightNumber}
           </DialogTitle>
-          <DialogDescription className="text-gray-300">
+          <DialogDescription className="text-muted-foreground">
             {emergencyType.charAt(0).toUpperCase() + emergencyType.slice(1)} situation requires immediate decision
           </DialogDescription>
         </DialogHeader>
 
         {/* Decision Timer */}
-        <Card className="border-orange-500 bg-orange-900/20 mb-4">
+        <Card className="border-orange-500 bg-aero-orange-alert/10 mb-4">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Timer className="h-5 w-5 text-orange-400" />
+                <Timer className="h-5 w-5 text-aero-orange-alert" />
                 <span className="text-orange-300 font-medium">Time to Decision</span>
               </div>
-              <div className="text-2xl font-mono text-orange-400">
+              <div className="text-2xl font-mono text-aero-orange-alert">
                 {formatTime(timer)}
               </div>
             </div>
@@ -169,7 +169,7 @@ const DecisionModal: React.FC<DecisionModalProps> = ({
 
         {/* Decision Options */}
         <div className="space-y-3">
-          <h3 className="text-white font-medium mb-3">Available Options ({options.length})</h3>
+          <h3 className="text-foreground font-medium mb-3">Available Options ({options.length})</h3>
           
           {options.map((option) => (
             <Card
@@ -177,7 +177,7 @@ const DecisionModal: React.FC<DecisionModalProps> = ({
               className={`cursor-pointer transition-all ${
                 selectedOption === option.id
                   ? 'border-blue-400 bg-blue-900/30'
-                  : 'border-gray-600 hover:border-gray-500'
+                  : 'border-border hover:border-gray-500'
               }`}
               onClick={() => setSelectedOption(option.id)}
             >
@@ -185,53 +185,53 @@ const DecisionModal: React.FC<DecisionModalProps> = ({
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <div className="font-medium text-white">
+                      <div className="font-medium text-foreground">
                         {option.title}
                       </div>
                       {aiRecommendation === option.id && (
-                        <Badge className="bg-blue-600 text-white text-xs">
+                        <Badge className="bg-aero-blue-primary text-foreground text-xs">
                           AI RECOMMENDED
                         </Badge>
                       )}
                     </div>
-                    <div className="text-gray-300 text-sm mb-3">
+                    <div className="text-muted-foreground text-sm mb-3">
                       {option.description}
                     </div>
                     
                     {/* Impact Metrics */}
                     <div className="grid grid-cols-4 gap-4 text-sm">
                       <div className="flex items-center gap-1">
-                        <DollarSign className="h-4 w-4 text-green-400" />
-                        <span className="text-gray-400">Cost:</span>
-                        <span className={option.impact.cost < 0 ? 'text-green-400' : 'text-red-400'}>
+                        <DollarSign className="h-4 w-4 text-aero-green-safe" />
+                        <span className="text-muted-foreground">Cost:</span>
+                        <span className={option.impact.cost < 0 ? 'text-aero-green-safe' : 'text-va-red-primary'}>
                           {option.impact.cost < 0 ? '-' : '+'}${Math.abs(option.impact.cost).toLocaleString()}
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4 text-blue-400" />
-                        <span className="text-gray-400">Delay:</span>
-                        <span className={option.impact.delay < 0 ? 'text-green-400' : 'text-red-400'}>
+                        <Clock className="h-4 w-4 text-aero-blue-primary" />
+                        <span className="text-muted-foreground">Delay:</span>
+                        <span className={option.impact.delay < 0 ? 'text-aero-green-safe' : 'text-va-red-primary'}>
                           {option.impact.delay < 0 ? '-' : '+'}${Math.abs(option.impact.delay)}min
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Shield className="h-4 w-4 text-purple-400" />
-                        <span className="text-gray-400">Safety:</span>
-                        <span className={option.impact.safety > 0 ? 'text-green-400' : 'text-red-400'}>
+                        <span className="text-muted-foreground">Safety:</span>
+                        <span className={option.impact.safety > 0 ? 'text-aero-green-safe' : 'text-va-red-primary'}>
                           {option.impact.safety > 0 ? '+' : ''}{option.impact.safety}%
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4 text-yellow-400" />
-                        <span className="text-gray-400">Passengers:</span>
-                        <span className="text-gray-300">{option.impact.passengers}</span>
+                        <Users className="h-4 w-4 text-aero-amber-caution" />
+                        <span className="text-muted-foreground">Passengers:</span>
+                        <span className="text-muted-foreground">{option.impact.passengers}</span>
                       </div>
                     </div>
                     
                     {/* Decision Score */}
                     {option.decisionScore && (
                       <div className="mt-2 flex items-center gap-2">
-                        <span className="text-gray-400 text-sm">Decision Score:</span>
+                        <span className="text-muted-foreground text-sm">Decision Score:</span>
                         <div className="flex items-center gap-1">
                           <div className="w-16 bg-gray-700 rounded-full h-2">
                             <div 
@@ -239,7 +239,7 @@ const DecisionModal: React.FC<DecisionModalProps> = ({
                               style={{ width: `${option.decisionScore}%` }}
                             />
                           </div>
-                          <span className="text-blue-400 text-sm font-medium">
+                          <span className="text-aero-blue-primary text-sm font-medium">
                             {option.decisionScore.toFixed(1)}%
                           </span>
                         </div>
@@ -251,7 +251,7 @@ const DecisionModal: React.FC<DecisionModalProps> = ({
                     <Badge className={getRiskColor(option.riskLevel)}>
                       {option.riskLevel.toUpperCase()}
                     </Badge>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-muted-foreground">
                       Confidence: {option.confidence}%
                     </div>
                   </div>
@@ -260,7 +260,7 @@ const DecisionModal: React.FC<DecisionModalProps> = ({
                 {/* Requirements */}
                 {option.requirements.length > 0 && (
                   <div className="mb-2">
-                    <div className="text-xs text-gray-400 mb-1">Requirements:</div>
+                    <div className="text-xs text-muted-foreground mb-1">Requirements:</div>
                     <div className="flex flex-wrap gap-1">
                       {option.requirements.map((req, index) => (
                         <Badge key={index} variant="outline" className="text-xs">
@@ -272,8 +272,8 @@ const DecisionModal: React.FC<DecisionModalProps> = ({
                 )}
 
                 {/* Timeline */}
-                <div className="text-xs text-gray-400">
-                  Timeline: <span className="text-gray-300">{option.timeline}</span>
+                <div className="text-xs text-muted-foreground">
+                  Timeline: <span className="text-muted-foreground">{option.timeline}</span>
                 </div>
               </CardContent>
             </Card>
@@ -282,10 +282,10 @@ const DecisionModal: React.FC<DecisionModalProps> = ({
 
         {/* Selected Option Details */}
         {selectedOptionData && (
-          <Card className="border-blue-500 bg-blue-900/20 mt-4">
+          <Card className="border-blue-500 bg-aero-blue-primary/10 mt-4">
             <CardContent className="p-4">
               <h4 className="text-blue-300 font-medium mb-2">Selected Option Details</h4>
-              <div className="text-gray-300 text-sm">
+              <div className="text-muted-foreground text-sm">
                 <div className="mb-2">
                   <strong>Impact Summary:</strong> {selectedOptionData.description}
                 </div>
@@ -306,7 +306,7 @@ const DecisionModal: React.FC<DecisionModalProps> = ({
             <Button
               onClick={() => handleDecision('crew')}
               disabled={isProcessing}
-              className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+              className="bg-aero-blue-primary hover:bg-aero-blue-light flex items-center gap-2"
             >
               {isProcessing ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />

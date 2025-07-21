@@ -207,11 +207,11 @@ const DiversionDecisionEngine = () => {
 
   const getSeverityColor = (severity: string) => {
     switch(severity) {
-      case 'critical': return 'text-red-400 bg-red-900/20 border-red-600';
-      case 'high': return 'text-orange-400 bg-orange-900/20 border-orange-600';
-      case 'medium': return 'text-yellow-400 bg-yellow-900/20 border-yellow-600';
-      case 'low': return 'text-green-400 bg-green-900/20 border-green-600';
-      default: return 'text-gray-400 bg-gray-900/20 border-gray-600';
+      case 'critical': return 'bg-va-red-primary/10 text-va-red-primary border-va-red-primary/30';
+      case 'high': return 'bg-aero-orange-alert/10 text-aero-orange-alert border-aero-orange-alert/30';
+      case 'medium': return 'bg-aero-amber-caution/10 text-aero-amber-caution border-aero-amber-caution/30';
+      case 'low': return 'bg-aero-green-safe/10 text-aero-green-safe border-aero-green-safe/30';
+      default: return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -231,34 +231,34 @@ const DiversionDecisionEngine = () => {
     <div className="p-6 space-y-6 max-h-full overflow-y-auto">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Brain className="h-6 w-6 text-blue-400" />
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            <Brain className="h-6 w-6 text-aero-blue-primary" />
             AI Diversion Decision Engine
           </h1>
-          <p className="text-gray-300">Machine Learning-powered diversion recommendations for Virgin Atlantic</p>
+          <p className="text-muted-foreground">Machine Learning-powered diversion recommendations for Virgin Atlantic</p>
         </div>
         <div className="flex items-center gap-4">
           <button
             onClick={toggleComparisonMode}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               comparisonMode 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                ? 'bg-aero-blue-primary text-foreground' 
+                : 'bg-gray-700 text-muted-foreground hover:bg-gray-600'
             }`}
           >
             {comparisonMode ? `Compare Mode (${selectedAirports.length}/3)` : 'Enable Comparison'}
           </button>
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-muted-foreground">
             {scenarios.length} active scenarios
           </div>
         </div>
       </div>
 
       {/* Active Scenarios */}
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-yellow-500" />
+          <CardTitle className="text-foreground flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-aero-amber-caution" />
             Active Diversion Scenarios
           </CardTitle>
         </CardHeader>
@@ -268,16 +268,16 @@ const DiversionDecisionEngine = () => {
               <div
                 key={scenario.flightId}
                 onClick={() => analyzeScenario(scenario)}
-                className={`p-4 rounded-lg border cursor-pointer transition-all hover:bg-gray-700/50 ${
-                  selectedScenario?.flightId === scenario.flightId ? 'bg-blue-900/20 border-blue-600' : 'bg-gray-700/30 border-gray-600'
+                className={`p-4 rounded-lg border cursor-pointer transition-all hover:bg-muted/50 ${
+                  selectedScenario?.flightId === scenario.flightId ? 'bg-aero-blue-primary/10 border-aero-blue-primary/30' : 'bg-gray-700/30 border-border'
                 }`}
               >
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-3">
-                    <Plane className="h-5 w-5 text-blue-400" />
+                    <Plane className="h-5 w-5 text-aero-blue-primary" />
                     <div>
-                      <div className="text-white font-medium">{scenario.flightId}</div>
-                      <div className="text-sm text-gray-400">{scenario.aircraft} • {scenario.passengers} passengers</div>
+                      <div className="text-foreground font-medium">{scenario.flightId}</div>
+                      <div className="text-sm text-muted-foreground">{scenario.aircraft} • {scenario.passengers} passengers</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -287,7 +287,7 @@ const DiversionDecisionEngine = () => {
                     </span>
                   </div>
                 </div>
-                <div className="mt-2 text-sm text-gray-300">
+                <div className="mt-2 text-sm text-muted-foreground">
                   {scenario.diversionReason.replace('_', ' ').toUpperCase()} • Destination: {scenario.destination}
                 </div>
               </div>
@@ -300,13 +300,13 @@ const DiversionDecisionEngine = () => {
       {selectedScenario && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recommended Airports */}
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Target className="h-5 w-5 text-green-500" />
+              <CardTitle className="text-foreground flex items-center gap-2">
+                <Target className="h-5 w-5 text-aero-green-safe" />
                 ML Recommendations for {selectedScenario.flightId}
               </CardTitle>
-              <CardDescription className="text-gray-400">
+              <CardDescription className="text-muted-foreground">
                 Random Forest model analysis based on operational factors
               </CardDescription>
             </CardHeader>
@@ -328,8 +328,8 @@ const DiversionDecisionEngine = () => {
                           isSelected 
                             ? 'bg-blue-900/30 border-blue-500 ring-2 ring-blue-500/50' 
                             : index === 0 
-                              ? 'bg-green-900/20 border-green-600' 
-                              : 'bg-gray-700/30 border-gray-600 hover:border-gray-500'
+                              ? 'bg-aero-green-safe/10 border-aero-green-safe/30' 
+                              : 'bg-gray-700/30 border-border hover:border-gray-500'
                         } ${comparisonMode ? 'hover:scale-[1.02]' : ''}`}
                         onClick={() => comparisonMode && canSelect && handleAirportSelection(rec.icao)}
                       >
@@ -338,32 +338,32 @@ const DiversionDecisionEngine = () => {
                             {comparisonMode && (
                               <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
                                 isSelected 
-                                  ? 'bg-blue-600 border-blue-600' 
+                                  ? 'bg-aero-blue-primary border-aero-blue-primary/30' 
                                   : canSelect 
                                     ? 'border-gray-400 hover:border-blue-400' 
-                                    : 'border-gray-600 opacity-50'
+                                    : 'border-border opacity-50'
                               }`}>
                                 {isSelected && <div className="w-2 h-2 bg-white rounded-full"></div>}
                               </div>
                             )}
                             <div>
-                              <div className="text-white font-medium">{rec.name}</div>
-                              <div className="text-sm text-gray-400">{rec.icao}</div>
+                              <div className="text-foreground font-medium">{rec.name}</div>
+                              <div className="text-sm text-muted-foreground">{rec.icao}</div>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-white font-bold">{rec.suitabilityScore}/10</div>
+                            <div className="text-foreground font-bold">{rec.suitabilityScore}/10</div>
                             <div className={`text-xs px-2 py-1 rounded ${
-                              rec.riskLevel === 'low' ? 'bg-green-900/30 text-green-400' :
-                              rec.riskLevel === 'medium' ? 'bg-yellow-900/30 text-yellow-400' :
-                              'bg-red-900/30 text-red-400'
+                              rec.riskLevel === 'low' ? 'bg-aero-green-safe/20 text-aero-green-safe' :
+                              rec.riskLevel === 'medium' ? 'bg-aero-amber-caution/20 text-aero-amber-caution' :
+                              'bg-va-red-primary/20 text-va-red-primary'
                             }`}>
                               {rec.riskLevel} risk
                             </div>
                           </div>
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-2 text-xs text-gray-300">
+                        <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <MapPin className="h-3 w-3" />
                             {rec.distance} nm
@@ -377,7 +377,7 @@ const DiversionDecisionEngine = () => {
                         </div>
                         
                         {!comparisonMode && index === 0 && (
-                          <div className="mt-2 text-sm text-green-400 font-medium">
+                          <div className="mt-2 text-sm text-aero-green-safe font-medium">
                             ✓ Primary Recommendation
                           </div>
                         )}
@@ -391,13 +391,13 @@ const DiversionDecisionEngine = () => {
 
           {/* Comparison View */}
           {comparisonMode && selectedAirports.length > 1 && (
-            <Card className="bg-gray-800 border-gray-700 mt-6">
+            <Card className="bg-card border-border mt-6">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Target className="h-5 w-5 text-blue-500" />
+                <CardTitle className="text-foreground flex items-center gap-2">
+                  <Target className="h-5 w-5 text-aero-blue-primary" />
                   Airport Comparison ({selectedAirports.length} selected)
                 </CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardDescription className="text-muted-foreground">
                   Side-by-side comparison of selected diversion options
                 </CardDescription>
               </CardHeader>
@@ -405,14 +405,14 @@ const DiversionDecisionEngine = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-gray-600">
-                        <th className="text-left text-gray-300 py-2 px-3">Metric</th>
+                      <tr className="border-b border-border">
+                        <th className="text-left text-muted-foreground py-2 px-3">Metric</th>
                         {selectedAirports.map(icao => {
                           const airport = recommendations.find(r => r.icao === icao);
                           return (
-                            <th key={icao} className="text-center text-white py-2 px-3 min-w-[120px]">
+                            <th key={icao} className="text-center text-foreground py-2 px-3 min-w-[120px]">
                               <div className="font-medium">{airport?.name}</div>
-                              <div className="text-xs text-gray-400">{icao}</div>
+                              <div className="text-xs text-muted-foreground">{icao}</div>
                             </th>
                           );
                         })}
@@ -420,37 +420,37 @@ const DiversionDecisionEngine = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-600">
                       <tr>
-                        <td className="text-gray-300 py-2 px-3 font-medium">Suitability Score</td>
+                        <td className="text-muted-foreground py-2 px-3 font-medium">Suitability Score</td>
                         {selectedAirports.map(icao => {
                           const airport = recommendations.find(r => r.icao === icao);
                           return (
                             <td key={icao} className="text-center py-2 px-3">
-                              <span className="text-white font-bold">{airport?.suitabilityScore}/10</span>
+                              <span className="text-foreground font-bold">{airport?.suitabilityScore}/10</span>
                             </td>
                           );
                         })}
                       </tr>
                       <tr>
-                        <td className="text-gray-300 py-2 px-3 font-medium">Distance</td>
+                        <td className="text-muted-foreground py-2 px-3 font-medium">Distance</td>
                         {selectedAirports.map(icao => {
                           const airport = recommendations.find(r => r.icao === icao);
                           return (
                             <td key={icao} className="text-center py-2 px-3">
-                              <span className="text-blue-400">{airport?.distance} nm</span>
+                              <span className="text-aero-blue-primary">{airport?.distance} nm</span>
                             </td>
                           );
                         })}
                       </tr>
                       <tr>
-                        <td className="text-gray-300 py-2 px-3 font-medium">Risk Level</td>
+                        <td className="text-muted-foreground py-2 px-3 font-medium">Risk Level</td>
                         {selectedAirports.map(icao => {
                           const airport = recommendations.find(r => r.icao === icao);
                           return (
                             <td key={icao} className="text-center py-2 px-3">
                               <span className={`px-2 py-1 rounded text-xs ${
-                                airport?.riskLevel === 'low' ? 'bg-green-900/30 text-green-400' :
-                                airport?.riskLevel === 'medium' ? 'bg-yellow-900/30 text-yellow-400' :
-                                'bg-red-900/30 text-red-400'
+                                airport?.riskLevel === 'low' ? 'bg-aero-green-safe/20 text-aero-green-safe' :
+                                airport?.riskLevel === 'medium' ? 'bg-aero-amber-caution/20 text-aero-amber-caution' :
+                                'bg-va-red-primary/20 text-va-red-primary'
                               }`}>
                                 {airport?.riskLevel}
                               </span>
@@ -459,7 +459,7 @@ const DiversionDecisionEngine = () => {
                         })}
                       </tr>
                       <tr>
-                        <td className="text-gray-300 py-2 px-3 font-medium">Medical Facilities</td>
+                        <td className="text-muted-foreground py-2 px-3 font-medium">Medical Facilities</td>
                         {selectedAirports.map(icao => {
                           const airport = recommendations.find(r => r.icao === icao);
                           return (
@@ -467,18 +467,18 @@ const DiversionDecisionEngine = () => {
                               <div className="flex items-center justify-center">
                                 <div className="w-16 bg-gray-700 rounded-full h-2">
                                   <div 
-                                    className="bg-green-500 h-2 rounded-full"
+                                    className="bg-aero-green-safe h-2 rounded-full"
                                     style={{ width: `${(airport?.factors.medicalFacilities || 0) * 10}%` }}
                                   ></div>
                                 </div>
-                                <span className="ml-2 text-white text-xs">{airport?.factors.medicalFacilities}/10</span>
+                                <span className="ml-2 text-foreground text-xs">{airport?.factors.medicalFacilities}/10</span>
                               </div>
                             </td>
                           );
                         })}
                       </tr>
                       <tr>
-                        <td className="text-gray-300 py-2 px-3 font-medium">VA Maintenance</td>
+                        <td className="text-muted-foreground py-2 px-3 font-medium">VA Maintenance</td>
                         {selectedAirports.map(icao => {
                           const airport = recommendations.find(r => r.icao === icao);
                           return (
@@ -490,41 +490,41 @@ const DiversionDecisionEngine = () => {
                                     style={{ width: `${(airport?.factors.vaMaintenance || 0) * 10}%` }}
                                   ></div>
                                 </div>
-                                <span className="ml-2 text-white text-xs">{airport?.factors.vaMaintenance}/10</span>
+                                <span className="ml-2 text-foreground text-xs">{airport?.factors.vaMaintenance}/10</span>
                               </div>
                             </td>
                           );
                         })}
                       </tr>
                       <tr>
-                        <td className="text-gray-300 py-2 px-3 font-medium">Weather Score</td>
+                        <td className="text-muted-foreground py-2 px-3 font-medium">Weather Score</td>
                         {selectedAirports.map(icao => {
                           const airport = recommendations.find(r => r.icao === icao);
                           return (
                             <td key={icao} className="text-center py-2 px-3">
-                              <span className="text-yellow-400">{airport?.factors.weatherScore}/10</span>
+                              <span className="text-aero-amber-caution">{airport?.factors.weatherScore}/10</span>
                             </td>
                           );
                         })}
                       </tr>
                       <tr>
-                        <td className="text-gray-300 py-2 px-3 font-medium">Estimated Arrival</td>
+                        <td className="text-muted-foreground py-2 px-3 font-medium">Estimated Arrival</td>
                         {selectedAirports.map(icao => {
                           const airport = recommendations.find(r => r.icao === icao);
                           return (
                             <td key={icao} className="text-center py-2 px-3">
-                              <span className="text-gray-300">{airport?.estimatedArrival}</span>
+                              <span className="text-muted-foreground">{airport?.estimatedArrival}</span>
                             </td>
                           );
                         })}
                       </tr>
                       <tr>
-                        <td className="text-gray-300 py-2 px-3 font-medium">Cost Impact</td>
+                        <td className="text-muted-foreground py-2 px-3 font-medium">Cost Impact</td>
                         {selectedAirports.map(icao => {
                           const airport = recommendations.find(r => r.icao === icao);
                           return (
                             <td key={icao} className="text-center py-2 px-3">
-                              <span className="text-orange-400">${airport?.costImpact?.toLocaleString()}</span>
+                              <span className="text-aero-orange-alert">${airport?.costImpact?.toLocaleString()}</span>
                             </td>
                           );
                         })}
@@ -534,7 +534,7 @@ const DiversionDecisionEngine = () => {
                 </div>
                 
                 {selectedAirports.length > 0 && (
-                  <div className="mt-4 p-3 bg-blue-900/20 rounded-lg border border-blue-600">
+                  <div className="mt-4 p-3 bg-aero-blue-primary/10 rounded-lg border border-aero-blue-primary/30">
                     <div className="text-blue-300 font-medium mb-2">Comparison Summary</div>
                     <div className="text-sm text-blue-200">
                       {(() => {
@@ -566,9 +566,9 @@ const DiversionDecisionEngine = () => {
           )}
 
           {/* ML Prediction Details */}
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-foreground flex items-center gap-2">
                 <Brain className="h-5 w-5 text-purple-500" />
                 ML Analysis Details
               </CardTitle>
@@ -576,8 +576,8 @@ const DiversionDecisionEngine = () => {
             <CardContent>
               {mlPrediction && (
                 <div className="space-y-4">
-                  <div className="p-4 bg-blue-900/20 rounded-lg border border-blue-600">
-                    <div className="text-white font-medium mb-2">Model Confidence</div>
+                  <div className="p-4 bg-aero-blue-primary/10 rounded-lg border border-aero-blue-primary/30">
+                    <div className="text-foreground font-medium mb-2">Model Confidence</div>
                     <div className="flex items-center gap-3">
                       <div className="flex-1 bg-gray-700 rounded-full h-2">
                         <div 
@@ -585,15 +585,15 @@ const DiversionDecisionEngine = () => {
                           style={{ width: `${mlPrediction.confidence * 100}%` }}
                         ></div>
                       </div>
-                      <span className="text-white font-bold">{Math.round(mlPrediction.confidence * 100)}%</span>
+                      <span className="text-foreground font-bold">{Math.round(mlPrediction.confidence * 100)}%</span>
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-white font-medium mb-2">Primary Decision Factors</div>
+                    <div className="text-foreground font-medium mb-2">Primary Decision Factors</div>
                     <div className="space-y-2">
                       {mlPrediction.primaryFactors.map((factor, index) => (
-                        <div key={index} className="flex items-center gap-2 text-sm text-gray-300">
+                        <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
                           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                           {factor}
                         </div>
@@ -602,19 +602,19 @@ const DiversionDecisionEngine = () => {
                   </div>
 
                   <div>
-                    <div className="text-white font-medium mb-2">Alternative Options</div>
+                    <div className="text-foreground font-medium mb-2">Alternative Options</div>
                     <div className="flex gap-2">
                       {mlPrediction.alternateOptions.map((option) => (
-                        <span key={option} className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-sm">
+                        <span key={option} className="px-2 py-1 bg-gray-700 text-muted-foreground rounded text-sm">
                           {option}
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  <Alert className={`${selectedScenario.severity === 'critical' ? 'bg-red-900/20 border-red-600' : 'bg-yellow-900/20 border-yellow-600'}`}>
+                  <Alert className={`${selectedScenario.severity === 'critical' ? 'bg-va-red-primary/10 border-va-red-primary/30' : 'bg-aero-amber-caution/10 border-aero-amber-caution/30'}`}>
                     <Clock className="h-4 w-4" />
-                    <AlertDescription className={selectedScenario.severity === 'critical' ? 'text-red-300' : 'text-yellow-300'}>
+                    <AlertDescription className={selectedScenario.severity === 'critical' ? 'text-va-red-primary' : 'text-aero-amber-caution'}>
                       Time to decision: {mlPrediction.timeToDecision} minutes
                       {selectedScenario.severity === 'critical' && ' (URGENT)'}
                     </AlertDescription>

@@ -706,8 +706,8 @@ const GeopoliticalRiskCenter = () => {
 
             {/* Route Status Overview - Expanded */}
             <div className="bg-va-white border border-va-grey rounded-lg p-8 mb-8">
-              <h2 className="text-4xl font-bold text-white mb-6 flex items-center">
-                <Plane className="h-10 w-10 mr-4 text-blue-500" />
+              <h2 className="text-4xl font-bold text-foreground mb-6 flex items-center">
+                <Plane className="h-10 w-10 mr-4 text-aero-blue-primary" />
                 Virgin Atlantic Route Risk Assessment Center
               </h2>
               
@@ -715,37 +715,37 @@ const GeopoliticalRiskCenter = () => {
                 <table className="w-full border-separate border-spacing-0">
                   <thead>
                     <tr className="bg-gray-700">
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Flight Number</th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Route</th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Operational Status</th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Risk Level</th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Passenger Count</th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Revenue Impact</th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase border-r border-gray-600">Delay Status</th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-gray-200 uppercase">Actions</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-muted-foreground uppercase border-r border-border">Flight Number</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-muted-foreground uppercase border-r border-border">Route</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-muted-foreground uppercase border-r border-border">Operational Status</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-muted-foreground uppercase border-r border-border">Risk Level</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-muted-foreground uppercase border-r border-border">Passenger Count</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-muted-foreground uppercase border-r border-border">Revenue Impact</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-muted-foreground uppercase border-r border-border">Delay Status</th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-muted-foreground uppercase">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {routes.map((route, index) => (
-                      <tr key={route.id} className={`${index % 2 === 0 ? 'bg-gray-750' : 'bg-gray-800'} hover:bg-aero-blue-light/10 transition-colors`}>
-                        <td className="px-6 py-5 text-lg font-bold text-white border-r border-gray-600">
+                      <tr key={route.id} className={`${index % 2 === 0 ? 'bg-gray-750' : 'bg-card'} hover:bg-aero-blue-light/10 transition-colors`}>
+                        <td className="px-6 py-5 text-lg font-bold text-foreground border-r border-border">
                           {route.id}
                         </td>
-                        <td className="px-6 py-5 border-r border-gray-600">
+                        <td className="px-6 py-5 border-r border-border">
                           <div className="flex items-center space-x-3">
                             <span className="text-lg font-semibold text-va-gray">{route.origin}</span>
-                            <span className="text-blue-400">→</span>
+                            <span className="text-aero-blue-primary">→</span>
                             <span className="text-lg font-semibold text-va-gray">{route.destination}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-5 border-r border-gray-600">
+                        <td className="px-6 py-5 border-r border-border">
                           <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold uppercase ${getStatusColor(route.status)}`}>
                             {route.status === 'normal' ? '✓ Normal' : 
                              route.status === 'monitoring' ? '⚠ Monitoring' : 
                              '🚨 Disrupted'}
                           </span>
                         </td>
-                        <td className={`px-6 py-5 text-lg font-bold border-r border-gray-600 ${getRiskLevelColor(route.riskLevel)}`}>
+                        <td className={`px-6 py-5 text-lg font-bold border-r border-border ${getRiskLevelColor(route.riskLevel)}`}>
                           <div className="flex items-center space-x-2">
                             <div className={`w-3 h-3 rounded-full ${
                               route.riskLevel === 'critical' ? 'bg-red-500' :
@@ -756,19 +756,19 @@ const GeopoliticalRiskCenter = () => {
                             <span className="uppercase">{route.riskLevel}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-5 text-lg font-semibold text-va-gray border-r border-gray-600">
+                        <td className="px-6 py-5 text-lg font-semibold text-va-gray border-r border-border">
                           {route.passengers.toLocaleString()} PAX
                         </td>
-                        <td className="px-6 py-5 text-lg font-semibold text-green-400 border-r border-gray-600">
+                        <td className="px-6 py-5 text-lg font-semibold text-aero-green-safe border-r border-border">
                           {route.revenue}
                         </td>
-                        <td className="px-6 py-5 border-r border-gray-600">
+                        <td className="px-6 py-5 border-r border-border">
                           {route.delayMinutes > 0 ? (
-                            <span className="text-orange-400 font-semibold">
+                            <span className="text-aero-orange-alert font-semibold">
                               +{route.delayMinutes} min
                             </span>
                           ) : (
-                            <span className="text-green-400 font-semibold">On Time</span>
+                            <span className="text-aero-green-safe font-semibold">On Time</span>
                           )}
                         </td>
                         <td className="px-6 py-5">
@@ -779,12 +779,12 @@ const GeopoliticalRiskCenter = () => {
                                   setSelectedRoute(route);
                                   setShowRouteOptions(true);
                                 }}
-                                className="bg-blue-600 hover:bg-blue-700 text-va-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                                className="bg-aero-blue-primary hover:bg-aero-blue-light text-va-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                               >
                                 View Options
                               </button>
                             )}
-                            <button className="bg-gray-600 hover:bg-gray-700 text-va-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            <button className="bg-gray-600 hover:bg-muted text-va-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                               Details
                             </button>
                           </div>
@@ -797,9 +797,9 @@ const GeopoliticalRiskCenter = () => {
               
               {routes.length === 0 && (
                 <div className="text-center py-12">
-                  <div className="text-6xl text-gray-600 mb-4">✈️</div>
-                  <div className="text-2xl text-gray-400 mb-2">No Route Data Available</div>
-                  <div className="text-lg text-gray-500">Fetching live Virgin Atlantic flight data...</div>
+                  <div className="text-6xl text-muted-foreground mb-4">✈️</div>
+                  <div className="text-2xl text-muted-foreground mb-2">No Route Data Available</div>
+                  <div className="text-lg text-foreground0">Fetching live Virgin Atlantic flight data...</div>
                 </div>
               )}
             </div>
@@ -812,7 +812,7 @@ const GeopoliticalRiskCenter = () => {
               <Card className="bg-va-white border-va-gray">
                 <CardHeader>
                   <CardTitle className="text-va-deep-space flex items-center">
-                    <Globe className="h-5 w-5 mr-2 text-green-500" />
+                    <Globe className="h-5 w-5 mr-2 text-aero-green-safe" />
                     Risk Factors by Region
                   </CardTitle>
                 </CardHeader>
@@ -827,7 +827,7 @@ const GeopoliticalRiskCenter = () => {
                       className={`w-full flex justify-between items-center p-3 rounded border transition-colors hover:bg-opacity-80 ${getSeverityColor(assessment.overallRisk)}`}
                     >
                       <span className="text-va-deep-space font-medium">{assessment.region}</span>
-                      <span className={`px-2 py-1 text-white text-xs rounded ${
+                      <span className={`px-2 py-1 text-foreground text-xs rounded ${
                         assessment.overallRisk === 'critical' ? 'bg-red-500' :
                         assessment.overallRisk === 'high' ? 'bg-orange-500' :
                         assessment.overallRisk === 'medium' ? 'bg-yellow-500' :
@@ -843,12 +843,12 @@ const GeopoliticalRiskCenter = () => {
               <Card className="bg-va-white border-va-gray">
                 <CardHeader>
                   <CardTitle className="text-va-deep-space flex items-center">
-                    <TrendingUp className="h-5 w-5 mr-2 text-blue-500" />
+                    <TrendingUp className="h-5 w-5 mr-2 text-aero-blue-primary" />
                     Predictive Indicators
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="p-3 border border-gray-600 rounded">
+                  <div className="p-3 border border-border rounded">
                     <div className="flex justify-between">
                       <span className="text-sm text-va-deep-space">Diplomatic Relations Index</span>
                       <span className="text-sm font-medium text-aero-amber-caution">Declining</span>
@@ -857,19 +857,19 @@ const GeopoliticalRiskCenter = () => {
                       <div className="bg-aero-amber-caution h-2 rounded-full" style={{width: '35%'}}></div>
                     </div>
                   </div>
-                  <div className="p-3 border border-gray-600 rounded">
+                  <div className="p-3 border border-border rounded">
                     <div className="flex justify-between">
                       <span className="text-sm text-va-deep-space">Military Activity Level</span>
-                      <span className="text-sm font-medium text-red-400">High</span>
+                      <span className="text-sm font-medium text-va-red-primary">High</span>
                     </div>
                     <div className="mt-1 w-full bg-gray-600 rounded-full h-2">
                       <div className="bg-red-500 h-2 rounded-full" style={{width: '80%'}}></div>
                     </div>
                   </div>
-                  <div className="p-3 border border-gray-600 rounded">
+                  <div className="p-3 border border-border rounded">
                     <div className="flex justify-between">
                       <span className="text-sm text-va-deep-space">Economic Sanctions Risk</span>
-                      <span className="text-sm font-medium text-yellow-400">Medium</span>
+                      <span className="text-sm font-medium text-aero-amber-caution">Medium</span>
                     </div>
                     <div className="mt-1 w-full bg-gray-600 rounded-full h-2">
                       <div className="bg-yellow-500 h-2 rounded-full" style={{width: '60%'}}></div>
@@ -884,15 +884,15 @@ const GeopoliticalRiskCenter = () => {
         {/* Route Options Modal */}
         {showRouteOptions && selectedRoute && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-gray-800 rounded-lg border border-gray-600 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between p-6 border-b border-gray-600">
-                <h2 className="text-xl font-bold text-white flex items-center">
-                  <Route className="h-6 w-6 mr-2 text-blue-500" />
+            <div className="bg-card rounded-lg border border-border max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-6 border-b border-border">
+                <h2 className="text-xl font-bold text-foreground flex items-center">
+                  <Route className="h-6 w-6 mr-2 text-aero-blue-primary" />
                   Route Options - {selectedRoute.id} ({selectedRoute.origin} → {selectedRoute.destination})
                 </h2>
                 <button 
                   onClick={() => setShowRouteOptions(false)}
-                  className="text-gray-400 hover:text-white"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -900,34 +900,34 @@ const GeopoliticalRiskCenter = () => {
               
               <div className="p-6 space-y-6">
                 {/* Current Status */}
-                <Card className="bg-gray-700 border-gray-600">
+                <Card className="bg-gray-700 border-border">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center">
-                      <AlertCircle className="h-5 w-5 mr-2 text-orange-500" />
+                    <CardTitle className="text-foreground flex items-center">
+                      <AlertCircle className="h-5 w-5 mr-2 text-aero-orange-alert" />
                       Current Status
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div>
-                        <p className="text-sm text-gray-400">Status</p>
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(selectedRoute.status)}`}>
+                        <p className="text-sm text-muted-foreground">Status</p>
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-foreground ${getStatusColor(selectedRoute.status)}`}>
                           {selectedRoute.status}
                         </span>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">Risk Level</p>
+                        <p className="text-sm text-muted-foreground">Risk Level</p>
                         <p className={`font-medium ${getRiskLevelColor(selectedRoute.riskLevel)}`}>
                           {selectedRoute.riskLevel}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">Passengers</p>
-                        <p className="text-white font-medium">{selectedRoute.passengers}</p>
+                        <p className="text-sm text-muted-foreground">Passengers</p>
+                        <p className="text-foreground font-medium">{selectedRoute.passengers}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">Revenue Impact</p>
-                        <p className="text-white font-medium">{selectedRoute.revenue}</p>
+                        <p className="text-sm text-muted-foreground">Revenue Impact</p>
+                        <p className="text-foreground font-medium">{selectedRoute.revenue}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -936,118 +936,118 @@ const GeopoliticalRiskCenter = () => {
                 {/* Available Options */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Option 1: Continue Current Route */}
-                  <Card className="bg-gray-700 border-gray-600">
+                  <Card className="bg-gray-700 border-border">
                     <CardHeader>
-                      <CardTitle className="text-white text-lg">Continue Current Route</CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardTitle className="text-foreground text-lg">Continue Current Route</CardTitle>
+                      <CardDescription className="text-muted-foreground">
                         Proceed with original flight path despite risks
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Additional Cost:</span>
-                          <span className="text-white">$0</span>
+                          <span className="text-muted-foreground">Additional Cost:</span>
+                          <span className="text-foreground">$0</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Delay:</span>
-                          <span className="text-white">0 minutes</span>
+                          <span className="text-muted-foreground">Delay:</span>
+                          <span className="text-foreground">0 minutes</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Risk Level:</span>
+                          <span className="text-muted-foreground">Risk Level:</span>
                           <span className={getRiskLevelColor(selectedRoute.riskLevel)}>
                             {selectedRoute.riskLevel}
                           </span>
                         </div>
                       </div>
-                      <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors">
+                      <button className="w-full bg-aero-blue-primary hover:bg-aero-blue-light text-foreground py-2 px-4 rounded transition-colors">
                         Select This Option
                       </button>
                     </CardContent>
                   </Card>
 
                   {/* Option 2: Use Alternate Route */}
-                  <Card className="bg-gray-700 border-gray-600">
+                  <Card className="bg-gray-700 border-border">
                     <CardHeader>
-                      <CardTitle className="text-white text-lg">Alternate Route</CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardTitle className="text-foreground text-lg">Alternate Route</CardTitle>
+                      <CardDescription className="text-muted-foreground">
                         {selectedRoute.alternateRoute}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Additional Cost:</span>
-                          <span className="text-white">{selectedRoute.additionalCost}</span>
+                          <span className="text-muted-foreground">Additional Cost:</span>
+                          <span className="text-foreground">{selectedRoute.additionalCost}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Delay:</span>
-                          <span className="text-white">{selectedRoute.delayMinutes} minutes</span>
+                          <span className="text-muted-foreground">Delay:</span>
+                          <span className="text-foreground">{selectedRoute.delayMinutes} minutes</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Risk Level:</span>
-                          <span className="text-green-400">Low</span>
+                          <span className="text-muted-foreground">Risk Level:</span>
+                          <span className="text-aero-green-safe">Low</span>
                         </div>
                       </div>
-                      <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition-colors">
+                      <button className="w-full bg-green-600 hover:bg-green-700 text-foreground py-2 px-4 rounded transition-colors">
                         Select This Option
                       </button>
                     </CardContent>
                   </Card>
 
                   {/* Option 3: Delay Flight */}
-                  <Card className="bg-gray-700 border-gray-600">
+                  <Card className="bg-gray-700 border-border">
                     <CardHeader>
-                      <CardTitle className="text-white text-lg">Delay Flight</CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardTitle className="text-foreground text-lg">Delay Flight</CardTitle>
+                      <CardDescription className="text-muted-foreground">
                         Wait for improved conditions
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Additional Cost:</span>
-                          <span className="text-white">$2,500</span>
+                          <span className="text-muted-foreground">Additional Cost:</span>
+                          <span className="text-foreground">$2,500</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Delay:</span>
-                          <span className="text-white">240 minutes</span>
+                          <span className="text-muted-foreground">Delay:</span>
+                          <span className="text-foreground">240 minutes</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Risk Level:</span>
-                          <span className="text-green-400">Low</span>
+                          <span className="text-muted-foreground">Risk Level:</span>
+                          <span className="text-aero-green-safe">Low</span>
                         </div>
                       </div>
-                      <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded transition-colors">
+                      <button className="w-full bg-yellow-600 hover:bg-yellow-700 text-foreground py-2 px-4 rounded transition-colors">
                         Select This Option
                       </button>
                     </CardContent>
                   </Card>
 
                   {/* Option 4: Cancel Flight */}
-                  <Card className="bg-gray-700 border-gray-600">
+                  <Card className="bg-gray-700 border-border">
                     <CardHeader>
-                      <CardTitle className="text-white text-lg">Cancel Flight</CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardTitle className="text-foreground text-lg">Cancel Flight</CardTitle>
+                      <CardDescription className="text-muted-foreground">
                         Full cancellation with passenger rebooking
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Revenue Loss:</span>
-                          <span className="text-red-400">{selectedRoute.revenue}</span>
+                          <span className="text-muted-foreground">Revenue Loss:</span>
+                          <span className="text-va-red-primary">{selectedRoute.revenue}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Rebooking Cost:</span>
-                          <span className="text-white">$15,000</span>
+                          <span className="text-muted-foreground">Rebooking Cost:</span>
+                          <span className="text-foreground">$15,000</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Risk Level:</span>
-                          <span className="text-green-400">None</span>
+                          <span className="text-muted-foreground">Risk Level:</span>
+                          <span className="text-aero-green-safe">None</span>
                         </div>
                       </div>
-                      <button className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition-colors">
+                      <button className="w-full bg-va-red-primary hover:bg-va-red-heritage text-foreground py-2 px-4 rounded transition-colors">
                         Select This Option
                       </button>
                     </CardContent>
@@ -1055,10 +1055,10 @@ const GeopoliticalRiskCenter = () => {
                 </div>
 
                 {/* AI Recommendation */}
-                <Card className="bg-blue-900/20 border-blue-600">
+                <Card className="bg-aero-blue-primary/10 border-aero-blue-primary/30">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center">
-                      <Shield className="h-5 w-5 mr-2 text-blue-500" />
+                    <CardTitle className="text-foreground flex items-center">
+                      <Shield className="h-5 w-5 mr-2 text-aero-blue-primary" />
                       AI Recommendation
                     </CardTitle>
                   </CardHeader>
@@ -1079,18 +1079,18 @@ const GeopoliticalRiskCenter = () => {
       {/* Regional Risk Details Modal */}
       {showRegionalDetails && selectedRegion && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 rounded-lg border border-gray-600 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-card rounded-lg border border-border max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-white">{selectedRegion.region} Risk Assessment</h2>
+                  <h2 className="text-2xl font-bold text-foreground">{selectedRegion.region} Risk Assessment</h2>
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="text-gray-300">Overall Risk Level:</span>
+                    <span className="text-muted-foreground">Overall Risk Level:</span>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      selectedRegion.overallRisk === 'critical' ? 'bg-red-500 text-white' :
-                      selectedRegion.overallRisk === 'high' ? 'bg-orange-500 text-white' :
-                      selectedRegion.overallRisk === 'medium' ? 'bg-yellow-500 text-white' :
-                      'bg-green-500 text-white'
+                      selectedRegion.overallRisk === 'critical' ? 'bg-red-500 text-foreground' :
+                      selectedRegion.overallRisk === 'high' ? 'bg-orange-500 text-foreground' :
+                      selectedRegion.overallRisk === 'medium' ? 'bg-yellow-500 text-foreground' :
+                      'bg-green-500 text-foreground'
                     }`}>
                       {selectedRegion.overallRisk.toUpperCase()}
                     </span>
@@ -1098,7 +1098,7 @@ const GeopoliticalRiskCenter = () => {
                 </div>
                 <button
                   onClick={() => setShowRegionalDetails(false)}
-                  className="text-gray-400 hover:text-white p-2"
+                  className="text-muted-foreground hover:text-foreground p-2"
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -1107,25 +1107,25 @@ const GeopoliticalRiskCenter = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Risk Factors */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                  <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-aero-amber-caution" />
                     Risk Factors
                   </h3>
                   <div className="space-y-3">
                     {selectedRegion.riskFactors.map((factor, index) => (
-                      <div key={index} className="bg-gray-800 rounded-lg border border-gray-600 p-4">
+                      <div key={index} className="bg-card rounded-lg border border-border p-4">
                         <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-medium text-white">{factor.category}</h4>
+                          <h4 className="font-medium text-foreground">{factor.category}</h4>
                           <span className={`px-2 py-1 rounded text-xs font-medium ${
-                            factor.impact === 'high' ? 'bg-red-500 text-white' :
-                            factor.impact === 'medium' ? 'bg-yellow-500 text-white' :
-                            'bg-green-500 text-white'
+                            factor.impact === 'high' ? 'bg-red-500 text-foreground' :
+                            factor.impact === 'medium' ? 'bg-yellow-500 text-foreground' :
+                            'bg-green-500 text-foreground'
                           }`}>
                             {factor.impact.toUpperCase()}
                           </span>
                         </div>
-                        <p className="text-gray-300 text-sm mb-2">{factor.description}</p>
-                        <div className="text-xs text-gray-400">
+                        <p className="text-muted-foreground text-sm mb-2">{factor.description}</p>
+                        <div className="text-xs text-muted-foreground">
                           Last updated: {factor.lastUpdated}
                         </div>
                       </div>
@@ -1137,16 +1137,16 @@ const GeopoliticalRiskCenter = () => {
                 <div className="space-y-4">
                   {/* Affected Routes */}
                   <div>
-                    <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-3">
-                      <Route className="h-5 w-5 text-blue-500" />
+                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 mb-3">
+                      <Route className="h-5 w-5 text-aero-blue-primary" />
                       Affected Routes
                     </h3>
-                    <div className="bg-gray-800 rounded-lg border border-gray-600 p-4">
+                    <div className="bg-card rounded-lg border border-border p-4">
                       <div className="grid grid-cols-1 gap-2">
                         {selectedRegion.affectedRoutes.map((route, index) => (
                           <div key={index} className="flex items-center gap-2 p-2 bg-gray-700 rounded">
-                            <Plane className="h-4 w-4 text-blue-400" />
-                            <span className="text-gray-300 font-mono text-sm">{route}</span>
+                            <Plane className="h-4 w-4 text-aero-blue-primary" />
+                            <span className="text-muted-foreground font-mono text-sm">{route}</span>
                           </div>
                         ))}
                       </div>
@@ -1155,16 +1155,16 @@ const GeopoliticalRiskCenter = () => {
 
                   {/* Operational Recommendations */}
                   <div>
-                    <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-3">
-                      <Shield className="h-5 w-5 text-green-500" />
+                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 mb-3">
+                      <Shield className="h-5 w-5 text-aero-green-safe" />
                       Operational Recommendations
                     </h3>
-                    <div className="bg-gray-800 rounded-lg border border-gray-600 p-4">
+                    <div className="bg-card rounded-lg border border-border p-4">
                       <ul className="space-y-2">
                         {selectedRegion.recommendations.map((recommendation, index) => (
                           <li key={index} className="flex items-start gap-2">
                             <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                            <span className="text-gray-300 text-sm">{recommendation}</span>
+                            <span className="text-muted-foreground text-sm">{recommendation}</span>
                           </li>
                         ))}
                       </ul>
@@ -1173,13 +1173,13 @@ const GeopoliticalRiskCenter = () => {
 
                   {/* Economic Impact */}
                   <div>
-                    <h3 className="text-lg font-semibold text-white flex items-center gap-2 mb-3">
-                      <DollarSign className="h-5 w-5 text-yellow-500" />
+                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 mb-3">
+                      <DollarSign className="h-5 w-5 text-aero-amber-caution" />
                       Economic Impact
                     </h3>
-                    <div className="bg-gray-800 rounded-lg border border-gray-600 p-4">
-                      <p className="text-gray-300 text-sm mb-2">{selectedRegion.economicImpact}</p>
-                      <div className="text-xs text-gray-400">
+                    <div className="bg-card rounded-lg border border-border p-4">
+                      <p className="text-muted-foreground text-sm mb-2">{selectedRegion.economicImpact}</p>
+                      <div className="text-xs text-muted-foreground">
                         Assessment timeframe: {selectedRegion.timeframe}
                       </div>
                     </div>
@@ -1190,7 +1190,7 @@ const GeopoliticalRiskCenter = () => {
               <div className="mt-6 flex justify-end">
                 <button
                   onClick={() => setShowRegionalDetails(false)}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  className="px-4 py-2 bg-aero-blue-primary hover:bg-aero-blue-light text-foreground rounded-lg transition-colors"
                 >
                   Close Assessment
                 </button>

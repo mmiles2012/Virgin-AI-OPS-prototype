@@ -77,10 +77,10 @@ export const StandConflictMonitor: React.FC<StandConflictMonitorProps> = ({ flig
 
   const getConflictColor = (type: string) => {
     switch (type) {
-      case 'CRITICAL': return 'bg-red-600 text-white';
-      case 'MAJOR': return 'bg-orange-600 text-white';
-      case 'MINOR': return 'bg-yellow-600 text-white';
-      default: return 'bg-green-600 text-white';
+      case 'CRITICAL': return 'bg-va-red-primary text-foreground';
+      case 'MAJOR': return 'bg-aero-orange-vibrant text-foreground';
+      case 'MINOR': return 'bg-aero-amber-caution text-foreground';
+      default: return 'bg-aero-green-safe text-foreground';
     }
   };
 
@@ -99,13 +99,13 @@ export const StandConflictMonitor: React.FC<StandConflictMonitorProps> = ({ flig
   const noConflicts = standConflicts.filter(c => c.conflictType === 'NONE');
 
   return (
-    <Card className="bg-gray-900 border-gray-700">
+    <Card className="bg-card border-border">
       <CardHeader>
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-blue-400" />
-            <span className="text-white">Stand Conflict Monitor - LHR Terminal 3</span>
-            <Badge className="ml-2 bg-blue-600 text-white">
+            <MapPin className="h-5 w-5 text-aero-blue-primary" />
+            <span className="text-foreground">Stand Conflict Monitor - LHR Terminal 3</span>
+            <Badge className="ml-2 bg-aero-blue-primary text-foreground">
               {standConflicts.length} Flights
             </Badge>
           </div>
@@ -113,13 +113,13 @@ export const StandConflictMonitor: React.FC<StandConflictMonitorProps> = ({ flig
             onClick={fetchStandConflicts}
             disabled={isLoading}
             size="sm"
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className="bg-aero-blue-primary hover:bg-aero-blue-light text-foreground"
           >
             <Settings className="h-4 w-4 mr-1" />
             Refresh Gates
           </Button>
         </div>
-        <div className="flex items-center gap-4 text-sm text-gray-400">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <span>Last Updated: {lastUpdate.toLocaleTimeString()}</span>
           <span>Authentic Heathrow T3 Gate Assignments</span>
           {isLoading && <span className="flex items-center gap-1">
@@ -131,35 +131,35 @@ export const StandConflictMonitor: React.FC<StandConflictMonitorProps> = ({ flig
       <CardContent className="space-y-4">
         {/* Summary Statistics */}
         <div className="grid grid-cols-4 gap-4">
-          <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-red-400">{criticalConflicts.length}</div>
-            <div className="text-xs text-red-300">Critical</div>
+          <div className="bg-va-red-primary/20 border border-va-red-primary/50 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-va-red-primary">{criticalConflicts.length}</div>
+            <div className="text-xs text-va-red-primary">Critical</div>
           </div>
-          <div className="bg-orange-900/30 border border-orange-500/50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-orange-400">{majorConflicts.length}</div>
-            <div className="text-xs text-orange-300">Major</div>
+          <div className="bg-aero-orange-vibrant/20 border border-aero-orange-vibrant/50 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-aero-orange-alert">{majorConflicts.length}</div>
+            <div className="text-xs text-aero-orange-alert">Major</div>
           </div>
-          <div className="bg-yellow-900/30 border border-yellow-500/50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-yellow-400">{minorConflicts.length}</div>
-            <div className="text-xs text-yellow-300">Minor</div>
+          <div className="bg-aero-amber-caution/20 border border-aero-amber-caution/50 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-aero-amber-caution">{minorConflicts.length}</div>
+            <div className="text-xs text-aero-amber-dark">Minor</div>
           </div>
-          <div className="bg-green-900/30 border border-green-500/50 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-green-400">{noConflicts.length}</div>
-            <div className="text-xs text-green-300">Clear</div>
+          <div className="bg-aero-green-safe/20 border border-aero-green-safe/50 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-aero-green-safe">{noConflicts.length}</div>
+            <div className="text-xs text-aero-green-dark">Clear</div>
           </div>
         </div>
 
         {/* Conflict Details */}
         <div className="space-y-3 max-h-96 overflow-y-auto">
           {standConflicts.map((conflict, index) => (
-            <div key={index} className="bg-gray-800 border border-gray-600 rounded-lg p-3">
+            <div key={index} className="bg-card border border-border rounded-lg p-3">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <Plane className="h-4 w-4 text-blue-400" />
-                  <span className="font-bold text-white">{conflict.flightNumber}</span>
-                  <span className="text-gray-400">{conflict.aircraft}</span>
-                  <span className="text-gray-400">→</span>
-                  <span className="text-gray-400">{conflict.route}</span>
+                  <Plane className="h-4 w-4 text-aero-blue-primary" />
+                  <span className="font-bold text-foreground">{conflict.flightNumber}</span>
+                  <span className="text-muted-foreground">{conflict.aircraft}</span>
+                  <span className="text-muted-foreground">→</span>
+                  <span className="text-muted-foreground">{conflict.route}</span>
                 </div>
                 <Badge className={getConflictColor(conflict.conflictType)}>
                   {getConflictIcon(conflict.conflictType)}
@@ -169,12 +169,12 @@ export const StandConflictMonitor: React.FC<StandConflictMonitorProps> = ({ flig
               
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <div className="text-gray-400">Gate Assignment:</div>
-                  <div className="text-white font-mono">{conflict.gate}</div>
+                  <div className="text-muted-foreground">Gate Assignment:</div>
+                  <div className="text-foreground font-mono">{conflict.gate}</div>
                 </div>
                 <div>
-                  <div className="text-gray-400">ETA:</div>
-                  <div className="text-white">
+                  <div className="text-muted-foreground">ETA:</div>
+                  <div className="text-foreground">
                     {new Date(conflict.estimatedArrival).toLocaleTimeString()}
                   </div>
                 </div>
@@ -183,10 +183,10 @@ export const StandConflictMonitor: React.FC<StandConflictMonitorProps> = ({ flig
               {conflict.conflictType !== 'NONE' && (
                 <div className="mt-3 p-2 bg-gray-700 rounded">
                   <div className="flex items-center gap-2 mb-1">
-                    <AlertTriangle className="h-4 w-4 text-yellow-400" />
-                    <span className="text-yellow-400 font-medium">Conflict Details</span>
+                    <AlertTriangle className="h-4 w-4 text-aero-amber-caution" />
+                    <span className="text-aero-amber-caution font-medium">Conflict Details</span>
                   </div>
-                  <div className="text-sm text-gray-300 space-y-1">
+                  <div className="text-sm text-muted-foreground space-y-1">
                     {conflict.previousFlightId && (
                       <div>Previous flight: {conflict.previousFlightId}</div>
                     )}
@@ -195,8 +195,8 @@ export const StandConflictMonitor: React.FC<StandConflictMonitorProps> = ({ flig
                   </div>
                   {conflict.recommendations.length > 0 && (
                     <div className="mt-2">
-                      <div className="text-blue-400 font-medium mb-1">Recommendations:</div>
-                      <ul className="text-xs text-gray-300 space-y-1">
+                      <div className="text-aero-blue-primary font-medium mb-1">Recommendations:</div>
+                      <ul className="text-xs text-muted-foreground space-y-1">
                         {conflict.recommendations.map((rec, i) => (
                           <li key={i}>• {rec}</li>
                         ))}
@@ -210,7 +210,7 @@ export const StandConflictMonitor: React.FC<StandConflictMonitorProps> = ({ flig
         </div>
 
         {standConflicts.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-muted-foreground">
             <MapPin className="h-12 w-12 mx-auto mb-2 opacity-50" />
             <div>No stand conflicts detected</div>
             <div className="text-sm">All gates available for arriving flights</div>

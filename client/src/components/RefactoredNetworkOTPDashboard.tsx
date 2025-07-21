@@ -61,8 +61,8 @@ export default function RefactoredNetworkOTPDashboard() {
     return (
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <div className="text-gray-600">Loading network performance data...</div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-aero-blue-primary/30 mx-auto mb-4"></div>
+          <div className="text-muted-foreground">Loading network performance data...</div>
         </div>
       </div>
     );
@@ -100,7 +100,7 @@ export default function RefactoredNetworkOTPDashboard() {
                 onClick={() => setNetworkView(view as any)}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   networkView === view
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-aero-blue-primary text-foreground'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -112,7 +112,7 @@ export default function RefactoredNetworkOTPDashboard() {
           {/* Content Based on View */}
           {networkView === 'overview' && (
             <div className="space-y-4">
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Network operating normally with {networkMetrics.totalFlights} flights monitored 
                 across {networkMetrics.hubCount} hubs.
               </p>
@@ -147,8 +147,8 @@ export default function RefactoredNetworkOTPDashboard() {
 
           {networkView === 'detailed' && (
             <div className="space-y-4">
-              <p className="text-gray-600">Detailed hub-by-hub performance analysis.</p>
-              <div className="text-center py-8 text-gray-500">
+              <p className="text-muted-foreground">Detailed hub-by-hub performance analysis.</p>
+              <div className="text-center py-8 text-foreground0">
                 Detailed view implementation in progress...
               </div>
             </div>
@@ -156,8 +156,8 @@ export default function RefactoredNetworkOTPDashboard() {
 
           {networkView === 'analysis' && (
             <div className="space-y-4">
-              <p className="text-gray-600">Advanced analytics and delay pattern analysis.</p>
-              <div className="text-center py-8 text-gray-500">
+              <p className="text-muted-foreground">Advanced analytics and delay pattern analysis.</p>
+              <div className="text-center py-8 text-foreground0">
                 Analytics view implementation in progress...
               </div>
             </div>

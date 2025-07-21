@@ -97,8 +97,8 @@ export default function SmartHubTileGrid() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-3 text-gray-600">Loading intelligent hub analysis...</span>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-aero-blue-primary/30"></div>
+            <span className="ml-3 text-muted-foreground">Loading intelligent hub analysis...</span>
           </div>
         </CardContent>
       </Card>
@@ -119,7 +119,7 @@ export default function SmartHubTileGrid() {
             <p className="text-red-800">{error}</p>
             <button 
               onClick={fetchHubData}
-              className="mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              className="mt-3 px-4 py-2 bg-va-red-primary text-foreground rounded hover:bg-va-red-heritage"
             >
               Retry Connection
             </button>
@@ -146,14 +146,14 @@ export default function SmartHubTileGrid() {
                 <AlertTriangle className="w-3 h-3" />
                 {alertCount} Alerts
               </Badge>
-              <span className="text-gray-500">Updated: {lastUpdate}</span>
+              <span className="text-foreground0">Updated: {lastUpdate}</span>
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             <div className="bg-blue-50 p-3 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{hubs.length}</div>
+              <div className="text-2xl font-bold text-aero-blue-dark">{hubs.length}</div>
               <div className="text-sm text-blue-700">Major US Hubs</div>
             </div>
             <div className="bg-red-50 p-3 rounded-lg">
@@ -193,29 +193,29 @@ export default function SmartHubTileGrid() {
                   <CardContent className="space-y-3">
                     {/* Live Status */}
                     <div className="bg-white/50 p-2 rounded border">
-                      <div className="text-xs font-medium text-gray-600">Live FAA Status</div>
+                      <div className="text-xs font-medium text-muted-foreground">Live FAA Status</div>
                       <div className="text-sm font-medium">{hub.nas_delay_status || "Normal"}</div>
-                      <div className="text-xs text-gray-600">{hub.nas_reason || "No delays"}</div>
+                      <div className="text-xs text-muted-foreground">{hub.nas_reason || "No delays"}</div>
                       <div className="text-xs">{hub.nas_avg_delay || "0 min"}</div>
                     </div>
 
                     {/* ML Predictions */}
                     <div className="bg-white/50 p-2 rounded border">
-                      <div className="text-xs font-medium text-gray-600">ML vs Actual</div>
+                      <div className="text-xs font-medium text-muted-foreground">ML vs Actual</div>
                       <div className="flex items-center justify-between">
                         <span className="text-sm">Delay: {hub.predicted_delay.toFixed(0)}min</span>
                         <span className={`text-xs font-medium ${delayDiff.color}`}>
                           {delayDiff.text}
                         </span>
                       </div>
-                      <div className="text-xs text-gray-600">
+                      <div className="text-xs text-muted-foreground">
                         Actual: {hub.actual_delay.toFixed(0)}min | OTP: {hub.predicted_otp.toFixed(1)}%
                       </div>
                     </div>
 
                     {/* Weather Data */}
                     <div className="bg-white/50 p-2 rounded border">
-                      <div className="text-xs font-medium text-gray-600 mb-1">Weather Impact</div>
+                      <div className="text-xs font-medium text-muted-foreground mb-1">Weather Impact</div>
                       <div className="grid grid-cols-3 gap-2 text-xs">
                         <div className="flex items-center gap-1">
                           <Zap className="w-3 h-3 text-yellow-600" />
@@ -223,12 +223,12 @@ export default function SmartHubTileGrid() {
                         </div>
                         {hub.snow_days > 0 && (
                           <div className="flex items-center gap-1">
-                            <Snowflake className="w-3 h-3 text-blue-600" />
+                            <Snowflake className="w-3 h-3 text-aero-blue-dark" />
                             <span>{hub.snow_days}</span>
                           </div>
                         )}
                         <div className="flex items-center gap-1">
-                          <Cloud className="w-3 h-3 text-gray-600" />
+                          <Cloud className="w-3 h-3 text-muted-foreground" />
                           <span>{hub.precip_mm?.toFixed(0)}mm</span>
                         </div>
                       </div>
@@ -236,7 +236,7 @@ export default function SmartHubTileGrid() {
 
                     {/* Risk Assessment */}
                     <div className="bg-white/50 p-2 rounded border">
-                      <div className="text-xs font-medium text-gray-600">Risk Level</div>
+                      <div className="text-xs font-medium text-muted-foreground">Risk Level</div>
                       <Badge className={`${getRiskColor(hub.predicted_risk)} text-xs`}>
                         {hub.predicted_risk} Risk
                       </Badge>
@@ -247,11 +247,11 @@ export default function SmartHubTileGrid() {
             })}
           </div>
 
-          <div className="mt-4 text-xs text-gray-500 flex items-center justify-between">
+          <div className="mt-4 text-xs text-foreground0 flex items-center justify-between">
             <span>Weather-enhanced ML predictions with live FAA NASSTATUS integration</span>
             <button 
               onClick={fetchHubData}
-              className="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded"
+              className="px-3 py-1 text-aero-blue-dark hover:bg-blue-50 rounded"
               disabled={loading}
             >
               {loading ? 'Refreshing...' : 'Refresh'}

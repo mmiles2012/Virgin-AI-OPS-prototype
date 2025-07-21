@@ -106,15 +106,15 @@ export default function AirspaceAlerts() {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return 'border-red-500 bg-red-500/10 text-red-400';
+        return 'border-red-500 bg-red-500/10 text-va-red-primary';
       case 'high':
-        return 'border-orange-500 bg-orange-500/10 text-orange-400';
+        return 'border-orange-500 bg-orange-500/10 text-aero-orange-alert';
       case 'medium':
-        return 'border-yellow-500 bg-yellow-500/10 text-yellow-400';
+        return 'border-yellow-500 bg-yellow-500/10 text-aero-amber-caution';
       case 'low':
-        return 'border-blue-500 bg-blue-500/10 text-blue-400';
+        return 'border-blue-500 bg-blue-500/10 text-aero-blue-primary';
       default:
-        return 'border-gray-500 bg-gray-500/10 text-gray-400';
+        return 'border-gray-500 bg-gray-500/10 text-muted-foreground';
     }
   };
 
@@ -148,7 +148,7 @@ export default function AirspaceAlerts() {
 
   if (loading) {
     return (
-      <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-6">
+      <div className="bg-card/50 rounded-lg border border-border p-6">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-700 rounded w-1/3 mb-4"></div>
           <div className="space-y-3">
@@ -165,26 +165,26 @@ export default function AirspaceAlerts() {
   const relevantAlerts = selectedFlight ? flightPathAlerts : activeAlerts;
 
   return (
-    <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-6">
+    <div className="bg-card/50 rounded-lg border border-border p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-          <Shield className="h-5 w-5 text-orange-400" />
+        <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          <Shield className="h-5 w-5 text-aero-orange-alert" />
           Airspace Alerts
-          <Badge className="bg-orange-500/20 text-orange-400 border-orange-500 text-xs">
+          <Badge className="bg-orange-500/20 text-aero-orange-alert border-orange-500 text-xs">
             Live Aviation Scraper
           </Badge>
           {selectedFlight && (
-            <span className="text-sm text-gray-400 ml-2">
+            <span className="text-sm text-muted-foreground ml-2">
               (Flight Path: {selectedFlight.callsign})
             </span>
           )}
         </h3>
-        <div className="flex items-center gap-4 text-xs text-gray-400">
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <div className="flex items-center">
             <Clock className="h-3 w-3 inline mr-1" />
             Updated: {lastUpdated ? formatDateTime(lastUpdated) : 'Never'}
           </div>
-          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500 text-xs">
+          <Badge className="bg-blue-500/20 text-aero-blue-primary border-blue-500 text-xs">
             Multi-Source
           </Badge>
           <div className="flex items-center text-xs">
@@ -195,14 +195,14 @@ export default function AirspaceAlerts() {
       </div>
 
       {/* Enhanced Scraper Status Display */}
-      <div className="mb-4 p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+      <div className="mb-4 p-3 bg-card/50 rounded-lg border border-border">
         <div className="flex items-center justify-between mb-2">
-          <div className="text-sm font-medium text-gray-300">Data Sources</div>
+          <div className="text-sm font-medium text-muted-foreground">Data Sources</div>
           <div className="text-xs">
             <Badge className={`${
               scraperStatus === 'active' ? 'bg-green-500/20 text-green-300 border-green-500/20' :
               scraperStatus === 'no_authentic_data' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/20' :
-              'bg-gray-500/20 text-gray-300 border-gray-500/20'
+              'bg-gray-500/20 text-muted-foreground border-gray-500/20'
             }`}>
               {scraperStatus === 'active' ? '● Enhanced Scraper Active' :
                scraperStatus === 'no_authentic_data' ? '● No Authentic Data' :
@@ -213,7 +213,7 @@ export default function AirspaceAlerts() {
         
         <div className="grid grid-cols-2 gap-4 text-xs">
           <div>
-            <div className="text-gray-400 mb-1">Alert Breakdown</div>
+            <div className="text-muted-foreground mb-1">Alert Breakdown</div>
             <div className="space-y-1">
               <div>Enhanced Scraper: {alertBreakdown.live_scraped_alerts || 0}</div>
               <div>SafeAirspace NOTAMs: {alertBreakdown.safe_airspace_alerts || 0}</div>
@@ -222,26 +222,26 @@ export default function AirspaceAlerts() {
           </div>
           
           <div>
-            <div className="text-gray-400 mb-1">Severity Distribution</div>
+            <div className="text-muted-foreground mb-1">Severity Distribution</div>
             <div className="space-y-1">
-              <div className="text-red-400">Critical: {alertBreakdown.critical || 0}</div>
-              <div className="text-orange-400">High: {alertBreakdown.high || 0}</div>
-              <div className="text-yellow-400">Medium: {alertBreakdown.medium || 0}</div>
-              <div className="text-blue-400">Low: {alertBreakdown.low || 0}</div>
+              <div className="text-va-red-primary">Critical: {alertBreakdown.critical || 0}</div>
+              <div className="text-aero-orange-alert">High: {alertBreakdown.high || 0}</div>
+              <div className="text-aero-amber-caution">Medium: {alertBreakdown.medium || 0}</div>
+              <div className="text-aero-blue-primary">Low: {alertBreakdown.low || 0}</div>
             </div>
           </div>
         </div>
         
-        <div className="mt-2 text-xs text-gray-500">
+        <div className="mt-2 text-xs text-foreground0">
           Sources: {dataSources.length > 0 ? dataSources.join(', ') : 'None available'}
         </div>
       </div>
 
       {relevantAlerts.length === 0 ? (
-        <div className="text-center py-8 text-gray-400">
+        <div className="text-center py-8 text-muted-foreground">
           <Shield className="h-12 w-12 mx-auto mb-3 opacity-50" />
           <p>Aviation data collection in progress</p>
-          <p className="text-sm text-yellow-400">
+          <p className="text-sm text-aero-amber-caution">
             Scraper status: Monitoring live aviation sources
           </p>
           <p className="text-xs mt-2">
@@ -259,46 +259,46 @@ export default function AirspaceAlerts() {
                 <div className="flex items-center gap-2">
                   {getTypeIcon(alert.type)}
                   <span className="font-medium text-sm">{alert.type}</span>
-                  <span className="text-xs px-2 py-1 rounded bg-gray-700 text-gray-300">
+                  <span className="text-xs px-2 py-1 rounded bg-gray-700 text-muted-foreground">
                     {alert.severity.toUpperCase()}
                   </span>
                 </div>
-                <span className="text-xs text-gray-400">{alert.source}</span>
+                <span className="text-xs text-muted-foreground">{alert.source}</span>
               </div>
 
-              <h4 className="font-semibold text-white mb-2">{alert.title}</h4>
-              <p className="text-sm text-gray-300 mb-3">{alert.description}</p>
+              <h4 className="font-semibold text-foreground mb-2">{alert.title}</h4>
+              <p className="text-sm text-muted-foreground mb-3">{alert.description}</p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                 <div>
-                  <div className="flex items-center gap-1 text-gray-400 mb-1">
+                  <div className="flex items-center gap-1 text-muted-foreground mb-1">
                     <MapPin className="h-3 w-3" />
                     Location
                   </div>
-                  <div className="text-white">
+                  <div className="text-foreground">
                     {alert.location.lat.toFixed(4)}°, {alert.location.lon.toFixed(4)}°
                     {alert.location.radius && (
-                      <div className="text-gray-400">Radius: {alert.location.radius} nm</div>
+                      <div className="text-muted-foreground">Radius: {alert.location.radius} nm</div>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-1 text-gray-400 mb-1">
+                  <div className="flex items-center gap-1 text-muted-foreground mb-1">
                     <Plane className="h-3 w-3" />
                     Altitude
                   </div>
-                  <div className="text-white">
+                  <div className="text-foreground">
                     {alert.altitude.min.toLocaleString()} - {alert.altitude.max.toLocaleString()} ft
                   </div>
                 </div>
 
                 <div>
-                  <div className="flex items-center gap-1 text-gray-400 mb-1">
+                  <div className="flex items-center gap-1 text-muted-foreground mb-1">
                     <Clock className="h-3 w-3" />
                     Duration
                   </div>
-                  <div className="text-white">
+                  <div className="text-foreground">
                     <div>From: {formatDateTime(alert.timeframe.start)}</div>
                     <div>To: {formatDateTime(alert.timeframe.end)}</div>
                   </div>
@@ -306,7 +306,7 @@ export default function AirspaceAlerts() {
               </div>
 
               {!isActiveAlert(alert) && (
-                <div className="mt-3 text-xs text-gray-500 italic">
+                <div className="mt-3 text-xs text-foreground0 italic">
                   Alert not currently active
                 </div>
               )}
@@ -315,7 +315,7 @@ export default function AirspaceAlerts() {
         </div>
       )}
 
-      <div className="mt-6 text-xs text-gray-500">
+      <div className="mt-6 text-xs text-foreground0">
         <p>Data sourced from aviation authorities including FAA, CAA, NATS, and Transport Canada.</p>
         <p>Always verify with official NOTAMs before flight operations.</p>
       </div>

@@ -76,11 +76,11 @@ export default function ICAODemoPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                  <Plane className="h-6 w-6 text-blue-600" />
+                  <Plane className="h-6 w-6 text-aero-blue-dark" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold">{flight.callsign}</h4>
-                  <p className="text-sm text-gray-600">{flight.aircraft_type} • {flight.operator}</p>
+                  <p className="text-sm text-muted-foreground">{flight.aircraft_type} • {flight.operator}</p>
                 </div>
               </div>
               
@@ -97,19 +97,19 @@ export default function ICAODemoPage() {
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <p className="text-gray-500">Route</p>
+                <p className="text-foreground0">Route</p>
                 <p className="font-medium">{flight.origin} → {flight.destination}</p>
               </div>
               <div>
-                <p className="text-gray-500">Altitude</p>
+                <p className="text-foreground0">Altitude</p>
                 <p className="font-medium">{flight.position?.altitude_ft?.toLocaleString()} ft</p>
               </div>
               <div>
-                <p className="text-gray-500">Speed</p>
+                <p className="text-foreground0">Speed</p>
                 <p className="font-medium">{flight.speed?.ground_speed_kts} kts</p>
               </div>
               <div>
-                <p className="text-gray-500">Squawk</p>
+                <p className="text-foreground0">Squawk</p>
                 <p className="font-medium">{flight.squawk}</p>
               </div>
             </div>
@@ -148,7 +148,7 @@ export default function ICAODemoPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
-                <AlertTriangle className="h-5 w-5 text-orange-500" />
+                <AlertTriangle className="h-5 w-5 text-aero-orange-alert" />
                 <h4 className="text-lg font-semibold">{notam.airport_icao}</h4>
               </div>
               <Badge className={`${
@@ -165,11 +165,11 @@ export default function ICAODemoPage() {
               <p className="text-sm"><strong>Type:</strong> {notam.type}</p>
               <p className="text-sm"><strong>Condition:</strong> {notam.condition}</p>
               <p className="text-sm"><strong>Location:</strong> {notam.location}</p>
-              <p className="text-sm text-gray-600">{notam.description}</p>
+              <p className="text-sm text-muted-foreground">{notam.description}</p>
             </div>
             
             <div className="flex items-center justify-between mt-4 pt-4 border-t">
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-foreground0">
                 <span>ID: {notam.notam_id}</span>
               </div>
               {notam.affects_operations && (
@@ -223,7 +223,7 @@ export default function ICAODemoPage() {
             <Card className="bg-blue-50 border-blue-200">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">
+                  <div className="text-2xl font-bold text-aero-blue-dark">
                     {demoData.safetyIntelligence.safety_intelligence.advisory_alerts?.length || 0}
                   </div>
                   <p className="text-sm text-blue-700">Advisory Alerts</p>
@@ -295,28 +295,28 @@ export default function ICAODemoPage() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">
+                  <div className="text-2xl font-bold text-aero-blue-dark">
                     {demoData.comprehensiveReport.aviation_intelligence_report.summary?.total_flights_tracked}
                   </div>
-                  <p className="text-sm text-gray-600">Flights Tracked</p>
+                  <p className="text-sm text-muted-foreground">Flights Tracked</p>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-orange-600">
                     {demoData.comprehensiveReport.aviation_intelligence_report.summary?.active_notams}
                   </div>
-                  <p className="text-sm text-gray-600">Active NOTAMs</p>
+                  <p className="text-sm text-muted-foreground">Active NOTAMs</p>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">
                     {demoData.comprehensiveReport.aviation_intelligence_report.summary?.monitored_airports}
                   </div>
-                  <p className="text-sm text-gray-600">Airports Monitored</p>
+                  <p className="text-sm text-muted-foreground">Airports Monitored</p>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-red-600">
                     {demoData.comprehensiveReport.aviation_intelligence_report.operational_overview?.emergency_situations}
                   </div>
-                  <p className="text-sm text-gray-600">Emergency Situations</p>
+                  <p className="text-sm text-muted-foreground">Emergency Situations</p>
                 </div>
               </div>
             </CardContent>
@@ -361,7 +361,7 @@ export default function ICAODemoPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">ICAO Aviation Intelligence Demonstration</h1>
-        <p className="text-gray-600">Comprehensive showcase of official ICAO data integration with ML safety intelligence</p>
+        <p className="text-muted-foreground">Comprehensive showcase of official ICAO data integration with ML safety intelligence</p>
       </div>
 
       <div className="flex justify-center">

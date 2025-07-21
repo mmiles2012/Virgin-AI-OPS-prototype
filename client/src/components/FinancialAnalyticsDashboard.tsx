@@ -182,7 +182,7 @@ function FleetOptimizationAnalysis() {
             onClick={() => setSelectedRoute(route as 'Long Haul' | 'Ultra Long Haul' | 'Short/Medium Haul')}
             className={`px-4 py-2 rounded-lg ${
               selectedRoute === route 
-                ? 'bg-blue-600 text-white' 
+                ? 'bg-aero-blue-primary text-foreground' 
                 : 'bg-gray-200 text-gray-700'
             }`}
           >
@@ -200,13 +200,13 @@ function FleetOptimizationAnalysis() {
             <div>
               <h4 className="font-semibold text-lg text-green-600">Optimal Aircraft</h4>
               <p className="text-2xl font-bold">{routeAnalysis[selectedRoute].optimalAircraft}</p>
-              <p className="text-sm text-gray-600 mt-2">{routeAnalysis[selectedRoute].reasoning}</p>
+              <p className="text-sm text-muted-foreground mt-2">{routeAnalysis[selectedRoute].reasoning}</p>
             </div>
             
             <div>
-              <h4 className="font-semibold text-lg text-blue-600">Cost Savings</h4>
+              <h4 className="font-semibold text-lg text-aero-blue-dark">Cost Savings</h4>
               <p className="text-2xl font-bold">{routeAnalysis[selectedRoute].costSaving}%</p>
-              <p className="text-sm text-gray-600 mt-2">vs. suboptimal aircraft selection</p>
+              <p className="text-sm text-muted-foreground mt-2">vs. suboptimal aircraft selection</p>
             </div>
             
             <div>
@@ -321,10 +321,10 @@ function OperationalCostCalculator() {
             <CardTitle className="text-sm">Single Flight Cost</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-aero-blue-dark">
               ${flightCost.toLocaleString()}
             </div>
-            <div className="text-xs text-gray-600 mt-1">
+            <div className="text-xs text-muted-foreground mt-1">
               {flightHours} hours @ ${aircraftData.total_per_hour.toLocaleString()}/hr
             </div>
           </CardContent>
@@ -338,7 +338,7 @@ function OperationalCostCalculator() {
             <div className="text-2xl font-bold text-green-600">
               ${dailyCost.toLocaleString()}
             </div>
-            <div className="text-xs text-gray-600 mt-1">
+            <div className="text-xs text-muted-foreground mt-1">
               {utilizationRate} hours utilization
             </div>
           </CardContent>
@@ -352,7 +352,7 @@ function OperationalCostCalculator() {
             <div className="text-2xl font-bold text-orange-600">
               ${monthlyCost.toLocaleString()}
             </div>
-            <div className="text-xs text-gray-600 mt-1">
+            <div className="text-xs text-muted-foreground mt-1">
               30-day projection
             </div>
           </CardContent>
@@ -366,7 +366,7 @@ function OperationalCostCalculator() {
             <div className="text-2xl font-bold text-red-600">
               ${yearlyCost.toLocaleString()}
             </div>
-            <div className="text-xs text-gray-600 mt-1">
+            <div className="text-xs text-muted-foreground mt-1">
               365-day projection
             </div>
           </CardContent>
@@ -389,8 +389,8 @@ function OperationalCostCalculator() {
               <div key={label} className="text-center">
                 <div className={`${color} h-2 rounded mb-2`}></div>
                 <div className="font-semibold">{label}</div>
-                <div className="text-sm text-gray-600">${value.toLocaleString()}/hr</div>
-                <div className="text-xs text-gray-500">
+                <div className="text-sm text-muted-foreground">${value.toLocaleString()}/hr</div>
+                <div className="text-xs text-foreground0">
                   {((value / aircraftData.total_per_hour) * 100).toFixed(1)}%
                 </div>
               </div>
@@ -407,7 +407,7 @@ export default function FinancialAnalyticsDashboard() {
     <div className="w-full h-full bg-gray-50 p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Financial Analytics Dashboard</h1>
-        <p className="text-gray-600">
+        <p className="text-muted-foreground">
           Comprehensive operating cost analysis and fleet optimization insights based on industry authentic data
         </p>
       </div>

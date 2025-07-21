@@ -223,7 +223,7 @@ export function MLEnhancedDigitalTwin({
       case 'normal': case 'low': case 'good': return 'text-green-600';
       case 'medium': case 'moderate': return 'text-yellow-600';
       case 'high': case 'critical': return 'text-red-600';
-      default: return 'text-gray-600';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -240,8 +240,8 @@ export function MLEnhancedDigitalTwin({
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
-          <RefreshCw className="animate-spin h-8 w-8 text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading ML-enhanced digital twin...</p>
+          <RefreshCw className="animate-spin h-8 w-8 text-aero-blue-dark mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading ML-enhanced digital twin...</p>
         </div>
       </div>
     );
@@ -268,12 +268,12 @@ export function MLEnhancedDigitalTwin({
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Activity className="h-6 w-6 text-blue-600" />
+              <Activity className="h-6 w-6 text-aero-blue-dark" />
               <div>
                 <h2 className="text-xl font-bold text-blue-900">
                   {digitalTwinData.aircraft_type} Digital Twin
                 </h2>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   {digitalTwinData.flight_number} • {digitalTwinData.aircraft_id} • ML-Enhanced
                 </p>
               </div>
@@ -282,7 +282,7 @@ export function MLEnhancedDigitalTwin({
               <Badge variant="outline" className="border-blue-500 text-blue-700 bg-blue-50">
                 Live Data
               </Badge>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-foreground0 mt-1">
                 Updated: {lastUpdate.toLocaleTimeString()}
               </p>
             </div>
@@ -291,28 +291,28 @@ export function MLEnhancedDigitalTwin({
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border">
-              <MapPin className="h-5 w-5 text-blue-600 mx-auto mb-1" />
+              <MapPin className="h-5 w-5 text-aero-blue-dark mx-auto mb-1" />
               <div className="text-sm font-medium">
                 {digitalTwinData.current_state?.altitude_ft?.toLocaleString() || '37,000'} ft
               </div>
-              <div className="text-xs text-gray-600">Altitude</div>
+              <div className="text-xs text-muted-foreground">Altitude</div>
             </div>
             <div className="text-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border">
               <TrendingUp className="h-5 w-5 text-green-600 mx-auto mb-1" />
               <div className="text-sm font-medium">{digitalTwinData.current_state?.ground_speed_kt || 488} kts</div>
-              <div className="text-xs text-gray-600">Ground Speed</div>
+              <div className="text-xs text-muted-foreground">Ground Speed</div>
             </div>
             <div className="text-center p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border">
               <Fuel className="h-5 w-5 text-purple-600 mx-auto mb-1" />
               <div className="text-sm font-medium">
                 {calculateFuelPercentage(digitalTwinData.aircraft_type === 'Airbus A350-1000' ? 'A350-1000' : 'B787-9', 65)}%
               </div>
-              <div className="text-xs text-gray-600">Fuel Remaining</div>
+              <div className="text-xs text-muted-foreground">Fuel Remaining</div>
             </div>
             <div className="text-center p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border">
               <Compass className="h-5 w-5 text-orange-600 mx-auto mb-1" />
               <div className="text-sm font-medium">{digitalTwinData.current_state?.heading_deg || 270}°</div>
-              <div className="text-xs text-gray-600">Heading</div>
+              <div className="text-xs text-muted-foreground">Heading</div>
             </div>
           </div>
         </CardContent>
@@ -353,13 +353,13 @@ export function MLEnhancedDigitalTwin({
                   
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-600">Fuel Flow:</span>
+                      <span className="text-muted-foreground">Fuel Flow:</span>
                       <div className="font-medium">
                         {(digitalTwinData.performance_metrics?.fuel_flow_kg_hr || 6783).toLocaleString()} kg/hr
                       </div>
                     </div>
                     <div>
-                      <span className="text-gray-600">Cruise Speed:</span>
+                      <span className="text-muted-foreground">Cruise Speed:</span>
                       <div className="font-medium">{digitalTwinData.performance_metrics?.cruise_speed_kt || 488} kts</div>
                     </div>
                   </div>
@@ -370,7 +370,7 @@ export function MLEnhancedDigitalTwin({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Fuel className="h-5 w-5 mr-2 text-blue-600" />
+                  <Fuel className="h-5 w-5 mr-2 text-aero-blue-dark" />
                   Fuel Management
                 </CardTitle>
               </CardHeader>
@@ -396,7 +396,7 @@ export function MLEnhancedDigitalTwin({
                     />
                   </div>
                   
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-muted-foreground">
                     Efficiency: {(digitalTwinData.performance_metrics?.fuel_efficiency_nm_per_kg || 0.072).toFixed(3)} NM/kg
                   </div>
                 </div>
@@ -419,7 +419,7 @@ export function MLEnhancedDigitalTwin({
                   >
                     {digitalTwinData.operational_status.fuel_status.toUpperCase()}
                   </Badge>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-muted-foreground">
                     {digitalTwinData.current_state.fuel_remaining_kg.toLocaleString()} kg remaining
                   </div>
                 </div>
@@ -432,7 +432,7 @@ export function MLEnhancedDigitalTwin({
                   >
                     {digitalTwinData.operational_status.range_capability.toUpperCase()}
                   </Badge>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-muted-foreground">
                     {digitalTwinData.performance_metrics.range_remaining_nm.toLocaleString()} NM range
                   </div>
                 </div>
@@ -445,7 +445,7 @@ export function MLEnhancedDigitalTwin({
                   >
                     {digitalTwinData.operational_status.diversion_urgency.toUpperCase()}
                   </Badge>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-muted-foreground">
                     Emergency readiness level
                   </div>
                 </div>
@@ -575,7 +575,7 @@ export function MLEnhancedDigitalTwin({
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <MapPin className="h-5 w-5 mr-2 text-blue-600" />
+                    <MapPin className="h-5 w-5 mr-2 text-aero-blue-dark" />
                     Suitable Diversion Airports
                   </CardTitle>
                 </CardHeader>
@@ -585,10 +585,10 @@ export function MLEnhancedDigitalTwin({
                       <div key={airport.icao} className="flex items-center justify-between p-4 border rounded-lg">
                         <div className="flex-1">
                           <div className="font-medium">{airport.name} ({airport.icao})</div>
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-muted-foreground">
                             {airport.distance_nm} NM • {airport.fuel_required_kg.toLocaleString()} kg fuel required
                           </div>
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-muted-foreground">
                             Runway: {airport.runway_length_ft.toLocaleString()} ft
                           </div>
                         </div>
@@ -614,7 +614,7 @@ export function MLEnhancedDigitalTwin({
                   <div className="space-y-2">
                     {digitalTwinData.diversion_analysis.risk_assessment.recommendations.map((rec, index) => (
                       <div key={index} className="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg">
-                        <div className="w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">
+                        <div className="w-6 h-6 bg-yellow-600 text-foreground rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0">
                           {index + 1}
                         </div>
                         <p className="text-sm">{rec}</p>
@@ -682,25 +682,25 @@ export function MLEnhancedDigitalTwin({
                   <div className="text-2xl font-bold text-green-600">
                     {digitalTwinData.diversion_analysis?.suitable_airports.length || 3}
                   </div>
-                  <div className="text-sm text-gray-600">Suitable Airports</div>
+                  <div className="text-sm text-muted-foreground">Suitable Airports</div>
                 </div>
                 <div className="text-center p-3 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">
+                  <div className="text-2xl font-bold text-aero-blue-dark">
                     {digitalTwinData.performance_metrics.range_remaining_nm.toLocaleString()}
                   </div>
-                  <div className="text-sm text-gray-600">Range (NM)</div>
+                  <div className="text-sm text-muted-foreground">Range (NM)</div>
                 </div>
                 <div className="text-center p-3 bg-purple-50 rounded-lg">
                   <div className="text-2xl font-bold text-purple-600">
                     {Math.round(digitalTwinData.current_state.fuel_remaining_kg / digitalTwinData.performance_metrics.fuel_flow_kg_hr * 10) / 10}
                   </div>
-                  <div className="text-sm text-gray-600">Hours Endurance</div>
+                  <div className="text-sm text-muted-foreground">Hours Endurance</div>
                 </div>
                 <div className="text-center p-3 bg-orange-50 rounded-lg">
                   <div className="text-2xl font-bold text-orange-600">
                     {digitalTwinData.ml_predictions ? Math.round(digitalTwinData.ml_predictions.success_probability * 100) : 95}%
                   </div>
-                  <div className="text-sm text-gray-600">Success Rate</div>
+                  <div className="text-sm text-muted-foreground">Success Rate</div>
                 </div>
               </div>
             </CardContent>

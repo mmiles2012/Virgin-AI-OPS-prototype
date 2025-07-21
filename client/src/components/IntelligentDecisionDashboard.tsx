@@ -206,11 +206,11 @@ const IntelligentDecisionDashboard: React.FC = () => {
 
   const getRiskColor = (riskLevel: string) => {
     switch (riskLevel) {
-      case 'LOW': return 'text-green-400';
-      case 'MEDIUM': return 'text-yellow-400';
-      case 'HIGH': return 'text-orange-400';
-      case 'CRITICAL': return 'text-red-400';
-      default: return 'text-gray-400';
+      case 'LOW': return 'text-aero-green-safe';
+      case 'MEDIUM': return 'text-aero-amber-caution';
+      case 'HIGH': return 'text-aero-orange-alert';
+      case 'CRITICAL': return 'text-va-red-primary';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -232,11 +232,11 @@ const IntelligentDecisionDashboard: React.FC = () => {
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
-            <Brain className="w-6 h-6 text-white" />
+            <Brain className="w-6 h-6 text-foreground" />
           </div>
           <div>
             <h1 className="text-2xl font-bold">Intelligent Decision Support</h1>
-            <p className="text-gray-400">ML-powered operational decision analysis</p>
+            <p className="text-muted-foreground">ML-powered operational decision analysis</p>
           </div>
         </div>
 
@@ -252,8 +252,8 @@ const IntelligentDecisionDashboard: React.FC = () => {
               onClick={() => setActiveTab(key as any)}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
                 activeTab === key
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:text-white'
+                  ? 'bg-purple-600 text-foreground'
+                  : 'bg-card text-muted-foreground hover:text-foreground'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -269,7 +269,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Scenario Configuration */}
             <div className="space-y-6">
-              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <div className="bg-card rounded-xl p-6 border border-border">
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <Settings className="w-5 h-5 text-purple-400" />
                   Scenario Configuration
@@ -281,7 +281,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
                     <select
                       value={selectedScenario}
                       onChange={(e) => setSelectedScenario(e.target.value)}
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2"
+                      className="w-full bg-gray-700 border border-border rounded-lg px-3 py-2"
                     >
                       <option value="diversion">Aircraft Diversion</option>
                       <option value="delay_management">Delay Management</option>
@@ -299,7 +299,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
                           ...prev,
                           context: { ...prev.context, aircraft_type: e.target.value }
                         }))}
-                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2"
+                        className="w-full bg-gray-700 border border-border rounded-lg px-3 py-2"
                       >
                         <option value="A350">Airbus A350-1000</option>
                         <option value="B787">Boeing 787-9</option>
@@ -316,7 +316,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
                           ...prev,
                           context: { ...prev.context, passenger_count: parseInt(e.target.value) }
                         }))}
-                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2"
+                        className="w-full bg-gray-700 border border-border rounded-lg px-3 py-2"
                       />
                     </div>
                   </div>
@@ -331,7 +331,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
                           ...prev,
                           context: { ...prev.context, current_fuel_kg: parseInt(e.target.value) }
                         }))}
-                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2"
+                        className="w-full bg-gray-700 border border-border rounded-lg px-3 py-2"
                       />
                     </div>
 
@@ -344,7 +344,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
                           ...prev,
                           context: { ...prev.context, max_cost_budget: parseInt(e.target.value) }
                         }))}
-                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2"
+                        className="w-full bg-gray-700 border border-border rounded-lg px-3 py-2"
                       />
                     </div>
                   </div>
@@ -352,7 +352,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
                   <button
                     onClick={analyzeScenario}
                     disabled={loading}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-foreground px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
                   >
                     {loading ? (
                       <>
@@ -370,13 +370,13 @@ const IntelligentDecisionDashboard: React.FC = () => {
               </div>
 
               {/* Options Preview */}
-              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+              <div className="bg-card rounded-xl p-6 border border-border">
                 <h3 className="text-lg font-semibold mb-4">Decision Options ({customScenario.options.length})</h3>
                 <div className="space-y-3">
                   {customScenario.options.map((option, index) => (
                     <div key={option.id} className="bg-gray-700 rounded-lg p-4">
                       <div className="font-medium">{option.title}</div>
-                      <div className="text-sm text-gray-400">{option.description}</div>
+                      <div className="text-sm text-muted-foreground">{option.description}</div>
                       <div className="mt-2 flex gap-4 text-xs">
                         <span>Cost: ${option.estimated_cost_usd?.toLocaleString()}</span>
                         <span>Delay: {option.estimated_delay_mins}min</span>
@@ -393,9 +393,9 @@ const IntelligentDecisionDashboard: React.FC = () => {
               {analysis && (
                 <>
                   {/* Recommendations */}
-                  <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                  <div className="bg-card rounded-xl p-6 border border-border">
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <Lightbulb className="w-5 h-5 text-yellow-400" />
+                      <Lightbulb className="w-5 h-5 text-aero-amber-caution" />
                       ML Recommendations
                     </h3>
 
@@ -408,29 +408,29 @@ const IntelligentDecisionDashboard: React.FC = () => {
                         }`}>
                           <div className="flex items-center justify-between mb-2">
                             <div className="font-medium flex items-center gap-2">
-                              {rec.type === 'PRIMARY' && <CheckCircle className="w-4 h-4 text-green-400" />}
-                              {rec.type === 'ALTERNATIVE' && <Target className="w-4 h-4 text-blue-400" />}
-                              {rec.type === 'RISK_MITIGATION' && <AlertTriangle className="w-4 h-4 text-orange-400" />}
+                              {rec.type === 'PRIMARY' && <CheckCircle className="w-4 h-4 text-aero-green-safe" />}
+                              {rec.type === 'ALTERNATIVE' && <Target className="w-4 h-4 text-aero-blue-primary" />}
+                              {rec.type === 'RISK_MITIGATION' && <AlertTriangle className="w-4 h-4 text-aero-orange-alert" />}
                               {rec.type} - {rec.option_id}
                             </div>
                             <div className="text-sm">
                               Confidence: {(rec.confidence * 100).toFixed(1)}%
                             </div>
                           </div>
-                          <div className="text-sm text-gray-300 mb-2">{rec.rationale}</div>
-                          <div className="text-sm font-medium text-white mb-1">Action:</div>
-                          <div className="text-sm text-gray-300 mb-2">{rec.action}</div>
-                          <div className="text-sm font-medium text-white mb-1">Expected Outcome:</div>
-                          <div className="text-sm text-gray-300">{rec.expected_outcome}</div>
+                          <div className="text-sm text-muted-foreground mb-2">{rec.rationale}</div>
+                          <div className="text-sm font-medium text-foreground mb-1">Action:</div>
+                          <div className="text-sm text-muted-foreground mb-2">{rec.action}</div>
+                          <div className="text-sm font-medium text-foreground mb-1">Expected Outcome:</div>
+                          <div className="text-sm text-muted-foreground">{rec.expected_outcome}</div>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   {/* Option Analysis */}
-                  <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                  <div className="bg-card rounded-xl p-6 border border-border">
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <BarChart3 className="w-5 h-5 text-blue-400" />
+                      <BarChart3 className="w-5 h-5 text-aero-blue-primary" />
                       Option Analysis
                     </h3>
 
@@ -455,7 +455,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
                             <div className="grid grid-cols-2 gap-2 text-xs">
                               {Object.entries(option.factor_scores).map(([factor, score]) => (
                                 <div key={factor} className="flex justify-between">
-                                  <span className="text-gray-400 capitalize">{factor.replace('_', ' ')}:</span>
+                                  <span className="text-muted-foreground capitalize">{factor.replace('_', ' ')}:</span>
                                   <span>{score.toFixed(3)}</span>
                                 </div>
                               ))}
@@ -469,10 +469,10 @@ const IntelligentDecisionDashboard: React.FC = () => {
               )}
 
               {!analysis && (
-                <div className="bg-gray-800 rounded-xl p-8 border border-gray-700 text-center">
-                  <Brain className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-400 mb-2">Ready for Analysis</h3>
-                  <p className="text-gray-500">Configure your scenario and click "Analyze Decision Scenario" to get ML-powered recommendations</p>
+                <div className="bg-card rounded-xl p-8 border border-border text-center">
+                  <Brain className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-muted-foreground mb-2">Ready for Analysis</h3>
+                  <p className="text-foreground0">Configure your scenario and click "Analyze Decision Scenario" to get ML-powered recommendations</p>
                 </div>
               )}
             </div>
@@ -482,31 +482,31 @@ const IntelligentDecisionDashboard: React.FC = () => {
         {activeTab === 'insights' && insights && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Key Metrics */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="bg-card rounded-xl p-6 border border-border">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-400" />
+                <TrendingUp className="w-5 h-5 text-aero-green-safe" />
                 Decision Metrics
               </h3>
               <div className="space-y-4">
                 <div>
-                  <div className="text-2xl font-bold text-green-400">{insights.total_decisions}</div>
-                  <div className="text-sm text-gray-400">Total Decisions Made</div>
+                  <div className="text-2xl font-bold text-aero-green-safe">{insights.total_decisions}</div>
+                  <div className="text-sm text-muted-foreground">Total Decisions Made</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-blue-400">{(insights.average_confidence * 100).toFixed(1)}%</div>
-                  <div className="text-sm text-gray-400">Average Confidence</div>
+                  <div className="text-2xl font-bold text-aero-blue-primary">{(insights.average_confidence * 100).toFixed(1)}%</div>
+                  <div className="text-sm text-muted-foreground">Average Confidence</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-purple-400">{(insights.performance_metrics.decision_accuracy * 100).toFixed(1)}%</div>
-                  <div className="text-sm text-gray-400">Decision Accuracy</div>
+                  <div className="text-sm text-muted-foreground">Decision Accuracy</div>
                 </div>
               </div>
             </div>
 
             {/* Scenario Distribution */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="bg-card rounded-xl p-6 border border-border">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Target className="w-5 h-5 text-blue-400" />
+                <Target className="w-5 h-5 text-aero-blue-primary" />
                 Scenario Types
               </h3>
               <div className="space-y-3">
@@ -520,9 +520,9 @@ const IntelligentDecisionDashboard: React.FC = () => {
             </div>
 
             {/* Risk Distribution */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="bg-card rounded-xl p-6 border border-border">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-orange-400" />
+                <AlertTriangle className="w-5 h-5 text-aero-orange-alert" />
                 Risk Distribution
               </h3>
               <div className="space-y-3">
@@ -536,38 +536,38 @@ const IntelligentDecisionDashboard: React.FC = () => {
             </div>
 
             {/* Performance Metrics */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 md:col-span-2">
+            <div className="bg-card rounded-xl p-6 border border-border md:col-span-2">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-cyan-400" />
                 Performance Impact
               </h3>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <div className="text-xl font-bold text-green-400">
+                  <div className="text-xl font-bold text-aero-green-safe">
                     {formatNumber(insights.performance_metrics.cost_savings_achieved, '$', '')}
                   </div>
-                  <div className="text-sm text-gray-400">Cost Savings Achieved</div>
+                  <div className="text-sm text-muted-foreground">Cost Savings Achieved</div>
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-blue-400">
+                  <div className="text-xl font-bold text-aero-blue-primary">
                     {formatNumber(insights.performance_metrics.time_savings_minutes, '', ' min')}
                   </div>
-                  <div className="text-sm text-gray-400">Time Savings</div>
+                  <div className="text-sm text-muted-foreground">Time Savings</div>
                 </div>
               </div>
             </div>
 
             {/* Implementation Success */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="bg-card rounded-xl p-6 border border-border">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-400" />
+                <CheckCircle className="w-5 h-5 text-aero-green-safe" />
                 Success Rate
               </h3>
               <div className="text-center">
-                <div className="text-3xl font-bold text-green-400 mb-2">
+                <div className="text-3xl font-bold text-aero-green-safe mb-2">
                   {(insights.performance_metrics.implementation_success_rate * 100).toFixed(1)}%
                 </div>
-                <div className="text-sm text-gray-400">Implementation Success Rate</div>
+                <div className="text-sm text-muted-foreground">Implementation Success Rate</div>
               </div>
             </div>
           </div>
@@ -576,7 +576,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
         {activeTab === 'scenarios' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Scenario Templates */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="bg-card rounded-xl p-6 border border-border">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Settings className="w-5 h-5 text-purple-400" />
                 Scenario Templates
@@ -610,7 +610,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
                 ].map((scenario) => (
                   <div key={scenario.type} className="bg-gray-700 rounded-lg p-4">
                     <div className="font-medium mb-2">{scenario.title}</div>
-                    <div className="text-sm text-gray-400 mb-3">{scenario.description}</div>
+                    <div className="text-sm text-muted-foreground mb-3">{scenario.description}</div>
                     <div className="flex flex-wrap gap-1 mb-3">
                       {scenario.factors.map((factor) => (
                         <span key={factor} className="px-2 py-1 bg-gray-600 rounded text-xs">
@@ -633,34 +633,34 @@ const IntelligentDecisionDashboard: React.FC = () => {
             </div>
 
             {/* Quick Decision Tools */}
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="bg-card rounded-xl p-6 border border-border">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Zap className="w-5 h-5 text-yellow-400" />
+                <Zap className="w-5 h-5 text-aero-amber-caution" />
                 Quick Decision Tools
               </h3>
               <div className="space-y-4">
                 <div className="bg-gray-700 rounded-lg p-4">
                   <div className="font-medium mb-2 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-red-400" />
+                    <AlertTriangle className="w-4 h-4 text-va-red-primary" />
                     Emergency Decision Support
                   </div>
-                  <div className="text-sm text-gray-400 mb-3">
+                  <div className="text-sm text-muted-foreground mb-3">
                     Rapid decision support for critical operational scenarios
                   </div>
-                  <button className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">
+                  <button className="bg-va-red-primary hover:bg-va-red-heritage text-foreground px-3 py-2 rounded text-sm">
                     Emergency Mode
                   </button>
                 </div>
 
                 <div className="bg-gray-700 rounded-lg p-4">
                   <div className="font-medium mb-2 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-blue-400" />
+                    <Clock className="w-4 h-4 text-aero-blue-primary" />
                     Time-Critical Decisions
                   </div>
-                  <div className="text-sm text-gray-400 mb-3">
+                  <div className="text-sm text-muted-foreground mb-3">
                     Accelerated analysis for time-sensitive situations
                   </div>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm">
+                  <button className="bg-aero-blue-primary hover:bg-aero-blue-light text-foreground px-3 py-2 rounded text-sm">
                     Quick Analysis
                   </button>
                 </div>
@@ -670,10 +670,10 @@ const IntelligentDecisionDashboard: React.FC = () => {
                     <Brain className="w-4 h-4 text-purple-400" />
                     ML Model Training
                   </div>
-                  <div className="text-sm text-gray-400 mb-3">
+                  <div className="text-sm text-muted-foreground mb-3">
                     Retrain models with latest operational data
                   </div>
-                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded text-sm">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-foreground px-3 py-2 rounded text-sm">
                     Update Models
                   </button>
                 </div>

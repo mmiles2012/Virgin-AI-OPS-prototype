@@ -230,18 +230,18 @@ export default function DiversionComparison() {
       case 'low': return 'bg-green-600';
       case 'medium': return 'bg-yellow-600';
       case 'high': return 'bg-orange-600';
-      case 'critical': return 'bg-red-600';
+      case 'critical': return 'bg-va-red-primary';
       default: return 'bg-gray-600';
     }
   };
 
   if (!ganderOption || !halifaxOption) {
-    return <div className="p-6 text-white">Calculating diversion options...</div>;
+    return <div className="p-6 text-foreground">Calculating diversion options...</div>;
   }
 
   return (
     <div className="p-6 space-y-6">
-      <Card className="bg-blue-900/20 border-blue-500">
+      <Card className="bg-aero-blue-primary/10 border-blue-500">
         <CardHeader>
           <CardTitle className="text-blue-300 flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
@@ -263,9 +263,9 @@ export default function DiversionComparison() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Gander Option */}
-        <Card className="bg-gray-800/50 border-gray-600">
+        <Card className="bg-card/50 border-border">
           <CardHeader>
-            <CardTitle className="text-white flex items-center justify-between">
+            <CardTitle className="text-foreground flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
                 Gander (CYQX)
@@ -280,38 +280,38 @@ export default function DiversionComparison() {
             {/* Basic Info */}
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <div className="text-gray-400">Distance</div>
-                <div className="text-white font-medium">{ganderOption.distance} km</div>
+                <div className="text-muted-foreground">Distance</div>
+                <div className="text-foreground font-medium">{ganderOption.distance} km</div>
               </div>
               <div>
-                <div className="text-gray-400">Flight Time</div>
-                <div className="text-white font-medium">{ganderOption.flightTime} min</div>
+                <div className="text-muted-foreground">Flight Time</div>
+                <div className="text-foreground font-medium">{ganderOption.flightTime} min</div>
               </div>
               <div>
-                <div className="text-gray-400">Fuel Required</div>
-                <div className="text-white font-medium">{ganderOption.fuelRequired.toLocaleString()} kg</div>
+                <div className="text-muted-foreground">Fuel Required</div>
+                <div className="text-foreground font-medium">{ganderOption.fuelRequired.toLocaleString()} kg</div>
               </div>
             </div>
 
             {/* Cost Analysis */}
             <div>
-              <div className="text-gray-400 mb-2">Cost Breakdown</div>
+              <div className="text-muted-foreground mb-2">Cost Breakdown</div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-300">Passenger Care:</span>
-                  <span className="text-white">{formatCurrency(ganderOption.cost.breakdown.passenger)}</span>
+                  <span className="text-muted-foreground">Passenger Care:</span>
+                  <span className="text-foreground">{formatCurrency(ganderOption.cost.breakdown.passenger)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-300">Crew Costs:</span>
-                  <span className="text-white">{formatCurrency(ganderOption.cost.breakdown.crew)}</span>
+                  <span className="text-muted-foreground">Crew Costs:</span>
+                  <span className="text-foreground">{formatCurrency(ganderOption.cost.breakdown.crew)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-300">Fuel Costs:</span>
-                  <span className="text-white">{formatCurrency(ganderOption.cost.breakdown.fuel)}</span>
+                  <span className="text-muted-foreground">Fuel Costs:</span>
+                  <span className="text-foreground">{formatCurrency(ganderOption.cost.breakdown.fuel)}</span>
                 </div>
-                <div className="flex justify-between border-t border-gray-600 pt-2">
-                  <span className="text-yellow-400 font-medium">Total:</span>
-                  <span className="text-yellow-400 font-bold">{formatCurrency(ganderOption.cost.total)}</span>
+                <div className="flex justify-between border-t border-border pt-2">
+                  <span className="text-aero-amber-caution font-medium">Total:</span>
+                  <span className="text-aero-amber-caution font-bold">{formatCurrency(ganderOption.cost.total)}</span>
                 </div>
               </div>
             </div>
@@ -319,63 +319,63 @@ export default function DiversionComparison() {
             {/* Weather & Facilities */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-gray-400 mb-2">Weather</div>
+                <div className="text-muted-foreground mb-2">Weather</div>
                 <div className="text-sm space-y-1">
                   <div className="flex items-center gap-2">
                     <Badge className={ganderOption.weather.conditions === 'VMC' ? 'bg-green-600' : 'bg-yellow-600'}>
                       {ganderOption.weather.category}
                     </Badge>
                   </div>
-                  <div className="text-gray-300">Vis: {ganderOption.weather.visibility} km</div>
-                  <div className="text-gray-300">Wind: {ganderOption.weather.winds}</div>
+                  <div className="text-muted-foreground">Vis: {ganderOption.weather.visibility} km</div>
+                  <div className="text-muted-foreground">Wind: {ganderOption.weather.winds}</div>
                 </div>
               </div>
               <div>
-                <div className="text-gray-400 mb-2">Facilities</div>
+                <div className="text-muted-foreground mb-2">Facilities</div>
                 <div className="text-sm space-y-1">
                   <div className="flex items-center gap-2">
-                    {ganderOption.facilities.medical ? <CheckCircle className="h-4 w-4 text-green-400" /> : <XCircle className="h-4 w-4 text-red-400" />}
-                    <span className="text-gray-300">Medical</span>
+                    {ganderOption.facilities.medical ? <CheckCircle className="h-4 w-4 text-aero-green-safe" /> : <XCircle className="h-4 w-4 text-va-red-primary" />}
+                    <span className="text-muted-foreground">Medical</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    {ganderOption.facilities.customs24h ? <CheckCircle className="h-4 w-4 text-green-400" /> : <XCircle className="h-4 w-4 text-red-400" />}
-                    <span className="text-gray-300">24/7 Customs</span>
+                    {ganderOption.facilities.customs24h ? <CheckCircle className="h-4 w-4 text-aero-green-safe" /> : <XCircle className="h-4 w-4 text-va-red-primary" />}
+                    <span className="text-muted-foreground">24/7 Customs</span>
                   </div>
-                  <div className="text-gray-300">Fire Cat: {ganderOption.facilities.fireCategory}</div>
+                  <div className="text-muted-foreground">Fire Cat: {ganderOption.facilities.fireCategory}</div>
                 </div>
               </div>
             </div>
 
             {/* Crew Status */}
             <div>
-              <div className="text-gray-400 mb-2">Crew Status</div>
+              <div className="text-muted-foreground mb-2">Crew Status</div>
               <div className="flex items-center justify-between">
-                <div className={`text-sm font-medium ${ganderOption.crewLegality.legal ? 'text-green-400' : 'text-red-400'}`}>
+                <div className={`text-sm font-medium ${ganderOption.crewLegality.legal ? 'text-aero-green-safe' : 'text-va-red-primary'}`}>
                   {ganderOption.crewLegality.legal ? 'LEGAL' : 'ILLEGAL'}
                 </div>
                 <Badge className={getRiskColor(ganderOption.crewLegality.riskLevel)}>
                   {ganderOption.crewLegality.riskLevel.toUpperCase()}
                 </Badge>
               </div>
-              <div className="text-sm text-gray-300 mt-1">
+              <div className="text-sm text-muted-foreground mt-1">
                 {ganderOption.crewLegality.timeRemaining} min remaining
               </div>
             </div>
 
             {/* Customer Impact */}
             <div>
-              <div className="text-gray-400 mb-2">Customer Impact</div>
+              <div className="text-muted-foreground mb-2">Customer Impact</div>
               <div className="flex items-center justify-between">
-                <div className="text-2xl font-bold text-white">{ganderOption.customerImpact.score}/100</div>
+                <div className="text-2xl font-bold text-foreground">{ganderOption.customerImpact.score}/100</div>
                 <div className={`text-sm ${
-                  ganderOption.customerImpact.category === 'severe' ? 'text-red-400' :
-                  ganderOption.customerImpact.category === 'high' ? 'text-orange-400' :
-                  ganderOption.customerImpact.category === 'moderate' ? 'text-yellow-400' : 'text-green-400'
+                  ganderOption.customerImpact.category === 'severe' ? 'text-va-red-primary' :
+                  ganderOption.customerImpact.category === 'high' ? 'text-aero-orange-alert' :
+                  ganderOption.customerImpact.category === 'moderate' ? 'text-aero-amber-caution' : 'text-aero-green-safe'
                 }`}>
                   {ganderOption.customerImpact.category.toUpperCase()}
                 </div>
               </div>
-              <div className="text-sm text-gray-300">
+              <div className="text-sm text-muted-foreground">
                 Est. Compensation: {formatCurrency(ganderOption.customerImpact.compensation)}
               </div>
             </div>
@@ -383,22 +383,22 @@ export default function DiversionComparison() {
             {/* Advantages/Disadvantages */}
             <div className="space-y-2">
               <div>
-                <div className="text-green-400 text-sm font-medium mb-1">Advantages:</div>
-                <ul className="text-xs text-gray-300 space-y-1">
+                <div className="text-aero-green-safe text-sm font-medium mb-1">Advantages:</div>
+                <ul className="text-xs text-muted-foreground space-y-1">
                   {ganderOption.advantages.map((advantage, index) => (
                     <li key={index} className="flex items-start gap-1">
-                      <span className="text-green-400 mt-1">•</span>
+                      <span className="text-aero-green-safe mt-1">•</span>
                       {advantage}
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <div className="text-red-400 text-sm font-medium mb-1">Disadvantages:</div>
-                <ul className="text-xs text-gray-300 space-y-1">
+                <div className="text-va-red-primary text-sm font-medium mb-1">Disadvantages:</div>
+                <ul className="text-xs text-muted-foreground space-y-1">
                   {ganderOption.disadvantages.map((disadvantage, index) => (
                     <li key={index} className="flex items-start gap-1">
-                      <span className="text-red-400 mt-1">•</span>
+                      <span className="text-va-red-primary mt-1">•</span>
                       {disadvantage}
                     </li>
                   ))}
@@ -409,9 +409,9 @@ export default function DiversionComparison() {
         </Card>
 
         {/* Halifax Option */}
-        <Card className="bg-gray-800/50 border-gray-600">
+        <Card className="bg-card/50 border-border">
           <CardHeader>
-            <CardTitle className="text-white flex items-center justify-between">
+            <CardTitle className="text-foreground flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
                 Halifax (CYHZ)
@@ -426,38 +426,38 @@ export default function DiversionComparison() {
             {/* Basic Info */}
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
-                <div className="text-gray-400">Distance</div>
-                <div className="text-white font-medium">{halifaxOption.distance} km</div>
+                <div className="text-muted-foreground">Distance</div>
+                <div className="text-foreground font-medium">{halifaxOption.distance} km</div>
               </div>
               <div>
-                <div className="text-gray-400">Flight Time</div>
-                <div className="text-white font-medium">{halifaxOption.flightTime} min</div>
+                <div className="text-muted-foreground">Flight Time</div>
+                <div className="text-foreground font-medium">{halifaxOption.flightTime} min</div>
               </div>
               <div>
-                <div className="text-gray-400">Fuel Required</div>
-                <div className="text-white font-medium">{halifaxOption.fuelRequired.toLocaleString()} kg</div>
+                <div className="text-muted-foreground">Fuel Required</div>
+                <div className="text-foreground font-medium">{halifaxOption.fuelRequired.toLocaleString()} kg</div>
               </div>
             </div>
 
             {/* Cost Analysis */}
             <div>
-              <div className="text-gray-400 mb-2">Cost Breakdown</div>
+              <div className="text-muted-foreground mb-2">Cost Breakdown</div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-300">Passenger Care:</span>
-                  <span className="text-white">{formatCurrency(halifaxOption.cost.breakdown.passenger)}</span>
+                  <span className="text-muted-foreground">Passenger Care:</span>
+                  <span className="text-foreground">{formatCurrency(halifaxOption.cost.breakdown.passenger)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-300">Crew Costs:</span>
-                  <span className="text-white">{formatCurrency(halifaxOption.cost.breakdown.crew)}</span>
+                  <span className="text-muted-foreground">Crew Costs:</span>
+                  <span className="text-foreground">{formatCurrency(halifaxOption.cost.breakdown.crew)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-300">Fuel Costs:</span>
-                  <span className="text-white">{formatCurrency(halifaxOption.cost.breakdown.fuel)}</span>
+                  <span className="text-muted-foreground">Fuel Costs:</span>
+                  <span className="text-foreground">{formatCurrency(halifaxOption.cost.breakdown.fuel)}</span>
                 </div>
-                <div className="flex justify-between border-t border-gray-600 pt-2">
-                  <span className="text-yellow-400 font-medium">Total:</span>
-                  <span className="text-yellow-400 font-bold">{formatCurrency(halifaxOption.cost.total)}</span>
+                <div className="flex justify-between border-t border-border pt-2">
+                  <span className="text-aero-amber-caution font-medium">Total:</span>
+                  <span className="text-aero-amber-caution font-bold">{formatCurrency(halifaxOption.cost.total)}</span>
                 </div>
               </div>
             </div>
@@ -465,63 +465,63 @@ export default function DiversionComparison() {
             {/* Weather & Facilities */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-gray-400 mb-2">Weather</div>
+                <div className="text-muted-foreground mb-2">Weather</div>
                 <div className="text-sm space-y-1">
                   <div className="flex items-center gap-2">
                     <Badge className={halifaxOption.weather.conditions === 'VMC' ? 'bg-green-600' : 'bg-yellow-600'}>
                       {halifaxOption.weather.category}
                     </Badge>
                   </div>
-                  <div className="text-gray-300">Vis: {halifaxOption.weather.visibility} km</div>
-                  <div className="text-gray-300">Wind: {halifaxOption.weather.winds}</div>
+                  <div className="text-muted-foreground">Vis: {halifaxOption.weather.visibility} km</div>
+                  <div className="text-muted-foreground">Wind: {halifaxOption.weather.winds}</div>
                 </div>
               </div>
               <div>
-                <div className="text-gray-400 mb-2">Facilities</div>
+                <div className="text-muted-foreground mb-2">Facilities</div>
                 <div className="text-sm space-y-1">
                   <div className="flex items-center gap-2">
-                    {halifaxOption.facilities.medical ? <CheckCircle className="h-4 w-4 text-green-400" /> : <XCircle className="h-4 w-4 text-red-400" />}
-                    <span className="text-gray-300">Medical</span>
+                    {halifaxOption.facilities.medical ? <CheckCircle className="h-4 w-4 text-aero-green-safe" /> : <XCircle className="h-4 w-4 text-va-red-primary" />}
+                    <span className="text-muted-foreground">Medical</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    {halifaxOption.facilities.customs24h ? <CheckCircle className="h-4 w-4 text-green-400" /> : <XCircle className="h-4 w-4 text-red-400" />}
-                    <span className="text-gray-300">24/7 Customs</span>
+                    {halifaxOption.facilities.customs24h ? <CheckCircle className="h-4 w-4 text-aero-green-safe" /> : <XCircle className="h-4 w-4 text-va-red-primary" />}
+                    <span className="text-muted-foreground">24/7 Customs</span>
                   </div>
-                  <div className="text-gray-300">Fire Cat: {halifaxOption.facilities.fireCategory}</div>
+                  <div className="text-muted-foreground">Fire Cat: {halifaxOption.facilities.fireCategory}</div>
                 </div>
               </div>
             </div>
 
             {/* Crew Status */}
             <div>
-              <div className="text-gray-400 mb-2">Crew Status</div>
+              <div className="text-muted-foreground mb-2">Crew Status</div>
               <div className="flex items-center justify-between">
-                <div className={`text-sm font-medium ${halifaxOption.crewLegality.legal ? 'text-green-400' : 'text-red-400'}`}>
+                <div className={`text-sm font-medium ${halifaxOption.crewLegality.legal ? 'text-aero-green-safe' : 'text-va-red-primary'}`}>
                   {halifaxOption.crewLegality.legal ? 'LEGAL' : 'ILLEGAL'}
                 </div>
                 <Badge className={getRiskColor(halifaxOption.crewLegality.riskLevel)}>
                   {halifaxOption.crewLegality.riskLevel.toUpperCase()}
                 </Badge>
               </div>
-              <div className="text-sm text-gray-300 mt-1">
+              <div className="text-sm text-muted-foreground mt-1">
                 {halifaxOption.crewLegality.timeRemaining} min remaining
               </div>
             </div>
 
             {/* Customer Impact */}
             <div>
-              <div className="text-gray-400 mb-2">Customer Impact</div>
+              <div className="text-muted-foreground mb-2">Customer Impact</div>
               <div className="flex items-center justify-between">
-                <div className="text-2xl font-bold text-white">{halifaxOption.customerImpact.score}/100</div>
+                <div className="text-2xl font-bold text-foreground">{halifaxOption.customerImpact.score}/100</div>
                 <div className={`text-sm ${
-                  halifaxOption.customerImpact.category === 'severe' ? 'text-red-400' :
-                  halifaxOption.customerImpact.category === 'high' ? 'text-orange-400' :
-                  halifaxOption.customerImpact.category === 'moderate' ? 'text-yellow-400' : 'text-green-400'
+                  halifaxOption.customerImpact.category === 'severe' ? 'text-va-red-primary' :
+                  halifaxOption.customerImpact.category === 'high' ? 'text-aero-orange-alert' :
+                  halifaxOption.customerImpact.category === 'moderate' ? 'text-aero-amber-caution' : 'text-aero-green-safe'
                 }`}>
                   {halifaxOption.customerImpact.category.toUpperCase()}
                 </div>
               </div>
-              <div className="text-sm text-gray-300">
+              <div className="text-sm text-muted-foreground">
                 Est. Compensation: {formatCurrency(halifaxOption.customerImpact.compensation)}
               </div>
             </div>
@@ -529,22 +529,22 @@ export default function DiversionComparison() {
             {/* Advantages/Disadvantages */}
             <div className="space-y-2">
               <div>
-                <div className="text-green-400 text-sm font-medium mb-1">Advantages:</div>
-                <ul className="text-xs text-gray-300 space-y-1">
+                <div className="text-aero-green-safe text-sm font-medium mb-1">Advantages:</div>
+                <ul className="text-xs text-muted-foreground space-y-1">
                   {halifaxOption.advantages.map((advantage, index) => (
                     <li key={index} className="flex items-start gap-1">
-                      <span className="text-green-400 mt-1">•</span>
+                      <span className="text-aero-green-safe mt-1">•</span>
                       {advantage}
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <div className="text-red-400 text-sm font-medium mb-1">Disadvantages:</div>
-                <ul className="text-xs text-gray-300 space-y-1">
+                <div className="text-va-red-primary text-sm font-medium mb-1">Disadvantages:</div>
+                <ul className="text-xs text-muted-foreground space-y-1">
                   {halifaxOption.disadvantages.map((disadvantage, index) => (
                     <li key={index} className="flex items-start gap-1">
-                      <span className="text-red-400 mt-1">•</span>
+                      <span className="text-va-red-primary mt-1">•</span>
                       {disadvantage}
                     </li>
                   ))}
@@ -556,7 +556,7 @@ export default function DiversionComparison() {
       </div>
 
       {/* Summary Comparison */}
-      <Card className="bg-green-900/20 border-green-500">
+      <Card className="bg-aero-green-safe/10 border-green-500">
         <CardHeader>
           <CardTitle className="text-green-300 flex items-center gap-2">
             <CheckCircle className="h-5 w-5" />
@@ -566,20 +566,20 @@ export default function DiversionComparison() {
         <CardContent>
           <div className="grid md:grid-cols-3 gap-4 text-sm">
             <div>
-              <div className="text-green-400 font-medium mb-2">Cost Difference</div>
-              <div className="text-white">
+              <div className="text-aero-green-safe font-medium mb-2">Cost Difference</div>
+              <div className="text-foreground">
                 Halifax costs {formatCurrency(halifaxOption.cost.total - ganderOption.cost.total)} more
               </div>
             </div>
             <div>
-              <div className="text-green-400 font-medium mb-2">Time Difference</div>
-              <div className="text-white">
+              <div className="text-aero-green-safe font-medium mb-2">Time Difference</div>
+              <div className="text-foreground">
                 Halifax requires {halifaxOption.flightTime - ganderOption.flightTime} minutes longer
               </div>
             </div>
             <div>
-              <div className="text-green-400 font-medium mb-2">Fuel Difference</div>
-              <div className="text-white">
+              <div className="text-aero-green-safe font-medium mb-2">Fuel Difference</div>
+              <div className="text-foreground">
                 Halifax needs {(halifaxOption.fuelRequired - ganderOption.fuelRequired).toLocaleString()} kg more fuel
               </div>
             </div>

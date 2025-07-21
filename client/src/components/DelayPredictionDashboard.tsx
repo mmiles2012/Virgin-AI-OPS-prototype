@@ -562,7 +562,7 @@ const DelayPredictionDashboard: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Delay Prediction & Holding Pattern Analysis
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Advanced predictive analytics using American Airlines operational data from JFK Airport
           </p>
         </div>
@@ -604,29 +604,29 @@ const DelayPredictionDashboard: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="bg-white p-6 rounded-lg shadow">
                 <h3 className="text-sm font-medium text-gray-900">Total Flights Analyzed</h3>
-                <p className="text-3xl font-bold text-blue-600 mt-2">
+                <p className="text-3xl font-bold text-aero-blue-dark mt-2">
                   {statistics.overview.totalFlights.toLocaleString()}
                 </p>
-                <p className="text-sm text-gray-500 mt-1">{statistics.overview.dataRange}</p>
+                <p className="text-sm text-foreground0 mt-1">{statistics.overview.dataRange}</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow">
                 <h3 className="text-sm font-medium text-gray-900">Average Delay Rate</h3>
                 <p className="text-3xl font-bold text-orange-600 mt-2">
                   {statistics.overview.avgDelayRate}%
                 </p>
-                <p className="text-sm text-gray-500 mt-1">15+ minute delays</p>
+                <p className="text-sm text-foreground0 mt-1">15+ minute delays</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow">
                 <h3 className="text-sm font-medium text-gray-900">Average Delay</h3>
                 <p className="text-3xl font-bold text-red-600 mt-2">
                   {statistics.overview.avgDelayMinutes} min
                 </p>
-                <p className="text-sm text-gray-500 mt-1">When delays occur</p>
+                <p className="text-sm text-foreground0 mt-1">When delays occur</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow">
                 <h3 className="text-sm font-medium text-gray-900">Peak Season</h3>
                 <p className="text-3xl font-bold text-purple-600 mt-2">Summer</p>
-                <p className="text-sm text-gray-500 mt-1">{statistics.peakMonths.join(', ')}</p>
+                <p className="text-sm text-foreground0 mt-1">{statistics.peakMonths.join(', ')}</p>
               </div>
             </div>
 
@@ -783,7 +783,7 @@ const DelayPredictionDashboard: React.FC = () => {
                   <button
                     onClick={predictFlightDelays}
                     disabled={loading}
-                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    className="w-full bg-aero-blue-primary text-foreground py-2 px-4 rounded-md hover:bg-aero-blue-light disabled:opacity-50"
                   >
                     {loading ? 'Analyzing...' : 'Predict Delays'}
                   </button>
@@ -814,7 +814,7 @@ const DelayPredictionDashboard: React.FC = () => {
                     </div>
                     <div className="bg-blue-50 p-4 rounded-lg">
                       <h4 className="font-semibold text-blue-900">Confidence</h4>
-                      <p className="text-2xl font-bold text-blue-600 mt-1">
+                      <p className="text-2xl font-bold text-aero-blue-dark mt-1">
                         {(prediction.predictions.confidence * 100).toFixed(1)}%
                       </p>
                       <p className="text-sm text-blue-700 mt-1">Based on historical data</p>
@@ -831,7 +831,7 @@ const DelayPredictionDashboard: React.FC = () => {
                             <div className="flex items-center space-x-2">
                               <div className="w-20 bg-gray-200 rounded-full h-2">
                                 <div 
-                                  className="bg-red-600 h-2 rounded-full"
+                                  className="bg-va-red-primary h-2 rounded-full"
                                   style={{ width: `${value * 100}%` }}
                                 ></div>
                               </div>
@@ -846,7 +846,7 @@ const DelayPredictionDashboard: React.FC = () => {
                       <ul className="space-y-2">
                         {prediction.recommendations.map((rec, index) => (
                           <li key={index} className="flex items-start space-x-2">
-                            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                            <div className="w-2 h-2 bg-aero-blue-primary rounded-full mt-2 flex-shrink-0"></div>
                             <span className="text-sm">{rec}</span>
                           </li>
                         ))}
@@ -864,8 +864,8 @@ const DelayPredictionDashboard: React.FC = () => {
                             <div className="flex items-center justify-between mb-2">
                               <h5 className="font-medium capitalize">{riskType.replace('Risk', ' Risk')}</h5>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                riskData.level === 'HIGH' ? 'bg-red-500 text-white' :
-                                riskData.level === 'MEDIUM' ? 'bg-yellow-500 text-white' :
+                                riskData.level === 'HIGH' ? 'bg-red-500 text-foreground' :
+                                riskData.level === 'MEDIUM' ? 'bg-yellow-500 text-foreground' :
                                 'bg-green-100 text-green-800'
                               }`}>
                                 {riskData.level} RISK
@@ -878,7 +878,7 @@ const DelayPredictionDashboard: React.FC = () => {
                                 {riskData.mitigationSteps.map((step: string, stepIndex: number) => (
                                   <li key={stepIndex} className="flex items-start space-x-2">
                                     <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                                    <span className="text-xs text-gray-600">{step}</span>
+                                    <span className="text-xs text-muted-foreground">{step}</span>
                                   </li>
                                 ))}
                               </ul>
@@ -897,13 +897,13 @@ const DelayPredictionDashboard: React.FC = () => {
                         {/* Flight Planning */}
                         <div className="border rounded-lg p-4">
                           <h5 className="font-medium mb-2">Flight Planning</h5>
-                          <p className="text-sm font-medium text-blue-600 mb-2">
+                          <p className="text-sm font-medium text-aero-blue-dark mb-2">
                             {prediction.operationalGuidance.flightPlanning.recommendation}
                           </p>
                           <ul className="space-y-1">
                             {prediction.operationalGuidance.flightPlanning.actions.map((action: string, index: number) => (
-                              <li key={index} className="text-xs text-gray-600 flex items-start space-x-1">
-                                <span className="text-blue-500">•</span>
+                              <li key={index} className="text-xs text-muted-foreground flex items-start space-x-1">
+                                <span className="text-aero-blue-primary">•</span>
                                 <span>{action}</span>
                               </li>
                             ))}
@@ -919,7 +919,7 @@ const DelayPredictionDashboard: React.FC = () => {
                           <p className="text-sm font-semibold mb-2">
                             {prediction.operationalGuidance.fuelStrategy.fuelAddition}
                           </p>
-                          <p className="text-xs text-gray-600">
+                          <p className="text-xs text-muted-foreground">
                             {prediction.operationalGuidance.fuelStrategy.reasoning}
                           </p>
                         </div>
@@ -950,7 +950,7 @@ const DelayPredictionDashboard: React.FC = () => {
                           </p>
                           <ul className="space-y-1">
                             {prediction.operationalGuidance.crewConsiderations.considerations.map((consideration: string, index: number) => (
-                              <li key={index} className="text-xs text-gray-600 flex items-start space-x-1">
+                              <li key={index} className="text-xs text-muted-foreground flex items-start space-x-1">
                                 <span className="text-purple-500">•</span>
                                 <span>{consideration}</span>
                               </li>
@@ -968,7 +968,7 @@ const DelayPredictionDashboard: React.FC = () => {
                         <ul className="space-y-1">
                           {prediction.operationalGuidance.alternateOptions.options.map((option: string, index: number) => (
                             <li key={index} className="text-sm text-gray-700 flex items-start space-x-2">
-                              <span className="text-red-500">▶</span>
+                              <span className="text-va-red-primary">▶</span>
                               <span>{option}</span>
                             </li>
                           ))}
@@ -997,19 +997,19 @@ const DelayPredictionDashboard: React.FC = () => {
                     <div className="space-y-1 text-xs">
                       <div className="flex justify-between">
                         <span className="text-green-700">0-2: Light Traffic</span>
-                        <span className="text-gray-600">Minimal aircraft movements, free flow</span>
+                        <span className="text-muted-foreground">Minimal aircraft movements, free flow</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-yellow-700">3-5: Moderate Traffic</span>
-                        <span className="text-gray-600">Normal operations, some sequencing</span>
+                        <span className="text-muted-foreground">Normal operations, some sequencing</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-orange-700">6-7: Heavy Traffic</span>
-                        <span className="text-gray-600">High volume, extended sequencing</span>
+                        <span className="text-muted-foreground">High volume, extended sequencing</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-red-700">8-10: Congested</span>
-                        <span className="text-gray-600">Peak capacity, holding likely</span>
+                        <span className="text-muted-foreground">Peak capacity, holding likely</span>
                       </div>
                     </div>
                   </div>
@@ -1018,19 +1018,19 @@ const DelayPredictionDashboard: React.FC = () => {
                     <div className="space-y-1 text-xs">
                       <div className="flex justify-between">
                         <span className="text-green-700">0-2: Clear Conditions</span>
-                        <span className="text-gray-600">CAVOK, unlimited visibility</span>
+                        <span className="text-muted-foreground">CAVOK, unlimited visibility</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-blue-700">3-4: Good Conditions</span>
-                        <span className="text-gray-600">Light clouds, good visibility</span>
+                        <span className="text-muted-foreground">Light clouds, good visibility</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-orange-700">5-7: Marginal Weather</span>
-                        <span className="text-gray-600">Low clouds, reduced visibility</span>
+                        <span className="text-muted-foreground">Low clouds, reduced visibility</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-red-700">8-10: Severe Weather</span>
-                        <span className="text-gray-600">Storms, fog, wind shear</span>
+                        <span className="text-muted-foreground">Storms, fog, wind shear</span>
                       </div>
                     </div>
                   </div>
@@ -1062,7 +1062,7 @@ const DelayPredictionDashboard: React.FC = () => {
                       onChange={(e) => setHoldingForm({...holdingForm, trafficLevel: parseInt(e.target.value)})}
                       className="w-full"
                     />
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-xs text-foreground0 mt-1">
                       {holdingForm.trafficLevel <= 2 ? 'Light Traffic' :
                        holdingForm.trafficLevel <= 5 ? 'Moderate Traffic' :
                        holdingForm.trafficLevel <= 7 ? 'Heavy Traffic' : 'Congested'}
@@ -1080,7 +1080,7 @@ const DelayPredictionDashboard: React.FC = () => {
                       onChange={(e) => setHoldingForm({...holdingForm, weatherConditions: parseInt(e.target.value)})}
                       className="w-full"
                     />
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-xs text-foreground0 mt-1">
                       {holdingForm.weatherConditions <= 2 ? 'Clear Conditions' :
                        holdingForm.weatherConditions <= 4 ? 'Good Conditions' :
                        holdingForm.weatherConditions <= 7 ? 'Marginal Weather' : 'Severe Weather'}
@@ -1103,7 +1103,7 @@ const DelayPredictionDashboard: React.FC = () => {
                   <button
                     onClick={analyzeHoldingPatterns}
                     disabled={loading}
-                    className="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 disabled:opacity-50"
+                    className="w-full bg-orange-600 text-foreground py-2 px-4 rounded-md hover:bg-orange-700 disabled:opacity-50"
                   >
                     {loading ? 'Analyzing...' : 'Analyze Holding Patterns'}
                   </button>
@@ -1151,7 +1151,7 @@ const DelayPredictionDashboard: React.FC = () => {
                             <div className="flex items-center space-x-2">
                               <div className="w-16 bg-gray-200 rounded-full h-2 overflow-hidden">
                                 <div 
-                                  className="bg-blue-600 h-2 rounded-full transition-all duration-1000 ease-out animate-in slide-in-from-left-full delay-800"
+                                  className="bg-aero-blue-primary h-2 rounded-full transition-all duration-1000 ease-out animate-in slide-in-from-left-full delay-800"
                                   style={{ width: `${(holdingAnalysis.currentConditions.trafficDensity / 10) * 100}%` }}
                                 ></div>
                               </div>
@@ -1189,7 +1189,7 @@ const DelayPredictionDashboard: React.FC = () => {
                             <div className="flex items-center space-x-2">
                               <div className="w-16 bg-gray-200 rounded-full h-2 overflow-hidden">
                                 <div 
-                                  className="bg-red-600 h-2 rounded-full transition-all duration-1000 ease-out animate-in slide-in-from-left-full delay-1100"
+                                  className="bg-va-red-primary h-2 rounded-full transition-all duration-1000 ease-out animate-in slide-in-from-left-full delay-1100"
                                   style={{ width: `${holdingAnalysis.currentConditions.currentDelays}%` }}
                                 ></div>
                               </div>
@@ -1206,7 +1206,7 @@ const DelayPredictionDashboard: React.FC = () => {
                         {holdingAnalysis.alternateRecommendations.map((rec, index) => (
                           <li key={index} className={`text-sm flex items-start space-x-3 animate-in slide-in-from-left-1 duration-600 hover:translate-x-1 transition-transform`}
                               style={{ animationDelay: `${800 + (index * 100)}ms` }}>
-                            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0 animate-pulse"></div>
+                            <div className="w-2 h-2 bg-aero-blue-primary rounded-full mt-2 flex-shrink-0 animate-pulse"></div>
                             <span className="text-blue-800">{rec}</span>
                           </li>
                         ))}
@@ -1223,14 +1223,14 @@ const DelayPredictionDashboard: React.FC = () => {
                       <button
                         onClick={generateAiHoldingPrediction}
                         disabled={loading}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm animate-in slide-in-from-right-2 duration-600 delay-900 hover:scale-105 transition-all"
+                        className="bg-aero-blue-primary text-foreground px-4 py-2 rounded-md hover:bg-aero-blue-light disabled:opacity-50 text-sm animate-in slide-in-from-right-2 duration-600 delay-900 hover:scale-105 transition-all"
                       >
                         {loading ? 'Generating...' : 'Generate AI Prediction'}
                       </button>
                       {aiHoldingPrediction && (
                         <button
                           onClick={() => forwardToFlightPlanning(aiHoldingPrediction)}
-                          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm animate-in slide-in-from-right-1 duration-600 delay-1000 hover:scale-105 transition-all"
+                          className="bg-green-600 text-foreground px-4 py-2 rounded-md hover:bg-green-700 text-sm animate-in slide-in-from-right-1 duration-600 delay-1000 hover:scale-105 transition-all"
                         >
                           Forward to Flight Planning
                         </button>
@@ -1243,7 +1243,7 @@ const DelayPredictionDashboard: React.FC = () => {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="bg-white p-3 rounded border animate-in slide-in-from-left-3 duration-700 delay-1200 hover:shadow-md hover:-translate-y-1 transition-all">
                           <h4 className="font-semibold text-blue-900 text-sm">Holding Probability</h4>
-                          <p className="text-2xl font-bold text-blue-600 animate-in zoom-in duration-1000 delay-1400">
+                          <p className="text-2xl font-bold text-aero-blue-dark animate-in zoom-in duration-1000 delay-1400">
                             {(aiHoldingPrediction.holdingProbability * 100).toFixed(1)}%
                           </p>
                           <p className="text-xs text-blue-700 animate-in fade-in duration-500 delay-1600">AI confidence: {(aiHoldingPrediction.confidence * 100).toFixed(0)}%</p>
@@ -1270,7 +1270,7 @@ const DelayPredictionDashboard: React.FC = () => {
                           {aiHoldingPrediction.flightPlanningRecommendations?.map((rec: string, index: number) => (
                             <li key={index} className={`flex items-start space-x-2 animate-in slide-in-from-left-1 duration-600 hover:translate-x-1 transition-transform`}
                                 style={{ animationDelay: `${1800 + (index * 100)}ms` }}>
-                              <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0 animate-pulse"></div>
+                              <div className="w-1.5 h-1.5 bg-aero-blue-primary rounded-full mt-2 flex-shrink-0 animate-pulse"></div>
                               <span>{rec}</span>
                             </li>
                           ))}
@@ -1299,7 +1299,7 @@ const DelayPredictionDashboard: React.FC = () => {
                   )}
 
                   {!aiHoldingPrediction && (
-                    <div className="text-center text-blue-600 py-4">
+                    <div className="text-center text-aero-blue-dark py-4">
                       <p className="text-sm">Generate AI prediction to get comprehensive holding recommendations for Flight Planning</p>
                     </div>
                   )}
@@ -1382,31 +1382,31 @@ const DelayPredictionDashboard: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="bg-white p-6 rounded-lg shadow">
                   <h3 className="text-sm font-medium text-gray-900">Total Flights</h3>
-                  <p className="text-3xl font-bold text-blue-600 mt-2">
+                  <p className="text-3xl font-bold text-aero-blue-dark mt-2">
                     {heathrowMetrics.overview.totalFlights.toLocaleString()}
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">{heathrowMetrics.overview.dataSource}</p>
+                  <p className="text-sm text-foreground0 mt-1">{heathrowMetrics.overview.dataSource}</p>
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow">
                   <h3 className="text-sm font-medium text-gray-900">Punctuality Rate</h3>
                   <p className="text-3xl font-bold text-green-600 mt-2">
                     {heathrowMetrics.overview.punctualityRate}%
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">0-15 min late or better</p>
+                  <p className="text-sm text-foreground0 mt-1">0-15 min late or better</p>
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow">
                   <h3 className="text-sm font-medium text-gray-900">Average Delay</h3>
                   <p className="text-3xl font-bold text-orange-600 mt-2">
                     {heathrowMetrics.overview.averageDelay} min
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">When delays occur</p>
+                  <p className="text-sm text-foreground0 mt-1">When delays occur</p>
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow">
                   <h3 className="text-sm font-medium text-gray-900">Cancellation Rate</h3>
                   <p className="text-3xl font-bold text-red-600 mt-2">
                     {heathrowMetrics.overview.cancellationRate}%
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">Flight cancellations</p>
+                  <p className="text-sm text-foreground0 mt-1">Flight cancellations</p>
                 </div>
               </div>
             )}
@@ -1475,7 +1475,7 @@ const DelayPredictionDashboard: React.FC = () => {
                   <button
                     onClick={predictHeathrowFlight}
                     disabled={loading}
-                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    className="w-full bg-aero-blue-primary text-foreground py-2 px-4 rounded-md hover:bg-aero-blue-light disabled:opacity-50"
                   >
                     {loading ? 'Analyzing...' : 'Predict Performance'}
                   </button>
@@ -1525,7 +1525,7 @@ const DelayPredictionDashboard: React.FC = () => {
                       <ul className="space-y-1">
                         {heathrowPrediction.recommendations.map((rec: string, index: number) => (
                           <li key={index} className="flex items-start space-x-2">
-                            <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                            <div className="w-2 h-2 bg-aero-blue-primary rounded-full mt-2 flex-shrink-0"></div>
                             <span className="text-sm">{rec}</span>
                           </li>
                         ))}
@@ -1544,22 +1544,22 @@ const DelayPredictionDashboard: React.FC = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                           Airline
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                           Grade
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                           Punctuality Rate
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                           Avg Delay
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                           Total Flights
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                           Cancellation Rate
                         </th>
                       </tr>
@@ -1574,9 +1574,9 @@ const DelayPredictionDashboard: React.FC = () => {
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                               airline.performanceGrade === 'A' ? 'bg-green-100 text-green-800' :
                               airline.performanceGrade === 'B' ? 'bg-blue-100 text-blue-800' :
-                              airline.performanceGrade === 'C' ? 'bg-yellow-500 text-white' :
-                              airline.performanceGrade === 'D' ? 'bg-orange-500 text-white' :
-                              'bg-red-500 text-white'
+                              airline.performanceGrade === 'C' ? 'bg-yellow-500 text-foreground' :
+                              airline.performanceGrade === 'D' ? 'bg-orange-500 text-foreground' :
+                              'bg-red-500 text-foreground'
                             }`}>
                               {airline.performanceGrade}
                             </span>
@@ -1610,29 +1610,29 @@ const DelayPredictionDashboard: React.FC = () => {
                     <div className="text-2xl font-bold text-green-600">
                       {heathrowMetrics.delayCategories.on_time}%
                     </div>
-                    <div className="text-sm text-gray-600">On Time</div>
-                    <div className="text-xs text-gray-500">0-15 min late</div>
+                    <div className="text-sm text-muted-foreground">On Time</div>
+                    <div className="text-xs text-foreground0">0-15 min late</div>
                   </div>
                   <div className="text-center p-4 bg-yellow-50 rounded-lg">
                     <div className="text-2xl font-bold text-yellow-600">
                       {heathrowMetrics.delayCategories.moderate_delay}%
                     </div>
-                    <div className="text-sm text-gray-600">Moderate Delay</div>
-                    <div className="text-xs text-gray-500">16-60 min late</div>
+                    <div className="text-sm text-muted-foreground">Moderate Delay</div>
+                    <div className="text-xs text-foreground0">16-60 min late</div>
                   </div>
                   <div className="text-center p-4 bg-orange-50 rounded-lg">
                     <div className="text-2xl font-bold text-orange-600">
                       {heathrowMetrics.delayCategories.severe_delay}%
                     </div>
-                    <div className="text-sm text-gray-600">Severe Delay</div>
-                    <div className="text-xs text-gray-500">61-180 min late</div>
+                    <div className="text-sm text-muted-foreground">Severe Delay</div>
+                    <div className="text-xs text-foreground0">61-180 min late</div>
                   </div>
                   <div className="text-center p-4 bg-red-50 rounded-lg">
                     <div className="text-2xl font-bold text-red-600">
                       {heathrowMetrics.delayCategories.extreme_delay}%
                     </div>
-                    <div className="text-sm text-gray-600">Extreme Delay</div>
-                    <div className="text-xs text-gray-500">180+ min late</div>
+                    <div className="text-sm text-muted-foreground">Extreme Delay</div>
+                    <div className="text-xs text-foreground0">180+ min late</div>
                   </div>
                 </div>
               </div>
@@ -1659,7 +1659,7 @@ const DelayPredictionDashboard: React.FC = () => {
                     <ul className="space-y-2">
                       {heathrowMetrics.operationalInsights.worstPerformingAirlines.map((airline: string, index: number) => (
                         <li key={index} className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                          <div className="w-2 h-2 bg-va-red-primary rounded-full"></div>
                           <span className="text-sm">{airline}</span>
                         </li>
                       ))}
@@ -1682,19 +1682,19 @@ const DelayPredictionDashboard: React.FC = () => {
                   <div className="bg-white p-4 rounded-lg">
                     <h3 className="text-sm font-medium text-gray-700">Framework</h3>
                     <p className="text-lg font-bold text-purple-600">{tensorflowStatus.framework}</p>
-                    <p className="text-xs text-gray-500">{tensorflowStatus.model_type}</p>
+                    <p className="text-xs text-foreground0">{tensorflowStatus.model_type}</p>
                   </div>
                   <div className="bg-white p-4 rounded-lg">
                     <h3 className="text-sm font-medium text-gray-700">Neural Network</h3>
                     <p className={`text-lg font-bold ${tensorflowStatus.neural_network_ready ? 'text-green-600' : 'text-orange-600'}`}>
                       {tensorflowStatus.neural_network_ready ? 'Ready' : 'Training Required'}
                     </p>
-                    <p className="text-xs text-gray-500">{tensorflowStatus.python_backend}</p>
+                    <p className="text-xs text-foreground0">{tensorflowStatus.python_backend}</p>
                   </div>
                   <div className="bg-white p-4 rounded-lg">
                     <h3 className="text-sm font-medium text-gray-700">Training Data</h3>
-                    <p className="text-sm font-medium text-blue-600">American Airlines JFK</p>
-                    <p className="text-xs text-gray-500">2022-2024 Operations</p>
+                    <p className="text-sm font-medium text-aero-blue-dark">American Airlines JFK</p>
+                    <p className="text-xs text-foreground0">2022-2024 Operations</p>
                   </div>
                 </div>
               </div>
@@ -1730,7 +1730,7 @@ const DelayPredictionDashboard: React.FC = () => {
                       <h4 className="font-medium text-sm mb-2">Model Architecture</h4>
                       <div className="space-y-1">
                         {tensorflowModelInfo.layers?.map((layer: string, index: number) => (
-                          <div key={index} className="text-xs text-gray-600 font-mono">
+                          <div key={index} className="text-xs text-muted-foreground font-mono">
                             Layer {index + 1}: {layer}
                           </div>
                         ))}
@@ -1741,14 +1741,14 @@ const DelayPredictionDashboard: React.FC = () => {
 
                 <div>
                   <h3 className="font-medium mb-3">Train Neural Network</h3>
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Train the deep learning model on historical American Airlines JFK delay data using TensorFlow. 
                     This will enable AI-powered delay predictions with enhanced accuracy.
                   </p>
                   <button
                     onClick={trainTensorflowModel}
                     disabled={loading}
-                    className="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 disabled:opacity-50"
+                    className="w-full bg-purple-600 text-foreground py-3 px-4 rounded-md hover:bg-purple-700 disabled:opacity-50"
                   >
                     {loading ? 'Training Neural Network...' : 'Train AI Model'}
                   </button>
@@ -1833,7 +1833,7 @@ const DelayPredictionDashboard: React.FC = () => {
                   <button
                     onClick={predictWithTensorflow}
                     disabled={loading || !tensorflowStatus?.neural_network_ready}
-                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-md hover:from-purple-700 hover:to-blue-700 disabled:opacity-50"
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-foreground py-3 px-4 rounded-md hover:from-purple-700 hover:to-blue-700 disabled:opacity-50"
                   >
                     {loading ? 'AI Processing...' : 'Predict with Neural Network'}
                   </button>
@@ -1857,7 +1857,7 @@ const DelayPredictionDashboard: React.FC = () => {
                           style={{ width: `${(tensorflowPrediction.predictions?.confidence * 100)}%` }}
                         ></div>
                       </div>
-                      <p className="text-xs text-gray-600 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         Neural network trained on 33 months of authentic data
                       </p>
                     </div>
@@ -1879,15 +1879,15 @@ const DelayPredictionDashboard: React.FC = () => {
                         <p className="text-xs text-orange-700">Neural network output</p>
                       </div>
                       <div className="bg-yellow-500 p-3 rounded-lg">
-                        <h4 className="font-semibold text-white text-sm">Holding Risk</h4>
-                        <p className="text-2xl font-bold text-white">
+                        <h4 className="font-semibold text-foreground text-sm">Holding Risk</h4>
+                        <p className="text-2xl font-bold text-foreground">
                           {(tensorflowPrediction.predictions?.holdingProbability * 100)?.toFixed(1)}%
                         </p>
                         <p className="text-xs text-yellow-100">AI calculated</p>
                       </div>
                       <div className="bg-blue-50 p-3 rounded-lg">
                         <h4 className="font-semibold text-blue-900 text-sm">Holding Time</h4>
-                        <p className="text-2xl font-bold text-blue-600">
+                        <p className="text-2xl font-bold text-aero-blue-dark">
                           {tensorflowPrediction.predictions?.expectedHoldingTime} min
                         </p>
                         <p className="text-xs text-blue-700">Estimated duration</p>
@@ -1909,7 +1909,7 @@ const DelayPredictionDashboard: React.FC = () => {
 
                     {/* Model Information */}
                     <div className="border-t pt-3">
-                      <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center justify-between text-xs text-foreground0">
                         <span>Model: {tensorflowPrediction.modelVersion}</span>
                         <span>Data: {tensorflowPrediction.dataSource}</span>
                       </div>
@@ -1973,13 +1973,13 @@ const DelayPredictionDashboard: React.FC = () => {
                   <div className="bg-white p-4 rounded-lg">
                     <h3 className="text-sm font-medium text-gray-700">Framework</h3>
                     <p className="text-lg font-bold text-emerald-600">{dualModelStatus.framework}</p>
-                    <p className="text-xs text-gray-500">{dualModelStatus.model_type}</p>
+                    <p className="text-xs text-foreground0">{dualModelStatus.model_type}</p>
                   </div>
                   <div className="bg-white p-4 rounded-lg">
                     <h3 className="text-sm font-medium text-gray-700">Data Sources</h3>
                     <div className="space-y-1">
                       {dualModelStatus.data_sources?.map((source: string, index: number) => (
-                        <p key={index} className="text-sm font-medium text-blue-600">{source}</p>
+                        <p key={index} className="text-sm font-medium text-aero-blue-dark">{source}</p>
                       ))}
                     </div>
                   </div>
@@ -1988,7 +1988,7 @@ const DelayPredictionDashboard: React.FC = () => {
                     <p className={`text-lg font-bold ${dualModelStatus.dual_model_ready ? 'text-green-600' : 'text-orange-600'}`}>
                       {dualModelStatus.dual_model_ready ? 'Ready' : 'Training Required'}
                     </p>
-                    <p className="text-xs text-gray-500">{dualModelStatus.ensemble_type} Ensemble</p>
+                    <p className="text-xs text-foreground0">{dualModelStatus.ensemble_type} Ensemble</p>
                   </div>
                 </div>
               </div>
@@ -2019,13 +2019,13 @@ const DelayPredictionDashboard: React.FC = () => {
                     <div className="mt-4 p-3 bg-gray-50 rounded">
                       <h4 className="font-medium text-sm mb-2">Model Architecture</h4>
                       <div className="space-y-1">
-                        <div className="text-xs text-gray-600">
+                        <div className="text-xs text-muted-foreground">
                           UK Model: {dualModelInfo.models?.uk_model?.architecture}
                         </div>
-                        <div className="text-xs text-gray-600">
+                        <div className="text-xs text-muted-foreground">
                           US Model: {dualModelInfo.models?.us_model?.architecture}
                         </div>
-                        <div className="text-xs text-gray-600">
+                        <div className="text-xs text-muted-foreground">
                           Ensemble: {dualModelInfo.models?.ensemble?.type}
                         </div>
                       </div>
@@ -2035,14 +2035,14 @@ const DelayPredictionDashboard: React.FC = () => {
 
                 <div>
                   <h3 className="font-medium mb-3">Train Dual-Model System</h3>
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Train the comprehensive AI system using both UK CAA punctuality statistics and US Airlines delay data. 
                     This creates an ensemble model for enhanced prediction accuracy across international operations.
                   </p>
                   <button
                     onClick={trainDualModelSystem}
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 px-4 rounded-md hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50"
+                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-foreground py-3 px-4 rounded-md hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50"
                   >
                     {loading ? 'Training Dual-Model System...' : 'Train Combined AI Models'}
                   </button>
@@ -2132,7 +2132,7 @@ const DelayPredictionDashboard: React.FC = () => {
                   <button
                     onClick={predictWithDualModel}
                     disabled={loading || !dualModelStatus?.dual_model_ready}
-                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 px-4 rounded-md hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50"
+                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-foreground py-3 px-4 rounded-md hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50"
                   >
                     {loading ? 'Processing with Dual Models...' : 'Predict with Enhanced AI'}
                   </button>
@@ -2156,7 +2156,7 @@ const DelayPredictionDashboard: React.FC = () => {
                           style={{ width: `${(dualModelPrediction.factors?.dualModelAgreement * 100)}%` }}
                         ></div>
                       </div>
-                      <p className="text-xs text-gray-600 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         UK CAA + US Airlines model consensus
                       </p>
                     </div>
@@ -2165,7 +2165,7 @@ const DelayPredictionDashboard: React.FC = () => {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-blue-50 p-3 rounded-lg">
                         <h4 className="font-semibold text-blue-900 text-sm">UK Model</h4>
-                        <p className="text-xl font-bold text-blue-600">
+                        <p className="text-xl font-bold text-aero-blue-dark">
                           {dualModelPrediction.modelDetails?.ukModelPrediction?.toFixed(0)} min
                         </p>
                         <p className="text-xs text-blue-700">CAA Data</p>
@@ -2212,7 +2212,7 @@ const DelayPredictionDashboard: React.FC = () => {
 
                     {/* Model Insights */}
                     <div className="border-t pt-3">
-                      <div className="grid grid-cols-2 gap-4 text-xs text-gray-500">
+                      <div className="grid grid-cols-2 gap-4 text-xs text-foreground0">
                         <div>
                           <span className="font-medium">Data Sources:</span>
                           <div>{dualModelPrediction.modelDetails?.dataSources?.join(', ')}</div>
@@ -2302,7 +2302,7 @@ const DelayPredictionDashboard: React.FC = () => {
                 <button
                   onClick={startNeuralNetworkTraining}
                   disabled={loading || trainingStatus?.status === 'training'}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                  className="bg-aero-blue-primary text-foreground px-4 py-2 rounded-md hover:bg-aero-blue-light disabled:opacity-50"
                 >
                   {loading ? 'Training...' : 'Start Neural Network Training'}
                 </button>
@@ -2358,7 +2358,7 @@ const DelayPredictionDashboard: React.FC = () => {
                     <div className="space-y-1 font-mono text-sm">
                       {trainingProgress.map((log, index) => (
                         <div key={index} className="text-gray-700">
-                          <span className="text-gray-400 mr-2">[{new Date().toLocaleTimeString()}]</span>
+                          <span className="text-muted-foreground mr-2">[{new Date().toLocaleTimeString()}]</span>
                           {log}
                         </div>
                       ))}
@@ -2376,7 +2376,7 @@ const DelayPredictionDashboard: React.FC = () => {
                   </p>
                   <div className="mt-2">
                     <span className={`inline-block px-2 py-1 rounded text-xs ${
-                      tensorflowStatus?.trained ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                      tensorflowStatus?.trained ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-muted-foreground'
                     }`}>
                       {tensorflowStatus?.trained ? 'Trained' : 'Not Trained'}
                     </span>
@@ -2390,7 +2390,7 @@ const DelayPredictionDashboard: React.FC = () => {
                   </p>
                   <div className="mt-2">
                     <span className={`inline-block px-2 py-1 rounded text-xs ${
-                      dualModelStatus?.status === 'ready' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                      dualModelStatus?.status === 'ready' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-muted-foreground'
                     }`}>
                       {dualModelStatus?.status || 'Unknown'}
                     </span>

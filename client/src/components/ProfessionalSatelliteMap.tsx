@@ -58,16 +58,16 @@ class SatelliteMapErrorBoundary extends React.Component<{children: React.ReactNo
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex items-center justify-center h-full bg-gray-900 text-white">
+        <div className="flex items-center justify-center h-full bg-card text-foreground">
           <div className="text-center p-8">
-            <AlertTriangle className="h-16 w-16 mx-auto mb-4 text-yellow-500" />
+            <AlertTriangle className="h-16 w-16 mx-auto mb-4 text-aero-amber-caution" />
             <h2 className="text-2xl font-semibold mb-4">Map Service Issue</h2>
-            <p className="text-gray-400 mb-6 max-w-md">
+            <p className="text-muted-foreground mb-6 max-w-md">
               Experiencing connectivity issues with satellite imagery service.
             </p>
             <button 
               onClick={() => this.setState({ hasError: false, errorCount: 0 })}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
+              className="px-6 py-3 bg-aero-blue-primary hover:bg-aero-blue-light rounded-lg font-medium transition-colors"
             >
               Retry Connection
             </button>
@@ -587,37 +587,37 @@ function ProfessionalSatelliteMapCore() {
   };
 
   return (
-    <div className="w-full h-full bg-gray-900 relative">
+    <div className="w-full h-full bg-card relative">
       
 
 
 
       {/* Selected Airport Weather Panel - DISABLED to fix black square overlay issue */}
       {false && selectedAirport && (
-        <div className="absolute top-4 right-4 z-40 bg-black/90 border border-gray-600 rounded-lg p-4 backdrop-blur-sm max-w-xs">
+        <div className="absolute top-4 right-4 z-40 bg-black/90 border border-border rounded-lg p-4 backdrop-blur-sm max-w-xs">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-white font-semibold">{selectedAirport.icao}</h3>
+            <h3 className="text-foreground font-semibold">{selectedAirport.icao}</h3>
             <button
               onClick={() => {
                 setSelectedAirport(null);
                 setAviationWeather(null);
               }}
-              className="text-gray-400 hover:text-white transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
           
-          <div className="text-gray-300 text-sm mb-2">{selectedAirport.name}</div>
-          <div className="text-gray-400 text-xs mb-3">{selectedAirport.city}, {selectedAirport.country}</div>
+          <div className="text-muted-foreground text-sm mb-2">{selectedAirport.name}</div>
+          <div className="text-muted-foreground text-xs mb-3">{selectedAirport.city}, {selectedAirport.country}</div>
           
-          <div className="grid grid-cols-2 gap-2 text-xs text-gray-300 mb-3">
+          <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground mb-3">
             <div>Elevation: {selectedAirport.elevation} ft</div>
             <div>Runways: {selectedAirport.runways?.length || 0}</div>
           </div>
 
           {weatherLoading && (
-            <div className="flex items-center gap-2 text-blue-400 text-sm mb-3">
+            <div className="flex items-center gap-2 text-aero-blue-primary text-sm mb-3">
               <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-400"></div>
               Loading weather...
             </div>
@@ -626,8 +626,8 @@ function ProfessionalSatelliteMapCore() {
           {aviationWeather && (
             <div className="space-y-2">
               <div>
-                <h4 className="text-white font-medium text-sm mb-1">METAR</h4>
-                <div className="bg-gray-900/50 p-2 rounded text-xs font-mono text-gray-300 max-h-16 overflow-y-auto">
+                <h4 className="text-foreground font-medium text-sm mb-1">METAR</h4>
+                <div className="bg-card/50 p-2 rounded text-xs font-mono text-muted-foreground max-h-16 overflow-y-auto">
                   {aviationWeather.metar.raw || 'No METAR data'}
                 </div>
               </div>
@@ -640,11 +640,11 @@ function ProfessionalSatelliteMapCore() {
       <div className="w-full h-full relative" style={{ minHeight: '500px' }}>
         {/* Loading overlay disabled to fix black square issue */}
         {false && !mapLoaded && (
-          <div className="absolute inset-0 bg-gray-900 flex items-center justify-center z-50">
-            <div className="text-center text-white">
+          <div className="absolute inset-0 bg-card flex items-center justify-center z-50">
+            <div className="text-center text-foreground">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
               <p className="text-lg font-medium">Loading Satellite Map</p>
-              <p className="text-sm text-gray-400 mt-2">Initializing world view...</p>
+              <p className="text-sm text-muted-foreground mt-2">Initializing world view...</p>
             </div>
           </div>
         )}
@@ -749,20 +749,20 @@ function ProfessionalSatelliteMapCore() {
               >
                 <div className="p-2 max-w-[260px]">
                   <div className="text-center mb-2">
-                    <h3 className="text-green-500 font-bold text-base">{airport.icao}</h3>
-                    <div className="text-white text-xs font-medium truncate">{airport.name}</div>
-                    <div className="text-gray-400 text-xs">{airport.city}, {airport.country}</div>
+                    <h3 className="text-aero-green-safe font-bold text-base">{airport.icao}</h3>
+                    <div className="text-foreground text-xs font-medium truncate">{airport.name}</div>
+                    <div className="text-muted-foreground text-xs">{airport.city}, {airport.country}</div>
                   </div>
                   
-                  <div className="space-y-1.5 border-t border-gray-600 pt-1.5">
+                  <div className="space-y-1.5 border-t border-border pt-1.5">
                     <div className="grid grid-cols-2 gap-1 text-xs">
                       <div>
-                        <span className="text-gray-400">IATA:</span>
-                        <span className="text-white ml-1">{airport.iata || 'N/A'}</span>
+                        <span className="text-muted-foreground">IATA:</span>
+                        <span className="text-foreground ml-1">{airport.iata || 'N/A'}</span>
                       </div>
                       <div>
-                        <span className="text-gray-400">Runways:</span>
-                        <span className="text-white ml-1">{airport.runways?.length || 0}</span>
+                        <span className="text-muted-foreground">Runways:</span>
+                        <span className="text-foreground ml-1">{airport.runways?.length || 0}</span>
                       </div>
                     </div>
                     
@@ -770,18 +770,18 @@ function ProfessionalSatelliteMapCore() {
                     {(() => {
                       const serviceInfo = getServiceCoverage(airport);
                       return serviceInfo ? (
-                        <div className="border-t border-gray-600 pt-1.5">
+                        <div className="border-t border-border pt-1.5">
                           <div className="flex items-center justify-between text-xs mb-1">
                             <div className="flex items-center gap-1">
-                              <Building className="w-3 h-3 text-gray-400" />
-                              <span className="text-gray-400">Services</span>
+                              <Building className="w-3 h-3 text-muted-foreground" />
+                              <span className="text-muted-foreground">Services</span>
                             </div>
                             <div className="flex items-center gap-1">
                               <div 
                                 className="w-2 h-2 rounded-full" 
                                 style={{ backgroundColor: getServiceIndicatorColor(serviceInfo.support) }}
                               ></div>
-                              <span className="text-xs text-gray-300 capitalize">
+                              <span className="text-xs text-muted-foreground capitalize">
                                 {serviceInfo.support.replace('_', ' ')}
                               </span>
                             </div>
@@ -791,39 +791,39 @@ function ProfessionalSatelliteMapCore() {
                             <div className="flex items-center gap-1">
                               <Fuel className={`w-3 h-3 ${
                                 serviceInfo.support === 'both' || serviceInfo.support === 'fuel_only' 
-                                  ? 'text-green-400' : 'text-gray-500'
+                                  ? 'text-aero-green-safe' : 'text-foreground0'
                               }`} />
-                              <span className="text-gray-300">Fuel</span>
+                              <span className="text-muted-foreground">Fuel</span>
                             </div>
                             <div className="flex items-center gap-1">
                               <Wrench className={`w-3 h-3 ${
                                 serviceInfo.support === 'both' || serviceInfo.support === 'ground_only' 
-                                  ? 'text-green-400' : 'text-gray-500'
+                                  ? 'text-aero-green-safe' : 'text-foreground0'
                               }`} />
-                              <span className="text-gray-300">Ground</span>
+                              <span className="text-muted-foreground">Ground</span>
                             </div>
                           </div>
                           
                           {serviceInfo.phone && serviceInfo.phone !== 'Not available' && (
                             <div className="mt-1.5 p-1.5 bg-blue-900/30 rounded text-xs">
                               <div className="flex items-center gap-1">
-                                <Phone className="w-3 h-3 text-blue-400" />
-                                <span className="text-blue-400 font-medium">Ops Center</span>
+                                <Phone className="w-3 h-3 text-aero-blue-primary" />
+                                <span className="text-aero-blue-primary font-medium">Ops Center</span>
                               </div>
-                              <div className="text-white font-mono text-xs">{serviceInfo.phone}</div>
+                              <div className="text-foreground font-mono text-xs">{serviceInfo.phone}</div>
                             </div>
                           )}
                         </div>
                       ) : (
-                        <div className="border-t border-gray-600 pt-1.5 text-xs">
-                          <span className="text-gray-500">No service data available</span>
+                        <div className="border-t border-border pt-1.5 text-xs">
+                          <span className="text-foreground0">No service data available</span>
                         </div>
                       );
                     })()}
                     
                     <button 
                       onClick={() => handleAirportClick(airport)}
-                      className="w-full mt-2 px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors"
+                      className="w-full mt-2 px-2 py-1 bg-green-600 text-foreground text-xs rounded hover:bg-green-700 transition-colors"
                     >
                       Weather & Details
                     </button>
@@ -855,13 +855,13 @@ function ProfessionalSatelliteMapCore() {
               <Popup>
                 <div className="text-sm">
                   <div className="font-medium">{flight.callsign}</div>
-                  <div className="text-gray-600">{flight.aircraft}</div>
-                  <div className="text-gray-600">{flight.altitude}ft - {flight.velocity}kts</div>
-                  <div className="text-gray-600">{flight.origin} → {flight.destination}</div>
-                  <div className="text-gray-600">Fuel: {calculateFuelPercentage(flight)}%</div>
+                  <div className="text-muted-foreground">{flight.aircraft}</div>
+                  <div className="text-muted-foreground">{flight.altitude}ft - {flight.velocity}kts</div>
+                  <div className="text-muted-foreground">{flight.origin} → {flight.destination}</div>
+                  <div className="text-muted-foreground">Fuel: {calculateFuelPercentage(flight)}%</div>
                   <button 
                     onClick={() => selectFlight(flight)}
-                    className="mt-2 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
+                    className="mt-2 px-2 py-1 bg-aero-blue-primary text-foreground text-xs rounded hover:bg-aero-blue-light"
                   >
                     Select Flight
                   </button>

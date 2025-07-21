@@ -390,14 +390,14 @@ const SkyGateAirportDashboard: React.FC = () => {
 
                 {searchLoading && (
                   <div className="text-center py-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-2 text-sm text-gray-600">Searching airports...</p>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-aero-blue-primary/30 mx-auto"></div>
+                    <p className="mt-2 text-sm text-muted-foreground">Searching airports...</p>
                   </div>
                 )}
 
                 {searchResults.length > 0 && (
                   <div className="max-h-[600px] overflow-y-auto space-y-3">
-                    <p className="text-sm text-gray-600 mb-2">Found {searchResults.length} airports:</p>
+                    <p className="text-sm text-muted-foreground mb-2">Found {searchResults.length} airports:</p>
                     {searchResults.map((airport, index) => (
                       <div key={index} className="border rounded-lg p-4 hover:bg-gray-50">
                         <div className="space-y-3">
@@ -430,18 +430,18 @@ const SkyGateAirportDashboard: React.FC = () => {
                                   </Badge>
                                 )}
                               </div>
-                              <p className="text-sm text-gray-600">
+                              <p className="text-sm text-muted-foreground">
                                 {airport.city}, {airport.country_name || airport.country}
                               </p>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-foreground0">
                                 {airport.continent_name || airport.continent}
                               </p>
                             </div>
                             <div className="text-right text-sm">
-                              <p className="text-gray-600 font-mono">
+                              <p className="text-muted-foreground font-mono">
                                 {airport.coordinates}
                               </p>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-foreground0">
                                 {airport.elevation_m}m / {airport.elevation}ft
                               </p>
                             </div>
@@ -653,7 +653,7 @@ const SkyGateAirportDashboard: React.FC = () => {
                                     href={airport.home_link} 
                                     target="_blank" 
                                     rel="noopener noreferrer" 
-                                    className="text-xs text-blue-600 hover:text-blue-800 underline"
+                                    className="text-xs text-aero-blue-dark hover:text-blue-800 underline"
                                   >
                                     Official Website
                                   </a>
@@ -663,7 +663,7 @@ const SkyGateAirportDashboard: React.FC = () => {
                                     href={airport.wikipedia_link} 
                                     target="_blank" 
                                     rel="noopener noreferrer" 
-                                    className="text-xs text-blue-600 hover:text-blue-800 underline"
+                                    className="text-xs text-aero-blue-dark hover:text-blue-800 underline"
                                   >
                                     Wikipedia
                                   </a>
@@ -678,7 +678,7 @@ const SkyGateAirportDashboard: React.FC = () => {
                 )}
 
                 {searchQuery && !searchLoading && searchResults.length === 0 && (
-                  <div className="text-center py-4 text-gray-500">
+                  <div className="text-center py-4 text-foreground0">
                     <p>No airports found matching "{searchQuery}"</p>
                     <p className="text-sm mt-1">Try searching by airport name, ICAO code, IATA code, or city</p>
                   </div>
@@ -745,12 +745,12 @@ const SkyGateAirportDashboard: React.FC = () => {
                               </Badge>
                             )}
                           </div>
-                          <div className="text-sm text-gray-600 mb-2">
+                          <div className="text-sm text-muted-foreground mb-2">
                             {airport.closest_big_city}, {airport.country.name}
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-xs text-gray-500 mb-1">Current Weather</div>
+                          <div className="text-xs text-foreground0 mb-1">Current Weather</div>
                           <div className="text-sm font-medium">{intel.weatherConditions}</div>
                           {intel.currentDelays > 0 && (
                             <div className="text-xs text-orange-600 mt-1">
@@ -785,11 +785,11 @@ const SkyGateAirportDashboard: React.FC = () => {
                           <h4 className="font-medium text-gray-900">Emergency Services</h4>
                           <div className="space-y-1 text-xs">
                             <div>
-                              <span className="text-gray-600">Medical:</span>
+                              <span className="text-muted-foreground">Medical:</span>
                               <div className="font-medium">{intel.medicalFacilities}</div>
                             </div>
                             <div>
-                              <span className="text-gray-600">Fire Rescue:</span>
+                              <span className="text-muted-foreground">Fire Rescue:</span>
                               <div className="font-medium">{intel.emergencyServices}</div>
                             </div>
                           </div>
@@ -799,7 +799,7 @@ const SkyGateAirportDashboard: React.FC = () => {
                           <h4 className="font-medium text-gray-900">Operations</h4>
                           <div className="space-y-1 text-xs">
                             <div>
-                              <span className="text-gray-600">Fuel Types:</span>
+                              <span className="text-muted-foreground">Fuel Types:</span>
                               <div className="font-medium">{intel.fuelAvailability}</div>
                             </div>
                             <div className="flex justify-between">
@@ -813,7 +813,7 @@ const SkyGateAirportDashboard: React.FC = () => {
                       <div className="mt-3 pt-3 border-t border-gray-200">
                         <div className="flex items-center justify-between text-xs">
                           <div className="flex items-center gap-3">
-                            <span className="text-gray-600">Virgin Atlantic Compatibility:</span>
+                            <span className="text-muted-foreground">Virgin Atlantic Compatibility:</span>
                             <div className="flex gap-1">
                               {intel.widebodyCompatible && (
                                 <>
@@ -830,7 +830,7 @@ const SkyGateAirportDashboard: React.FC = () => {
                           <div className="flex items-center gap-2">
                             {getStatusIcon(intel.medicalFacilities.includes('Trauma') ? 'excellent' : 
                                          intel.medicalFacilities.includes('Clinic') ? 'good' : 'basic')}
-                            <span className="text-gray-500">
+                            <span className="text-foreground0">
                               {intel.medicalFacilities.includes('Trauma') ? 'Excellent' : 
                                intel.medicalFacilities.includes('Clinic') ? 'Good' : 'Basic'} Medical
                             </span>

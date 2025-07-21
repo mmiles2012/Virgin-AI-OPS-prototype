@@ -131,16 +131,16 @@ export default function HeathrowHoldingDashboard() {
   if (error) {
     return (
       <div className="min-h-screen w-full bg-gray-50 text-gray-900 p-6">
-        <Card className="bg-red-900/20 border-red-500/30">
+        <Card className="bg-va-red-primary/10 border-red-500/30">
           <CardContent className="p-6">
             <div className="flex items-center space-x-3">
-              <AlertTriangle className="w-6 h-6 text-red-400" />
+              <AlertTriangle className="w-6 h-6 text-va-red-primary" />
               <div>
-                <h3 className="text-lg font-semibold text-red-400">Error Loading Holding Data</h3>
+                <h3 className="text-lg font-semibold text-va-red-primary">Error Loading Holding Data</h3>
                 <p className="text-red-300 mt-1">{error}</p>
                 <Button 
                   onClick={fetchHoldingData} 
-                  className="mt-3 bg-red-600 hover:bg-red-700"
+                  className="mt-3 bg-va-red-primary hover:bg-va-red-heritage"
                 >
                   Retry
                 </Button>
@@ -158,10 +158,10 @@ export default function HeathrowHoldingDashboard() {
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Plane className="w-8 h-8 text-blue-400" />
+            <Plane className="w-8 h-8 text-aero-blue-primary" />
             <div>
               <h1 className="text-2xl font-bold">Heathrow Holding Areas Monitor</h1>
-              <p className="text-gray-300">Real-time airborne holding pattern detection</p>
+              <p className="text-muted-foreground">Real-time airborne holding pattern detection</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
@@ -184,15 +184,15 @@ export default function HeathrowHoldingDashboard() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-blue-500/20 rounded-lg">
-                <Plane className="w-5 h-5 text-blue-400" />
+                <Plane className="w-5 h-5 text-aero-blue-primary" />
               </div>
               <div>
-                <p className="text-sm text-gray-400">Total Holding</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-sm text-muted-foreground">Total Holding</p>
+                <p className="text-2xl font-bold text-foreground">
                   {holdingData?.holding_status?.totalHolding || 0}
                 </p>
               </div>
@@ -201,14 +201,14 @@ export default function HeathrowHoldingDashboard() {
         </Card>
 
         {holdingData?.holding_areas?.map((stack) => (
-          <Card key={stack.code} className="bg-gray-800 border-gray-700">
+          <Card key={stack.code} className="bg-card border-border">
             <CardContent className="p-4">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-purple-500/20 rounded-lg">
                   <MapPin className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400">{stack.name} ({stack.code})</p>
+                  <p className="text-sm text-muted-foreground">{stack.name} ({stack.code})</p>
                   <p className={`text-2xl font-bold ${getStackStatusColor(stack.currentCount)}`}>
                     {stack.currentCount}
                   </p>
@@ -221,7 +221,7 @@ export default function HeathrowHoldingDashboard() {
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="bg-gray-800 border-gray-700">
+        <TabsList className="bg-card border-border">
           <TabsTrigger value="overview" className="data-[state=active]:bg-gray-700">
             Overview
           </TabsTrigger>
@@ -240,25 +240,25 @@ export default function HeathrowHoldingDashboard() {
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Current Status */}
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Activity className="w-5 h-5 text-green-400" />
+                  <Activity className="w-5 h-5 text-aero-green-safe" />
                   <span>Current Status</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-400">Total Aircraft Holding:</span>
-                    <span className="text-2xl font-bold text-white">
+                    <span className="text-muted-foreground">Total Aircraft Holding:</span>
+                    <span className="text-2xl font-bold text-foreground">
                       {holdingData?.holding_status?.totalHolding || 0}
                     </span>
                   </div>
                   
                   {holdingData?.holding_areas?.map((stack) => (
                     <div key={stack.code} className="flex justify-between items-center">
-                      <span className="text-gray-400">{stack.name} ({stack.code}):</span>
+                      <span className="text-muted-foreground">{stack.name} ({stack.code}):</span>
                       <span className={`font-semibold ${getStackStatusColor(stack.currentCount)}`}>
                         {stack.currentCount} aircraft
                       </span>
@@ -269,10 +269,10 @@ export default function HeathrowHoldingDashboard() {
             </Card>
 
             {/* Holding Stacks Map Info */}
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <MapPin className="w-5 h-5 text-blue-400" />
+                  <MapPin className="w-5 h-5 text-aero-blue-primary" />
                   <span>Holding Stack Locations</span>
                 </CardTitle>
               </CardHeader>
@@ -282,15 +282,15 @@ export default function HeathrowHoldingDashboard() {
                     <div key={stack.code} className="p-3 bg-gray-700/50 rounded-lg">
                       <div className="flex justify-between items-start">
                         <div>
-                          <h4 className="font-semibold text-white">{stack.name}</h4>
-                          <p className="text-sm text-gray-400">Code: {stack.code}</p>
-                          <p className="text-xs text-gray-500">
+                          <h4 className="font-semibold text-foreground">{stack.name}</h4>
+                          <p className="text-sm text-muted-foreground">Code: {stack.code}</p>
+                          <p className="text-xs text-foreground0">
                             {stack.lat.toFixed(4)}°N, {Math.abs(stack.lon).toFixed(4)}°W
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-gray-400">Altitude Range</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-sm text-muted-foreground">Altitude Range</p>
+                          <p className="text-xs text-foreground0">
                             {stack.minAltitude}ft - {stack.maxAltitude}ft
                           </p>
                         </div>
@@ -307,7 +307,7 @@ export default function HeathrowHoldingDashboard() {
         <TabsContent value="stacks" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {holdingData?.holding_areas?.map((stack) => (
-              <Card key={stack.code} className="bg-gray-800 border-gray-700">
+              <Card key={stack.code} className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>{stack.name} Holding Stack</span>
@@ -320,23 +320,23 @@ export default function HeathrowHoldingDashboard() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-gray-400">Stack Code</p>
-                        <p className="font-semibold text-white">{stack.code}</p>
+                        <p className="text-sm text-muted-foreground">Stack Code</p>
+                        <p className="font-semibold text-foreground">{stack.code}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">Radius</p>
-                        <p className="font-semibold text-white">{stack.radius} km</p>
+                        <p className="text-sm text-muted-foreground">Radius</p>
+                        <p className="font-semibold text-foreground">{stack.radius} km</p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">Coordinates</p>
-                        <p className="font-semibold text-white text-sm">
+                        <p className="text-sm text-muted-foreground">Coordinates</p>
+                        <p className="font-semibold text-foreground text-sm">
                           {stack.lat.toFixed(4)}°N<br />
                           {Math.abs(stack.lon).toFixed(4)}°W
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm text-gray-400">Altitude Range</p>
-                        <p className="font-semibold text-white text-sm">
+                        <p className="text-sm text-muted-foreground">Altitude Range</p>
+                        <p className="font-semibold text-foreground text-sm">
                           {stack.minAltitude}ft<br />
                           {stack.maxAltitude}ft
                         </p>
@@ -344,8 +344,8 @@ export default function HeathrowHoldingDashboard() {
                     </div>
                     
                     {stack.currentCount > 0 && (
-                      <div className="p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
-                        <p className="text-red-400 font-semibold">
+                      <div className="p-3 bg-va-red-primary/10 border border-red-500/30 rounded-lg">
+                        <p className="text-va-red-primary font-semibold">
                           {stack.currentCount} aircraft currently holding
                         </p>
                       </div>
@@ -359,7 +359,7 @@ export default function HeathrowHoldingDashboard() {
 
         {/* Active Flights Tab */}
         <TabsContent value="flights" className="space-y-6">
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle>Virgin Atlantic Flights - Holding Analysis</CardTitle>
             </CardHeader>
@@ -368,40 +368,40 @@ export default function HeathrowHoldingDashboard() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-gray-700">
-                        <th className="text-left p-2 text-gray-400">Flight</th>
-                        <th className="text-left p-2 text-gray-400">Route</th>
-                        <th className="text-left p-2 text-gray-400">Aircraft</th>
-                        <th className="text-left p-2 text-gray-400">Position</th>
-                        <th className="text-left p-2 text-gray-400">Altitude</th>
-                        <th className="text-left p-2 text-gray-400">Holding Status</th>
+                      <tr className="border-b border-border">
+                        <th className="text-left p-2 text-muted-foreground">Flight</th>
+                        <th className="text-left p-2 text-muted-foreground">Route</th>
+                        <th className="text-left p-2 text-muted-foreground">Aircraft</th>
+                        <th className="text-left p-2 text-muted-foreground">Position</th>
+                        <th className="text-left p-2 text-muted-foreground">Altitude</th>
+                        <th className="text-left p-2 text-muted-foreground">Holding Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {holdingData.holding_analysis.flights.map((flight) => (
-                        <tr key={flight.flight_number} className="border-b border-gray-700/50">
+                        <tr key={flight.flight_number} className="border-b border-border/50">
                           <td className="p-2">
                             <div>
-                              <p className="font-semibold text-white">{flight.flight_number}</p>
-                              <p className="text-xs text-gray-400">{flight.registration || 'N/A'}</p>
+                              <p className="font-semibold text-foreground">{flight.flight_number}</p>
+                              <p className="text-xs text-muted-foreground">{flight.registration || 'N/A'}</p>
                             </div>
                           </td>
-                          <td className="p-2 text-gray-300">{flight.route}</td>
-                          <td className="p-2 text-gray-300">{flight.aircraft_type}</td>
+                          <td className="p-2 text-muted-foreground">{flight.route}</td>
+                          <td className="p-2 text-muted-foreground">{flight.aircraft_type}</td>
                           <td className="p-2">
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-muted-foreground">
                               {flight.latitude?.toFixed(4) || 'N/A'}°N<br />
                               {flight.longitude ? Math.abs(flight.longitude).toFixed(4) : 'N/A'}°W
                             </p>
                           </td>
-                          <td className="p-2 text-gray-300">{flight.altitude || 'N/A'}ft</td>
+                          <td className="p-2 text-muted-foreground">{flight.altitude || 'N/A'}ft</td>
                           <td className="p-2">
                             {flight.holding && flight.holding.isHolding ? (
                               <div>
                                 <Badge variant="destructive" className="mb-1">
                                   HOLDING
                                 </Badge>
-                                <p className="text-xs text-gray-400">
+                                <p className="text-xs text-muted-foreground">
                                   Stack: {flight.holding.stackName}<br />
                                   Confidence: {flight.holding.confidence}%
                                 </p>
@@ -413,7 +413,7 @@ export default function HeathrowHoldingDashboard() {
                                     'Outbound' : 'Not Holding'}
                                 </Badge>
                                 {flight.route && flight.route.startsWith('LHR-') && (
-                                  <p className="text-xs text-gray-500 mt-1">
+                                  <p className="text-xs text-foreground0 mt-1">
                                     Holding stacks apply to inbound flights only
                                   </p>
                                 )}
@@ -427,8 +427,8 @@ export default function HeathrowHoldingDashboard() {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <Plane className="w-12 h-12 text-gray-500 mx-auto mb-3" />
-                  <p className="text-gray-400">No flights currently being analyzed for holding patterns</p>
+                  <Plane className="w-12 h-12 text-foreground0 mx-auto mb-3" />
+                  <p className="text-muted-foreground">No flights currently being analyzed for holding patterns</p>
                 </div>
               )}
             </CardContent>
@@ -437,10 +437,10 @@ export default function HeathrowHoldingDashboard() {
 
         {/* Alerts Tab */}
         <TabsContent value="alerts" className="space-y-6">
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <AlertTriangle className="w-5 h-5 text-yellow-400" />
+                <AlertTriangle className="w-5 h-5 text-aero-amber-caution" />
                 <span>Holding Alerts</span>
               </CardTitle>
             </CardHeader>
@@ -471,9 +471,9 @@ export default function HeathrowHoldingDashboard() {
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <AlertTriangle className="w-12 h-12 text-gray-500 mx-auto mb-3" />
-                  <p className="text-gray-400">No active holding alerts</p>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <AlertTriangle className="w-12 h-12 text-foreground0 mx-auto mb-3" />
+                  <p className="text-muted-foreground">No active holding alerts</p>
+                  <p className="text-sm text-foreground0 mt-1">
                     All holding stacks are operating normally
                   </p>
                 </div>
@@ -484,8 +484,8 @@ export default function HeathrowHoldingDashboard() {
       </Tabs>
 
       {/* Footer */}
-      <div className="mt-8 pt-6 border-t border-gray-700">
-        <div className="flex items-center justify-between text-sm text-gray-400">
+      <div className="mt-8 pt-6 border-t border-border">
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>
             Last updated: {holdingData?.timestamp ? 
               new Date(holdingData.timestamp).toLocaleString() : 'Never'}

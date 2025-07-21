@@ -42,10 +42,10 @@ export default function FaaAirportPopup({ data, onClose }: FaaAirportPopupProps)
 
   const riskLevel = (risk: string) => {
     switch (risk) {
-      case "Red": return "text-red-600 font-bold";
-      case "Amber": return "text-yellow-600 font-bold";
-      case "Green": return "text-green-600 font-bold";
-      default: return "text-gray-600";
+      case "Red": return "text-va-red-primary font-bold";
+      case "Amber": return "text-aero-amber-caution font-bold";
+      case "Green": return "text-aero-green-safe font-bold";
+      default: return "text-muted-foreground";
     }
   };
 
@@ -55,7 +55,7 @@ export default function FaaAirportPopup({ data, onClose }: FaaAirportPopupProps)
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-bold text-gray-900">{data.airport} Weather-Enhanced Analysis</h3>
           <button 
-            className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+            className="text-foreground0 hover:text-gray-700 text-xl font-bold"
             onClick={onClose}
             aria-label="Close"
           >
@@ -121,17 +121,17 @@ export default function FaaAirportPopup({ data, onClose }: FaaAirportPopupProps)
           <div className="p-4 border rounded-lg">
             <h5 className="font-medium text-gray-700 mb-2">Actual Risk</h5>
             <p className={`text-lg ${riskLevel(data.actual_risk)}`}>{data.actual_risk}</p>
-            <p className="text-sm text-gray-600 mt-1">Current operational state</p>
+            <p className="text-sm text-muted-foreground mt-1">Current operational state</p>
           </div>
           <div className="p-4 border rounded-lg">
             <h5 className="font-medium text-gray-700 mb-2">Model Prediction</h5>
             <p className={`text-lg ${riskLevel(data.predicted_risk)}`}>{data.predicted_risk}</p>
-            <p className="text-sm text-gray-600 mt-1">Weather-enhanced ML forecast</p>
+            <p className="text-sm text-muted-foreground mt-1">Weather-enhanced ML forecast</p>
           </div>
           <div className="p-4 border rounded-lg">
             <h5 className="font-medium text-gray-700 mb-2">Seasonal Baseline</h5>
             <p className={`text-lg ${riskLevel(data.baseline_risk)}`}>{data.baseline_risk}</p>
-            <p className="text-sm text-gray-600 mt-1">Historical monthly average</p>
+            <p className="text-sm text-muted-foreground mt-1">Historical monthly average</p>
           </div>
         </div>
 
@@ -140,42 +140,42 @@ export default function FaaAirportPopup({ data, onClose }: FaaAirportPopupProps)
           <h4 className="font-semibold text-gray-800 mb-3">Performance Comparison</h4>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
             <div>
-              <span className="text-gray-600">Actual vs Model Delay:</span>
+              <span className="text-muted-foreground">Actual vs Model Delay:</span>
               <span className="ml-1 font-medium">
                 {data.actual_delay > data.predicted_delay ? "+" : ""}
                 {data.actual_delay - data.predicted_delay} min
               </span>
             </div>
             <div>
-              <span className="text-gray-600">Actual vs Model OTP:</span>
+              <span className="text-muted-foreground">Actual vs Model OTP:</span>
               <span className="ml-1 font-medium">
                 {data.actual_otp > data.predicted_otp ? "+" : ""}
                 {(data.actual_otp - data.predicted_otp).toFixed(1)}%
               </span>
             </div>
             <div>
-              <span className="text-gray-600">Weather Impact:</span>
+              <span className="text-muted-foreground">Weather Impact:</span>
               <span className="ml-1 font-medium">
                 {data.weather_severity_score > 2.5 ? "High" : data.weather_severity_score > 1.0 ? "Moderate" : "Low"}
               </span>
             </div>
             <div>
-              <span className="text-gray-600">vs Baseline Delay:</span>
+              <span className="text-muted-foreground">vs Baseline Delay:</span>
               <span className="ml-1 font-medium">
                 {data.actual_delay > data.baseline_delay ? "+" : ""}
                 {data.actual_delay - data.baseline_delay} min
               </span>
             </div>
             <div>
-              <span className="text-gray-600">vs Baseline OTP:</span>
+              <span className="text-muted-foreground">vs Baseline OTP:</span>
               <span className="ml-1 font-medium">
                 {data.actual_otp > data.baseline_otp ? "+" : ""}
                 {(data.actual_otp - data.baseline_otp).toFixed(1)}%
               </span>
             </div>
             <div>
-              <span className="text-gray-600">Model Accuracy:</span>
-              <span className="ml-1 font-medium text-green-600">
+              <span className="text-muted-foreground">Model Accuracy:</span>
+              <span className="ml-1 font-medium text-aero-green-safe">
                 {(100 - Math.abs((data.actual_delay - data.predicted_delay) / data.actual_delay * 100)).toFixed(0)}%
               </span>
             </div>

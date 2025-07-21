@@ -307,31 +307,31 @@ export default function FAAStatusDashboard() {
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'CRITICAL': return 'bg-red-500 text-white';
-      case 'HIGH': return 'bg-orange-500 text-white';
-      case 'MEDIUM': return 'bg-yellow-500 text-white';
-      case 'LOW': return 'bg-blue-500 text-white';
-      default: return 'bg-gray-500 text-white';
+      case 'CRITICAL': return 'bg-red-500 text-foreground';
+      case 'HIGH': return 'bg-orange-500 text-foreground';
+      case 'MEDIUM': return 'bg-yellow-500 text-foreground';
+      case 'LOW': return 'bg-blue-500 text-foreground';
+      default: return 'bg-gray-500 text-foreground';
     }
   };
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
-      case 'CRITICAL': return 'bg-red-600 text-white';
-      case 'HIGH': return 'bg-orange-600 text-white';
-      case 'MEDIUM': return 'bg-yellow-600 text-white';
-      case 'LOW': return 'bg-blue-600 text-white';
-      case 'NORMAL': return 'bg-green-600 text-white';
-      default: return 'bg-gray-600 text-white';
+      case 'CRITICAL': return 'bg-va-red-primary text-foreground';
+      case 'HIGH': return 'bg-orange-600 text-foreground';
+      case 'MEDIUM': return 'bg-yellow-600 text-foreground';
+      case 'LOW': return 'bg-aero-blue-primary text-foreground';
+      case 'NORMAL': return 'bg-green-600 text-foreground';
+      default: return 'bg-gray-600 text-foreground';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'DISRUPTED': return 'bg-red-500 text-white';
-      case 'IMPACTED': return 'bg-orange-500 text-white';
-      case 'NORMAL': return 'bg-green-500 text-white';
-      default: return 'bg-gray-500 text-white';
+      case 'DISRUPTED': return 'bg-red-500 text-foreground';
+      case 'IMPACTED': return 'bg-orange-500 text-foreground';
+      case 'NORMAL': return 'bg-green-500 text-foreground';
+      default: return 'bg-gray-500 text-foreground';
     }
   };
 
@@ -340,14 +340,14 @@ export default function FAAStatusDashboard() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900">FAA NAS Status</h2>
-          <div className="flex items-center text-blue-600">
+          <div className="flex items-center text-aero-blue-dark">
             <Wifi className="w-4 h-4 mr-2 animate-pulse" />
             <span>Loading...</span>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="bg-gray-800 border-gray-700">
+            <Card key={i} className="bg-card border-border">
               <CardContent className="p-6">
                 <div className="animate-pulse">
                   <div className="h-4 bg-gray-700 rounded mb-2"></div>
@@ -365,21 +365,21 @@ export default function FAAStatusDashboard() {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-white">FAA NAS Status</h2>
-          <div className="flex items-center text-red-400">
+          <h2 className="text-2xl font-bold text-foreground">FAA NAS Status</h2>
+          <div className="flex items-center text-va-red-primary">
             <WifiOff className="w-4 h-4 mr-2" />
             <span>Connection Error</span>
           </div>
         </div>
-        <Card className="bg-red-900/20 border-red-700">
+        <Card className="bg-va-red-primary/10 border-red-700">
           <CardContent className="p-6">
-            <div className="flex items-center text-red-400">
+            <div className="flex items-center text-va-red-primary">
               <AlertTriangle className="w-5 h-5 mr-2" />
               <span>Error: {error}</span>
             </div>
             <button 
               onClick={fetchFAAStatus}
-              className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+              className="mt-4 bg-va-red-primary hover:bg-va-red-heritage text-foreground px-4 py-2 rounded"
             >
               Retry Connection
             </button>
@@ -396,15 +396,15 @@ export default function FAAStatusDashboard() {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-white">FAA NAS Status</h2>
+          <h2 className="text-2xl font-bold text-foreground">FAA NAS Status</h2>
           <div className="flex items-center space-x-4">
             {faaData.fallback && (
-              <Badge className="bg-yellow-600 text-white">
+              <Badge className="bg-yellow-600 text-foreground">
                 <AlertTriangle className="w-3 h-3 mr-1" />
                 Fallback Mode
               </Badge>
             )}
-            <div className="flex items-center text-green-400">
+            <div className="flex items-center text-aero-green-safe">
               <Wifi className="w-4 h-4 mr-2" />
               <span className="text-sm">
                 {lastUpdate ? `Updated ${lastUpdate.toLocaleTimeString()}` : 'Connected'}
@@ -414,14 +414,14 @@ export default function FAAStatusDashboard() {
         </div>
 
         {/* ML Model Information */}
-        <Card className="bg-blue-900/20 border-blue-700">
+        <Card className="bg-aero-blue-primary/10 border-blue-700">
           <CardContent className="p-4">
             <div className="flex items-center space-x-4">
-              <div className="bg-blue-600 p-2 rounded">
-                <TrendingUp className="w-5 h-5 text-white" />
+              <div className="bg-aero-blue-primary p-2 rounded">
+                <TrendingUp className="w-5 h-5 text-foreground" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-white">ML-Powered Ground Stop Prediction</h3>
+                <h3 className="text-lg font-semibold text-foreground">ML-Powered Ground Stop Prediction</h3>
                 <p className="text-blue-200 text-sm">Random Forest Model • 77% Cross-Validation Accuracy • 14 Features</p>
                 <p className="text-blue-300 text-xs mt-1">Source: {faaData.dataSource}</p>
               </div>
@@ -431,12 +431,12 @@ export default function FAAStatusDashboard() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">System Status</p>
-                <p className="text-2xl font-bold text-white">{faaData.summary.status}</p>
+                <p className="text-muted-foreground text-sm">System Status</p>
+                <p className="text-2xl font-bold text-foreground">{faaData.summary.status}</p>
               </div>
               <Badge className={getStatusColor(faaData.summary.status)}>
                 {faaData.summary.status}
@@ -445,24 +445,24 @@ export default function FAAStatusDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Active Events</p>
-                <p className="text-2xl font-bold text-white">{faaData.summary.activeEvents}</p>
+                <p className="text-muted-foreground text-sm">Active Events</p>
+                <p className="text-2xl font-bold text-foreground">{faaData.summary.activeEvents}</p>
               </div>
-              <AlertTriangle className="w-8 h-8 text-orange-500" />
+              <AlertTriangle className="w-8 h-8 text-aero-orange-alert" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Virgin Atlantic Impact</p>
-                <p className="text-2xl font-bold text-white">{faaData.summary.virginAtlanticAffected}</p>
+                <p className="text-muted-foreground text-sm">Virgin Atlantic Impact</p>
+                <p className="text-2xl font-bold text-foreground">{faaData.summary.virginAtlanticAffected}</p>
               </div>
               <Badge className={getRiskColor(faaData.virginAtlanticImpact.overallRisk)}>
                 {faaData.virginAtlanticImpact.overallRisk}
@@ -471,14 +471,14 @@ export default function FAAStatusDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">Forecast Events</p>
-                <p className="text-2xl font-bold text-white">{faaData.summary.forecastCount}</p>
+                <p className="text-muted-foreground text-sm">Forecast Events</p>
+                <p className="text-2xl font-bold text-foreground">{faaData.summary.forecastCount}</p>
               </div>
-              <Clock className="w-8 h-8 text-blue-500" />
+              <Clock className="w-8 h-8 text-aero-blue-primary" />
             </div>
           </CardContent>
         </Card>
@@ -486,14 +486,14 @@ export default function FAAStatusDashboard() {
 
       {/* Detailed Information */}
       <Tabs defaultValue="current" className="w-full">
-        <TabsList className="bg-gray-800 border-gray-700">
-          <TabsTrigger value="current" className="data-[state=active]:bg-blue-600">
+        <TabsList className="bg-card border-border">
+          <TabsTrigger value="current" className="data-[state=active]:bg-aero-blue-primary">
             Current Events ({faaData.airportEvents.length})
           </TabsTrigger>
-          <TabsTrigger value="forecast" className="data-[state=active]:bg-blue-600">
+          <TabsTrigger value="forecast" className="data-[state=active]:bg-aero-blue-primary">
             Forecast Events ({faaData.forecastEvents.length})
           </TabsTrigger>
-          <TabsTrigger value="virgin" className="data-[state=active]:bg-blue-600">
+          <TabsTrigger value="virgin" className="data-[state=active]:bg-aero-blue-primary">
             Virgin Atlantic Impact
           </TabsTrigger>
         </TabsList>
@@ -501,33 +501,33 @@ export default function FAAStatusDashboard() {
         {/* Current Events */}
         <TabsContent value="current" className="space-y-4">
           {faaData.airportEvents.length === 0 ? (
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardContent className="p-6 text-center">
-                <p className="text-gray-400">No active airport events</p>
+                <p className="text-muted-foreground">No active airport events</p>
               </CardContent>
             </Card>
           ) : (
             faaData.airportEvents.map((event, index) => (
-              <Card key={index} className="bg-gray-800 border-gray-700">
+              <Card key={index} className="bg-card border-border">
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
-                        <MapPin className="w-4 h-4 text-blue-400" />
-                        <span className="font-bold text-white">{event.airport}</span>
+                        <MapPin className="w-4 h-4 text-aero-blue-primary" />
+                        <span className="font-bold text-foreground">{event.airport}</span>
                         <Badge className={getSeverityColor(event.severity)}>
                           {event.severity}
                         </Badge>
                         {event.isVirginAtlanticDestination && (
-                          <Badge className="bg-purple-600 text-white">Virgin Atlantic</Badge>
+                          <Badge className="bg-purple-600 text-foreground">Virgin Atlantic</Badge>
                         )}
                       </div>
-                      <p className="text-white font-semibold">{event.eventType}</p>
-                      <p className="text-gray-400 text-sm">{event.reason}</p>
+                      <p className="text-foreground font-semibold">{event.eventType}</p>
+                      <p className="text-muted-foreground text-sm">{event.reason}</p>
                       {event.avgDelay && (
-                        <p className="text-orange-400 text-sm">Average Delay: {event.avgDelay}</p>
+                        <p className="text-aero-orange-alert text-sm">Average Delay: {event.avgDelay}</p>
                       )}
-                      <p className="text-gray-500 text-xs mt-2">{event.eventTime}</p>
+                      <p className="text-foreground0 text-xs mt-2">{event.eventTime}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -539,32 +539,32 @@ export default function FAAStatusDashboard() {
         {/* Forecast Events */}
         <TabsContent value="forecast" className="space-y-4">
           {faaData.forecastEvents.length === 0 ? (
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardContent className="p-6 text-center">
-                <p className="text-gray-400">No forecast events</p>
+                <p className="text-muted-foreground">No forecast events</p>
               </CardContent>
             </Card>
           ) : (
             faaData.forecastEvents.map((event, index) => (
-              <Card key={index} className="bg-gray-800 border-gray-700">
+              <Card key={index} className="bg-card border-border">
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
-                        <Clock className="w-4 h-4 text-blue-400" />
-                        <span className="font-bold text-white">{event.time}</span>
+                        <Clock className="w-4 h-4 text-aero-blue-primary" />
+                        <span className="font-bold text-foreground">{event.time}</span>
                         <Badge className={getSeverityColor(event.severity)}>
                           {event.severity}
                         </Badge>
                         {event.virginAtlanticRelevance !== 'NONE' && (
-                          <Badge className="bg-purple-600 text-white">
+                          <Badge className="bg-purple-600 text-foreground">
                             {event.virginAtlanticRelevance} Impact
                           </Badge>
                         )}
                       </div>
-                      <p className="text-white">{event.event}</p>
+                      <p className="text-foreground">{event.event}</p>
                       {event.airports.length > 0 && (
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           Airports: {event.airports.join(', ')}
                         </p>
                       )}
@@ -578,9 +578,9 @@ export default function FAAStatusDashboard() {
 
         {/* Virgin Atlantic Impact */}
         <TabsContent value="virgin" className="space-y-4">
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white flex items-center">
+              <CardTitle className="text-foreground flex items-center">
                 <TrendingUp className="w-5 h-5 mr-2" />
                 Overall Risk Assessment
               </CardTitle>
@@ -590,18 +590,18 @@ export default function FAAStatusDashboard() {
                 <Badge className={getRiskColor(faaData.virginAtlanticImpact.overallRisk)} size="lg">
                   {faaData.virginAtlanticImpact.overallRisk}
                 </Badge>
-                <p className="text-gray-400">
+                <p className="text-muted-foreground">
                   {faaData.virginAtlanticImpact.currentImpacts.length} current impacts, 
                   {faaData.virginAtlanticImpact.forecastImpacts.length} forecast impacts
                 </p>
               </div>
               
               <div className="space-y-2">
-                <h4 className="text-white font-semibold">Operational Recommendations:</h4>
+                <h4 className="text-foreground font-semibold">Operational Recommendations:</h4>
                 {faaData.virginAtlanticImpact.recommendations.map((rec, index) => (
                   <div key={index} className="flex items-start space-x-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p className="text-gray-300 text-sm">{rec}</p>
+                    <p className="text-muted-foreground text-sm">{rec}</p>
                   </div>
                 ))}
               </div>
@@ -610,21 +610,21 @@ export default function FAAStatusDashboard() {
 
           {/* Current Impacts */}
           {faaData.virginAtlanticImpact.currentImpacts.length > 0 && (
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white">Current Impacts</CardTitle>
+                <CardTitle className="text-foreground">Current Impacts</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {faaData.virginAtlanticImpact.currentImpacts.map((impact, index) => (
                   <div key={index} className="border-l-4 border-orange-500 pl-4">
                     <div className="flex items-center space-x-2">
-                      <span className="font-bold text-white">{impact.airport}</span>
+                      <span className="font-bold text-foreground">{impact.airport}</span>
                       <Badge className={getSeverityColor(impact.severity)}>
                         {impact.severity}
                       </Badge>
                     </div>
-                    <p className="text-gray-400 text-sm">{impact.eventType}</p>
-                    <p className="text-gray-300 text-sm">{impact.impact.description}</p>
+                    <p className="text-muted-foreground text-sm">{impact.eventType}</p>
+                    <p className="text-muted-foreground text-sm">{impact.impact.description}</p>
                   </div>
                 ))}
               </CardContent>
@@ -634,9 +634,9 @@ export default function FAAStatusDashboard() {
       </Tabs>
 
         {/* Data Source Info */}
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <div className="flex items-center justify-between text-sm text-gray-400">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>Data Source: {faaData.dataSource}</span>
               <span>Monitoring {faaData.monitoredAirports} Virgin Atlantic destinations</span>
               <span>Last Updated: {new Date(faaData.timestamp).toLocaleString()}</span>

@@ -341,10 +341,10 @@ const EmergencyCommDashboard: React.FC = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active': return <AlertTriangle className="h-4 w-4 text-red-500" />;
-      case 'acknowledged': return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'resolved': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      default: return <XCircle className="h-4 w-4 text-gray-500" />;
+      case 'active': return <AlertTriangle className="h-4 w-4 text-va-red-primary" />;
+      case 'acknowledged': return <Clock className="h-4 w-4 text-aero-amber-caution" />;
+      case 'resolved': return <CheckCircle className="h-4 w-4 text-aero-green-safe" />;
+      default: return <XCircle className="h-4 w-4 text-foreground0" />;
     }
   };
 
@@ -377,7 +377,7 @@ const EmergencyCommDashboard: React.FC = () => {
           {activeAlerts.length === 0 ? (
             <Card>
               <CardContent className="flex items-center justify-center h-32">
-                <p className="text-gray-500">No active emergency alerts</p>
+                <p className="text-foreground0">No active emergency alerts</p>
               </CardContent>
             </Card>
           ) : (
@@ -524,7 +524,7 @@ const EmergencyCommDashboard: React.FC = () => {
                 <Button 
                   onClick={sendMessage}
                   disabled={!selectedAlert || !newMessage.trim()}
-                  className="w-full bg-accent hover:bg-va-red-primary/80 text-white"
+                  className="w-full bg-accent hover:bg-va-red-primary/80 text-foreground"
                 >
                   <Send className="h-4 w-4 mr-2" />
                   Send Urgent Message
@@ -542,11 +542,11 @@ const EmergencyCommDashboard: React.FC = () => {
               <CardContent>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {messages.length === 0 ? (
-                    <p className="text-gray-500 text-sm">No messages</p>
+                    <p className="text-foreground0 text-sm">No messages</p>
                   ) : (
                     messages.map((message) => (
                       <div key={message.id} className="p-2 bg-gray-50 rounded-md">
-                        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                        <div className="flex items-center justify-between text-xs text-foreground0 mb-1">
                           <span>To: {message.recipient}</span>
                           <span>{new Date(message.timestamp).toLocaleTimeString()}</span>
                         </div>
@@ -702,9 +702,9 @@ const EmergencyCommDashboard: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <p className="text-sm text-gray-600">Type: {channel.type.toUpperCase()}</p>
+                    <p className="text-sm text-muted-foreground">Type: {channel.type.toUpperCase()}</p>
                     {channel.frequency && (
-                      <p className="text-sm text-gray-600">Frequency: {channel.frequency} MHz</p>
+                      <p className="text-sm text-muted-foreground">Frequency: {channel.frequency} MHz</p>
                     )}
                     <div>
                       <p className="text-sm font-medium">Participants:</p>

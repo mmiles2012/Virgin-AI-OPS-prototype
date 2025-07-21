@@ -169,10 +169,10 @@ export default function DisruptionResponseConsole() {
 
   const getServiceStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'failed': return <XCircle className="w-4 h-4 text-red-500" />;
+      case 'completed': return <CheckCircle className="w-4 h-4 text-aero-green-safe" />;
+      case 'failed': return <XCircle className="w-4 h-4 text-va-red-primary" />;
       case 'processing': return <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />;
-      default: return <Clock className="w-4 h-4 text-gray-500" />;
+      default: return <Clock className="w-4 h-4 text-foreground0" />;
     }
   };
 
@@ -375,14 +375,14 @@ export default function DisruptionResponseConsole() {
   return (
     <div className="w-full h-screen bg-gray-50 text-gray-900 overflow-hidden flex flex-col">
       <div className="p-6 flex-shrink-0">
-        <h1 className="text-2xl font-bold text-white mb-2">Disruption Response Console</h1>
-        <p className="text-gray-400">AI-powered disruption management and recovery orchestration</p>
+        <h1 className="text-2xl font-bold text-foreground mb-2">Disruption Response Console</h1>
+        <p className="text-muted-foreground">AI-powered disruption management and recovery orchestration</p>
       </div>
 
       <div className="flex-1 overflow-hidden">
         <Tabs defaultValue="active" className="w-full h-full flex flex-col">
           <div className="px-6 flex-shrink-0">
-            <TabsList className="grid w-full grid-cols-4 bg-gray-800">
+            <TabsList className="grid w-full grid-cols-4 bg-card">
               <TabsTrigger value="active">Active Disruptions</TabsTrigger>
               <TabsTrigger value="scenarios">Recovery Scenarios</TabsTrigger>
               <TabsTrigger value="execution">Automated Services</TabsTrigger>
@@ -393,10 +393,10 @@ export default function DisruptionResponseConsole() {
           <TabsContent value="active" className="flex-1 overflow-hidden p-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
               {/* Disruption List */}
-              <Card className="bg-gray-800 border-gray-700 flex flex-col">
+              <Card className="bg-card border-border flex flex-col">
                 <CardHeader className="flex-shrink-0">
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5 text-red-500" />
+                  <CardTitle className="text-foreground flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-va-red-primary" />
                     Active Disruptions ({disruptions.length})
                   </CardTitle>
                 </CardHeader>
@@ -407,8 +407,8 @@ export default function DisruptionResponseConsole() {
                       key={disruption.id}
                       className={`p-4 rounded-lg border cursor-pointer transition-colors ${
                         selectedDisruption?.id === disruption.id
-                          ? 'border-blue-500 bg-blue-900/20'
-                          : 'border-gray-600 bg-gray-700/50 hover:bg-gray-700'
+                          ? 'border-blue-500 bg-aero-blue-primary/10'
+                          : 'border-border bg-gray-700/50 hover:bg-muted'
                       }`}
                       onClick={() => {
                         setSelectedDisruption(disruption);
@@ -417,16 +417,16 @@ export default function DisruptionResponseConsole() {
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <Badge className={`${getSeverityColor(disruption.severity)} text-white`}>
+                          <Badge className={`${getSeverityColor(disruption.severity)} text-foreground`}>
                             {disruption.severity.toUpperCase()}
                           </Badge>
-                          <span className="text-sm text-gray-400">{disruption.id}</span>
+                          <span className="text-sm text-muted-foreground">{disruption.id}</span>
                         </div>
-                        <span className="text-xs text-gray-400">{disruption.firstDetected}</span>
+                        <span className="text-xs text-muted-foreground">{disruption.firstDetected}</span>
                       </div>
-                      <h3 className="font-medium text-white mb-1">{disruption.title}</h3>
-                      <p className="text-sm text-gray-300 mb-2">{disruption.description}</p>
-                      <div className="flex items-center gap-4 text-xs text-gray-400">
+                      <h3 className="font-medium text-foreground mb-1">{disruption.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-2">{disruption.description}</p>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span>{disruption.affectedFlights.length} flights affected</span>
                         <span>{disruption.estimatedDuration}min duration</span>
                         <span>{disruption.location}</span>
@@ -438,9 +438,9 @@ export default function DisruptionResponseConsole() {
               </Card>
 
               {/* Disruption Details */}
-              <Card className="bg-gray-800 border-gray-700 flex flex-col">
+              <Card className="bg-card border-border flex flex-col">
                 <CardHeader className="flex-shrink-0">
-                  <CardTitle className="text-white">
+                  <CardTitle className="text-foreground">
                     {selectedDisruption ? 'Disruption Analysis' : 'Select a Disruption'}
                   </CardTitle>
                 </CardHeader>
@@ -449,42 +449,42 @@ export default function DisruptionResponseConsole() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <span className="text-sm text-gray-400">Type</span>
-                        <p className="text-white capitalize">{selectedDisruption.type}</p>
+                        <span className="text-sm text-muted-foreground">Type</span>
+                        <p className="text-foreground capitalize">{selectedDisruption.type}</p>
                       </div>
                       <div>
-                        <span className="text-sm text-gray-400">Status</span>
-                        <p className="text-white capitalize">{selectedDisruption.status}</p>
+                        <span className="text-sm text-muted-foreground">Status</span>
+                        <p className="text-foreground capitalize">{selectedDisruption.status}</p>
                       </div>
                       <div>
-                        <span className="text-sm text-gray-400">Duration</span>
-                        <p className="text-white">{selectedDisruption.estimatedDuration} minutes</p>
+                        <span className="text-sm text-muted-foreground">Duration</span>
+                        <p className="text-foreground">{selectedDisruption.estimatedDuration} minutes</p>
                       </div>
                       <div>
-                        <span className="text-sm text-gray-400">Location</span>
-                        <p className="text-white">{selectedDisruption.location}</p>
+                        <span className="text-sm text-muted-foreground">Location</span>
+                        <p className="text-foreground">{selectedDisruption.location}</p>
                       </div>
                     </div>
 
                     <div>
-                      <span className="text-sm text-gray-400">Affected Flights</span>
+                      <span className="text-sm text-muted-foreground">Affected Flights</span>
                       <div className="flex flex-wrap gap-2 mt-1">
                         {selectedDisruption.affectedFlights.map((flight) => (
-                          <Badge key={flight} variant="outline" className="text-white border-gray-600">
+                          <Badge key={flight} variant="outline" className="text-foreground border-border">
                             {flight}
                           </Badge>
                         ))}
                       </div>
                     </div>
 
-                    <div className="pt-4 border-t border-gray-600">
+                    <div className="pt-4 border-t border-border">
                       <Button
                         onClick={generateRecoveryScenarios}
                         disabled={scenarioGenerationStatus === 'generating'}
                         className={`w-full ${
                           scenarioGenerationStatus === 'generated' 
                             ? 'bg-green-600 hover:bg-green-700' 
-                            : 'bg-blue-600 hover:bg-blue-700'
+                            : 'bg-aero-blue-primary hover:bg-aero-blue-light'
                         }`}
                       >
                         {scenarioGenerationStatus === 'generating' ? 'Generating AI Scenarios...' : 
@@ -495,14 +495,14 @@ export default function DisruptionResponseConsole() {
                     
                     {/* Scenario Generation Log */}
                     {scenarioGenerationLog.length > 0 && (
-                      <Card className="bg-gray-700 border-gray-600 mt-4">
+                      <Card className="bg-gray-700 border-border mt-4">
                         <CardHeader>
-                          <CardTitle className="text-white text-sm">AI Generation Process</CardTitle>
+                          <CardTitle className="text-foreground text-sm">AI Generation Process</CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-2 max-h-40 overflow-y-auto">
                             {scenarioGenerationLog.map((log, index) => (
-                              <div key={index} className="text-sm text-gray-300 p-2 bg-gray-800 rounded">
+                              <div key={index} className="text-sm text-muted-foreground p-2 bg-card rounded">
                                 {log}
                               </div>
                             ))}
@@ -512,7 +512,7 @@ export default function DisruptionResponseConsole() {
                     )}
                   </div>
                 ) : (
-                  <div className="text-center text-gray-400 py-8">
+                  <div className="text-center text-muted-foreground py-8">
                     Select a disruption to view details and generate recovery scenarios
                   </div>
                   )}
@@ -524,9 +524,9 @@ export default function DisruptionResponseConsole() {
           <TabsContent value="scenarios" className="flex-1 overflow-hidden p-6">
             <div className="h-full overflow-y-auto">
               {/* Scenario Allocation Summary */}
-              <Card className="bg-gray-800 border-gray-700 mb-6">
+              <Card className="bg-card border-border mb-6">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-foreground flex items-center gap-2">
                     <MapPin className="w-5 h-5" />
                     Recovery Scenario Allocations
                   </CardTitle>
@@ -540,18 +540,18 @@ export default function DisruptionResponseConsole() {
                       
                       return (
                         <div key={disruption.id} className="bg-gray-700 p-3 rounded">
-                          <div className="text-white font-medium text-sm mb-2">
+                          <div className="text-foreground font-medium text-sm mb-2">
                             {disruption.title.replace('Aircraft G-VLIB Engine Issue', 'VS103 Engine')
                                            .replace('LHR Weather Disruption', 'LHR Weather')
                                            .replace('VS011 Crew Availability', 'VS011 Crew')}
                           </div>
                           <div className="space-y-1">
                             {allocatedScenarios.length > 0 ? allocatedScenarios.map((scenarioName, idx) => (
-                              <span key={idx} className="inline-block px-2 py-1 text-xs bg-green-600 text-white rounded mr-1">
+                              <span key={idx} className="inline-block px-2 py-1 text-xs bg-green-600 text-foreground rounded mr-1">
                                 {scenarioName?.split(' + ')[0] || 'Unknown'}
                               </span>
                             )) : (
-                              <span className="text-xs text-gray-400">No scenarios assigned</span>
+                              <span className="text-xs text-muted-foreground">No scenarios assigned</span>
                             )}
                           </div>
                         </div>
@@ -570,21 +570,21 @@ export default function DisruptionResponseConsole() {
                   });
                   
                   return (
-              <Card key={scenario.id} className="bg-gray-800 border-gray-700">
+              <Card key={scenario.id} className="bg-card border-border">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-white text-lg">{scenario.name}</CardTitle>
-                    <Badge className="bg-green-600 text-white">
+                    <CardTitle className="text-foreground text-lg">{scenario.name}</CardTitle>
+                    <Badge className="bg-green-600 text-foreground">
                       {scenario.confidence}% Confidence
                     </Badge>
                   </div>
                   {/* Show which disruptions this scenario addresses */}
                   <div className="flex flex-wrap gap-1 mt-3">
-                    <span className="text-xs text-gray-400 mr-2">Addresses:</span>
+                    <span className="text-xs text-muted-foreground mr-2">Addresses:</span>
                     {assignedDisruptionNames.map((name, idx) => (
                       <span 
                         key={idx}
-                        className="px-2 py-1 text-xs bg-blue-600 text-white rounded-full"
+                        className="px-2 py-1 text-xs bg-aero-blue-primary text-foreground rounded-full"
                       >
                         {name.replace('Aircraft G-VLIB Engine Issue', 'VS103 Engine')
                              .replace('LHR Weather Disruption', 'LHR Weather')
@@ -592,7 +592,7 @@ export default function DisruptionResponseConsole() {
                       </span>
                     ))}
                     {assignedDisruptionNames.length === 0 && (
-                      <span className="px-2 py-1 text-xs bg-gray-600 text-gray-300 rounded-full">
+                      <span className="px-2 py-1 text-xs bg-gray-600 text-muted-foreground rounded-full">
                         No specific assignment
                       </span>
                     )}
@@ -603,38 +603,38 @@ export default function DisruptionResponseConsole() {
                     {/* Key Metrics */}
                     <div className="grid grid-cols-2 gap-4">
                       <div className="text-center p-3 bg-gray-700 rounded">
-                        <DollarSign className="w-5 h-5 text-green-400 mx-auto mb-1" />
-                        <div className="text-lg font-bold text-white">
+                        <DollarSign className="w-5 h-5 text-aero-green-safe mx-auto mb-1" />
+                        <div className="text-lg font-bold text-foreground">
                           £{(scenario.estimatedCost / 1000).toFixed(0)}k
                         </div>
-                        <div className="text-xs text-gray-400">Total Cost</div>
+                        <div className="text-xs text-muted-foreground">Total Cost</div>
                       </div>
                       <div className="text-center p-3 bg-gray-700 rounded">
-                        <Users className="w-5 h-5 text-blue-400 mx-auto mb-1" />
-                        <div className="text-lg font-bold text-white">{scenario.passengerImpact}</div>
-                        <div className="text-xs text-gray-400">Passengers</div>
+                        <Users className="w-5 h-5 text-aero-blue-primary mx-auto mb-1" />
+                        <div className="text-lg font-bold text-foreground">{scenario.passengerImpact}</div>
+                        <div className="text-xs text-muted-foreground">Passengers</div>
                       </div>
                       <div className="text-center p-3 bg-gray-700 rounded">
-                        <Clock className="w-5 h-5 text-yellow-400 mx-auto mb-1" />
-                        <div className="text-lg font-bold text-white">{scenario.timeToImplement}m</div>
-                        <div className="text-xs text-gray-400">Implementation</div>
+                        <Clock className="w-5 h-5 text-aero-amber-caution mx-auto mb-1" />
+                        <div className="text-lg font-bold text-foreground">{scenario.timeToImplement}m</div>
+                        <div className="text-xs text-muted-foreground">Implementation</div>
                       </div>
                       <div className="text-center p-3 bg-gray-700 rounded">
-                        <AlertTriangle className="w-5 h-5 text-red-400 mx-auto mb-1" />
-                        <div className="text-lg font-bold text-white">
+                        <AlertTriangle className="w-5 h-5 text-va-red-primary mx-auto mb-1" />
+                        <div className="text-lg font-bold text-foreground">
                           £{(scenario.eu261Risk / 1000).toFixed(0)}k
                         </div>
-                        <div className="text-xs text-gray-400">EU261 Risk</div>
+                        <div className="text-xs text-muted-foreground">EU261 Risk</div>
                       </div>
                     </div>
 
                     {/* Actions */}
                     <div>
-                      <h4 className="text-sm font-medium text-gray-400 mb-2">Required Actions</h4>
+                      <h4 className="text-sm font-medium text-muted-foreground mb-2">Required Actions</h4>
                       <ul className="space-y-1">
                         {scenario.actions.map((action, index) => (
-                          <li key={index} className="text-sm text-gray-300 flex items-start gap-2">
-                            <span className="text-blue-400 mt-1">•</span>
+                          <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                            <span className="text-aero-blue-primary mt-1">•</span>
                             {action}
                           </li>
                         ))}
@@ -644,22 +644,22 @@ export default function DisruptionResponseConsole() {
                     {/* Pros and Cons */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <h4 className="text-sm font-medium text-green-400 mb-2">Advantages</h4>
+                        <h4 className="text-sm font-medium text-aero-green-safe mb-2">Advantages</h4>
                         <ul className="space-y-1">
                           {scenario.pros.map((pro, index) => (
-                            <li key={index} className="text-xs text-gray-300 flex items-start gap-1">
-                              <span className="text-green-400">+</span>
+                            <li key={index} className="text-xs text-muted-foreground flex items-start gap-1">
+                              <span className="text-aero-green-safe">+</span>
                               {pro}
                             </li>
                           ))}
                         </ul>
                       </div>
                       <div>
-                        <h4 className="text-sm font-medium text-red-400 mb-2">Disadvantages</h4>
+                        <h4 className="text-sm font-medium text-va-red-primary mb-2">Disadvantages</h4>
                         <ul className="space-y-1">
                           {scenario.cons.map((con, index) => (
-                            <li key={index} className="text-xs text-gray-300 flex items-start gap-1">
-                              <span className="text-red-400">-</span>
+                            <li key={index} className="text-xs text-muted-foreground flex items-start gap-1">
+                              <span className="text-va-red-primary">-</span>
                               {con}
                             </li>
                           ))}
@@ -684,11 +684,11 @@ export default function DisruptionResponseConsole() {
           </TabsContent>
 
           <TabsContent value="execution" className="flex-1 overflow-hidden p-6">
-            <Card className="bg-gray-800 border-gray-700 h-full flex flex-col">
+            <Card className="bg-card border-border h-full flex flex-col">
             <CardHeader className="flex-shrink-0">
-              <CardTitle className="text-white">Automated Service Coordination</CardTitle>
+              <CardTitle className="text-foreground">Automated Service Coordination</CardTitle>
               {activeWorkflow && (
-                <p className="text-blue-400 text-sm">{activeWorkflow}</p>
+                <p className="text-aero-blue-primary text-sm">{activeWorkflow}</p>
               )}
             </CardHeader>
             <CardContent className="flex-1 overflow-y-auto">
@@ -699,19 +699,19 @@ export default function DisruptionResponseConsole() {
                       <div className="flex items-center gap-3">
                         {getServiceStatusIcon(service.status)}
                         <div>
-                          <h3 className="font-medium text-white">{service.name}</h3>
-                          <p className="text-sm text-gray-400">{service.provider}</p>
+                          <h3 className="font-medium text-foreground">{service.name}</h3>
+                          <p className="text-sm text-muted-foreground">{service.provider}</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-white font-medium">£{service.cost.toLocaleString()}</div>
-                        <div className="text-sm text-gray-400">{service.estimatedTime}min</div>
+                        <div className="text-foreground font-medium">£{service.cost.toLocaleString()}</div>
+                        <div className="text-sm text-muted-foreground">{service.estimatedTime}min</div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center text-gray-400 py-8">
+                <div className="text-center text-muted-foreground py-8">
                   Execute a recovery scenario to see automated service coordination
                 </div>
               )}
@@ -720,9 +720,9 @@ export default function DisruptionResponseConsole() {
           </TabsContent>
 
           <TabsContent value="communication" className="flex-1 overflow-hidden p-6">
-            <Card className="bg-gray-800 border-gray-700 h-full flex flex-col">
+            <Card className="bg-card border-border h-full flex flex-col">
             <CardHeader className="flex-shrink-0">
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-foreground flex items-center gap-2">
                 <MessageSquare className="w-5 h-5" />
                 Communication Workflows
               </CardTitle>
@@ -736,7 +736,7 @@ export default function DisruptionResponseConsole() {
                     className={`h-20 flex flex-col items-center justify-center ${
                       communicationStatus.passengers === 'sent' 
                         ? 'bg-green-600 hover:bg-green-700' 
-                        : 'bg-blue-600 hover:bg-blue-700'
+                        : 'bg-aero-blue-primary hover:bg-aero-blue-light'
                     }`}
                   >
                     <Users className="w-6 h-6 mb-2" />
@@ -775,14 +775,14 @@ export default function DisruptionResponseConsole() {
                 
                 {/* Communication Activity Log */}
                 {communicationResults.length > 0 && (
-                  <Card className="bg-gray-700 border-gray-600 mt-4">
+                  <Card className="bg-gray-700 border-border mt-4">
                     <CardHeader>
-                      <CardTitle className="text-white text-sm">Communication Activity</CardTitle>
+                      <CardTitle className="text-foreground text-sm">Communication Activity</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2 max-h-40 overflow-y-auto">
                         {communicationResults.map((result, index) => (
-                          <div key={index} className="text-sm text-gray-300 p-2 bg-gray-800 rounded">
+                          <div key={index} className="text-sm text-muted-foreground p-2 bg-card rounded">
                             {result}
                           </div>
                         ))}
@@ -791,7 +791,7 @@ export default function DisruptionResponseConsole() {
                   </Card>
                 )}
                 
-                <div className="text-center text-gray-400 py-2 text-sm">
+                <div className="text-center text-muted-foreground py-2 text-sm">
                   Click buttons above to trigger real-time communication workflows
                 </div>
               </div>

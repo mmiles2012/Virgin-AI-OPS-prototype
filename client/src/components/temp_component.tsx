@@ -658,7 +658,7 @@ export default function EnhancedNetworkOTPDashboard() {
       case 'on-time': return 'text-green-600';
       case 'delayed': return 'text-yellow-600';
       case 'cancelled': return 'text-red-600';
-      default: return 'text-gray-600';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -689,7 +689,7 @@ export default function EnhancedNetworkOTPDashboard() {
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-aero-blue-primary mx-auto mb-4"></div>
-          <div className="text-gray-600">Loading enhanced network performance data...</div>
+          <div className="text-muted-foreground">Loading enhanced network performance data...</div>
         </div>
       </div>
     );
@@ -728,28 +728,28 @@ export default function EnhancedNetworkOTPDashboard() {
       }`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Plane className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-bold text-white">Virgin Atlantic Enhanced Network Operations</h2>
+            <Plane className="w-6 h-6 text-foreground" />
+            <h2 className="text-xl font-bold text-foreground">Virgin Atlantic Enhanced Network Operations</h2>
             <button 
               onClick={() => setNetworkView(networkView === 'detailed' ? 'overview' : 'detailed')}
               className={`px-3 py-1 rounded-full text-sm font-semibold border-2 hover:scale-105 transition-transform cursor-pointer ${
                 networkAlertStatus === 'alert' 
-                  ? 'bg-red-900/50 text-white border-red-300 hover:bg-red-800/50' 
+                  ? 'bg-red-900/50 text-foreground border-red-300 hover:bg-red-800/50' 
                   : networkAlertStatus === 'minor'
-                  ? 'bg-amber-900/50 text-white border-amber-300 hover:bg-amber-800/50'
-                  : 'bg-green-900/50 text-white border-green-300 hover:bg-green-800/50'
+                  ? 'bg-amber-900/50 text-foreground border-amber-300 hover:bg-amber-800/50'
+                  : 'bg-green-900/50 text-foreground border-green-300 hover:bg-green-800/50'
               }`}>
               {networkAlertStatus === 'alert' ? '🚨 NETWORK ALERT' : 
                networkAlertStatus === 'minor' ? '⚠️ MINOR DISRUPTION' : 
                '✅ STABLE'} • CLICK FOR DETAILS
             </button>
           </div>
-          <div className="flex items-center gap-4 text-white/80">
+          <div className="flex items-center gap-4 text-foreground/80">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setNetworkView('overview')}
                 className={`px-3 py-1 rounded text-sm ${
-                  networkView === 'overview' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'
+                  networkView === 'overview' ? 'bg-white/20 text-foreground' : 'text-foreground/70 hover:text-foreground'
                 }`}
               >
                 Network Overview
@@ -757,7 +757,7 @@ export default function EnhancedNetworkOTPDashboard() {
               <button
                 onClick={() => setNetworkView('detailed')}
                 className={`px-3 py-1 rounded text-sm ${
-                  networkView === 'detailed' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'
+                  networkView === 'detailed' ? 'bg-white/20 text-foreground' : 'text-foreground/70 hover:text-foreground'
                 }`}
               >
                 Detailed View
@@ -765,7 +765,7 @@ export default function EnhancedNetworkOTPDashboard() {
               <button
                 onClick={() => setNetworkView('delay-analysis')}
                 className={`px-3 py-1 rounded text-sm ${
-                  networkView === 'delay-analysis' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'
+                  networkView === 'delay-analysis' ? 'bg-white/20 text-foreground' : 'text-foreground/70 hover:text-foreground'
                 }`}
               >
                 Delay Analysis
@@ -782,42 +782,42 @@ export default function EnhancedNetworkOTPDashboard() {
       </div>
 
       {/* Network Statistics Bar */}
-      <div className="bg-gray-800/50 px-6 py-3 border-b border-gray-700">
+      <div className="bg-card/50 px-6 py-3 border-b border-border">
         <div className="grid grid-cols-4 gap-6">
           <div className="text-center">
-            <div className="text-2xl font-bold text-white">{totalNetworkFlights}</div>
-            <div className="text-sm text-gray-400">Total Flights</div>
+            <div className="text-2xl font-bold text-foreground">{totalNetworkFlights}</div>
+            <div className="text-sm text-muted-foreground">Total Flights</div>
           </div>
           <div className="text-center">
-            <div className={`text-2xl font-bold ${networkDelayRate > 20 ? 'text-red-400' : networkDelayRate > 10 ? 'text-yellow-400' : 'text-green-400'}`}>
+            <div className={`text-2xl font-bold ${networkDelayRate > 20 ? 'text-va-red-primary' : networkDelayRate > 10 ? 'text-aero-amber-caution' : 'text-aero-green-safe'}`}>
               {networkDelayRate.toFixed(1)}%
             </div>
-            <div className="text-sm text-gray-400">Network Delay Rate</div>
+            <div className="text-sm text-muted-foreground">Network Delay Rate</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-400">{avgNetworkDelay.toFixed(0)}min</div>
-            <div className="text-sm text-gray-400">Avg Delay Time</div>
+            <div className="text-2xl font-bold text-aero-blue-primary">{avgNetworkDelay.toFixed(0)}min</div>
+            <div className="text-sm text-muted-foreground">Avg Delay Time</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-purple-400">{hubData.length}</div>
-            <div className="text-sm text-gray-400">Monitored Hubs</div>
+            <div className="text-sm text-muted-foreground">Monitored Hubs</div>
           </div>
         </div>
       </div>
 
       {/* Enhanced Alert Details Panel */}
       {networkView === 'detailed' && alertDetails && (
-        <div className="bg-gray-800/50 border-b border-gray-700 p-6">
+        <div className="bg-card/50 border-b border-border p-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5" />
                 Network Alert Details
               </h3>
               <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                alertDetails.level === 'Critical' ? 'bg-red-500/20 text-red-400' :
+                alertDetails.level === 'Critical' ? 'bg-red-500/20 text-va-red-primary' :
                 alertDetails.level === 'Moderate' ? 'bg-amber-500/20 text-amber-400' :
-                'bg-green-500/20 text-green-400'
+                'bg-green-500/20 text-aero-green-safe'
               }`}>
                 {alertDetails.level} Level
               </span>
@@ -825,31 +825,31 @@ export default function EnhancedNetworkOTPDashboard() {
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-3">
-                <h4 className="font-semibold text-white">{alertDetails.title}</h4>
-                <p className="text-gray-300">{alertDetails.message}</p>
+                <h4 className="font-semibold text-foreground">{alertDetails.title}</h4>
+                <p className="text-muted-foreground">{alertDetails.message}</p>
                 
                 {/* Active Alerts */}
                 {activeAlerts.length > 0 && (
                   <div className="space-y-2">
-                    <h5 className="text-sm font-semibold text-gray-400">Active Alerts:</h5>
+                    <h5 className="text-sm font-semibold text-muted-foreground">Active Alerts:</h5>
                     {activeAlerts.map((alert, index) => (
                       <div key={index} className={`p-3 rounded-lg border-l-4 ${
-                        alert.severity === 'high' ? 'bg-red-900/20 border-red-500' :
+                        alert.severity === 'high' ? 'bg-va-red-primary/10 border-red-500' :
                         alert.severity === 'medium' ? 'bg-amber-900/20 border-amber-500' :
-                        'bg-blue-900/20 border-blue-500'
+                        'bg-aero-blue-primary/10 border-blue-500'
                       }`}>
                         <div className="flex items-center justify-between">
-                          <span className="font-medium text-white">{alert.title}</span>
-                          <span className="text-xs text-gray-400">{alert.type.toUpperCase()}</span>
+                          <span className="font-medium text-foreground">{alert.title}</span>
+                          <span className="text-xs text-muted-foreground">{alert.type.toUpperCase()}</span>
                         </div>
-                        <p className="text-sm text-gray-300 mt-1">{alert.message}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{alert.message}</p>
                         {alert.hubs && (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {alert.hubs.map((hub: any, i: number) => (
                               <button
                                 key={i}
                                 onClick={() => handleAirportSelect(hub)}
-                                className="px-2 py-1 bg-gray-700 hover:bg-gray-600 text-xs rounded text-white transition-colors cursor-pointer"
+                                className="px-2 py-1 bg-gray-700 hover:bg-gray-600 text-xs rounded text-foreground transition-colors cursor-pointer"
                               >
                                 {hub}
                               </button>
@@ -865,7 +865,7 @@ export default function EnhancedNetworkOTPDashboard() {
                               console.log(`Alert acknowledged: ${alert.id}`);
                               setActiveAlerts(prev => prev.filter(a => a.id !== alert.id));
                             }}
-                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-colors"
+                            className="px-3 py-1 bg-aero-blue-primary hover:bg-aero-blue-light text-foreground text-xs rounded transition-colors"
                           >
                             Acknowledge
                           </button>
@@ -875,7 +875,7 @@ export default function EnhancedNetworkOTPDashboard() {
                                 console.log('Weather monitoring activated');
                                 // Could trigger weather monitoring dashboard
                               }}
-                              className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-xs rounded transition-colors"
+                              className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-foreground text-xs rounded transition-colors"
                             >
                               Monitor Weather
                             </button>
@@ -886,7 +886,7 @@ export default function EnhancedNetworkOTPDashboard() {
                                 console.log('Capacity management activated');
                                 // Could trigger capacity management tools
                               }}
-                              className="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-xs rounded transition-colors"
+                              className="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-foreground text-xs rounded transition-colors"
                             >
                               Manage Capacity
                             </button>
@@ -899,10 +899,10 @@ export default function EnhancedNetworkOTPDashboard() {
               </div>
               
               <div className="space-y-3">
-                <h4 className="font-semibold text-white">Recommended Actions</h4>
+                <h4 className="font-semibold text-foreground">Recommended Actions</h4>
                 <ul className="space-y-2">
                   {alertDetails.recommendations.map((rec: any, index: number) => (
-                    <li key={index} className="flex items-start gap-2 text-gray-300">
+                    <li key={index} className="flex items-start gap-2 text-muted-foreground">
                       <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                       <span className="text-sm">{rec}</span>
                     </li>
@@ -912,21 +912,21 @@ export default function EnhancedNetworkOTPDashboard() {
                 {/* Quick Metrics */}
                 {detailedMetrics && (
                   <div className="mt-4 p-4 bg-gray-700/50 rounded-lg">
-                    <h5 className="text-sm font-semibold text-gray-400 mb-3">Network Performance Breakdown</h5>
+                    <h5 className="text-sm font-semibold text-muted-foreground mb-3">Network Performance Breakdown</h5>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <div className="text-green-400 font-semibold">
+                        <div className="text-aero-green-safe font-semibold">
                           {detailedMetrics.bestPerformingHub?.iata} - Best Hub
                         </div>
-                        <div className="text-gray-300">
+                        <div className="text-muted-foreground">
                           {detailedMetrics.bestPerformingHub?.onTimeRate?.toFixed(1)}% on-time
                         </div>
                       </div>
                       <div>
-                        <div className="text-red-400 font-semibold">
+                        <div className="text-va-red-primary font-semibold">
                           {detailedMetrics.worstPerformingHub?.iata} - Attention Needed
                         </div>
-                        <div className="text-gray-300">
+                        <div className="text-muted-foreground">
                           {detailedMetrics.worstPerformingHub?.onTimeRate?.toFixed(1)}% on-time
                         </div>
                       </div>
@@ -947,9 +947,9 @@ export default function EnhancedNetworkOTPDashboard() {
             <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Delay Categories Chart */}
-              <Card className="bg-gray-800/50 border-gray-700">
+              <Card className="bg-card/50 border-border">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Delay Categories Network-Wide</h3>
+                  <h3 className="text-lg font-semibold text-foreground mb-4">Delay Categories Network-Wide</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -966,9 +966,9 @@ export default function EnhancedNetworkOTPDashboard() {
               </Card>
 
               {/* Top Delayed Hubs */}
-              <Card className="bg-gray-800/50 border-gray-700">
+              <Card className="bg-card/50 border-border">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Most Impacted Hubs</h3>
+                  <h3 className="text-lg font-semibold text-foreground mb-4">Most Impacted Hubs</h3>
                   <div className="space-y-3">
                     {hubData
                       .filter(hub => hub.delayedFlights > 0)
@@ -977,12 +977,12 @@ export default function EnhancedNetworkOTPDashboard() {
                       .map(hub => (
                         <div key={hub.iata} className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
                           <div>
-                            <div className="text-white font-medium">{hub.name}</div>
-                            <div className="text-sm text-gray-400">{hub.iata} • {hub.delayedFlights} delayed flights</div>
+                            <div className="text-foreground font-medium">{hub.name}</div>
+                            <div className="text-sm text-muted-foreground">{hub.iata} • {hub.delayedFlights} delayed flights</div>
                           </div>
                           <div className="text-right">
-                            <div className="text-red-400 font-bold">{hub.avgDelayMinutes}min</div>
-                            <div className="text-sm text-gray-400">avg delay</div>
+                            <div className="text-va-red-primary font-bold">{hub.avgDelayMinutes}min</div>
+                            <div className="text-sm text-muted-foreground">avg delay</div>
                           </div>
                         </div>
                       ))}
@@ -999,15 +999,15 @@ export default function EnhancedNetworkOTPDashboard() {
                   className={`cursor-pointer transition-all duration-200 border-2 ${
                     selectedAirport === hub.iata 
                       ? 'border-red-500 bg-red-500/10' 
-                      : `border-gray-700 hover:border-gray-600 ${getDelayImpactColor(hub.avgDelayMinutes)}`
+                      : `border-border hover:border-border ${getDelayImpactColor(hub.avgDelayMinutes)}`
                   }`}
                   onClick={() => handleAirportSelect(hub.iata)}
                 >
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <h3 className="text-lg font-bold text-white">{hub.name}</h3>
-                        <p className="text-sm text-gray-400">{hub.city} • {hub.iata}</p>
+                        <h3 className="text-lg font-bold text-foreground">{hub.name}</h3>
+                        <p className="text-sm text-muted-foreground">{hub.city} • {hub.iata}</p>
                       </div>
                       <Badge className={`${getDelayImpactColor(hub.avgDelayMinutes)}`}>
                         {hub.avgDelayMinutes === 0 ? 'ON TIME' : `${hub.avgDelayMinutes}min`}
@@ -1016,33 +1016,33 @@ export default function EnhancedNetworkOTPDashboard() {
 
                     <div className="space-y-2 mb-3">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">On-Time Rate:</span>
-                        <span className={hub.onTimeRate > 85 ? 'text-green-400' : hub.onTimeRate > 70 ? 'text-yellow-400' : 'text-red-400'}>
+                        <span className="text-muted-foreground">On-Time Rate:</span>
+                        <span className={hub.onTimeRate > 85 ? 'text-aero-green-safe' : hub.onTimeRate > 70 ? 'text-aero-amber-caution' : 'text-va-red-primary'}>
                           {hub.onTimeRate.toFixed(1)}%
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Delayed Flights:</span>
-                        <span className="text-white">{hub.delayedFlights}/{hub.totalFlights}</span>
+                        <span className="text-muted-foreground">Delayed Flights:</span>
+                        <span className="text-foreground">{hub.delayedFlights}/{hub.totalFlights}</span>
                       </div>
                     </div>
 
                     {hub.contact && (
-                      <div className="bg-gray-700/50 rounded-lg p-2 border border-gray-600 mb-3">
+                      <div className="bg-gray-700/50 rounded-lg p-2 border border-border mb-3">
                         <div className="flex items-center gap-2 mb-1">
-                          <Phone className="w-3 h-3 text-green-400" />
-                          <span className="text-xs font-semibold text-green-400">Emergency Contact</span>
+                          <Phone className="w-3 h-3 text-aero-green-safe" />
+                          <span className="text-xs font-semibold text-aero-green-safe">Emergency Contact</span>
                         </div>
-                        <div className="text-xs text-blue-400 font-mono">{hub.contact.phone}</div>
+                        <div className="text-xs text-aero-blue-primary font-mono">{hub.contact.phone}</div>
                       </div>
                     )}
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1">
                         {getTrendIcon(hub.trend)}
-                        <span className="text-xs text-gray-400 capitalize">{hub.trend}</span>
+                        <span className="text-xs text-muted-foreground capitalize">{hub.trend}</span>
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-muted-foreground">
                         {hub.historicalDelays.length} historical records
                       </div>
                     </div>
@@ -1056,7 +1056,7 @@ export default function EnhancedNetworkOTPDashboard() {
           <div className="space-y-6">
             {/* Current Airport Group (Auto-Rotating) */}
             <div>
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                 <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
                 Current Focus: {
                   currentAirportGroup === 0 ? 'UK Hubs' :
@@ -1064,7 +1064,7 @@ export default function EnhancedNetworkOTPDashboard() {
                   currentAirportGroup === 2 ? 'US West Coast + Florida' :
                   'International Destinations'
                 } (Auto-rotating)
-                <div className="text-sm text-gray-400 ml-2">
+                <div className="text-sm text-muted-foreground ml-2">
                   Group {currentAirportGroup + 1} of {airportGroups.length}
                 </div>
               </h3>
@@ -1078,12 +1078,12 @@ export default function EnhancedNetworkOTPDashboard() {
                       className={`cursor-pointer transition-all duration-200 border-2 rounded-lg p-4 ${
                         selectedAirport === hub.iata 
                           ? 'border-blue-500 bg-blue-500/20' 
-                          : `border-gray-700 hover:border-gray-600 ${getDelayImpactColor(hub.avgDelayMinutes)}`
+                          : `border-border hover:border-border ${getDelayImpactColor(hub.avgDelayMinutes)}`
                       }`}
                     >
                       <div className="text-center mb-3">
-                        <h4 className="text-xl font-bold text-white">{hub.iata}</h4>
-                        <p className="text-sm text-gray-400">{hub.city}</p>
+                        <h4 className="text-xl font-bold text-foreground">{hub.iata}</h4>
+                        <p className="text-sm text-muted-foreground">{hub.city}</p>
                         <Badge className={`mt-2 ${getDelayImpactColor(hub.avgDelayMinutes)}`}>
                           {hub.avgDelayMinutes === 0 ? 'ON TIME' : `${hub.avgDelayMinutes}min avg`}
                         </Badge>
@@ -1091,19 +1091,19 @@ export default function EnhancedNetworkOTPDashboard() {
                       
                       <div className="space-y-2 mb-3">
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">OTP:</span>
-                          <span className={hub.onTimeRate > 85 ? 'text-green-400' : hub.onTimeRate > 70 ? 'text-yellow-400' : 'text-red-400'}>
+                          <span className="text-muted-foreground">OTP:</span>
+                          <span className={hub.onTimeRate > 85 ? 'text-aero-green-safe' : hub.onTimeRate > 70 ? 'text-aero-amber-caution' : 'text-va-red-primary'}>
                             {hub.onTimeRate.toFixed(1)}%
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Delayed:</span>
-                          <span className="text-white">{hub.delayedFlights}/{hub.totalFlights}</span>
+                          <span className="text-muted-foreground">Delayed:</span>
+                          <span className="text-foreground">{hub.delayedFlights}/{hub.totalFlights}</span>
                         </div>
                         {hub.delayedFlights > 0 && (
                           <div className="flex justify-between text-sm">
-                            <span className="text-gray-400">Severe (&gt;30min):</span>
-                            <span className="text-red-400">
+                            <span className="text-muted-foreground">Severe (&gt;30min):</span>
+                            <span className="text-va-red-primary">
                               {hub.recentFlights.filter(f => f.delayMinutes > 30).length}
                             </span>
                           </div>
@@ -1111,21 +1111,21 @@ export default function EnhancedNetworkOTPDashboard() {
                       </div>
 
                       {hub.contact && (
-                        <div className="bg-green-900/20 border border-green-500 rounded-lg p-2 mb-3">
+                        <div className="bg-aero-green-safe/10 border border-green-500 rounded-lg p-2 mb-3">
                           <div className="flex items-center gap-1 mb-1">
-                            <Phone className="w-3 h-3 text-green-400" />
-                            <span className="text-xs font-semibold text-green-400">24/7 Ops</span>
+                            <Phone className="w-3 h-3 text-aero-green-safe" />
+                            <span className="text-xs font-semibold text-aero-green-safe">24/7 Ops</span>
                           </div>
-                          <div className="text-xs text-blue-400 font-mono">{hub.contact.phone}</div>
+                          <div className="text-xs text-aero-blue-primary font-mono">{hub.contact.phone}</div>
                         </div>
                       )}
 
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1">
                           {getTrendIcon(hub.trend)}
-                          <span className="text-xs text-gray-400 capitalize">{hub.trend}</span>
+                          <span className="text-xs text-muted-foreground capitalize">{hub.trend}</span>
                         </div>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-muted-foreground">
                           {hub.recentFlights?.length || 0} flights
                         </div>
                       </div>
@@ -1137,7 +1137,7 @@ export default function EnhancedNetworkOTPDashboard() {
             {/* Secondary Hubs */}
             {secondaryHubsData.length > 0 && (
               <div>
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                   <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                   Secondary Hubs
                 </h3>
@@ -1146,20 +1146,20 @@ export default function EnhancedNetworkOTPDashboard() {
                     <div 
                       key={hub.iata}
                       onClick={() => handleAirportSelect(hub.iata)}
-                      className={`bg-gray-800/50 rounded-lg p-3 cursor-pointer transition-all duration-200 border-2 ${
+                      className={`bg-card/50 rounded-lg p-3 cursor-pointer transition-all duration-200 border-2 ${
                         selectedAirport === hub.iata 
                           ? 'border-blue-500 bg-blue-500/10' 
-                          : 'border-transparent hover:border-gray-600'
+                          : 'border-transparent hover:border-border'
                       }`}
                     >
                       <div className="text-center">
-                        <h5 className="text-sm font-bold text-white">{hub.iata}</h5>
-                        <p className="text-xs text-gray-400 mb-2">{hub.city}</p>
+                        <h5 className="text-sm font-bold text-foreground">{hub.iata}</h5>
+                        <p className="text-xs text-muted-foreground mb-2">{hub.city}</p>
                         <div className="text-xs">
-                          <div className={hub.onTimeRate > 85 ? 'text-green-400' : hub.onTimeRate > 70 ? 'text-yellow-400' : 'text-red-400'}>
+                          <div className={hub.onTimeRate > 85 ? 'text-aero-green-safe' : hub.onTimeRate > 70 ? 'text-aero-amber-caution' : 'text-va-red-primary'}>
                             {hub.onTimeRate.toFixed(0)}% OTP
                           </div>
-                          <div className="text-gray-400">{hub.totalFlights} flights</div>
+                          <div className="text-muted-foreground">{hub.totalFlights} flights</div>
                         </div>
                       </div>
                     </div>
@@ -1170,7 +1170,7 @@ export default function EnhancedNetworkOTPDashboard() {
           </div>
         ) : (
           // Detailed View (empty for now)
-          <div className="text-center text-gray-400 py-12">
+          <div className="text-center text-muted-foreground py-12">
             <h3 className="text-lg font-semibold mb-2">Detailed View</h3>
             <p>Detailed network analysis view coming soon.</p>
           </div>

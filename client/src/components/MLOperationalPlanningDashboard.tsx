@@ -27,90 +27,90 @@ export const MLOperationalPlanningDashboard: React.FC<MLOperationalPlanningDashb
 
   const getPhaseColor = (phase: string) => {
     switch (phase) {
-      case 'DEPARTURE_PHASE': return 'bg-blue-500';
-      case 'INITIAL_CRUISE': return 'bg-green-500';
-      case 'MID_CRUISE': return 'bg-green-600';
-      case 'APPROACH_PHASE': return 'bg-yellow-500';
-      case 'FINAL_APPROACH': return 'bg-red-500';
+      case 'DEPARTURE_PHASE': return 'bg-aero-blue-primary';
+      case 'INITIAL_CRUISE': return 'bg-aero-green-safe';
+      case 'MID_CRUISE': return 'bg-aero-green-dark';
+      case 'APPROACH_PHASE': return 'bg-aero-amber-caution';
+      case 'FINAL_APPROACH': return 'bg-va-red-primary';
       default: return 'bg-gray-500';
     }
   };
 
   const getRouteTypeColor = (type: string) => {
     switch (type) {
-      case 'DOMESTIC_SHORT': return 'bg-blue-600';
+      case 'DOMESTIC_SHORT': return 'bg-aero-blue-primary';
       case 'DOMESTIC_LONG': return 'bg-blue-700';
       case 'REGIONAL': return 'bg-purple-600';
       case 'LONG_HAUL': return 'bg-orange-600';
-      case 'ULTRA_LONG_HAUL': return 'bg-red-600';
+      case 'ULTRA_LONG_HAUL': return 'bg-va-red-primary';
       default: return 'bg-gray-600';
     }
   };
 
   const renderOverview = () => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className="bg-card border-border">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
-            <Brain className="h-5 w-5 text-blue-400" />
+            <Brain className="h-5 w-5 text-aero-blue-primary" />
             ML Model Status
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-400">Active Models:</span>
-            <Badge className="bg-green-600 text-white">3 Models</Badge>
+            <span className="text-sm text-muted-foreground">Active Models:</span>
+            <Badge className="bg-aero-green-safe text-white">3 Models</Badge>
           </div>
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-muted-foreground">
             • Route Progress Predictor
           </div>
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-muted-foreground">
             • Delay Risk Analyzer
           </div>
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-muted-foreground">
             • Connection Optimizer
           </div>
           <div className="flex justify-between items-center mt-2">
-            <span className="text-sm text-gray-400">Prediction Accuracy:</span>
-            <span className="text-sm text-green-400">87.3%</span>
+            <span className="text-sm text-muted-foreground">Prediction Accuracy:</span>
+            <span className="text-sm text-aero-green-safe">87.3%</span>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className="bg-card border-border">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-green-400" />
+            <TrendingUp className="h-5 w-5 text-aero-green-safe" />
             Real-Time Metrics
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-400">Flights Analyzed:</span>
-            <span className="text-sm text-white font-bold">{mlResults.length}</span>
+            <span className="text-sm text-muted-foreground">Flights Analyzed:</span>
+            <span className="text-sm text-foreground font-bold">{mlResults.length}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-400">High Risk Flights:</span>
-            <span className="text-sm text-red-400">
+            <span className="text-sm text-muted-foreground">High Risk Flights:</span>
+            <span className="text-sm text-va-red-primary">
               {mlResults.filter(r => r.predictedDelay > 15).length}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-400">Diversion Alerts:</span>
-            <span className="text-sm text-orange-400">
+            <span className="text-sm text-muted-foreground">Diversion Alerts:</span>
+            <span className="text-sm text-aero-orange-alert">
               {mlResults.filter(r => r.diversionRisk).length}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-400">Connection Risks:</span>
-            <span className="text-sm text-yellow-400">
+            <span className="text-sm text-muted-foreground">Connection Risks:</span>
+            <span className="text-sm text-aero-amber-caution">
               {mlResults.filter(r => r.missedConnectionRisk > 0.7).length}
             </span>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className="bg-card border-border">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
             <Activity className="h-5 w-5 text-purple-400" />
@@ -125,9 +125,9 @@ export const MLOperationalPlanningDashboard: React.FC<MLOperationalPlanningDashb
                 <div key={phase} className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <div className={`w-2 h-2 rounded-full ${getPhaseColor(phase)}`}></div>
-                    <span className="text-xs text-gray-400">{phase.replace('_', ' ')}</span>
+                    <span className="text-xs text-muted-foreground">{phase.replace('_', ' ')}</span>
                   </div>
-                  <span className="text-xs text-white">{count}</span>
+                  <span className="text-xs text-foreground">{count}</span>
                 </div>
               );
             })}
@@ -140,12 +140,12 @@ export const MLOperationalPlanningDashboard: React.FC<MLOperationalPlanningDashb
   const renderPredictions = () => (
     <div className="space-y-4">
       {mlResults.map((result, index) => (
-        <Card key={index} className="bg-gray-800 border-gray-700">
+        <Card key={index} className="bg-card border-border">
           <CardContent className="p-4">
             <div className="flex justify-between items-start mb-3">
               <div>
-                <h3 className="text-lg font-bold text-white">{result.callsign}</h3>
-                <p className="text-sm text-gray-400">
+                <h3 className="text-lg font-bold text-foreground">{result.callsign}</h3>
+                <p className="text-sm text-muted-foreground">
                   {result.routeInfo?.origin} → {result.routeInfo?.destination}
                 </p>
               </div>
@@ -161,26 +161,26 @@ export const MLOperationalPlanningDashboard: React.FC<MLOperationalPlanningDashb
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
               <div className="text-center">
-                <div className="text-blue-400 font-bold text-xl">{result.routeProgress}%</div>
-                <div className="text-xs text-gray-400">Route Progress</div>
+                <div className="text-aero-blue-primary font-bold text-xl">{result.routeProgress}%</div>
+                <div className="text-xs text-muted-foreground">Route Progress</div>
               </div>
               <div className="text-center">
-                <div className={`font-bold text-xl ${result.predictedDelay > 15 ? 'text-red-400' : 'text-green-400'}`}>
+                <div className={`font-bold text-xl ${result.predictedDelay > 15 ? 'text-va-red-primary' : 'text-aero-green-safe'}`}>
                   {Math.round(result.predictedDelay)}min
                 </div>
-                <div className="text-xs text-gray-400">Predicted Delay</div>
+                <div className="text-xs text-muted-foreground">Predicted Delay</div>
               </div>
               <div className="text-center">
-                <div className={`font-bold text-xl ${result.diversionRisk ? 'text-red-400' : 'text-green-400'}`}>
+                <div className={`font-bold text-xl ${result.diversionRisk ? 'text-va-red-primary' : 'text-aero-green-safe'}`}>
                   {result.diversionRisk ? 'HIGH' : 'LOW'}
                 </div>
-                <div className="text-xs text-gray-400">Diversion Risk</div>
+                <div className="text-xs text-muted-foreground">Diversion Risk</div>
               </div>
               <div className="text-center">
-                <div className="text-white font-bold text-xl">
+                <div className="text-foreground font-bold text-xl">
                   £{Math.round(result.costImpact).toLocaleString()}
                 </div>
-                <div className="text-xs text-gray-400">Cost Impact</div>
+                <div className="text-xs text-muted-foreground">Cost Impact</div>
               </div>
             </div>
 
@@ -193,7 +193,7 @@ export const MLOperationalPlanningDashboard: React.FC<MLOperationalPlanningDashb
                 <div className="space-y-1">
                   {result.operationalRecommendations.map((rec, idx) => (
                     <div key={idx} className="text-xs text-blue-200 flex items-start gap-2">
-                      <span className="text-blue-400">•</span>
+                      <span className="text-aero-blue-primary">•</span>
                       <span>{rec}</span>
                     </div>
                   ))}
@@ -208,63 +208,63 @@ export const MLOperationalPlanningDashboard: React.FC<MLOperationalPlanningDashb
 
   const renderFeatures = () => (
     <div className="space-y-4">
-      <Card className="bg-gray-800 border-gray-700">
+      <Card className="bg-card border-border">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-green-400" />
+            <BarChart3 className="h-5 w-5 text-aero-green-safe" />
             ML Feature Engineering with Route Progress
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-sm font-medium text-white mb-3">Route Progress Features</h4>
+              <h4 className="text-sm font-medium text-foreground mb-3">Route Progress Features</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Completion Percentage:</span>
-                  <span className="text-blue-400">Real-time calculation</span>
+                  <span className="text-muted-foreground">Completion Percentage:</span>
+                  <span className="text-aero-blue-primary">Real-time calculation</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Remaining Distance:</span>
-                  <span className="text-blue-400">Dynamic calculation</span>
+                  <span className="text-muted-foreground">Remaining Distance:</span>
+                  <span className="text-aero-blue-primary">Dynamic calculation</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Progress Phase:</span>
-                  <span className="text-blue-400">5 categories</span>
+                  <span className="text-muted-foreground">Progress Phase:</span>
+                  <span className="text-aero-blue-primary">5 categories</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Route Type:</span>
-                  <span className="text-blue-400">5 classifications</span>
+                  <span className="text-muted-foreground">Route Type:</span>
+                  <span className="text-aero-blue-primary">5 classifications</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Time Remaining:</span>
-                  <span className="text-blue-400">ML-estimated</span>
+                  <span className="text-muted-foreground">Time Remaining:</span>
+                  <span className="text-aero-blue-primary">ML-estimated</span>
                 </div>
               </div>
             </div>
             
             <div>
-              <h4 className="text-sm font-medium text-white mb-3">Enhanced Predictions</h4>
+              <h4 className="text-sm font-medium text-foreground mb-3">Enhanced Predictions</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Delay Risk:</span>
-                  <span className="text-green-400">Progress-aware</span>
+                  <span className="text-muted-foreground">Delay Risk:</span>
+                  <span className="text-aero-green-safe">Progress-aware</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Diversion Risk:</span>
-                  <span className="text-green-400">Phase-based</span>
+                  <span className="text-muted-foreground">Diversion Risk:</span>
+                  <span className="text-aero-green-safe">Phase-based</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Connection Risk:</span>
-                  <span className="text-green-400">Time-sensitive</span>
+                  <span className="text-muted-foreground">Connection Risk:</span>
+                  <span className="text-aero-green-safe">Time-sensitive</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Cost Impact:</span>
-                  <span className="text-green-400">Route-adjusted</span>
+                  <span className="text-muted-foreground">Cost Impact:</span>
+                  <span className="text-aero-green-safe">Route-adjusted</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Holding Stack:</span>
-                  <span className="text-green-400">Progress-optimized</span>
+                  <span className="text-muted-foreground">Holding Stack:</span>
+                  <span className="text-aero-green-safe">Progress-optimized</span>
                 </div>
               </div>
             </div>
@@ -287,31 +287,31 @@ export const MLOperationalPlanningDashboard: React.FC<MLOperationalPlanningDashb
 
     return (
       <div className="space-y-4">
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-card border-border">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Target className="h-5 w-5 text-blue-400" />
+              <Target className="h-5 w-5 text-aero-blue-primary" />
               ML-Enhanced Operational Recommendations
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {allRecommendations.map((item, index) => (
-                <div key={index} className="p-3 bg-gray-700/50 rounded-lg border border-gray-600">
+                <div key={index} className="p-3 bg-gray-700/50 rounded-lg border border-border">
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-white font-medium">{item.callsign}</span>
+                      <span className="text-foreground font-medium">{item.callsign}</span>
                       <Badge className={getPhaseColor(item.phase || 'UNKNOWN')}>
                         {item.phase?.replace('_', ' ')}
                       </Badge>
                     </div>
                     <div className="text-right">
-                      <div className="text-blue-400 font-bold">{item.progress}%</div>
-                      <div className="text-xs text-gray-400">{Math.round(item.delay)}min delay</div>
+                      <div className="text-aero-blue-primary font-bold">{item.progress}%</div>
+                      <div className="text-xs text-muted-foreground">{Math.round(item.delay)}min delay</div>
                     </div>
                   </div>
-                  <div className="text-sm text-gray-200 flex items-start gap-2">
-                    <AlertTriangle className="h-4 w-4 text-yellow-400 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-muted-foreground flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 text-aero-amber-caution mt-0.5 flex-shrink-0" />
                     <span>{item.recommendation}</span>
                   </div>
                 </div>
@@ -326,14 +326,14 @@ export const MLOperationalPlanningDashboard: React.FC<MLOperationalPlanningDashb
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-          <Brain className="h-6 w-6 text-blue-400" />
+        <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+          <Brain className="h-6 w-6 text-aero-blue-primary" />
           ML-Enhanced Operational Planning
         </h2>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-gray-400" />
-            <span className="text-sm text-gray-400">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
               Updated: {lastUpdate.toLocaleTimeString()}
             </span>
           </div>
@@ -341,14 +341,14 @@ export const MLOperationalPlanningDashboard: React.FC<MLOperationalPlanningDashb
             onClick={() => setAutoRefresh(!autoRefresh)}
             variant="outline"
             size="sm"
-            className={autoRefresh ? 'border-green-500 text-green-400' : 'border-gray-600 text-gray-400'}
+            className={autoRefresh ? 'border-green-500 text-aero-green-safe' : 'border-border text-muted-foreground'}
           >
             {autoRefresh ? 'Auto-Refresh ON' : 'Auto-Refresh OFF'}
           </Button>
         </div>
       </div>
 
-      <div className="flex space-x-1 bg-gray-800 p-1 rounded-lg">
+      <div className="flex space-x-1 bg-card p-1 rounded-lg">
         {[
           { key: 'overview', label: 'Overview', icon: Activity },
           { key: 'predictions', label: 'Predictions', icon: TrendingUp },
@@ -360,8 +360,8 @@ export const MLOperationalPlanningDashboard: React.FC<MLOperationalPlanningDashb
             onClick={() => setSelectedTab(key as any)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
               selectedTab === key
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                ? 'bg-aero-blue-primary text-foreground'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
           >
             <Icon className="h-4 w-4" />
