@@ -1,8 +1,13 @@
 // Flight Plan Upload Routes with PDF Support
-import express from 'express';
+import express, { Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+
+// Extended Request interface for multer
+interface MulterRequest extends Request {
+  file?: Express.Multer.File;
+}
 
 const router = express.Router();
 
@@ -13,7 +18,7 @@ const upload = multer({
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (req: any, file: any, cb: any) => {
     // Accept PDF, text, JSON, and XML files
     const allowedTypes = ['.pdf', '.txt', '.json', '.xml'];
     const ext = path.extname(file.originalname).toLowerCase();
@@ -27,24 +32,39 @@ const upload = multer({
 });
 
 // Initialize flight plan service
-let flightPlanService;
+let flightPlanService: any;
+let FlightPlanServiceClass: any;
+
 async function getFlightPlanService() {
   if (!flightPlanService) {
-    const { FlightPlanService } = await import('./flightPlanService.js');
-    flightPlanService = new FlightPlanService();
+    if (!FlightPlanServiceClass) {
+      const module = await import('./flightPlanService.js');
+      console.log('📦 Module keys:', Object.keys(module));
+      console.log('📦 Default export type:', typeof module.default);
+      console.log('📦 Module type:', typeof module);
+      
+      // Try different export patterns
+      FlightPlanServiceClass = module.default || module.FlightPlanService || module;
+      console.log('📦 Using class:', typeof FlightPlanServiceClass);
+    }
+    flightPlanService = new FlightPlanServiceClass();
   }
   return flightPlanService;
 }
 
 // Upload flight plan (file or text content)
-router.post('/upload', upload.single('flightPlan'), async (req, res) => {
+router.post('/upload', upload.single('file'), async (req: MulterRequest, res: Response) => {
   try {
+    console.log('📡 Flight plan upload request received');
+    console.log('📋 Request body keys:', Object.keys(req.body));
+    console.log('📁 File present:', !!req.file);
+    
     const service = await getFlightPlanService();
     let fileContent, filename, format;
 
     if (req.file) {
       // File upload
-      filename = req.file.originalname;
+      filename = req.body.filename || req.file.originalname;
       const ext = path.extname(filename).toLowerCase();
       
       if (ext === '.pdf') {
@@ -55,7 +75,7 @@ router.post('/upload', upload.single('flightPlan'), async (req, res) => {
         format = 'auto';
       }
       
-      console.log(`📁 File uploaded: ${filename} (${req.file.size} bytes)`);
+      console.log(`📁 File uploaded: ${filename} (${req.file.size} bytes, format: ${format})`);
     } else if (req.body.content && req.body.filename) {
       // Text content upload
       fileContent = req.body.content;
@@ -64,6 +84,7 @@ router.post('/upload', upload.single('flightPlan'), async (req, res) => {
       
       console.log(`📝 Text content uploaded: ${filename}`);
     } else {
+      console.log('❌ No file or content provided in request');
       return res.status(400).json({
         success: false,
         error: 'No file or content provided'

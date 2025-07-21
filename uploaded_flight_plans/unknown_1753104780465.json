@@ -1,0 +1,127 @@
+{
+  "waypoints": [
+    "EGLL",
+    "KJFK",
+    "EGLL",
+    "NATW",
+    "KJFK",
+    "EINN",
+    "BIKF",
+    "CYQX"
+  ],
+  "coordinates": [
+    {
+      "waypoint": "EGLL",
+      "coordinates": {
+        "lat": 51.47,
+        "lon": -0.4543
+      }
+    },
+    {
+      "waypoint": "KJFK",
+      "coordinates": {
+        "lat": 40.6413,
+        "lon": -73.7781
+      }
+    },
+    {
+      "waypoint": "EGLL",
+      "coordinates": {
+        "lat": 51.47,
+        "lon": -0.4543
+      }
+    },
+    {
+      "waypoint": "NATW",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "KJFK",
+      "coordinates": {
+        "lat": 40.6413,
+        "lon": -73.7781
+      }
+    },
+    {
+      "waypoint": "EINN",
+      "coordinates": {
+        "lat": 52.7019,
+        "lon": -8.9247
+      }
+    },
+    {
+      "waypoint": "BIKF",
+      "coordinates": {
+        "lat": 63.985,
+        "lon": -22.6056
+      }
+    },
+    {
+      "waypoint": "CYQX",
+      "coordinates": {
+        "lat": 48.9369,
+        "lon": -54.5681
+      }
+    }
+  ],
+  "altitudes": [],
+  "routeSegments": [
+    {
+      "from": "EGLL",
+      "to": "KJFK",
+      "distance": 298.62977187162164,
+      "bearing": 198.10307222726814,
+      "segmentIndex": 0
+    },
+    {
+      "from": "KJFK",
+      "to": "EGLL",
+      "distance": 598.7723282995366,
+      "bearing": 93.54108201609418,
+      "segmentIndex": 1
+    },
+    {
+      "from": "EGLL",
+      "to": "NATW",
+      "distance": 457.9344774123947,
+      "bearing": 56.778196299439685,
+      "segmentIndex": 2
+    },
+    {
+      "from": "NATW",
+      "to": "KJFK",
+      "distance": 391.1988520603335,
+      "bearing": 88.41460050782635,
+      "segmentIndex": 3
+    },
+    {
+      "from": "KJFK",
+      "to": "EINN",
+      "distance": 128.60365188286696,
+      "bearing": 223.34482736774146,
+      "segmentIndex": 4
+    },
+    {
+      "from": "EINN",
+      "to": "BIKF",
+      "distance": 267.7967770071458,
+      "bearing": 251.12138880307523,
+      "segmentIndex": 5
+    },
+    {
+      "from": "BIKF",
+      "to": "CYQX",
+      "distance": 458.2657166015092,
+      "bearing": 28.133414422542735,
+      "segmentIndex": 6
+    }
+  ],
+  "originalContent": "FLIGHT: VIR3N\nAIRCRAFT: A330-900\nDEPARTURE: EGLL\nDESTINATION: KJFK\nROUTE: EGLL DET1J UL9 NATW 55N020W 5630N03000W KJFK\nALTERNATES: EINN BIKF CYQX",
+  "uploadedAt": "2025-07-21T13:33:00.465Z",
+  "filename": "VIR3N_LHR_JFK.txt",
+  "format": "text"
+}

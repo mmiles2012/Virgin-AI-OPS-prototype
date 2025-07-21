@@ -1,0 +1,370 @@
+{
+  "waypoints": [
+    "PLAN",
+    "EGLL",
+    "BUCGO",
+    "FELCA",
+    "NICXI",
+    "BAKUR",
+    "DOGAL",
+    "NEEKO",
+    "DANOL",
+    "KJFK",
+    "FROM",
+    "EGLL",
+    "BUCGO",
+    "FELCA",
+    "NICXI",
+    "BAKUR",
+    "DOGAL",
+    "NEEKO",
+    "DANOL",
+    "KJFK",
+    "KBOS",
+    "FUEL",
+    "TRIP"
+  ],
+  "coordinates": [
+    {
+      "waypoint": "PLAN",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "EGLL",
+      "coordinates": {
+        "lat": 51.47,
+        "lon": -0.4543
+      }
+    },
+    {
+      "waypoint": "BUCGO",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "FELCA",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "NICXI",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "BAKUR",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "DOGAL",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "NEEKO",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "DANOL",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "KJFK",
+      "coordinates": {
+        "lat": 40.6413,
+        "lon": -73.7781
+      }
+    },
+    {
+      "waypoint": "FROM",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "EGLL",
+      "coordinates": {
+        "lat": 51.47,
+        "lon": -0.4543
+      }
+    },
+    {
+      "waypoint": "BUCGO",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "FELCA",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "NICXI",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "BAKUR",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "DOGAL",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "NEEKO",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "DANOL",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "KJFK",
+      "coordinates": {
+        "lat": 40.6413,
+        "lon": -73.7781
+      }
+    },
+    {
+      "waypoint": "KBOS",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "FUEL",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "TRIP",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    }
+  ],
+  "altitudes": [],
+  "routeSegments": [
+    {
+      "from": "PLAN",
+      "to": "EGLL",
+      "distance": 514.9870585002323,
+      "bearing": 155.24773153506368,
+      "segmentIndex": 0
+    },
+    {
+      "from": "EGLL",
+      "to": "BUCGO",
+      "distance": 547.2130757981818,
+      "bearing": 257.91153039519537,
+      "segmentIndex": 1
+    },
+    {
+      "from": "BUCGO",
+      "to": "FELCA",
+      "distance": 139.76918937659113,
+      "bearing": 294.78693499200625,
+      "segmentIndex": 2
+    },
+    {
+      "from": "FELCA",
+      "to": "NICXI",
+      "distance": 460.929637499184,
+      "bearing": 37.18221686715122,
+      "segmentIndex": 3
+    },
+    {
+      "from": "NICXI",
+      "to": "BAKUR",
+      "distance": 599.0875937975757,
+      "bearing": 28.90777344207016,
+      "segmentIndex": 4
+    },
+    {
+      "from": "BAKUR",
+      "to": "DOGAL",
+      "distance": 555.5760031281609,
+      "bearing": 317.13512895014304,
+      "segmentIndex": 5
+    },
+    {
+      "from": "DOGAL",
+      "to": "NEEKO",
+      "distance": 109.66769741249773,
+      "bearing": 339.2949805730729,
+      "segmentIndex": 6
+    },
+    {
+      "from": "NEEKO",
+      "to": "DANOL",
+      "distance": 304.35742220808316,
+      "bearing": 51.48878889712776,
+      "segmentIndex": 7
+    },
+    {
+      "from": "DANOL",
+      "to": "KJFK",
+      "distance": 508.1669218792904,
+      "bearing": 262.5173367032078,
+      "segmentIndex": 8
+    },
+    {
+      "from": "KJFK",
+      "to": "FROM",
+      "distance": 577.6359570333483,
+      "bearing": 64.09528496450791,
+      "segmentIndex": 9
+    },
+    {
+      "from": "FROM",
+      "to": "EGLL",
+      "distance": 211.87999702881768,
+      "bearing": 164.64490622397437,
+      "segmentIndex": 10
+    },
+    {
+      "from": "EGLL",
+      "to": "BUCGO",
+      "distance": 268.52939736213204,
+      "bearing": 200.71475083224772,
+      "segmentIndex": 11
+    },
+    {
+      "from": "BUCGO",
+      "to": "FELCA",
+      "distance": 331.25741970334843,
+      "bearing": 233.35250032263815,
+      "segmentIndex": 12
+    },
+    {
+      "from": "FELCA",
+      "to": "NICXI",
+      "distance": 263.1568372531369,
+      "bearing": 227.1884398108807,
+      "segmentIndex": 13
+    },
+    {
+      "from": "NICXI",
+      "to": "BAKUR",
+      "distance": 548.3171160232071,
+      "bearing": 84.11868807953063,
+      "segmentIndex": 14
+    },
+    {
+      "from": "BAKUR",
+      "to": "DOGAL",
+      "distance": 338.0903753783653,
+      "bearing": 336.41481511495675,
+      "segmentIndex": 15
+    },
+    {
+      "from": "DOGAL",
+      "to": "NEEKO",
+      "distance": 129.72754765252927,
+      "bearing": 114.69742413888073,
+      "segmentIndex": 16
+    },
+    {
+      "from": "NEEKO",
+      "to": "DANOL",
+      "distance": 496.2260234315875,
+      "bearing": 324.3196030967301,
+      "segmentIndex": 17
+    },
+    {
+      "from": "DANOL",
+      "to": "KJFK",
+      "distance": 279.454890923023,
+      "bearing": 217.50900461027362,
+      "segmentIndex": 18
+    },
+    {
+      "from": "KJFK",
+      "to": "KBOS",
+      "distance": 500.6083040304852,
+      "bearing": 331.2072687953704,
+      "segmentIndex": 19
+    },
+    {
+      "from": "KBOS",
+      "to": "FUEL",
+      "distance": 443.2834468187132,
+      "bearing": 147.87267969013953,
+      "segmentIndex": 20
+    },
+    {
+      "from": "FUEL",
+      "to": "TRIP",
+      "distance": 207.52224594123928,
+      "bearing": 250.2683374060482,
+      "segmentIndex": 21
+    }
+  ],
+  "originalContent": "OPERATIONAL FLIGHT PLAN VIR3N\n21JUL25 EGLL/LHR 0835 KJFK/JFK 1645\nAIRCRAFT: A330-900 (A339)\nREGISTRATION: G-VEII\n\nROUTE: EGLL CPT5J CPT L9 BUCGO DCT FELCA DCT NICXI DCT BAKUR DCT DOGAL DCT 55N020W DCT 5630N03000W DCT 56N040W DCT 54N050W DCT NEEKO DCT DANOL DCT ENE PARCH4 KJFK\n\nAUTHENTIC WAYPOINTS FROM CAE OFP:\nEGLL - London Heathrow (51.4706N, 0.4619W)\nCPT - London TMA Exit\nBUCGO - L9 Airway Point (51.4610N, 2.3660W)\nFELCA - European Waypoint (51.4950N, 3.3230W)\nNICXI - UK Exit Point (52.0080N, 5.0330W)\nBAKUR - Atlantic Entry (52.1450N, 5.4080W)\nDOGAL - Shannon Oceanic (54.0000N, 15.0000W)\n55N020W - North Atlantic Track (55.0000N, 20.0000W)\n5630N03000W - Mid Atlantic (56.3000N, 30.0000W)\n56N040W - Atlantic Waypoint (56.0000N, 40.0000W)\n54N050W - Atlantic Waypoint (54.0000N, 50.0000W)\nNEEKO - Atlantic Exit (52.2400N, 55.5000W)\nDANOL - Canadian Entry (45.4180N, 67.4820W)\nENE - US Entry (43.2550N, 70.3680W)\nKJFK - New York JFK (40.6413N, 73.7781W)\n\nALTERNATES: KSWF, KEWR, KBOS\nFUEL PLANNED: 38700 KG\nTRIP FUEL: 38700 KG\nFLIGHT TIME: 07H 14M\nDISTANCE: 3102 NM",
+  "uploadedAt": "2025-07-21T13:33:22.886Z",
+  "filename": "VIR3N_Authentic_OFP.txt",
+  "format": "text"
+}
