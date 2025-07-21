@@ -675,65 +675,65 @@ export default function OperationalDecisionEngine() {
   };
 
   return (
-    <div className="bg-gray-900/90 backdrop-blur-sm rounded-lg border border-gray-700 p-6 h-full">
+    <div className="bg-card/90 backdrop-blur-sm rounded-lg border border-border p-6 h-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <Brain className="h-6 w-6 text-blue-400" />
-          <h2 className="text-xl font-bold text-white">Operational Decision Engine</h2>
-          <div className={`px-2 py-1 rounded text-xs ${systemStatus === 'active' ? 'bg-green-600' : 'bg-yellow-600'} text-white`}>
+          <Brain className="h-6 w-6 text-aero-blue-primary" />
+          <h2 className="text-xl font-bold text-foreground">Operational Decision Engine</h2>
+          <div className={`px-2 py-1 rounded text-xs ${systemStatus === 'active' ? 'bg-green-600' : 'bg-yellow-600'} text-foreground`}>
             {systemStatus.toUpperCase()}
           </div>
         </div>
-        <div className="text-sm text-gray-400">
+        <div className="text-sm text-muted-foreground">
           Real-time Analysis • {new Date().toLocaleTimeString()}
         </div>
       </div>
 
       {/* Current Flight Context */}
       {flightData && (
-        <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-4 mb-6">
+        <div className="bg-card/50 rounded-lg border border-border p-4 mb-6">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
-              <Plane className="h-5 w-5 text-blue-400" />
-              <span className="text-white font-medium">{flightData.callsign}</span>
-              <span className="text-gray-400">•</span>
-              <span className="text-gray-300">{flightData.aircraft}</span>
+              <Plane className="h-5 w-5 text-aero-blue-primary" />
+              <span className="text-foreground font-medium">{flightData.callsign}</span>
+              <span className="text-muted-foreground">•</span>
+              <span className="text-muted-foreground">{flightData.aircraft}</span>
             </div>
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-muted-foreground">
               {flightData.route}
             </div>
           </div>
           
           <div className="grid grid-cols-4 gap-4 text-sm">
             <div>
-              <div className="text-gray-400">Position</div>
-              <div className="text-white">{flightData.currentPosition.lat.toFixed(2)}°, {flightData.currentPosition.lon.toFixed(2)}°</div>
+              <div className="text-muted-foreground">Position</div>
+              <div className="text-foreground">{flightData.currentPosition.lat.toFixed(2)}°, {flightData.currentPosition.lon.toFixed(2)}°</div>
             </div>
             <div>
-              <div className="text-gray-400">Altitude/Speed</div>
-              <div className="text-white">{Math.round(flightData.altitude)}ft / {Math.round(flightData.speed)}kts</div>
+              <div className="text-muted-foreground">Altitude/Speed</div>
+              <div className="text-foreground">{Math.round(flightData.altitude)}ft / {Math.round(flightData.speed)}kts</div>
             </div>
             <div>
-              <div className="text-gray-400">Fuel Remaining</div>
-              <div className="text-white">{flightData.fuelRemaining}%</div>
+              <div className="text-muted-foreground">Fuel Remaining</div>
+              <div className="text-foreground">{flightData.fuelRemaining}%</div>
             </div>
             <div>
-              <div className="text-gray-400">ETA</div>
-              <div className="text-white">{flightData.eta}</div>
+              <div className="text-muted-foreground">ETA</div>
+              <div className="text-foreground">{flightData.eta}</div>
             </div>
           </div>
         </div>
       )}
 
       {/* Scenario Triggers */}
-      <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-4 mb-6">
+      <div className="bg-card/50 rounded-lg border border-border p-4 mb-6">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold text-white">Scenario Testing</h3>
+          <h3 className="text-lg font-semibold text-foreground">Scenario Testing</h3>
           {manualScenario && (
             <button
               onClick={clearScenario}
-              className="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700"
+              className="bg-gray-600 text-foreground px-3 py-1 rounded text-sm hover:bg-muted"
             >
               Clear Active Scenario
             </button>
@@ -744,8 +744,8 @@ export default function OperationalDecisionEngine() {
             onClick={() => triggerScenario('medical')}
             className={`p-3 rounded text-sm font-medium transition-colors ${
               manualScenario === 'medical' 
-                ? 'bg-red-600 text-white' 
-                : 'bg-red-600/20 border border-red-500 text-red-400 hover:bg-red-600/30'
+                ? 'bg-va-red-primary text-foreground' 
+                : 'bg-va-red-primary/20 border border-red-500 text-va-red-primary hover:bg-va-red-primary/30'
             }`}
           >
             Medical Emergency
@@ -754,8 +754,8 @@ export default function OperationalDecisionEngine() {
             onClick={() => triggerScenario('technical')}
             className={`p-3 rounded text-sm font-medium transition-colors ${
               manualScenario === 'technical'
-                ? 'bg-orange-600 text-white'
-                : 'bg-orange-600/20 border border-orange-500 text-orange-400 hover:bg-orange-600/30'
+                ? 'bg-orange-600 text-foreground'
+                : 'bg-orange-600/20 border border-orange-500 text-aero-orange-alert hover:bg-orange-600/30'
             }`}
           >
             Technical Issue
@@ -764,8 +764,8 @@ export default function OperationalDecisionEngine() {
             onClick={() => triggerScenario('weather')}
             className={`p-3 rounded text-sm font-medium transition-colors ${
               manualScenario === 'weather'
-                ? 'bg-yellow-600 text-white'
-                : 'bg-yellow-600/20 border border-yellow-500 text-yellow-400 hover:bg-yellow-600/30'
+                ? 'bg-yellow-600 text-foreground'
+                : 'bg-yellow-600/20 border border-yellow-500 text-aero-amber-caution hover:bg-yellow-600/30'
             }`}
           >
             Severe Weather
@@ -774,7 +774,7 @@ export default function OperationalDecisionEngine() {
             onClick={() => triggerScenario('security')}
             className={`p-3 rounded text-sm font-medium transition-colors ${
               manualScenario === 'security'
-                ? 'bg-purple-600 text-white'
+                ? 'bg-purple-600 text-foreground'
                 : 'bg-purple-600/20 border border-purple-500 text-purple-400 hover:bg-purple-600/30'
             }`}
           >
@@ -782,7 +782,7 @@ export default function OperationalDecisionEngine() {
           </button>
         </div>
         {manualScenario && (
-          <div className="mt-3 text-sm text-yellow-400">
+          <div className="mt-3 text-sm text-aero-amber-caution">
             Active Scenario: {manualScenario.charAt(0).toUpperCase() + manualScenario.slice(1)} - Decision recommendations updated
           </div>
         )}
@@ -790,48 +790,48 @@ export default function OperationalDecisionEngine() {
 
       {/* Boeing 787 Performance Impact */}
       {performanceData && flightData && (
-        <div className="bg-gray-800/50 rounded-lg border border-gray-600 p-4 mb-6">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Gauge className="h-5 w-5 text-blue-400" />
+        <div className="bg-card/50 rounded-lg border border-border p-4 mb-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Gauge className="h-5 w-5 text-aero-blue-primary" />
             {performanceData.aircraftType || 'Aircraft'} Performance Impact Analysis
           </h3>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
             {/* Fuel Consumption Impact */}
             <div className="bg-gray-700/50 rounded-lg p-4">
-              <h4 className="text-md font-medium text-white mb-3 flex items-center gap-2">
-                <Zap className="h-4 w-4 text-yellow-400" />
+              <h4 className="text-md font-medium text-foreground mb-3 flex items-center gap-2">
+                <Zap className="h-4 w-4 text-aero-amber-caution" />
                 Fuel Consumption Impact
               </h4>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Normal Burn Rate:</span>
-                  <span className="text-white font-medium">{performanceData.normalSpecs.normalCruiseBurn} kg/hr</span>
+                  <span className="text-muted-foreground">Normal Burn Rate:</span>
+                  <span className="text-foreground font-medium">{performanceData.normalSpecs.normalCruiseBurn} kg/hr</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Current Burn Rate:</span>
-                  <span className="text-red-400 font-medium">{Math.round(performanceData.fuelBurnRate)} kg/hr</span>
+                  <span className="text-muted-foreground">Current Burn Rate:</span>
+                  <span className="text-va-red-primary font-medium">{Math.round(performanceData.fuelBurnRate)} kg/hr</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Increase:</span>
-                  <span className="text-red-400 font-medium">
+                  <span className="text-muted-foreground">Increase:</span>
+                  <span className="text-va-red-primary font-medium">
                     +{Math.round(performanceData.fuelBurnRate - performanceData.normalSpecs.normalCruiseBurn)} kg/hr 
                     ({performanceData.fuelIncreasePercent.toFixed(1)}%)
                   </span>
                 </div>
                 {performanceData.efficiencyBonus && performanceData.efficiencyBonus > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">
+                    <span className="text-muted-foreground">
                       {performanceData.detectedAircraftType === 'A350' ? 'Fly-by-Wire Efficiency:' : 
                        performanceData.detectedAircraftType === 'A330' ? 'Neo Engine Efficiency:' : 'Efficiency Bonus:'}
                     </span>
-                    <span className="text-green-400 font-medium">-{performanceData.efficiencyBonus} kg saved</span>
+                    <span className="text-aero-green-safe font-medium">-{performanceData.efficiencyBonus} kg saved</span>
                   </div>
                 )}
                 {performanceData.conventionalPenalty && performanceData.conventionalPenalty > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Conventional Controls:</span>
-                    <span className="text-orange-400 font-medium">+{performanceData.conventionalPenalty} kg penalty</span>
+                    <span className="text-muted-foreground">Conventional Controls:</span>
+                    <span className="text-aero-orange-alert font-medium">+{performanceData.conventionalPenalty} kg penalty</span>
                   </div>
                 )}
               </div>
@@ -839,22 +839,22 @@ export default function OperationalDecisionEngine() {
 
             {/* Range Impact */}
             <div className="bg-gray-700/50 rounded-lg p-4">
-              <h4 className="text-md font-medium text-white mb-3 flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-green-400" />
+              <h4 className="text-md font-medium text-foreground mb-3 flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-aero-green-safe" />
                 Range Impact
               </h4>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Normal Max Range:</span>
-                  <span className="text-white font-medium">{performanceData.normalSpecs.maxRange} nm</span>
+                  <span className="text-muted-foreground">Normal Max Range:</span>
+                  <span className="text-foreground font-medium">{performanceData.normalSpecs.maxRange} nm</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Current Range:</span>
-                  <span className="text-red-400 font-medium">{performanceData.range} nm</span>
+                  <span className="text-muted-foreground">Current Range:</span>
+                  <span className="text-va-red-primary font-medium">{performanceData.range} nm</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Range Reduction:</span>
-                  <span className="text-red-400 font-medium">
+                  <span className="text-muted-foreground">Range Reduction:</span>
+                  <span className="text-va-red-primary font-medium">
                     -{performanceData.rangeReduction} nm ({((performanceData.rangeReduction / performanceData.normalSpecs.maxRange) * 100).toFixed(1)}%)
                   </span>
                 </div>
@@ -864,35 +864,35 @@ export default function OperationalDecisionEngine() {
 
           {/* Operational Recommendations */}
           <div className="bg-gray-700/50 rounded-lg p-4">
-            <h4 className="text-md font-medium text-white mb-3">Emergency Impact Analysis</h4>
-            <p className="text-gray-300 text-sm mb-3">{performanceData.scenario.description}</p>
+            <h4 className="text-md font-medium text-foreground mb-3">Emergency Impact Analysis</h4>
+            <p className="text-muted-foreground text-sm mb-3">{performanceData.scenario.description}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <div className="text-xs text-gray-400 mb-2">Flight Parameters</div>
+                <div className="text-xs text-muted-foreground mb-2">Flight Parameters</div>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Current Altitude:</span>
-                    <span className="text-white">{performanceData.altitude.toLocaleString()} ft</span>
+                    <span className="text-muted-foreground">Current Altitude:</span>
+                    <span className="text-foreground">{performanceData.altitude.toLocaleString()} ft</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Current Speed:</span>
-                    <span className="text-white">{performanceData.speed} kts</span>
+                    <span className="text-muted-foreground">Current Speed:</span>
+                    <span className="text-foreground">{performanceData.speed} kts</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Time Remaining:</span>
-                    <span className="text-white">{performanceData.timeRemaining.toFixed(1)} hrs</span>
+                    <span className="text-muted-foreground">Time Remaining:</span>
+                    <span className="text-foreground">{performanceData.timeRemaining.toFixed(1)} hrs</span>
                   </div>
                 </div>
               </div>
               <div>
-                <div className="text-xs text-gray-400 mb-2">Emergency Status</div>
+                <div className="text-xs text-muted-foreground mb-2">Emergency Status</div>
                 <div className="space-y-1 text-sm">
                   <div className={`font-medium ${
-                    performanceData.scenario.diversionRequired ? 'text-red-400' : 'text-yellow-400'
+                    performanceData.scenario.diversionRequired ? 'text-va-red-primary' : 'text-aero-amber-caution'
                   }`}>
                     {performanceData.scenario.diversionRequired ? 'DIVERSION REQUIRED' : 'CONTINUE MONITORING'}
                   </div>
-                  <div className="text-gray-300">
+                  <div className="text-muted-foreground">
                     Stabilize Time: {performanceData.scenario.timeToStabilize} min
                   </div>
                 </div>
@@ -904,21 +904,21 @@ export default function OperationalDecisionEngine() {
 
       {/* Active Operational Decisions */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-white mb-4">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
           Operational Recommendations ({activeDecisions.length})
         </h3>
         
         {activeDecisions.map((decision) => (
-          <div key={decision.id} className="bg-gray-800/50 rounded-lg border border-gray-600 p-4">
+          <div key={decision.id} className="bg-card/50 rounded-lg border border-border p-4">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
                 {getTypeIcon(decision.type)}
                 <div>
-                  <h4 className="text-white font-medium">{decision.title}</h4>
-                  <p className="text-gray-400 text-sm mt-1">{decision.description}</p>
+                  <h4 className="text-foreground font-medium">{decision.title}</h4>
+                  <p className="text-muted-foreground text-sm mt-1">{decision.description}</p>
                 </div>
               </div>
-              <div className={`px-2 py-1 rounded text-xs text-white ${getPriorityColor(decision.priority)}`}>
+              <div className={`px-2 py-1 rounded text-xs text-foreground ${getPriorityColor(decision.priority)}`}>
                 {decision.priority.toUpperCase()}
               </div>
             </div>
@@ -926,46 +926,46 @@ export default function OperationalDecisionEngine() {
             {/* Impact Analysis */}
             <div className="grid grid-cols-4 gap-4 mb-4 text-sm">
               <div className="bg-gray-700/50 rounded p-2">
-                <div className="flex items-center gap-1 text-gray-400">
+                <div className="flex items-center gap-1 text-muted-foreground">
                   <DollarSign className="h-3 w-3" />
                   <span>Cost Impact</span>
                 </div>
-                <div className={`font-medium ${decision.impact.cost < 0 ? 'text-green-400' : decision.impact.cost > 0 ? 'text-red-400' : 'text-gray-300'}`}>
+                <div className={`font-medium ${decision.impact.cost < 0 ? 'text-aero-green-safe' : decision.impact.cost > 0 ? 'text-va-red-primary' : 'text-muted-foreground'}`}>
                   {decision.impact.cost < 0 ? '-' : ''}${Math.abs(decision.impact.cost)}
                 </div>
               </div>
               <div className="bg-gray-700/50 rounded p-2">
-                <div className="flex items-center gap-1 text-gray-400">
+                <div className="flex items-center gap-1 text-muted-foreground">
                   <Clock className="h-3 w-3" />
                   <span>Delay</span>
                 </div>
-                <div className="text-white font-medium">{decision.impact.delay} min</div>
+                <div className="text-foreground font-medium">{decision.impact.delay} min</div>
               </div>
               <div className="bg-gray-700/50 rounded p-2">
-                <div className="flex items-center gap-1 text-gray-400">
+                <div className="flex items-center gap-1 text-muted-foreground">
                   <TrendingUp className="h-3 w-3" />
                   <span>Fuel</span>
                 </div>
-                <div className={`font-medium ${decision.impact.fuel < 0 ? 'text-green-400' : decision.impact.fuel > 0 ? 'text-red-400' : 'text-gray-300'}`}>
+                <div className={`font-medium ${decision.impact.fuel < 0 ? 'text-aero-green-safe' : decision.impact.fuel > 0 ? 'text-va-red-primary' : 'text-muted-foreground'}`}>
                   {decision.impact.fuel < 0 ? '-' : ''}{Math.abs(decision.impact.fuel)} lbs
                 </div>
               </div>
               <div className="bg-gray-700/50 rounded p-2">
-                <div className="flex items-center gap-1 text-gray-400">
+                <div className="flex items-center gap-1 text-muted-foreground">
                   <Users className="h-3 w-3" />
                   <span>Passengers</span>
                 </div>
-                <div className="text-white font-medium">{decision.impact.passengers} affected</div>
+                <div className="text-foreground font-medium">{decision.impact.passengers} affected</div>
               </div>
             </div>
 
             {/* Recommendations */}
             <div className="mb-4">
-              <div className="text-sm font-medium text-gray-300 mb-2">Recommendations:</div>
-              <ul className="text-sm text-gray-400 space-y-1">
+              <div className="text-sm font-medium text-muted-foreground mb-2">Recommendations:</div>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 {decision.recommendations.map((rec, index) => (
                   <li key={index} className="flex items-start gap-2">
-                    <span className="text-blue-400">•</span>
+                    <span className="text-aero-blue-primary">•</span>
                     <span>{rec}</span>
                   </li>
                 ))}
@@ -975,14 +975,14 @@ export default function OperationalDecisionEngine() {
             {/* Action Timeline and Approvals */}
             <div className="flex items-center justify-between">
               <div className="text-sm">
-                <span className="text-gray-400">Timeline: </span>
-                <span className="text-white">{decision.timeline}</span>
+                <span className="text-muted-foreground">Timeline: </span>
+                <span className="text-foreground">{decision.timeline}</span>
               </div>
               <div className="text-sm">
                 {decision.approval_required.length > 0 && (
                   <>
-                    <span className="text-gray-400">Requires: </span>
-                    <span className="text-yellow-400">{decision.approval_required.join(', ')}</span>
+                    <span className="text-muted-foreground">Requires: </span>
+                    <span className="text-aero-amber-caution">{decision.approval_required.join(', ')}</span>
                   </>
                 )}
               </div>
@@ -991,7 +991,7 @@ export default function OperationalDecisionEngine() {
         ))}
 
         {!flightData ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-muted-foreground">
             <Brain className="h-16 w-16 mx-auto mb-4 opacity-50" />
             <p className="text-lg mb-2">No flight selected for analysis</p>
             <p className="text-sm max-w-md mx-auto">
@@ -999,7 +999,7 @@ export default function OperationalDecisionEngine() {
             </p>
           </div>
         ) : activeDecisions.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-muted-foreground">
             <Brain className="h-12 w-12 mx-auto mb-3 opacity-50" />
             <p>No active operational decisions</p>
             <p className="text-sm">System monitoring flight operations</p>

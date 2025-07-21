@@ -22,10 +22,10 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   };
 
   const colorClasses = {
-    blue: 'text-blue-600',
-    orange: 'text-orange-500',
-    white: 'text-white',
-    gray: 'text-gray-400'
+    blue: 'text-aero-blue-dark',
+    orange: 'text-aero-orange-alert',
+    white: 'text-foreground',
+    gray: 'text-muted-foreground'
   };
 
   if (variant === 'default') {
@@ -154,7 +154,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
     return (
       <div className={cn('relative', className)}>
         {children}
-        <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-white/80 dark:bg-card/80 backdrop-blur-sm flex items-center justify-center z-10">
           {fallback || defaultFallback}
         </div>
       </div>
@@ -186,8 +186,8 @@ export const LoadingButton: React.FC<LoadingButtonProps> = ({
 }) => {
   const variantClasses = {
     default: 'bg-gray-100 hover:bg-gray-200 text-gray-900',
-    primary: 'bg-blue-600 hover:bg-blue-700 text-white',
-    secondary: 'bg-orange-500 hover:bg-orange-600 text-white',
+    primary: 'bg-aero-blue-primary hover:bg-aero-blue-light text-foreground',
+    secondary: 'bg-orange-500 hover:bg-orange-600 text-foreground',
     ghost: 'hover:bg-gray-100 text-gray-700'
   };
 
@@ -228,7 +228,7 @@ export const FullPageLoading: React.FC<FullPageLoadingProps> = ({
         <LoadingSpinner variant="aviation" size="xl" color="orange" />
       </div>
       <div className="space-y-2">
-        <h2 className="text-xl font-semibold text-white">{message}</h2>
+        <h2 className="text-xl font-semibold text-foreground">{message}</h2>
         <p className="text-slate-300">{submessage}</p>
       </div>
       <div className="flex justify-center">

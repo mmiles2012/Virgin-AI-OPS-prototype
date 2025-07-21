@@ -140,10 +140,10 @@ export default function GlobalAirportDatabase() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <Globe className="w-8 h-8 text-blue-600" />
+        <Globe className="w-8 h-8 text-aero-blue-dark" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Global Airport Database</h1>
-          <p className="text-gray-600">Comprehensive worldwide airport information system</p>
+          <p className="text-muted-foreground">Comprehensive worldwide airport information system</p>
         </div>
       </div>
 
@@ -159,20 +159,20 @@ export default function GlobalAirportDatabase() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">{stats.total.toLocaleString()}</div>
-                <div className="text-sm text-gray-600">Total Airports</div>
+                <div className="text-3xl font-bold text-aero-blue-dark">{stats.total.toLocaleString()}</div>
+                <div className="text-sm text-muted-foreground">Total Airports</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-600">{stats.withICAO.toLocaleString()}</div>
-                <div className="text-sm text-gray-600">ICAO Codes</div>
+                <div className="text-sm text-muted-foreground">ICAO Codes</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-purple-600">{stats.withIATA.toLocaleString()}</div>
-                <div className="text-sm text-gray-600">IATA Codes</div>
+                <div className="text-sm text-muted-foreground">IATA Codes</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-orange-600">{stats.withScheduledService.toLocaleString()}</div>
-                <div className="text-sm text-gray-600">Scheduled Service</div>
+                <div className="text-sm text-muted-foreground">Scheduled Service</div>
               </div>
             </div>
             
@@ -297,7 +297,7 @@ export default function GlobalAirportDatabase() {
                         </div>
                       </div>
                       
-                      <div className="mt-2 text-sm text-gray-600">
+                      <div className="mt-2 text-sm text-muted-foreground">
                         <MapPin className="w-4 h-4 inline mr-1" />
                         {airport.latitude_deg.toFixed(4)}, {airport.longitude_deg.toFixed(4)}
                       </div>
@@ -313,7 +313,7 @@ export default function GlobalAirportDatabase() {
       {loading && (
         <div className="text-center py-8">
           <div className="inline-flex items-center gap-2">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-aero-blue-primary/30"></div>
             Searching global airport database...
           </div>
         </div>

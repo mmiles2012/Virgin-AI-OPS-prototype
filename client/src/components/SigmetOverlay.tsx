@@ -315,7 +315,7 @@ export default function SigmetOverlay({ showSigmets, onSigmetSelect }: SigmetOve
               </div>
 
               {/* Source */}
-              <div className="text-xs text-gray-500 border-t border-gray-200 pt-2">
+              <div className="text-xs text-foreground0 border-t border-gray-200 pt-2">
                 Source: {sigmet.source} • Updated: {formatDateTime(sigmet.lastUpdated)}
               </div>
             </div>

@@ -279,10 +279,10 @@ export default function DiversionSupportDashboard() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'confirmed': return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case 'processing': return <Clock className="w-5 h-5 text-blue-500 animate-spin" />;
-      case 'failed': return <XCircle className="w-5 h-5 text-red-500" />;
-      default: return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+      case 'confirmed': return <CheckCircle className="w-5 h-5 text-aero-green-safe" />;
+      case 'processing': return <Clock className="w-5 h-5 text-aero-blue-primary animate-spin" />;
+      case 'failed': return <XCircle className="w-5 h-5 text-va-red-primary" />;
+      default: return <AlertTriangle className="w-5 h-5 text-aero-amber-caution" />;
     }
   };
 
@@ -500,7 +500,7 @@ export default function DiversionSupportDashboard() {
       case 'emergency': return 'text-red-600 bg-red-100';
       case 'urgent': return 'text-orange-600 bg-orange-100';
       case 'routine': return 'text-green-600 bg-green-100';
-      default: return 'text-gray-600 bg-gray-100';
+      default: return 'text-muted-foreground bg-gray-100';
     }
   };
 
@@ -513,13 +513,13 @@ export default function DiversionSupportDashboard() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             🤖 ML-Enhanced Diversion Support Operations
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             AI-powered diversion planning with machine learning predictions, authentic aircraft performance data, 
             and comprehensive coordination for hotels, fuel, ground handling, and passenger services
           </p>
           <div className="mt-4 flex flex-wrap gap-4">
             <div className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-              <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+              <span className="w-2 h-2 bg-aero-blue-primary rounded-full"></span>
               Random Forest ML Models
             </div>
             <div className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
@@ -549,8 +549,8 @@ export default function DiversionSupportDashboard() {
               onClick={() => setActiveTab(id as any)}
               className={`flex items-center space-x-2 px-4 py-2 rounded-md font-medium transition-colors ${
                 activeTab === id
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white text-aero-blue-dark shadow-sm'
+                  : 'text-muted-foreground hover:text-gray-900'
               }`}
             >
               <Icon size={18} />
@@ -728,7 +728,7 @@ export default function DiversionSupportDashboard() {
                 <span>🤖</span>
                 <span>Automated Support Services</span>
               </h3>
-              <p className="text-sm text-gray-600 mb-3">
+              <p className="text-sm text-muted-foreground mb-3">
                 When you initiate diversion support, the system will automatically coordinate all necessary services:
               </p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -771,7 +771,7 @@ export default function DiversionSupportDashboard() {
               <button
                 onClick={handleInitiateDiversion}
                 disabled={isLoading || !diversionRequest.flightNumber || !diversionRequest.diversionAirport}
-                className="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="w-full bg-va-red-primary text-foreground py-3 px-6 rounded-lg font-medium hover:bg-va-red-heritage disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
               >
                 {isLoading ? (
                   <>
@@ -793,13 +793,13 @@ export default function DiversionSupportDashboard() {
                 {/* Service Status Panel */}
                 <div className="bg-white rounded-lg shadow-lg p-6">
                   <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <Wifi className="w-5 h-5 text-blue-600" />
+                    <Wifi className="w-5 h-5 text-aero-blue-dark" />
                     Live Service Status
                   </h3>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <Building className="w-5 h-5 text-gray-600" />
+                        <Building className="w-5 h-5 text-muted-foreground" />
                         <span className="font-medium">Hotel Accommodation</span>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -812,7 +812,7 @@ export default function DiversionSupportDashboard() {
 
                     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <Fuel className="w-5 h-5 text-gray-600" />
+                        <Fuel className="w-5 h-5 text-muted-foreground" />
                         <span className="font-medium">Fuel Supply</span>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -825,7 +825,7 @@ export default function DiversionSupportDashboard() {
 
                     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <Users className="w-5 h-5 text-gray-600" />
+                        <Users className="w-5 h-5 text-muted-foreground" />
                         <span className="font-medium">Ground Handling</span>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -839,7 +839,7 @@ export default function DiversionSupportDashboard() {
                     {diversionRequest.diversionReason === 'technical' && (
                       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-3">
-                          <Wrench className="w-5 h-5 text-gray-600" />
+                          <Wrench className="w-5 h-5 text-muted-foreground" />
                           <span className="font-medium">Engineering Support</span>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -854,7 +854,7 @@ export default function DiversionSupportDashboard() {
                     {diversionRequest.estimatedDelayHours > 4 && (
                       <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-3">
-                          <Users className="w-5 h-5 text-gray-600" />
+                          <Users className="w-5 h-5 text-muted-foreground" />
                           <span className="font-medium">Passenger Services</span>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -878,7 +878,7 @@ export default function DiversionSupportDashboard() {
                     <div className="space-y-2">
                       {processingLog.map((log, index) => (
                         <div key={index} className="flex items-start space-x-3 text-sm">
-                          <span className="text-gray-500 text-xs mt-0.5 min-w-16">
+                          <span className="text-foreground0 text-xs mt-0.5 min-w-16">
                             {log.timestamp}
                           </span>
                           <div className={`flex-1 ${
@@ -892,7 +892,7 @@ export default function DiversionSupportDashboard() {
                         </div>
                       ))}
                       {processingLog.length === 0 && (
-                        <div className="text-gray-500 text-sm italic">
+                        <div className="text-foreground0 text-sm italic">
                           Processing log will appear here...
                         </div>
                       )}
@@ -916,7 +916,7 @@ export default function DiversionSupportDashboard() {
                   </h2>
                   <div className="text-sm text-green-600 mt-1 flex items-center gap-2">
                     <span>✅ All services automatically coordinated</span>
-                    <span className="text-gray-400">•</span>
+                    <span className="text-muted-foreground">•</span>
                     <span>Hotels • Fuel • Engineering • Ground Handling</span>
                   </div>
                 </div>
@@ -931,15 +931,15 @@ export default function DiversionSupportDashboard() {
                   <h3 className="text-lg font-semibold text-blue-900 mb-3">Flight Information</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <span className="text-blue-600 font-medium">Flight:</span>
+                      <span className="text-aero-blue-dark font-medium">Flight:</span>
                       <div className="font-semibold">{diversionResponse.flightDetails.flightNumber}</div>
                     </div>
                     <div>
-                      <span className="text-blue-600 font-medium">Aircraft:</span>
+                      <span className="text-aero-blue-dark font-medium">Aircraft:</span>
                       <div className="font-semibold">{diversionResponse.flightDetails.aircraftType}</div>
                     </div>
                     <div>
-                      <span className="text-blue-600 font-medium">Diversion Airport:</span>
+                      <span className="text-aero-blue-dark font-medium">Diversion Airport:</span>
                       <div className="font-semibold text-lg text-blue-800">
                         {diversionResponse.flightDetails.diversionAirport}
                         {diversionResponse.flightDetails.diversionAirportName && 
@@ -948,23 +948,23 @@ export default function DiversionSupportDashboard() {
                       </div>
                     </div>
                     <div>
-                      <span className="text-blue-600 font-medium">Reason:</span>
+                      <span className="text-aero-blue-dark font-medium">Reason:</span>
                       <div className="font-semibold capitalize">{diversionResponse.flightDetails.diversionReason}</div>
                     </div>
                     <div>
-                      <span className="text-blue-600 font-medium">Passengers:</span>
+                      <span className="text-aero-blue-dark font-medium">Passengers:</span>
                       <div className="font-semibold">{diversionResponse.flightDetails.passengerCount}</div>
                     </div>
                     <div>
-                      <span className="text-blue-600 font-medium">Crew:</span>
+                      <span className="text-aero-blue-dark font-medium">Crew:</span>
                       <div className="font-semibold">{diversionResponse.flightDetails.crewCount}</div>
                     </div>
                     <div>
-                      <span className="text-blue-600 font-medium">Est. Delay:</span>
+                      <span className="text-aero-blue-dark font-medium">Est. Delay:</span>
                       <div className="font-semibold">{diversionResponse.flightDetails.estimatedDelayHours}h</div>
                     </div>
                     <div>
-                      <span className="text-blue-600 font-medium">Priority:</span>
+                      <span className="text-aero-blue-dark font-medium">Priority:</span>
                       <div className={`font-semibold capitalize ${getUrgencyColor(diversionResponse.flightDetails.urgencyLevel).split(' ')[0]}`}>
                         {diversionResponse.flightDetails.urgencyLevel}
                       </div>
@@ -977,15 +977,15 @@ export default function DiversionSupportDashboard() {
                 <div className="flex items-center space-x-3">
                   <DollarSign className="text-green-600" size={24} />
                   <div>
-                    <p className="text-sm text-gray-600">Total Estimated Cost</p>
+                    <p className="text-sm text-muted-foreground">Total Estimated Cost</p>
                     <p className="text-lg font-semibold">{formatCurrency(diversionResponse.totalEstimatedCost)}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center space-x-3">
-                  <Clock className="text-blue-600" size={24} />
+                  <Clock className="text-aero-blue-dark" size={24} />
                   <div>
-                    <p className="text-sm text-gray-600">Initiated At</p>
+                    <p className="text-sm text-muted-foreground">Initiated At</p>
                     <p className="text-lg font-semibold">{formatDateTime(diversionResponse.timeline.initiatedAt)}</p>
                   </div>
                 </div>
@@ -993,7 +993,7 @@ export default function DiversionSupportDashboard() {
                 <div className="flex items-center space-x-3">
                   <Clock className="text-orange-600" size={24} />
                   <div>
-                    <p className="text-sm text-gray-600">Est. Completion</p>
+                    <p className="text-sm text-muted-foreground">Est. Completion</p>
                     <p className="text-lg font-semibold">{formatDateTime(diversionResponse.timeline.estimatedCompletion)}</p>
                   </div>
                 </div>
@@ -1004,15 +1004,15 @@ export default function DiversionSupportDashboard() {
             {diversionResponse.hotelBooking && (
               <div className="bg-white rounded-xl shadow-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                  <Users className="text-blue-600" size={20} />
+                  <Users className="text-aero-blue-dark" size={20} />
                   <span>Hotel Accommodation</span>
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <p className="font-medium">{diversionResponse.hotelBooking.hotelName}</p>
-                    <p className="text-gray-600">{diversionResponse.hotelBooking.address}</p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-muted-foreground">{diversionResponse.hotelBooking.address}</p>
+                    <p className="text-sm text-foreground0 mt-1">
                       Confirmation: {diversionResponse.hotelBooking.confirmationCode}
                     </p>
                   </div>
@@ -1031,7 +1031,7 @@ export default function DiversionSupportDashboard() {
                       <span>{formatCurrency(diversionResponse.hotelBooking.totalCost)}</span>
                     </div>
                     <div className="flex items-center space-x-2 mt-3">
-                      <Phone size={16} className="text-gray-400" />
+                      <Phone size={16} className="text-muted-foreground" />
                       <span className="text-sm">{diversionResponse.hotelBooking.contactPhone}</span>
                     </div>
                   </div>
@@ -1050,9 +1050,9 @@ export default function DiversionSupportDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <p className="font-medium">{diversionResponse.fuelCoordination.supplierName}</p>
-                    <p className="text-sm text-gray-500">ID: {diversionResponse.fuelCoordination.supplierId}</p>
+                    <p className="text-sm text-foreground0">ID: {diversionResponse.fuelCoordination.supplierId}</p>
                     <div className="flex items-center space-x-2 mt-2">
-                      <Phone size={16} className="text-gray-400" />
+                      <Phone size={16} className="text-muted-foreground" />
                       <span className="text-sm">{diversionResponse.fuelCoordination.contactPhone}</span>
                     </div>
                   </div>
@@ -1090,15 +1090,15 @@ export default function DiversionSupportDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <p className="font-medium">{diversionResponse.groundHandling.handlerName}</p>
-                    <p className="text-sm text-gray-500">ID: {diversionResponse.groundHandling.handlerId}</p>
+                    <p className="text-sm text-foreground0">ID: {diversionResponse.groundHandling.handlerId}</p>
                     <div className="flex items-center space-x-2 mt-2">
-                      <Phone size={16} className="text-gray-400" />
+                      <Phone size={16} className="text-muted-foreground" />
                       <span className="text-sm">{diversionResponse.groundHandling.contactPhone}</span>
                     </div>
                     
                     <div className="mt-3">
                       <p className="text-sm font-medium text-gray-700">Services Confirmed:</p>
-                      <ul className="text-sm text-gray-600 mt-1">
+                      <ul className="text-sm text-muted-foreground mt-1">
                         {diversionResponse.groundHandling.servicesConfirmed.map((service, index) => (
                           <li key={index} className="capitalize">• {service.replace('_', ' ')}</li>
                         ))}
@@ -1132,8 +1132,8 @@ export default function DiversionSupportDashboard() {
                   <div>
                     <div className="mb-4">
                       <p className="font-medium">Meal Arrangements</p>
-                      <p className="text-sm text-gray-600">Provider: {diversionResponse.passengerServices.mealArrangements.provider}</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">Provider: {diversionResponse.passengerServices.mealArrangements.provider}</p>
+                      <p className="text-sm text-muted-foreground">
                         Types: {diversionResponse.passengerServices.mealArrangements.mealTypes.join(', ')}
                       </p>
                       <p className="text-sm font-medium">Cost: {formatCurrency(diversionResponse.passengerServices.mealArrangements.cost)}</p>
@@ -1143,8 +1143,8 @@ export default function DiversionSupportDashboard() {
                   <div>
                     <div className="mb-4">
                       <p className="font-medium">Passenger Compensation</p>
-                      <p className="text-sm text-gray-600">Type: {diversionResponse.passengerServices.compensation.type}</p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">Type: {diversionResponse.passengerServices.compensation.type}</p>
+                      <p className="text-sm text-muted-foreground">
                         Per Person: {formatCurrency(diversionResponse.passengerServices.compensation.valuePerPerson)}
                       </p>
                       <p className="text-sm font-medium">
@@ -1180,16 +1180,16 @@ export default function DiversionSupportDashboard() {
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
-                        <div className="text-sm text-gray-600">Operations Center</div>
+                        <div className="text-sm text-muted-foreground">Operations Center</div>
                         <div className="font-semibold text-gray-900">{diversionResponse.emergencyContacts.airportOperationsName}</div>
                       </div>
                       <div>
-                        <div className="text-sm text-gray-600">Direct Phone</div>
-                        <div className="font-mono text-lg text-blue-600">{diversionResponse.emergencyContacts.airportOperations}</div>
+                        <div className="text-sm text-muted-foreground">Direct Phone</div>
+                        <div className="font-mono text-lg text-aero-blue-dark">{diversionResponse.emergencyContacts.airportOperations}</div>
                       </div>
                       {diversionResponse.emergencyContacts.airportOperationsContact !== 'Not available' && (
                         <div className="md:col-span-2">
-                          <div className="text-sm text-gray-600">Additional Contact</div>
+                          <div className="text-sm text-muted-foreground">Additional Contact</div>
                           <div className="font-semibold text-gray-900">{diversionResponse.emergencyContacts.airportOperationsContact}</div>
                         </div>
                       )}
@@ -1207,7 +1207,7 @@ export default function DiversionSupportDashboard() {
                     .map(([role, contact]) => (
                       <div key={role} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <span className="font-medium capitalize">{role.replace(/([A-Z])/g, ' $1')}</span>
-                        <span className="text-blue-600 font-mono">{contact}</span>
+                        <span className="text-aero-blue-dark font-mono">{contact}</span>
                       </div>
                     ))}
                 </div>
@@ -1244,7 +1244,7 @@ export default function DiversionSupportDashboard() {
                     {availableServices.hotels?.map((hotel: any, index: number) => (
                       <div key={index} className="mb-2">
                         <p className="font-medium">{hotel.name}</p>
-                        <p className="text-sm text-gray-600">{hotel.contact}</p>
+                        <p className="text-sm text-muted-foreground">{hotel.contact}</p>
                         <span className={`inline-block px-2 py-1 rounded text-xs ${hotel.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                           {hotel.available ? 'Available' : 'Unavailable'}
                         </span>
@@ -1257,7 +1257,7 @@ export default function DiversionSupportDashboard() {
                     {availableServices.fuelSuppliers?.map((supplier: any, index: number) => (
                       <div key={index} className="mb-2">
                         <p className="font-medium">{supplier.name}</p>
-                        <p className="text-sm text-gray-600">{supplier.contact}</p>
+                        <p className="text-sm text-muted-foreground">{supplier.contact}</p>
                         <span className={`inline-block px-2 py-1 rounded text-xs ${supplier.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                           {supplier.available ? 'Available' : 'Unavailable'}
                         </span>
@@ -1270,7 +1270,7 @@ export default function DiversionSupportDashboard() {
                     {availableServices.groundHandlers?.map((handler: any, index: number) => (
                       <div key={index} className="mb-2">
                         <p className="font-medium">{handler.name}</p>
-                        <p className="text-sm text-gray-600">{handler.contact}</p>
+                        <p className="text-sm text-muted-foreground">{handler.contact}</p>
                         <span className={`inline-block px-2 py-1 rounded text-xs ${handler.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                           {handler.available ? 'Available' : 'Unavailable'}
                         </span>
@@ -1319,16 +1319,16 @@ export default function DiversionSupportDashboard() {
                                   <h3 class="font-semibold text-blue-900 mb-3">Fuel Cost Comparison</h3>
                                   <div class="grid grid-cols-3 gap-4">
                                     <div class="text-center">
-                                      <div class="text-2xl font-bold text-blue-600">$${fuelData.costComparison.traditional.toFixed(2)}</div>
-                                      <div class="text-sm text-gray-600">Traditional Jet-A1</div>
+                                      <div class="text-2xl font-bold text-aero-blue-dark">$${fuelData.costComparison.traditional.toFixed(2)}</div>
+                                      <div class="text-sm text-muted-foreground">Traditional Jet-A1</div>
                                     </div>
                                     <div class="text-center">
                                       <div class="text-2xl font-bold text-green-600">$${fuelData.costComparison.sustainable.toFixed(2)}</div>
-                                      <div class="text-sm text-gray-600">Sustainable Aviation Fuel</div>
+                                      <div class="text-sm text-muted-foreground">Sustainable Aviation Fuel</div>
                                     </div>
                                     <div class="text-center">
                                       <div class="text-2xl font-bold text-red-600">$${fuelData.costComparison.emergency.toFixed(2)}</div>
-                                      <div class="text-sm text-gray-600">Emergency Supply</div>
+                                      <div class="text-sm text-muted-foreground">Emergency Supply</div>
                                     </div>
                                   </div>
                                 </div>
@@ -1339,11 +1339,11 @@ export default function DiversionSupportDashboard() {
                                   <div class="grid grid-cols-2 gap-4">
                                     <div>
                                       <div class="text-2xl font-bold text-green-600">${fuelData.environmentalImpact.co2ReductionPercent}%</div>
-                                      <div class="text-sm text-gray-600">CO₂ Reduction with SAF</div>
+                                      <div class="text-sm text-muted-foreground">CO₂ Reduction with SAF</div>
                                     </div>
                                     <div>
                                       <div class="text-2xl font-bold text-green-600">${fuelData.environmentalImpact.sustainabilityScore}/100</div>
-                                      <div class="text-sm text-gray-600">Sustainability Score</div>
+                                      <div class="text-sm text-muted-foreground">Sustainability Score</div>
                                     </div>
                                   </div>
                                 </div>
@@ -1357,12 +1357,12 @@ export default function DiversionSupportDashboard() {
                                         <div class="flex justify-between items-start">
                                           <div>
                                             <h4 class="font-medium text-gray-900">${supplier.name}</h4>
-                                            <p class="text-sm text-gray-600">${supplier.contact}</p>
-                                            <p class="text-sm text-gray-600">${supplier.location.address}</p>
+                                            <p class="text-sm text-muted-foreground">${supplier.contact}</p>
+                                            <p class="text-sm text-muted-foreground">${supplier.location.address}</p>
                                           </div>
                                           <div class="text-right">
-                                            <div class="text-lg font-semibold text-blue-600">$${supplier.pricing.jetA1PerGallon.toFixed(2)}/gal</div>
-                                            <div class="text-sm text-gray-600">${supplier.capacity.deliveryTimeMinutes} min delivery</div>
+                                            <div class="text-lg font-semibold text-aero-blue-dark">$${supplier.pricing.jetA1PerGallon.toFixed(2)}/gal</div>
+                                            <div class="text-sm text-muted-foreground">${supplier.capacity.deliveryTimeMinutes} min delivery</div>
                                           </div>
                                         </div>
                                         <div class="mt-3 flex flex-wrap gap-2">
@@ -1422,7 +1422,7 @@ export default function DiversionSupportDashboard() {
                       }
                     }
                   }}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  className="px-6 py-2 bg-aero-blue-primary text-foreground rounded-md hover:bg-aero-blue-light transition-colors"
                 >
                   Analyze Fuel Options
                 </button>
@@ -1430,7 +1430,7 @@ export default function DiversionSupportDashboard() {
             </div>
 
             <div id="fuelResults" className="mt-6">
-              <div className="text-center text-gray-500 py-8">
+              <div className="text-center text-foreground0 py-8">
                 Enter an airport code to view comprehensive fuel analysis including traditional, sustainable, and emergency fuel options
               </div>
             </div>
@@ -1460,7 +1460,7 @@ export default function DiversionSupportDashboard() {
                       handleAirportIntelligenceSearch(airportCode);
                     }
                   }}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  className="px-6 py-2 bg-aero-blue-primary text-foreground rounded-md hover:bg-aero-blue-light transition-colors"
                 >
                   Analyze Airport
                 </button>
@@ -1471,7 +1471,7 @@ export default function DiversionSupportDashboard() {
               {airportIntelligenceLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                  <span className="ml-3 text-gray-600">Loading airport intelligence...</span>
+                  <span className="ml-3 text-muted-foreground">Loading airport intelligence...</span>
                 </div>
               ) : airportIntelligenceData ? (
                 <div className="space-y-6">
@@ -1483,33 +1483,33 @@ export default function DiversionSupportDashboard() {
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                          <div className="text-sm text-gray-600">IATA/ICAO</div>
+                          <div className="text-sm text-muted-foreground">IATA/ICAO</div>
                           <div className="font-semibold">
                             {airportIntelligenceData.basicInfo.iata_code}/{airportIntelligenceData.basicInfo.icao_code}
                           </div>
                         </div>
                         <div>
-                          <div className="text-sm text-gray-600">Location</div>
+                          <div className="text-sm text-muted-foreground">Location</div>
                           <div className="font-semibold">
                             {airportIntelligenceData.basicInfo.city}, {airportIntelligenceData.basicInfo.country}
                           </div>
                         </div>
                         <div>
-                          <div className="text-sm text-gray-600">Type</div>
+                          <div className="text-sm text-muted-foreground">Type</div>
                           <div className="font-semibold capitalize">
                             {airportIntelligenceData.basicInfo.type?.replace('_', ' ')}
                           </div>
                         </div>
                         <div>
-                          <div className="text-sm text-gray-600">Elevation</div>
+                          <div className="text-sm text-muted-foreground">Elevation</div>
                           <div className="font-semibold">{airportIntelligenceData.basicInfo.elevation} ft</div>
                         </div>
                         <div>
-                          <div className="text-sm text-gray-600">Timezone</div>
+                          <div className="text-sm text-muted-foreground">Timezone</div>
                           <div className="font-semibold">{airportIntelligenceData.basicInfo.timezone}</div>
                         </div>
                         <div>
-                          <div className="text-sm text-gray-600">Coordinates</div>
+                          <div className="text-sm text-muted-foreground">Coordinates</div>
                           <div className="font-semibold">
                             {airportIntelligenceData.basicInfo.latitude?.toFixed(4)}, {airportIntelligenceData.basicInfo.longitude?.toFixed(4)}
                           </div>
@@ -1529,18 +1529,18 @@ export default function DiversionSupportDashboard() {
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <div className="text-sm text-gray-600">Airport Operations Center</div>
+                            <div className="text-sm text-muted-foreground">Airport Operations Center</div>
                             <div className="font-semibold text-gray-900">{contact.name}</div>
-                            <div className="text-sm text-gray-600 mt-1">{contact.country}</div>
+                            <div className="text-sm text-muted-foreground mt-1">{contact.country}</div>
                           </div>
                           <div>
-                            <div className="text-sm text-gray-600">24/7 Operations Phone</div>
-                            <div className="font-semibold text-blue-600">{contact.phone}</div>
-                            <div className="text-sm text-gray-600 mt-1">Services: {contact.support}</div>
+                            <div className="text-sm text-muted-foreground">24/7 Operations Phone</div>
+                            <div className="font-semibold text-aero-blue-dark">{contact.phone}</div>
+                            <div className="text-sm text-muted-foreground mt-1">Services: {contact.support}</div>
                           </div>
                           {contact.contact !== 'Not available' && (
                             <div className="md:col-span-2">
-                              <div className="text-sm text-gray-600">Additional Contact</div>
+                              <div className="text-sm text-muted-foreground">Additional Contact</div>
                               <div className="font-semibold text-gray-900">{contact.contact}</div>
                             </div>
                           )}
@@ -1563,25 +1563,25 @@ export default function DiversionSupportDashboard() {
                         <div className="text-2xl font-bold text-green-600">
                           {airportIntelligenceData.operationalMetrics.capacity.runways}
                         </div>
-                        <div className="text-sm text-gray-600">Runways</div>
+                        <div className="text-sm text-muted-foreground">Runways</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-green-600">
                           {airportIntelligenceData.operationalMetrics.capacity.terminals}
                         </div>
-                        <div className="text-sm text-gray-600">Terminals</div>
+                        <div className="text-sm text-muted-foreground">Terminals</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-green-600">
                           {airportIntelligenceData.operationalMetrics.capacity.gates}
                         </div>
-                        <div className="text-sm text-gray-600">Gates</div>
+                        <div className="text-sm text-muted-foreground">Gates</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-green-600">
                           {airportIntelligenceData.operationalMetrics.capacity.hourlyCapacity}
                         </div>
-                        <div className="text-sm text-gray-600">Hourly Capacity</div>
+                        <div className="text-sm text-muted-foreground">Hourly Capacity</div>
                       </div>
                     </div>
                   </div>
@@ -1594,13 +1594,13 @@ export default function DiversionSupportDashboard() {
                         <div className="text-2xl font-bold text-yellow-600">
                           {airportIntelligenceData.operationalMetrics.efficiency.onTimePerformance?.toFixed(1)}%
                         </div>
-                        <div className="text-sm text-gray-600">On-Time Performance</div>
+                        <div className="text-sm text-muted-foreground">On-Time Performance</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-yellow-600">
                           {airportIntelligenceData.operationalMetrics.efficiency.averageDelay?.toFixed(0)} min
                         </div>
-                        <div className="text-sm text-gray-600">Average Delay</div>
+                        <div className="text-sm text-muted-foreground">Average Delay</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-yellow-600">
@@ -1609,7 +1609,7 @@ export default function DiversionSupportDashboard() {
                             'N/A'
                           }
                         </div>
-                        <div className="text-sm text-gray-600">Capacity Utilization</div>
+                        <div className="text-sm text-muted-foreground">Capacity Utilization</div>
                       </div>
                     </div>
                   </div>
@@ -1624,13 +1624,13 @@ export default function DiversionSupportDashboard() {
                         {airportIntelligenceData.airlines.slice(0, 12).map((airline: any, index: number) => (
                           <div key={index} className="bg-white p-3 rounded border">
                             <div className="font-medium text-purple-900">{airline.airline_name}</div>
-                            <div className="text-sm text-gray-600">{airline.iata_code}/{airline.icao_code}</div>
-                            <div className="text-xs text-gray-500">{airline.country}</div>
+                            <div className="text-sm text-muted-foreground">{airline.iata_code}/{airline.icao_code}</div>
+                            <div className="text-xs text-foreground0">{airline.country}</div>
                           </div>
                         ))}
                       </div>
                       {airportIntelligenceData.airlines.length > 12 && (
-                        <div className="text-sm text-gray-600 mt-3">
+                        <div className="text-sm text-muted-foreground mt-3">
                           ... and {airportIntelligenceData.airlines.length - 12} more carriers
                         </div>
                       )}
@@ -1698,7 +1698,7 @@ export default function DiversionSupportDashboard() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center text-gray-500 py-8">
+                <div className="text-center text-foreground0 py-8">
                   Enter an airport code to view comprehensive operational intelligence including capacity, performance metrics, operating airlines, and service availability
                 </div>
               )}
@@ -1747,7 +1747,7 @@ export default function DiversionSupportDashboard() {
               </div>
               
               <button
-                className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="mt-4 px-6 py-2 bg-aero-blue-primary text-foreground rounded-md hover:bg-aero-blue-light transition-colors"
                 onClick={() => {
                   if (diversionRequest.aircraftType && diversionRequest.diversionAirport) {
                     const isAirbus = Object.keys(AIRBUS_FLEET_SPECS).includes(diversionRequest.aircraftType);
@@ -1822,7 +1822,7 @@ export default function DiversionSupportDashboard() {
             </div>
             
             <div id="compatibilityResults" className="mt-6">
-              <div className="text-center text-gray-500 py-8">
+              <div className="text-center text-foreground0 py-8">
                 Select aircraft type and airport to perform compatibility assessment
               </div>
             </div>
@@ -1833,7 +1833,7 @@ export default function DiversionSupportDashboard() {
               </h3>
               
               <button
-                className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                className="px-6 py-2 bg-green-600 text-foreground rounded-md hover:bg-green-700 transition-colors"
                 onClick={() => {
                   if (diversionRequest.aircraftType && Object.keys(AIRBUS_FLEET_SPECS).includes(diversionRequest.aircraftType)) {
                     const aircraftType = diversionRequest.aircraftType as keyof typeof AIRBUS_FLEET_SPECS;
@@ -1887,28 +1887,28 @@ export default function DiversionSupportDashboard() {
                               <div class="flex justify-between items-start mb-2">
                                 <div>
                                   <h5 class="font-medium text-gray-900">${assessment.airport.name}</h5>
-                                  <p class="text-sm text-gray-600">${assessment.airport.icao}</p>
+                                  <p class="text-sm text-muted-foreground">${assessment.airport.icao}</p>
                                 </div>
                                 <div class="text-right">
                                   <div class="text-lg font-semibold ${assessment.suitability >= 80 ? 'text-green-600' : assessment.suitability >= 60 ? 'text-yellow-600' : 'text-red-600'}">
                                     ${assessment.suitability}%
                                   </div>
-                                  <div class="text-sm text-gray-600">${assessment.distance.toFixed(0)}km away</div>
+                                  <div class="text-sm text-muted-foreground">${assessment.distance.toFixed(0)}km away</div>
                                 </div>
                               </div>
                               
                               <div class="grid grid-cols-2 gap-4 text-sm">
                                 <div>
-                                  <span class="text-gray-600">Runway:</span> ${assessment.airport.runwayLength}m
+                                  <span class="text-muted-foreground">Runway:</span> ${assessment.airport.runwayLength}m
                                 </div>
                                 <div>
-                                  <span class="text-gray-600">Wide Body:</span> ${assessment.airport.wideBodyCapable ? 'Yes' : 'No'}
+                                  <span class="text-muted-foreground">Wide Body:</span> ${assessment.airport.wideBodyCapable ? 'Yes' : 'No'}
                                 </div>
                                 <div>
-                                  <span class="text-gray-600">Fuel:</span> ${assessment.airport.fuelAvailable ? 'Available' : 'Limited'}
+                                  <span class="text-muted-foreground">Fuel:</span> ${assessment.airport.fuelAvailable ? 'Available' : 'Limited'}
                                 </div>
                                 <div>
-                                  <span class="text-gray-600">Maintenance:</span> ${assessment.airport.maintenanceCapable ? 'Capable' : 'Limited'}
+                                  <span class="text-muted-foreground">Maintenance:</span> ${assessment.airport.maintenanceCapable ? 'Capable' : 'Limited'}
                                 </div>
                               </div>
                               
@@ -1931,7 +1931,7 @@ export default function DiversionSupportDashboard() {
               </button>
               
               <div id="alternativeAirports" className="mt-4">
-                <div className="text-center text-gray-500 py-4">
+                <div className="text-center text-foreground0 py-4">
                   Click to assess alternative airports for selected aircraft
                 </div>
               </div>
@@ -1944,10 +1944,10 @@ export default function DiversionSupportDashboard() {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Zap className="h-6 w-6 text-blue-600" />
+                <Zap className="h-6 w-6 text-aero-blue-dark" />
                 🤖 Machine Learning Diversion Analysis
               </h2>
-              <p className="text-gray-600 mb-4">
+              <p className="text-muted-foreground mb-4">
                 Advanced AI-powered diversion analysis using Random Forest models, digital twin integration, and authentic OFP data.
               </p>
               
@@ -1955,7 +1955,7 @@ export default function DiversionSupportDashboard() {
                 <button
                   onClick={() => handleMLDiversionAnalysis(diversionRequest.flightNumber)}
                   disabled={mlAnalysisLoading}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  className="bg-aero-blue-primary text-foreground px-4 py-2 rounded-lg hover:bg-aero-blue-light disabled:opacity-50"
                 >
                   {mlAnalysisLoading ? 'Analyzing...' : 'Run ML Diversion Analysis'}
                 </button>
@@ -1979,25 +1979,25 @@ export default function DiversionSupportDashboard() {
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">ML Predictions Summary</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-white rounded-lg p-4 border">
-                      <div className="text-sm text-gray-600">Delay Prediction</div>
-                      <div className="text-2xl font-bold text-blue-600">
+                      <div className="text-sm text-muted-foreground">Delay Prediction</div>
+                      <div className="text-2xl font-bold text-aero-blue-dark">
                         {Math.round(mlDiversionAnalysis.delay_prediction?.predicted_delay_minutes || 0)} min
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-foreground0">
                         Confidence: {Math.round((mlDiversionAnalysis.delay_prediction?.confidence || 0) * 100)}%
                       </div>
                     </div>
                     <div className="bg-white rounded-lg p-4 border">
-                      <div className="text-sm text-gray-600">Fuel Remaining</div>
+                      <div className="text-sm text-muted-foreground">Fuel Remaining</div>
                       <div className="text-2xl font-bold text-green-600">
                         {(mlDiversionAnalysis.fuel_analysis?.remaining_fuel_kg || 0).toLocaleString()} kg
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-foreground0">
                         Range: {Math.round(mlDiversionAnalysis.fuel_analysis?.range_remaining_nm || 0)} NM
                       </div>
                     </div>
                     <div className="bg-white rounded-lg p-4 border">
-                      <div className="text-sm text-gray-600">Risk Level</div>
+                      <div className="text-sm text-muted-foreground">Risk Level</div>
                       <div className={`text-2xl font-bold ${
                         mlDiversionAnalysis.risk_assessment?.overall_risk === 'LOW' ? 'text-green-600' :
                         mlDiversionAnalysis.risk_assessment?.overall_risk === 'MEDIUM' ? 'text-yellow-600' :
@@ -2018,13 +2018,13 @@ export default function DiversionSupportDashboard() {
                         <div key={index} className={`border rounded-lg p-4 ${index === 0 ? 'border-green-500 bg-green-50' : 'border-gray-200'}`}>
                           <div className="flex justify-between items-start mb-2">
                             <h4 className="font-semibold text-gray-900">{option.airport_code}</h4>
-                            {index === 0 && <span className="text-xs bg-green-600 text-white px-2 py-1 rounded">OPTIMAL</span>}
+                            {index === 0 && <span className="text-xs bg-green-600 text-foreground px-2 py-1 rounded">OPTIMAL</span>}
                           </div>
                           <div className="space-y-1 text-sm">
                             <div>Distance: {Math.round(option.distance_nm)} NM</div>
                             <div>Runway: {option.runway_length_ft?.toLocaleString() || 'N/A'} ft</div>
                             <div>Fuel Required: {Math.round(option.fuel_required_kg || 0)} kg</div>
-                            <div className="text-xs text-gray-600 mt-2">
+                            <div className="text-xs text-muted-foreground mt-2">
                               Suitability: {Math.round((option.suitability_score || 0) * 100)}%
                             </div>
                           </div>
@@ -2043,25 +2043,25 @@ export default function DiversionSupportDashboard() {
                         {mlDiversionAnalysis.aircraft_performance?.engine_efficiency ? 
                           `${Math.round(mlDiversionAnalysis.aircraft_performance.engine_efficiency * 100)}%` : '94%'}
                       </div>
-                      <div className="text-sm text-gray-600">Engine Efficiency</div>
+                      <div className="text-sm text-muted-foreground">Engine Efficiency</div>
                     </div>
                     <div className="text-center">
                       <div className="text-lg font-bold text-purple-600">
                         {mlDiversionAnalysis.aircraft_performance?.fuel_flow_kg_hr?.toLocaleString() || '6,783'} kg/hr
                       </div>
-                      <div className="text-sm text-gray-600">Fuel Flow</div>
+                      <div className="text-sm text-muted-foreground">Fuel Flow</div>
                     </div>
                     <div className="text-center">
                       <div className="text-lg font-bold text-purple-600">
                         {mlDiversionAnalysis.aircraft_performance?.cruise_speed_kt || 488} kts
                       </div>
-                      <div className="text-sm text-gray-600">Cruise Speed</div>
+                      <div className="text-sm text-muted-foreground">Cruise Speed</div>
                     </div>
                     <div className="text-center">
                       <div className="text-lg font-bold text-purple-600">
                         {mlDiversionAnalysis.aircraft_performance?.service_ceiling_ft?.toLocaleString() || '43,000'} ft
                       </div>
-                      <div className="text-sm text-gray-600">Service Ceiling</div>
+                      <div className="text-sm text-muted-foreground">Service Ceiling</div>
                     </div>
                   </div>
                 </div>
@@ -2084,8 +2084,8 @@ export default function DiversionSupportDashboard() {
             )}
 
             {!mlDiversionAnalysis && !mlAnalysisLoading && (
-              <div className="text-center py-12 text-gray-500">
-                <Zap className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <div className="text-center py-12 text-foreground0">
+                <Zap className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                 <p>Click "Run ML Diversion Analysis" to generate AI-powered recommendations</p>
               </div>
             )}

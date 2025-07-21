@@ -79,8 +79,8 @@ export default function FaaLiveStatus() {
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-3 text-gray-600">Connecting to FAA NASSTATUS...</span>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-aero-blue-primary/30"></div>
+            <span className="ml-3 text-muted-foreground">Connecting to FAA NASSTATUS...</span>
           </div>
         </CardContent>
       </Card>
@@ -101,7 +101,7 @@ export default function FaaLiveStatus() {
             <p className="text-red-800">{error}</p>
             <button 
               onClick={fetchLiveData}
-              className="mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              className="mt-3 px-4 py-2 bg-va-red-primary text-foreground rounded hover:bg-va-red-heritage"
             >
               Retry Connection
             </button>
@@ -119,7 +119,7 @@ export default function FaaLiveStatus() {
             <Plane className="w-5 h-5" />
             Live FAA Delay Status
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-foreground0">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             Last updated: {lastUpdate}
           </div>
@@ -128,7 +128,7 @@ export default function FaaLiveStatus() {
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           <div className="bg-blue-50 p-3 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{liveData.length}</div>
+            <div className="text-2xl font-bold text-aero-blue-dark">{liveData.length}</div>
             <div className="text-sm text-blue-700">Airports Monitored</div>
           </div>
           <div className="bg-red-50 p-3 rounded-lg">
@@ -163,7 +163,7 @@ export default function FaaLiveStatus() {
                   <td className="p-3">
                     <div>
                       <div className="font-medium">{airport.faa}</div>
-                      <div className="text-sm text-gray-600">{airport.airport_name}</div>
+                      <div className="text-sm text-muted-foreground">{airport.airport_name}</div>
                     </div>
                   </td>
                   <td className="p-3">
@@ -178,7 +178,7 @@ export default function FaaLiveStatus() {
                   <td className="p-3">
                     <div>
                       <div className="font-medium">{airport.avg_delay}</div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-foreground0">
                         ({airport.delay_minutes} min)
                       </div>
                     </div>
@@ -187,7 +187,7 @@ export default function FaaLiveStatus() {
                     <div className="font-medium">{airport.estimated_otp.toFixed(1)}%</div>
                   </td>
                   <td className="p-3">
-                    <span className="text-sm text-gray-600">{airport.reason}</span>
+                    <span className="text-sm text-muted-foreground">{airport.reason}</span>
                   </td>
                 </tr>
               ))}
@@ -195,11 +195,11 @@ export default function FaaLiveStatus() {
           </table>
         </div>
 
-        <div className="mt-4 text-xs text-gray-500 flex items-center justify-between">
+        <div className="mt-4 text-xs text-foreground0 flex items-center justify-between">
           <span>Data source: FAA NASSTATUS (Live)</span>
           <button 
             onClick={fetchLiveData}
-            className="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded"
+            className="px-3 py-1 text-aero-blue-dark hover:bg-blue-50 rounded"
             disabled={loading}
           >
             {loading ? 'Refreshing...' : 'Refresh'}

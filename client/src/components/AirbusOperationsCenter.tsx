@@ -282,13 +282,13 @@ function AirportAssessmentPanel({ aircraftType }: { aircraftType: keyof typeof A
             <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded">
               <div>
                 <div className="font-medium">{assessment.airport.name}</div>
-                <div className="text-sm text-gray-600">{assessment.airport.icao}</div>
+                <div className="text-sm text-muted-foreground">{assessment.airport.icao}</div>
               </div>
               <div className="text-right">
                 <Badge variant={assessment.compatibility.compatible ? "default" : "destructive"}>
                   {assessment.compatibility.score}%
                 </Badge>
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="text-xs text-foreground0 mt-1">
                   {assessment.compatibility.compatible ? 'Compatible' : 'Issues'}
                 </div>
               </div>
@@ -357,7 +357,7 @@ function FleetOptimizationPanel() {
                   <div className="font-medium">
                     {opt.route.origin} → {opt.route.destination}
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-muted-foreground">
                     {opt.route.distance}km • {opt.route.demand} pax • {opt.route.frequency}
                   </div>
                 </div>
@@ -366,7 +366,7 @@ function FleetOptimizationPanel() {
               <div className="text-sm">
                 <strong>Recommended:</strong> {opt.optimization.recommended}
               </div>
-              <div className="text-xs text-gray-600 mt-1">
+              <div className="text-xs text-muted-foreground mt-1">
                 {opt.optimization.reasoning[0]}
               </div>
             </div>
@@ -418,7 +418,7 @@ function SystemStatusPanel() {
           </div>
           <div className="flex justify-between">
             <span>Last Update:</span>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-muted-foreground">
               {systemMetrics.lastUpdate.toLocaleTimeString()}
             </span>
           </div>
@@ -599,7 +599,7 @@ export default function AirbusOperationsCenter() {
                 </div>
 
                 {/* Operating Costs Section */}
-                <div className="mt-6 pt-4 border-t border-gray-600">
+                <div className="mt-6 pt-4 border-t border-border">
                   <div className="text-sm text-muted-foreground mb-3">Operating Costs (Per Hour)</div>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
@@ -654,9 +654,9 @@ export default function AirbusOperationsCenter() {
 
           {/* Alerts */}
           {alerts.length > 0 && (
-            <Card className="bg-green-900/20 border-green-500/30">
+            <Card className="bg-aero-green-safe/10 border-green-500/30">
               <CardHeader>
-                <CardTitle className="text-green-400 text-sm">System Alerts</CardTitle>
+                <CardTitle className="text-aero-green-safe text-sm">System Alerts</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">

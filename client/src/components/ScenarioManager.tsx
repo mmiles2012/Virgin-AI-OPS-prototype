@@ -62,10 +62,10 @@ export default function ScenarioManager({ onEmergencyActivate, draggable = false
         <div className="space-y-2">
           <label className="text-blue-300 text-sm">Select Non Normal Operation</label>
           <Select value={selectedScenarioId} onValueChange={setSelectedScenarioId}>
-            <SelectTrigger className="bg-gray-800 border-gray-600">
+            <SelectTrigger className="bg-card border-border">
               <SelectValue placeholder="Choose a scenario..." />
             </SelectTrigger>
-            <SelectContent className="bg-gray-800 border-gray-600">
+            <SelectContent className="bg-card border-border">
               {scenarios.map((scenario) => (
                 <SelectItem key={scenario.id} value={scenario.id}>
                   <div className="flex items-center gap-2">
@@ -97,7 +97,7 @@ export default function ScenarioManager({ onEmergencyActivate, draggable = false
           <Button
             onClick={handleStopScenario}
             disabled={!isActive}
-            className="flex-1 bg-red-600 hover:bg-red-700"
+            className="flex-1 bg-va-red-primary hover:bg-va-red-heritage"
             size="sm"
           >
             <Square className="h-4 w-4 mr-1" />
@@ -116,7 +116,7 @@ export default function ScenarioManager({ onEmergencyActivate, draggable = false
 
         {/* Compact Current Scenario Status */}
         {currentScenario && (
-          <div className="border border-blue-500 rounded p-2 bg-blue-900/20">
+          <div className="border border-blue-500 rounded p-2 bg-aero-blue-primary/10">
             <div className="flex justify-between items-center mb-1">
               <div className="flex-1 min-w-0">
                 <h4 className="text-blue-300 font-medium text-sm truncate">{currentScenario.title}</h4>
@@ -140,17 +140,17 @@ export default function ScenarioManager({ onEmergencyActivate, draggable = false
 
         {/* Compact scenario info */}
         {selectedScenarioId && !currentScenario && (
-          <div className="border border-gray-600 rounded p-2 bg-gray-900/20">
+          <div className="border border-border rounded p-2 bg-card/20">
             {(() => {
               const scenario = scenarios.find(s => s.id === selectedScenarioId);
               return scenario ? (
                 <div>
-                  <h4 className="text-gray-300 font-medium text-sm mb-1">{scenario.title}</h4>
+                  <h4 className="text-muted-foreground font-medium text-sm mb-1">{scenario.title}</h4>
                   <div className="flex gap-2 text-xs">
-                    <Badge variant="outline" className="text-gray-400 text-xs">
+                    <Badge variant="outline" className="text-muted-foreground text-xs">
                       {scenario.estimatedDuration}
                     </Badge>
-                    <Badge variant="outline" className="text-gray-400 text-xs">
+                    <Badge variant="outline" className="text-muted-foreground text-xs">
                       {scenario.severity}
                     </Badge>
                   </div>

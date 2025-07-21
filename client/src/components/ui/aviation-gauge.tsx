@@ -53,7 +53,7 @@ export default function AviationGauge({
         
         {/* Center value */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className={`text-xs font-mono ${isDangerous ? 'text-red-400' : 'text-white'}`}>
+          <span className={`text-xs font-mono ${isDangerous ? 'text-va-red-primary' : 'text-foreground'}`}>
             {value.toFixed(0)}
           </span>
         </div>
@@ -68,7 +68,7 @@ export default function AviationGauge({
       </div>
       
       {isDangerous && (
-        <div className="text-red-400 text-xs mt-1 font-bold">CAUTION</div>
+        <div className="text-va-red-primary text-xs mt-1 font-bold">CAUTION</div>
       )}
     </div>
   );

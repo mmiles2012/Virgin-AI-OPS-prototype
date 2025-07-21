@@ -173,9 +173,9 @@ export default function AinoTrainingSimulator() {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return 'bg-green-100 text-green-800';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'advanced': return 'bg-red-100 text-red-800';
+      case 'beginner': return 'bg-aero-green-safe/10 text-aero-green-dark';
+      case 'intermediate': return 'bg-aero-amber-caution/10 text-aero-amber-dark';
+      case 'advanced': return 'bg-va-red-primary/10 text-va-red-primary';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -191,7 +191,7 @@ export default function AinoTrainingSimulator() {
       <div className="p-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900">AINO Flight Training Simulator</h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Boeing 787 Training with Real-time Aviation Intelligence Integration
           </p>
         </div>
@@ -217,8 +217,8 @@ export default function AinoTrainingSimulator() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-gray-600 mb-3">{scenario.description}</p>
-                <div className="text-xs text-gray-500">
+                <p className="text-sm text-muted-foreground mb-3">{scenario.description}</p>
+                <div className="text-xs text-foreground0">
                   Flight: {scenario.flightId}
                 </div>
                 {scenario.emergencyType && (
@@ -249,10 +249,10 @@ export default function AinoTrainingSimulator() {
                 
                 {isScenarioActive && (
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">
+                    <div className="text-2xl font-bold text-aero-blue-dark">
                       {getCompletionRate()}%
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-muted-foreground">
                       Training Progress
                     </div>
                   </div>
@@ -286,7 +286,7 @@ export default function AinoTrainingSimulator() {
                   </div>
                   {flightStatus.warnings.length > 0 && (
                     <div className="mt-3">
-                      <div className="text-sm font-medium text-red-600">Active Warnings:</div>
+                      <div className="text-sm font-medium text-va-red-primary">Active Warnings:</div>
                       {flightStatus.warnings.map((warning, index) => (
                         <Badge key={index} variant="destructive" className="mr-1 mt-1">
                           {warning}
@@ -296,7 +296,7 @@ export default function AinoTrainingSimulator() {
                   )}
                 </div>
               ) : (
-                <div className="text-gray-500">Loading flight data...</div>
+                <div className="text-foreground0">Loading flight data...</div>
               )}
             </CardContent>
           </Card>
@@ -316,12 +316,12 @@ export default function AinoTrainingSimulator() {
                           {alert.data.risk_analysis?.risk_level || 'NORMAL'}
                         </Badge>
                       ) : (
-                        <span className="ml-2 text-green-600">Active</span>
+                        <span className="ml-2 text-aero-green-safe">Active</span>
                       )}
                     </div>
                   ))
                 ) : (
-                  <div className="text-gray-500">Loading intelligence data...</div>
+                  <div className="text-foreground0">Loading intelligence data...</div>
                 )}
               </div>
             </CardContent>

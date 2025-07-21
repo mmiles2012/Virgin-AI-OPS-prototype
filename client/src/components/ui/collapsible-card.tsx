@@ -99,21 +99,21 @@ export default function CollapsibleCard({
       onMouseDown={handleMouseDown}
     >
       <CardHeader 
-        className={`pb-3 select-none hover:bg-gray-800/50 transition-colors ${draggable ? 'cursor-move' : 'cursor-pointer'}`}
+        className={`pb-3 select-none hover:bg-card/50 transition-colors ${draggable ? 'cursor-move' : 'cursor-pointer'}`}
         onClick={() => !isDragging && setIsCollapsed(!isCollapsed)}
       >
-        <CardTitle className="text-white flex items-center justify-between">
+        <CardTitle className="text-foreground flex items-center justify-between">
           <div className="flex items-center gap-2">
             {icon}
             {title}
             {draggable && (
-              <Move className="h-4 w-4 text-gray-400 drag-handle cursor-move" />
+              <Move className="h-4 w-4 text-muted-foreground drag-handle cursor-move" />
             )}
           </div>
           {isCollapsed ? (
-            <ChevronDown className="h-4 w-4 text-gray-400" />
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
           ) : (
-            <ChevronUp className="h-4 w-4 text-gray-400" />
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
           )}
         </CardTitle>
       </CardHeader>

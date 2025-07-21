@@ -200,7 +200,7 @@ export default function ICAODashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">ICAO Aviation Intelligence</h1>
-          <p className="text-gray-600 mt-2">Official ICAO data with smart API management (100 calls/24hrs)</p>
+          <p className="text-muted-foreground mt-2">Official ICAO data with smart API management (100 calls/24hrs)</p>
         </div>
         
         <div className="flex items-center space-x-4">
@@ -223,7 +223,7 @@ export default function ICAODashboard() {
                     <p className="text-sm font-medium">API Calls</p>
                     <p className="text-2xl font-bold">{usage.calls_remaining}/100</p>
                   </div>
-                  <Gauge className="h-8 w-8 text-blue-600" />
+                  <Gauge className="h-8 w-8 text-aero-blue-dark" />
                 </div>
                 <div className="mt-2">
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -267,7 +267,7 @@ export default function ICAODashboard() {
             <Card className="border-red-200 bg-red-50">
               <CardContent className="p-4">
                 <div className="flex items-center">
-                  <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
+                  <AlertTriangle className="h-5 w-5 text-va-red-primary mr-2" />
                   <span className="text-red-700">{error}</span>
                 </div>
               </CardContent>
@@ -281,11 +281,11 @@ export default function ICAODashboard() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
-                        <Plane className="h-6 w-6 text-blue-600" />
+                        <Plane className="h-6 w-6 text-aero-blue-dark" />
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold">{flight.callsign || 'Unknown'}</h3>
-                        <p className="text-sm text-gray-600">{flight.aircraft_type} • {flight.operator}</p>
+                        <p className="text-sm text-muted-foreground">{flight.aircraft_type} • {flight.operator}</p>
                       </div>
                     </div>
                     
@@ -304,19 +304,19 @@ export default function ICAODashboard() {
                   
                   <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <p className="text-gray-500">Route</p>
+                      <p className="text-foreground0">Route</p>
                       <p className="font-medium">{flight.origin} → {flight.destination}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">Altitude</p>
+                      <p className="text-foreground0">Altitude</p>
                       <p className="font-medium">{flight.position?.altitude_ft?.toLocaleString()} ft</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">Speed</p>
+                      <p className="text-foreground0">Speed</p>
                       <p className="font-medium">{flight.speed?.ground_speed_kts} kts</p>
                     </div>
                     <div>
-                      <p className="text-gray-500">Squawk</p>
+                      <p className="text-foreground0">Squawk</p>
                       <p className="font-medium">{flight.squawk}</p>
                     </div>
                   </div>
@@ -343,7 +343,7 @@ export default function ICAODashboard() {
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold">{flight.callsign}</h3>
-                        <p className="text-sm text-gray-600">Virgin Atlantic • {flight.aircraft_type}</p>
+                        <p className="text-sm text-muted-foreground">Virgin Atlantic • {flight.aircraft_type}</p>
                       </div>
                     </div>
                     <Badge className="bg-red-100 text-red-800 border-red-200">VIR</Badge>
@@ -371,7 +371,7 @@ export default function ICAODashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-3">
-                      <AlertTriangle className="h-5 w-5 text-orange-500" />
+                      <AlertTriangle className="h-5 w-5 text-aero-orange-alert" />
                       <h3 className="text-lg font-semibold">{notam.airport_icao}</h3>
                     </div>
                     <Badge className={getSeverityColor(notam.severity)}>
@@ -383,11 +383,11 @@ export default function ICAODashboard() {
                     <p className="text-sm"><strong>Type:</strong> {notam.type}</p>
                     <p className="text-sm"><strong>Condition:</strong> {notam.condition}</p>
                     <p className="text-sm"><strong>Location:</strong> {notam.location}</p>
-                    <p className="text-sm text-gray-600">{notam.description}</p>
+                    <p className="text-sm text-muted-foreground">{notam.description}</p>
                   </div>
                   
                   <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                    <div className="flex items-center space-x-4 text-xs text-foreground0">
                       <span>Effective: {new Date(notam.effective_from).toLocaleDateString()}</span>
                       <span>Until: {new Date(notam.effective_until).toLocaleDateString()}</span>
                     </div>
@@ -412,18 +412,18 @@ export default function ICAODashboard() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{flights.length}</div>
-                  <p className="text-sm text-gray-600">Active Flights Tracked</p>
+                  <div className="text-2xl font-bold text-aero-blue-dark">{flights.length}</div>
+                  <p className="text-sm text-muted-foreground">Active Flights Tracked</p>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-orange-600">{notams.length}</div>
-                  <p className="text-sm text-gray-600">Active NOTAMs</p>
+                  <p className="text-sm text-muted-foreground">Active NOTAMs</p>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">
                     {usage ? usage.calls_remaining : '100'}
                   </div>
-                  <p className="text-sm text-gray-600">API Calls Remaining</p>
+                  <p className="text-sm text-muted-foreground">API Calls Remaining</p>
                 </div>
               </div>
               

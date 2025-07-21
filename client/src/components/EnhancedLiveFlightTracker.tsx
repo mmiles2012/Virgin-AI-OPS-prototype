@@ -254,7 +254,7 @@ export default function EnhancedLiveFlightTracker() {
       case 'TAXI': return 'bg-blue-500';
       case 'DEPARTED':
       case 'TAKEOFF':
-      case 'CLIMBING': return 'bg-blue-600';
+      case 'CLIMBING': return 'bg-aero-blue-primary';
       case 'EN_ROUTE':
       case 'EN_ROUTE_ADS_B':
       case 'CRUISE': return 'bg-green-600';
@@ -264,10 +264,10 @@ export default function EnhancedLiveFlightTracker() {
       case 'LANDED':
       case 'ARRIVED':
       case 'AT_GATE': return 'bg-gray-600';
-      case 'DELAYED': return 'bg-red-600';
+      case 'DELAYED': return 'bg-va-red-primary';
       case 'CANCELLED': return 'bg-red-800';
       case 'SCHEDULED': return 'bg-purple-600';
-      default: return 'bg-blue-600';
+      default: return 'bg-aero-blue-primary';
     }
   };
 
@@ -308,9 +308,9 @@ export default function EnhancedLiveFlightTracker() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Activity className="h-6 w-6 text-blue-400" />
-          <h2 className="text-xl font-bold text-white">Live Flight Tracking</h2>
-          <Badge className="bg-red-600 text-white">
+          <Activity className="h-6 w-6 text-aero-blue-primary" />
+          <h2 className="text-xl font-bold text-foreground">Live Flight Tracking</h2>
+          <Badge className="bg-va-red-primary text-foreground">
             {flights.length} Active Flights
           </Badge>
         </div>
@@ -319,8 +319,8 @@ export default function EnhancedLiveFlightTracker() {
             onClick={() => setAutoRefresh(!autoRefresh)}
             className={`px-3 py-1 rounded text-sm transition-colors ${
               autoRefresh 
-                ? 'bg-green-600 text-white hover:bg-green-700' 
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                ? 'bg-green-600 text-foreground hover:bg-green-700' 
+                : 'bg-gray-700 text-muted-foreground hover:bg-gray-600'
             }`}
           >
             {autoRefresh ? 'Auto Refresh On' : 'Auto Refresh Off'}
@@ -328,7 +328,7 @@ export default function EnhancedLiveFlightTracker() {
           <Button
             onClick={fetchFlightData}
             disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-aero-blue-primary hover:bg-aero-blue-light"
           >
             {loading ? 'Updating...' : 'Refresh'}
           </Button>
@@ -336,9 +336,9 @@ export default function EnhancedLiveFlightTracker() {
       </div>
 
       {lastUpdate && (
-        <div className="text-sm text-gray-400">
+        <div className="text-sm text-muted-foreground">
           Last updated: {lastUpdate.toLocaleTimeString()}
-          {autoRefresh && <span className="ml-2 text-green-400">(Auto-refreshing every 30s)</span>}
+          {autoRefresh && <span className="ml-2 text-aero-green-safe">(Auto-refreshing every 30s)</span>}
         </div>
       )}
 
@@ -347,7 +347,7 @@ export default function EnhancedLiveFlightTracker() {
         {flights.map((flight, index) => {
           const uniqueKey = `${flight.callsign}-${flight.origin}-${flight.destination}-${index}`;
           return (
-            <Card key={uniqueKey} className="bg-gray-800/50 border-gray-600">
+            <Card key={uniqueKey} className="bg-card/50 border-border">
             <CardContent className="p-4">
               <div 
                 className="cursor-pointer"
@@ -361,12 +361,12 @@ export default function EnhancedLiveFlightTracker() {
                       <div className={`w-3 h-3 rounded-full ${getStatusColor(flight.current_status)}`}></div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-white font-bold text-lg">{flight.callsign}</span>
-                          <Badge className="bg-red-600 text-white text-xs">
+                          <span className="text-foreground font-bold text-lg">{flight.callsign}</span>
+                          <Badge className="bg-va-red-primary text-foreground text-xs">
                             {flight.aircraft}
                           </Badge>
                         </div>
-                        <div className="text-sm text-gray-400">
+                        <div className="text-sm text-muted-foreground">
                           {flight.origin} → {flight.destination} • {getStatusText(flight.current_status)}
                         </div>
                       </div>
@@ -375,37 +375,37 @@ export default function EnhancedLiveFlightTracker() {
 
                   <div className="flex items-center gap-6 text-sm">
                     <div className="text-center">
-                      <div className="text-gray-400">Altitude</div>
-                      <div className="text-white font-mono">
+                      <div className="text-muted-foreground">Altitude</div>
+                      <div className="text-foreground font-mono">
                         {flight.altitude != null ? flight.altitude.toLocaleString() : 'N/A'} ft
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-gray-400">Speed</div>
-                      <div className={`font-mono ${flight.velocity_estimated ? 'text-orange-400' : 'text-white'}`}>
+                      <div className="text-muted-foreground">Speed</div>
+                      <div className={`font-mono ${flight.velocity_estimated ? 'text-aero-orange-alert' : 'text-foreground'}`}>
                         {flight.velocity != null ? Math.round(flight.velocity) : 'N/A'} kts
                         {flight.velocity_estimated && <span className="text-orange-300 text-xs ml-1">est</span>}
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-gray-400">Route Progress</div>
-                      <div className="text-blue-400 font-mono font-bold">{flight.flight_progress}%</div>
+                      <div className="text-muted-foreground">Route Progress</div>
+                      <div className="text-aero-blue-primary font-mono font-bold">{flight.flight_progress}%</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-gray-400">Fuel</div>
-                      <div className="text-blue-400 font-mono font-bold text-lg">
+                      <div className="text-muted-foreground">Fuel</div>
+                      <div className="text-aero-blue-primary font-mono font-bold text-lg">
                         {fuelOptimizationData[flight.callsign]?.fuel_percentage || calculateFuelPercentage(flight)}%
                       </div>
-                      <div className="text-xs text-white">
+                      <div className="text-xs text-foreground">
                         {fuelOptimizationData[flight.callsign]?.fuel_efficiency || 85}% eff
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-foreground0">
                         {fuelOptimizationData[flight.callsign]?.optimization_strategy || 'STANDARD'}
                       </div>
                     </div>
                     {selectedFlightId === flight.callsign ? 
-                      <ChevronUp className="h-5 w-5 text-gray-400" /> : 
-                      <ChevronDown className="h-5 w-5 text-gray-400" />
+                      <ChevronUp className="h-5 w-5 text-muted-foreground" /> : 
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
                     }
                   </div>
                 </div>
@@ -413,7 +413,7 @@ export default function EnhancedLiveFlightTracker() {
                 {/* Warnings */}
                 {flight.warnings && flight.warnings.length > 0 && (
                   <div className="mt-2 flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                    <AlertTriangle className="h-4 w-4 text-aero-amber-caution" />
                     <div className="flex gap-2">
                       {flight.warnings.map((warning, index) => (
                         <Badge key={index} className="bg-yellow-600 text-yellow-100 text-xs">
@@ -427,27 +427,27 @@ export default function EnhancedLiveFlightTracker() {
 
               {/* Expanded Details */}
               {selectedFlightId === flight.callsign && (
-                <div className="mt-4 pt-4 border-t border-gray-600 space-y-4">
+                <div className="mt-4 pt-4 border-t border-border space-y-4">
                   {/* Flight Details Grid */}
                   <div className="grid grid-cols-4 gap-4 text-sm">
                     <div>
                       <div className="text-blue-300 font-medium mb-2">Flight Information</div>
                       <div className="space-y-1">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Passengers:</span>
-                          <span className="text-white">{flight.passengers}</span>
+                          <span className="text-muted-foreground">Passengers:</span>
+                          <span className="text-foreground">{flight.passengers}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Cargo:</span>
-                          <span className="text-white">{(flight.cargo_weight / 1000).toFixed(1)}t</span>
+                          <span className="text-muted-foreground">Cargo:</span>
+                          <span className="text-foreground">{(flight.cargo_weight / 1000).toFixed(1)}t</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Dep Gate:</span>
-                          <span className="text-white">{flight.departure_gate}</span>
+                          <span className="text-muted-foreground">Dep Gate:</span>
+                          <span className="text-foreground">{flight.departure_gate}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Arr Gate:</span>
-                          <span className="text-white">{flight.arrival_gate}</span>
+                          <span className="text-muted-foreground">Arr Gate:</span>
+                          <span className="text-foreground">{flight.arrival_gate}</span>
                         </div>
                       </div>
                     </div>
@@ -456,20 +456,20 @@ export default function EnhancedLiveFlightTracker() {
                       <div className="text-green-300 font-medium mb-2">Position & Navigation</div>
                       <div className="space-y-1">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Latitude:</span>
-                          <span className="text-white font-mono">{flight.latitude.toFixed(4)}°</span>
+                          <span className="text-muted-foreground">Latitude:</span>
+                          <span className="text-foreground font-mono">{flight.latitude.toFixed(4)}°</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Longitude:</span>
-                          <span className="text-white font-mono">{flight.longitude.toFixed(4)}°</span>
+                          <span className="text-muted-foreground">Longitude:</span>
+                          <span className="text-foreground font-mono">{flight.longitude.toFixed(4)}°</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Heading:</span>
-                          <span className="text-white font-mono">{Math.round(flight.heading)}°</span>
+                          <span className="text-muted-foreground">Heading:</span>
+                          <span className="text-foreground font-mono">{Math.round(flight.heading)}°</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Distance:</span>
-                          <span className="text-white">{flight.distance_remaining} nm</span>
+                          <span className="text-muted-foreground">Distance:</span>
+                          <span className="text-foreground">{flight.distance_remaining} nm</span>
                         </div>
                       </div>
                     </div>
@@ -478,16 +478,16 @@ export default function EnhancedLiveFlightTracker() {
                       <div className="text-yellow-300 font-medium mb-2">Weather Conditions</div>
                       <div className="space-y-1">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Wind:</span>
-                          <span className="text-white">{flight.weather_conditions.wind_speed}kt @ {flight.weather_conditions.wind_direction}°</span>
+                          <span className="text-muted-foreground">Wind:</span>
+                          <span className="text-foreground">{flight.weather_conditions.wind_speed}kt @ {flight.weather_conditions.wind_direction}°</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Temp:</span>
-                          <span className="text-white">{Math.round(flight.weather_conditions.temperature)}°C</span>
+                          <span className="text-muted-foreground">Temp:</span>
+                          <span className="text-foreground">{Math.round(flight.weather_conditions.temperature)}°C</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Visibility:</span>
-                          <span className="text-white">{flight.weather_conditions.visibility.toFixed(1)}km</span>
+                          <span className="text-muted-foreground">Visibility:</span>
+                          <span className="text-foreground">{flight.weather_conditions.visibility.toFixed(1)}km</span>
                         </div>
                       </div>
                     </div>
@@ -496,19 +496,19 @@ export default function EnhancedLiveFlightTracker() {
                       <div className="text-red-300 font-medium mb-2">Aircraft Systems</div>
                       <div className="space-y-1">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Hydraulics:</span>
+                          <span className="text-muted-foreground">Hydraulics:</span>
                           <Badge className={`text-xs ${flight.systems_status.hydraulics === 'NORMAL' ? 'bg-green-600' : 'bg-yellow-600'}`}>
                             {flight.systems_status.hydraulics}
                           </Badge>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Electrical:</span>
+                          <span className="text-muted-foreground">Electrical:</span>
                           <Badge className={`text-xs ${flight.systems_status.electrical === 'NORMAL' ? 'bg-green-600' : 'bg-yellow-600'}`}>
                             {flight.systems_status.electrical}
                           </Badge>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Autopilot:</span>
+                          <span className="text-muted-foreground">Autopilot:</span>
                           <Badge className={`text-xs ${flight.systems_status.autopilot ? 'bg-green-600' : 'bg-gray-600'}`}>
                             {flight.systems_status.autopilot ? 'ENGAGED' : 'MANUAL'}
                           </Badge>
@@ -522,28 +522,28 @@ export default function EnhancedLiveFlightTracker() {
                     <div className="text-orange-300 font-medium mb-2">Engine Performance</div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-gray-700/50 rounded p-3">
-                        <div className="text-sm font-medium text-white mb-2">Engine 1</div>
+                        <div className="text-sm font-medium text-foreground mb-2">Engine 1</div>
                         <div className="space-y-1 text-xs">
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Temperature:</span>
-                            <span className="text-white">{Math.round(flight.engine_status.engine1_temp)}°C</span>
+                            <span className="text-muted-foreground">Temperature:</span>
+                            <span className="text-foreground">{Math.round(flight.engine_status.engine1_temp)}°C</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Thrust:</span>
-                            <span className="text-white">{Math.round(flight.engine_status.engine1_thrust)}%</span>
+                            <span className="text-muted-foreground">Thrust:</span>
+                            <span className="text-foreground">{Math.round(flight.engine_status.engine1_thrust)}%</span>
                           </div>
                         </div>
                       </div>
                       <div className="bg-gray-700/50 rounded p-3">
-                        <div className="text-sm font-medium text-white mb-2">Engine 2</div>
+                        <div className="text-sm font-medium text-foreground mb-2">Engine 2</div>
                         <div className="space-y-1 text-xs">
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Temperature:</span>
-                            <span className="text-white">{Math.round(flight.engine_status.engine2_temp)}°C</span>
+                            <span className="text-muted-foreground">Temperature:</span>
+                            <span className="text-foreground">{Math.round(flight.engine_status.engine2_temp)}°C</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Thrust:</span>
-                            <span className="text-white">{Math.round(flight.engine_status.engine2_thrust)}%</span>
+                            <span className="text-muted-foreground">Thrust:</span>
+                            <span className="text-foreground">{Math.round(flight.engine_status.engine2_thrust)}%</span>
                           </div>
                         </div>
                       </div>
@@ -557,20 +557,20 @@ export default function EnhancedLiveFlightTracker() {
                       <div className="bg-purple-900/20 rounded p-3 text-xs">
                         <div className="grid grid-cols-3 gap-4">
                           <div>
-                            <span className="text-gray-400">Fuel Efficiency:</span>
-                            <span className="text-white ml-2">
+                            <span className="text-muted-foreground">Fuel Efficiency:</span>
+                            <span className="text-foreground ml-2">
                               {flight.digital_twin_data.performance_calculations?.fuel_efficiency_kg_per_hour?.toFixed(0) || 'N/A'} kg/h
                             </span>
                           </div>
                           <div>
-                            <span className="text-gray-400">Operational Cost:</span>
-                            <span className="text-white ml-2">
+                            <span className="text-muted-foreground">Operational Cost:</span>
+                            <span className="text-foreground ml-2">
                               ${flight.digital_twin_data.performance_calculations?.operational_cost_usd?.toFixed(0) || 'N/A'}
                             </span>
                           </div>
                           <div>
-                            <span className="text-gray-400">Cost/Passenger:</span>
-                            <span className="text-white ml-2">
+                            <span className="text-muted-foreground">Cost/Passenger:</span>
+                            <span className="text-foreground ml-2">
                               ${flight.digital_twin_data.performance_calculations?.cost_per_passenger_usd?.toFixed(0) || 'N/A'}
                             </span>
                           </div>
@@ -588,9 +588,9 @@ export default function EnhancedLiveFlightTracker() {
 
       {flights.length === 0 && !loading && (
         <div className="text-center py-8">
-          <Plane className="h-12 w-12 text-gray-600 mx-auto mb-3" />
-          <div className="text-gray-400">No active flights found</div>
-          <Button onClick={fetchFlightData} className="mt-3 bg-blue-600 hover:bg-blue-700">
+          <Plane className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+          <div className="text-muted-foreground">No active flights found</div>
+          <Button onClick={fetchFlightData} className="mt-3 bg-aero-blue-primary hover:bg-aero-blue-light">
             Refresh Flight Data
           </Button>
         </div>

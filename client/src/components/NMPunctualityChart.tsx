@@ -98,7 +98,7 @@ export default function NMPunctualityChart() {
           <CardTitle>Network Manager Punctuality</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-red-500">Error: {error}</div>
+          <div className="text-va-red-primary">Error: {error}</div>
         </CardContent>
       </Card>
     );
@@ -111,7 +111,7 @@ export default function NMPunctualityChart() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4">
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-aero-blue-dark">
                 {analytics.overall.avgArrivalPunctuality}%
               </div>
               <div className="text-sm text-muted-foreground">Avg Arrival Punctuality</div>

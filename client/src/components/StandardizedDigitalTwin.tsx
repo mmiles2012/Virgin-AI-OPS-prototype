@@ -185,17 +185,17 @@ export default function StandardizedDigitalTwin({
       case 'caution': case 'degraded': case 'adequate': return 'text-yellow-600';
       case 'warning': case 'poor': return 'text-orange-600';
       case 'critical': case 'emergency': return 'text-red-600';
-      default: return 'text-gray-600';
+      default: return 'text-muted-foreground';
     }
   };
 
   const getPriorityColor = (priority: string): string => {
     switch (priority.toLowerCase()) {
-      case 'low': return 'bg-blue-600 text-white';
-      case 'medium': return 'bg-yellow-600 text-white';
-      case 'high': return 'bg-orange-600 text-white';
-      case 'critical': return 'bg-red-600 text-white';
-      default: return 'bg-gray-600 text-white';
+      case 'low': return 'bg-aero-blue-primary text-foreground';
+      case 'medium': return 'bg-yellow-600 text-foreground';
+      case 'high': return 'bg-orange-600 text-foreground';
+      case 'critical': return 'bg-va-red-primary text-foreground';
+      default: return 'bg-gray-600 text-foreground';
     }
   };
 
@@ -203,7 +203,7 @@ export default function StandardizedDigitalTwin({
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-aero-blue-primary/30 mx-auto mb-4"></div>
           <p className="text-gray-900">Loading digital twin data...</p>
         </div>
       </div>
@@ -231,12 +231,12 @@ export default function StandardizedDigitalTwin({
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Plane className="h-6 w-6 text-blue-600" />
+              <Plane className="h-6 w-6 text-aero-blue-dark" />
               <div>
                 <h2 className="text-xl font-bold">
                   {digitalTwinData.identity.aircraftType}
                 </h2>
-                <p className="text-sm text-gray-300">
+                <p className="text-sm text-muted-foreground">
                   {digitalTwinData.identity.tailNumber} • {digitalTwinData.identity.fleetId}
                 </p>
               </div>
@@ -255,27 +255,27 @@ export default function StandardizedDigitalTwin({
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center p-3 bg-gray-800 rounded-lg">
-              <MapPin className="h-5 w-5 text-gray-300 mx-auto mb-1" />
-              <div className="text-sm font-medium text-white">{digitalTwinData.currentState.location.altitude.toLocaleString()} ft</div>
-              <div className="text-xs text-gray-300">Altitude</div>
+            <div className="text-center p-3 bg-card rounded-lg">
+              <MapPin className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
+              <div className="text-sm font-medium text-foreground">{digitalTwinData.currentState.location.altitude.toLocaleString()} ft</div>
+              <div className="text-xs text-muted-foreground">Altitude</div>
             </div>
-            <div className="text-center p-3 bg-gray-800 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-gray-300 mx-auto mb-1" />
-              <div className="text-sm font-medium text-white">{digitalTwinData.currentState.location.groundSpeed} kts</div>
-              <div className="text-xs text-gray-300">Ground Speed</div>
+            <div className="text-center p-3 bg-card rounded-lg">
+              <TrendingUp className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
+              <div className="text-sm font-medium text-foreground">{digitalTwinData.currentState.location.groundSpeed} kts</div>
+              <div className="text-xs text-muted-foreground">Ground Speed</div>
             </div>
-            <div className="text-center p-3 bg-gray-800 rounded-lg">
-              <Fuel className="h-5 w-5 text-gray-300 mx-auto mb-1" />
-              <div className="text-sm font-medium text-white">{digitalTwinData.currentState.fuel.remainingPercentage.toFixed(1)}%</div>
-              <div className="text-xs text-gray-300">Fuel Remaining</div>
+            <div className="text-center p-3 bg-card rounded-lg">
+              <Fuel className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
+              <div className="text-sm font-medium text-foreground">{digitalTwinData.currentState.fuel.remainingPercentage.toFixed(1)}%</div>
+              <div className="text-xs text-muted-foreground">Fuel Remaining</div>
             </div>
-            <div className="text-center p-3 bg-gray-800 rounded-lg">
-              <Settings className="h-5 w-5 text-gray-300 mx-auto mb-1" />
+            <div className="text-center p-3 bg-card rounded-lg">
+              <Settings className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
               <div className={`text-sm font-medium ${getStatusColor(digitalTwinData.currentState.engines.status)}`}>
                 {digitalTwinData.currentState.engines.status}
               </div>
-              <div className="text-xs text-gray-600">Engine Status</div>
+              <div className="text-xs text-muted-foreground">Engine Status</div>
             </div>
           </div>
         </CardContent>
@@ -349,7 +349,7 @@ export default function StandardizedDigitalTwin({
                         <AlertTriangle className="h-4 w-4 text-orange-600" />
                         <div>
                           <p className="text-sm font-medium">{alert.message}</p>
-                          <p className="text-xs text-gray-600">{alert.type}</p>
+                          <p className="text-xs text-muted-foreground">{alert.type}</p>
                         </div>
                       </div>
                       <Badge className={getPriorityColor(alert.priority)}>
@@ -380,12 +380,12 @@ export default function StandardizedDigitalTwin({
                   </div>
                   
                   <div>
-                    <span className="text-sm text-gray-600">Expected Delay: </span>
+                    <span className="text-sm text-muted-foreground">Expected Delay: </span>
                     <span className="font-medium">{digitalTwinData.predictions.delayRisk.expectedDelay} minutes</span>
                   </div>
                   
                   <div>
-                    <span className="text-sm text-gray-600">Confidence: </span>
+                    <span className="text-sm text-muted-foreground">Confidence: </span>
                     <span className="font-medium">{(digitalTwinData.predictions.delayRisk.confidence * 100).toFixed(1)}%</span>
                   </div>
                   
@@ -393,7 +393,7 @@ export default function StandardizedDigitalTwin({
                     <h5 className="font-medium mb-2">Contributing Factors:</h5>
                     <ul className="text-sm space-y-1">
                       {digitalTwinData.predictions.delayRisk.factors.map((factor, index) => (
-                        <li key={index} className="text-gray-600">• {factor}</li>
+                        <li key={index} className="text-muted-foreground">• {factor}</li>
                       ))}
                     </ul>
                   </div>
@@ -521,7 +521,7 @@ export default function StandardizedDigitalTwin({
                       <div key={airport.icao} className="flex items-center justify-between p-3 border rounded-lg">
                         <div>
                           <p className="font-medium">{airport.icao} - {airport.name}</p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-muted-foreground">
                             {airport.distance} nm • Runway: {airport.runwayLength.toLocaleString()} ft
                           </p>
                         </div>
@@ -536,7 +536,7 @@ export default function StandardizedDigitalTwin({
                           >
                             {airport.suitability}
                           </Badge>
-                          <div className="text-xs text-gray-600 mt-1">
+                          <div className="text-xs text-muted-foreground mt-1">
                             {airport.fuelAvailable && 'Fuel • '}
                             {airport.maintenanceCapable && 'Maintenance'}
                           </div>
@@ -563,7 +563,7 @@ export default function StandardizedDigitalTwin({
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="font-medium">{route.route}</p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-muted-foreground">
                             +{route.addedTime} min • +{route.addedFuel} kg • +${route.addedCost}
                           </p>
                         </div>
@@ -614,24 +614,24 @@ export default function StandardizedDigitalTwin({
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <Clock className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+              <Clock className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
               <div className="text-sm font-medium">${digitalTwinData.economics.operationalCost.perHour.toLocaleString()}</div>
-              <div className="text-xs text-gray-600">Per Hour</div>
+              <div className="text-xs text-muted-foreground">Per Hour</div>
             </div>
             <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <MapPin className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+              <MapPin className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
               <div className="text-sm font-medium">${digitalTwinData.economics.operationalCost.perNauticalMile.toFixed(0)}</div>
-              <div className="text-xs text-gray-600">Per Nautical Mile</div>
+              <div className="text-xs text-muted-foreground">Per Nautical Mile</div>
             </div>
             <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <Plane className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+              <Plane className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
               <div className="text-sm font-medium">${digitalTwinData.economics.operationalCost.perPassenger.toFixed(0)}</div>
-              <div className="text-xs text-gray-600">Per Passenger</div>
+              <div className="text-xs text-muted-foreground">Per Passenger</div>
             </div>
             <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <Fuel className="h-5 w-5 text-gray-600 mx-auto mb-1" />
+              <Fuel className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
               <div className="text-sm font-medium">${digitalTwinData.economics.fuelCost.efficiency.toFixed(2)}</div>
-              <div className="text-xs text-gray-600">Fuel Efficiency</div>
+              <div className="text-xs text-muted-foreground">Fuel Efficiency</div>
             </div>
           </div>
         </CardContent>

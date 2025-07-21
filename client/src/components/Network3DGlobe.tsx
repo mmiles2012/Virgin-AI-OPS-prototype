@@ -281,50 +281,50 @@ const PerformanceHUD: React.FC<{
   networkMetrics: NetworkMetrics;
 }> = ({ selectedAirport, networkMetrics }) => {
   return (
-    <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm rounded-lg p-4 text-white min-w-80 z-10">
+    <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm rounded-lg p-4 text-foreground min-w-80 z-10">
       <h3 className="text-lg font-bold mb-3 text-blue-300">Network Performance</h3>
       
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="text-center">
-          <div className="text-2xl font-bold text-green-400">
+          <div className="text-2xl font-bold text-aero-green-safe">
             {networkMetrics.onTimePerformance.toFixed(1)}%
           </div>
-          <div className="text-xs text-gray-300">On-Time Performance</div>
+          <div className="text-xs text-muted-foreground">On-Time Performance</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-blue-400">
+          <div className="text-2xl font-bold text-aero-blue-primary">
             {networkMetrics.totalFlights}
           </div>
-          <div className="text-xs text-gray-300">Active Flights</div>
+          <div className="text-xs text-muted-foreground">Active Flights</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-yellow-400">
+          <div className="text-2xl font-bold text-aero-amber-caution">
             {networkMetrics.delays}
           </div>
-          <div className="text-xs text-gray-300">Delays</div>
+          <div className="text-xs text-muted-foreground">Delays</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-red-400">
+          <div className="text-2xl font-bold text-va-red-primary">
             {networkMetrics.averageDelay.toFixed(0)}m
           </div>
-          <div className="text-xs text-gray-300">Avg Delay</div>
+          <div className="text-xs text-muted-foreground">Avg Delay</div>
         </div>
       </div>
 
       {selectedAirport && (
-        <div className="border-t border-gray-600 pt-3">
+        <div className="border-t border-border pt-3">
           <h4 className="font-bold text-blue-300 mb-2">{selectedAirport.icao} - {selectedAirport.name}</h4>
           <div className="text-sm space-y-1">
             <div className="flex justify-between">
-              <span className="text-gray-300">Location:</span>
+              <span className="text-muted-foreground">Location:</span>
               <span>{selectedAirport.city}, {selectedAirport.country}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-300">Coordinates:</span>
+              <span className="text-muted-foreground">Coordinates:</span>
               <span>{selectedAirport.latitude.toFixed(2)}°, {selectedAirport.longitude.toFixed(2)}°</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-300">Continent:</span>
+              <span className="text-muted-foreground">Continent:</span>
               <span>{selectedAirport.continent}</span>
             </div>
           </div>
@@ -344,7 +344,7 @@ const ControlPanel: React.FC<{
   setRotationSpeed: (speed: number) => void;
 }> = ({ showRoutes, setShowRoutes, showFlights, setShowFlights, rotationSpeed, setRotationSpeed }) => {
   return (
-    <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg p-4 text-white z-10">
+    <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-sm rounded-lg p-4 text-foreground z-10">
       <h3 className="text-lg font-bold mb-3 text-blue-300">3D Globe Controls</h3>
       
       <div className="space-y-3">
@@ -461,7 +461,7 @@ const Network3DGlobe: React.FC = () => {
   if (loading) {
     return (
       <div className="w-full h-full flex items-center justify-center">
-        <div className="text-white text-xl">Loading 3D Network Globe...</div>
+        <div className="text-foreground text-xl">Loading 3D Network Globe...</div>
       </div>
     );
   }
@@ -554,7 +554,7 @@ const Network3DGlobe: React.FC = () => {
       />
       
       {/* Legend */}
-      <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-sm rounded-lg p-4 text-white z-10">
+      <div className="absolute bottom-4 right-4 bg-black/80 backdrop-blur-sm rounded-lg p-4 text-foreground z-10">
         <h3 className="text-sm font-bold mb-2 text-blue-300">Performance Legend</h3>
         <div className="space-y-1 text-xs">
           <div className="flex items-center space-x-2">

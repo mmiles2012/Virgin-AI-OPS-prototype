@@ -85,17 +85,17 @@ const HeathrowHoldingMonitor: React.FC = () => {
     switch (priority) {
       case 'CRITICAL': return 'text-red-600';
       case 'HIGH': return 'text-orange-600';
-      case 'MEDIUM': return 'text-yellow-400';
-      default: return 'text-blue-400';
+      case 'MEDIUM': return 'text-aero-amber-caution';
+      default: return 'text-aero-blue-primary';
     }
   };
 
   if (loading) {
     return (
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-card rounded-lg p-6">
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          <span className="ml-2 text-gray-400">Loading holding data...</span>
+          <span className="ml-2 text-muted-foreground">Loading holding data...</span>
         </div>
       </div>
     );
@@ -103,10 +103,10 @@ const HeathrowHoldingMonitor: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-card rounded-lg p-6">
         <div className="flex items-center justify-center h-64">
-          <AlertTriangle className="h-8 w-8 text-red-400 mr-2" />
-          <span className="text-red-400">Error: {error}</span>
+          <AlertTriangle className="h-8 w-8 text-va-red-primary mr-2" />
+          <span className="text-va-red-primary">Error: {error}</span>
         </div>
       </div>
     );
@@ -114,9 +114,9 @@ const HeathrowHoldingMonitor: React.FC = () => {
 
   if (!holdingData) {
     return (
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-card rounded-lg p-6">
         <div className="flex items-center justify-center h-64">
-          <span className="text-gray-400">No holding data available</span>
+          <span className="text-muted-foreground">No holding data available</span>
         </div>
       </div>
     );
@@ -125,13 +125,13 @@ const HeathrowHoldingMonitor: React.FC = () => {
   const { holding_status, holding_alerts, holding_areas } = holdingData;
 
   return (
-    <div className="bg-gray-800 rounded-lg p-6">
+    <div className="bg-card rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-white flex items-center">
-          <Navigation className="h-6 w-6 mr-2 text-blue-400" />
+        <h2 className="text-xl font-bold text-foreground flex items-center">
+          <Navigation className="h-6 w-6 mr-2 text-aero-blue-primary" />
           Heathrow Holding Areas
         </h2>
-        <div className="flex items-center text-sm text-gray-400">
+        <div className="flex items-center text-sm text-muted-foreground">
           <Clock className="h-4 w-4 mr-1" />
           Last updated: {lastUpdate}
         </div>
@@ -142,10 +142,10 @@ const HeathrowHoldingMonitor: React.FC = () => {
         <div className="bg-gray-700 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-400">Total Holding</p>
-              <p className="text-2xl font-bold text-white">{holding_status.totalHolding}</p>
+              <p className="text-sm text-muted-foreground">Total Holding</p>
+              <p className="text-2xl font-bold text-foreground">{holding_status.totalHolding}</p>
             </div>
-            <Activity className="h-8 w-8 text-blue-400" />
+            <Activity className="h-8 w-8 text-aero-blue-primary" />
           </div>
         </div>
         
@@ -153,11 +153,11 @@ const HeathrowHoldingMonitor: React.FC = () => {
           <div key={area.code} className={`rounded-lg p-4 ${getStackBgColor(area.currentCount)}`}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">{area.code}</p>
+                <p className="text-sm text-muted-foreground">{area.code}</p>
                 <p className={`text-xl font-bold ${getStackColor(area.currentCount)}`}>
                   {area.currentCount}
                 </p>
-                <p className="text-xs text-gray-500">{area.name}</p>
+                <p className="text-xs text-foreground0">{area.name}</p>
               </div>
               <Circle className={`h-6 w-6 ${getStackColor(area.currentCount)}`} />
             </div>
@@ -168,15 +168,15 @@ const HeathrowHoldingMonitor: React.FC = () => {
       {/* Holding Areas Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="bg-gray-700 rounded-lg p-4">
-          <h3 className="text-lg font-semibold text-white mb-4">Holding Stack Status</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Holding Stack Status</h3>
           <div className="space-y-3">
             {holding_areas.map((area) => (
               <div key={area.code} className="flex items-center justify-between p-3 bg-gray-600 rounded-lg">
                 <div className="flex items-center">
                   <div className={`w-3 h-3 rounded-full mr-3 ${getStackColor(area.currentCount).replace('text-', 'bg-')}`}></div>
                   <div>
-                    <p className="text-white font-medium">{area.name} ({area.code})</p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-foreground font-medium">{area.name} ({area.code})</p>
+                    <p className="text-sm text-muted-foreground">
                       {area.minAltitude}ft - {area.maxAltitude}ft | {area.radius}km radius
                     </p>
                   </div>
@@ -185,7 +185,7 @@ const HeathrowHoldingMonitor: React.FC = () => {
                   <p className={`text-lg font-bold ${getStackColor(area.currentCount)}`}>
                     {area.currentCount}
                   </p>
-                  <p className="text-xs text-gray-400">aircraft</p>
+                  <p className="text-xs text-muted-foreground">aircraft</p>
                 </div>
               </div>
             ))}
@@ -193,7 +193,7 @@ const HeathrowHoldingMonitor: React.FC = () => {
         </div>
 
         <div className="bg-gray-700 rounded-lg p-4">
-          <h3 className="text-lg font-semibold text-white mb-4">Holding Alerts</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Holding Alerts</h3>
           <div className="space-y-2">
             {holding_alerts.length > 0 ? (
               holding_alerts.map((alert, index) => (
@@ -204,9 +204,9 @@ const HeathrowHoldingMonitor: React.FC = () => {
                       {alert.priority}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-300 mt-1">{alert.message}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{alert.message}</p>
                   {alert.stack && (
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Stack: {alert.stackName} ({alert.stack})
                     </p>
                   )}
@@ -214,9 +214,9 @@ const HeathrowHoldingMonitor: React.FC = () => {
               ))
             ) : (
               <div className="text-center py-8">
-                <Circle className="h-8 w-8 text-green-400 mx-auto mb-2" />
-                <p className="text-green-400 text-sm">No holding alerts</p>
-                <p className="text-gray-400 text-xs">All stacks operating normally</p>
+                <Circle className="h-8 w-8 text-aero-green-safe mx-auto mb-2" />
+                <p className="text-aero-green-safe text-sm">No holding alerts</p>
+                <p className="text-muted-foreground text-xs">All stacks operating normally</p>
               </div>
             )}
           </div>
@@ -225,8 +225,8 @@ const HeathrowHoldingMonitor: React.FC = () => {
 
       {/* Operational Notes */}
       <div className="bg-gray-700 rounded-lg p-4">
-        <h3 className="text-lg font-semibold text-white mb-2">Holding Area Information</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
+        <h3 className="text-lg font-semibold text-foreground mb-2">Holding Area Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
           <div>
             <p><strong>BNN (Bovington):</strong> Northwest holding area</p>
             <p><strong>BIG (Biggin Hill):</strong> Southeast holding area</p>
@@ -236,7 +236,7 @@ const HeathrowHoldingMonitor: React.FC = () => {
             <p><strong>OCK (Ockham):</strong> Southwest holding area</p>
           </div>
         </div>
-        <p className="text-xs text-gray-400 mt-2">
+        <p className="text-xs text-muted-foreground mt-2">
           Detection based on altitude stability (&lt;300ft variation), heading changes (&gt;90°), and low speed (&lt;250kt)
         </p>
       </div>

@@ -219,7 +219,7 @@ export default function DecisionCenter() {
       case 'high': return 'bg-orange-900 text-orange-100 border-orange-500';
       case 'medium': return 'bg-yellow-900 text-yellow-100 border-yellow-500';
       case 'low': return 'bg-green-900 text-green-100 border-green-500';
-      default: return 'bg-gray-900 text-gray-100 border-gray-500';
+      default: return 'bg-card text-foreground border-gray-500';
     }
   };
 
@@ -265,14 +265,14 @@ export default function DecisionCenter() {
           {decisionContext ? (
             <>
               {/* Decision Timer */}
-              <Card className="border-orange-500 bg-orange-900/20">
+              <Card className="border-orange-500 bg-aero-orange-alert/10">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Timer className="h-5 w-5 text-orange-400" />
+                      <Timer className="h-5 w-5 text-aero-orange-alert" />
                       <span className="text-orange-300 font-medium">Decision Required</span>
                     </div>
-                    <div className="text-2xl font-mono text-orange-400">
+                    <div className="text-2xl font-mono text-aero-orange-alert">
                       {formatTime(decisionTimer)}
                     </div>
                   </div>
@@ -285,7 +285,7 @@ export default function DecisionCenter() {
 
               {/* AI Recommendation */}
               {aiRecommendation && (
-                <Card className="border-blue-500 bg-blue-900/20">
+                <Card className="border-blue-500 bg-aero-blue-primary/10">
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-blue-300">
                       <Brain className="h-5 w-5" />
@@ -293,7 +293,7 @@ export default function DecisionCenter() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="font-medium text-white mb-2">
+                    <div className="font-medium text-foreground mb-2">
                       {aiRecommendation.title}
                     </div>
                     <div className="text-blue-200 text-sm mb-3">
@@ -322,17 +322,17 @@ export default function DecisionCenter() {
                     className={`cursor-pointer transition-all ${
                       selectedOption === option.id
                         ? 'border-blue-400 bg-blue-900/30'
-                        : 'border-gray-600 hover:border-gray-500'
+                        : 'border-border hover:border-gray-500'
                     }`}
                     onClick={() => setSelectedOption(option.id)}
                   >
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <div className="font-medium text-white mb-1">
+                          <div className="font-medium text-foreground mb-1">
                             {option.title}
                           </div>
-                          <div className="text-gray-300 text-sm">
+                          <div className="text-muted-foreground text-sm">
                             {option.description}
                           </div>
                         </div>
@@ -343,26 +343,26 @@ export default function DecisionCenter() {
 
                       <div className="grid grid-cols-4 gap-3 text-sm">
                         <div>
-                          <div className="text-gray-400">Safety Score</div>
-                          <div className="text-white font-mono">
+                          <div className="text-muted-foreground">Safety Score</div>
+                          <div className="text-foreground font-mono">
                             {option.safetyScore}%
                           </div>
                         </div>
                         <div>
-                          <div className="text-gray-400">Cost Impact</div>
-                          <div className="text-white font-mono">
+                          <div className="text-muted-foreground">Cost Impact</div>
+                          <div className="text-foreground font-mono">
                             {formatCurrency(option.costImpact)}
                           </div>
                         </div>
                         <div>
-                          <div className="text-gray-400">Time Impact</div>
-                          <div className="text-white font-mono">
+                          <div className="text-muted-foreground">Time Impact</div>
+                          <div className="text-foreground font-mono">
                             {option.timeImpact}min
                           </div>
                         </div>
                         <div>
-                          <div className="text-gray-400">Feasibility</div>
-                          <div className="text-white font-mono">
+                          <div className="text-muted-foreground">Feasibility</div>
+                          <div className="text-foreground font-mono">
                             {option.feasibility}%
                           </div>
                         </div>
@@ -370,7 +370,7 @@ export default function DecisionCenter() {
 
                       {option.requirements.length > 0 && (
                         <div className="mt-3">
-                          <div className="text-gray-400 text-xs mb-1">Requirements:</div>
+                          <div className="text-muted-foreground text-xs mb-1">Requirements:</div>
                           <div className="flex flex-wrap gap-1">
                             {option.requirements.map((req, idx) => (
                               <Badge key={idx} variant="outline" className="text-xs">
@@ -391,7 +391,7 @@ export default function DecisionCenter() {
                   <Button
                     onClick={() => handleMakeDecision('crew')}
                     disabled={isLoading}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-aero-blue-primary hover:bg-aero-blue-light"
                   >
                     Crew Decision
                   </Button>
@@ -413,7 +413,7 @@ export default function DecisionCenter() {
               )}
             </>
           ) : (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-muted-foreground">
               No active decision context available
             </div>
           )}
@@ -445,7 +445,7 @@ export default function DecisionCenter() {
 
               {/* Flight Warnings */}
               {analysis.currentSituation.flightWarnings.length > 0 && (
-                <Card className="border-red-500 bg-red-900/20">
+                <Card className="border-red-500 bg-va-red-primary/10">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-red-300">Active Warnings</CardTitle>
                   </CardHeader>
@@ -475,10 +475,10 @@ export default function DecisionCenter() {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     {analysis.currentSituation.criticalFactors.map((factor, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-2 border border-gray-600 rounded">
+                      <div key={idx} className="flex justify-between items-center p-2 border border-border rounded">
                         <div>
-                          <div className="font-medium text-white">{factor.factor}</div>
-                          <div className="text-gray-300 text-sm">{factor.description}</div>
+                          <div className="font-medium text-foreground">{factor.factor}</div>
+                          <div className="text-muted-foreground text-sm">{factor.description}</div>
                         </div>
                         <Badge className={getRiskColor(factor.impact.toLowerCase())}>
                           {factor.impact}
@@ -500,8 +500,8 @@ export default function DecisionCenter() {
                       <div className="text-orange-300 font-medium mb-2">Immediate Actions</div>
                       <ul className="space-y-1">
                         {analysis.recommendations.immediate.map((rec, idx) => (
-                          <li key={idx} className="text-gray-300 text-sm flex items-center gap-2">
-                            <CheckCircle className="h-3 w-3 text-orange-400" />
+                          <li key={idx} className="text-muted-foreground text-sm flex items-center gap-2">
+                            <CheckCircle className="h-3 w-3 text-aero-orange-alert" />
                             {rec}
                           </li>
                         ))}
@@ -511,8 +511,8 @@ export default function DecisionCenter() {
                       <div className="text-blue-300 font-medium mb-2">Strategic Considerations</div>
                       <ul className="space-y-1">
                         {analysis.recommendations.strategic.map((rec, idx) => (
-                          <li key={idx} className="text-gray-300 text-sm flex items-center gap-2">
-                            <TrendingUp className="h-3 w-3 text-blue-400" />
+                          <li key={idx} className="text-muted-foreground text-sm flex items-center gap-2">
+                            <TrendingUp className="h-3 w-3 text-aero-blue-primary" />
                             {rec}
                           </li>
                         ))}
@@ -541,21 +541,21 @@ export default function DecisionCenter() {
                     <div className="space-y-2">
                       {'affected' in data && (
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Affected:</span>
-                          <span className="text-white">{data.affected}</span>
+                          <span className="text-muted-foreground">Affected:</span>
+                          <span className="text-foreground">{data.affected}</span>
                         </div>
                       )}
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Impact Level:</span>
+                        <span className="text-muted-foreground">Impact Level:</span>
                         <Badge className={getRiskColor(data.impact.toLowerCase())}>
                           {data.impact}
                         </Badge>
                       </div>
                       <div>
-                        <div className="text-gray-400 text-sm mb-1">Key Concerns:</div>
+                        <div className="text-muted-foreground text-sm mb-1">Key Concerns:</div>
                         <ul className="space-y-1">
                           {data.concerns.map((concern: string, idx: number) => (
-                            <li key={idx} className="text-gray-300 text-xs">
+                            <li key={idx} className="text-muted-foreground text-xs">
                               • {concern}
                             </li>
                           ))}
@@ -578,18 +578,18 @@ export default function DecisionCenter() {
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <div className="font-medium text-white">
+                        <div className="font-medium text-foreground">
                           {decision.chosenOption.title}
                         </div>
-                        <div className="text-gray-300 text-sm">
+                        <div className="text-muted-foreground text-sm">
                           Decision by: {decision.decisionMaker}
                         </div>
                       </div>
                       <div className="text-right">
                         <Badge className={
                           decision.safetyOutcome === 'excellent' ? 'bg-green-600' :
-                          decision.safetyOutcome === 'good' ? 'bg-blue-600' :
-                          decision.safetyOutcome === 'acceptable' ? 'bg-yellow-600' : 'bg-red-600'
+                          decision.safetyOutcome === 'good' ? 'bg-aero-blue-primary' :
+                          decision.safetyOutcome === 'acceptable' ? 'bg-yellow-600' : 'bg-va-red-primary'
                         }>
                           {decision.safetyOutcome}
                         </Badge>
@@ -597,16 +597,16 @@ export default function DecisionCenter() {
                     </div>
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <div className="text-gray-400">Response Time</div>
-                        <div className="text-white">{decision.responseTime}s</div>
+                        <div className="text-muted-foreground">Response Time</div>
+                        <div className="text-foreground">{decision.responseTime}s</div>
                       </div>
                       <div>
-                        <div className="text-gray-400">Actual Cost</div>
-                        <div className="text-white">{formatCurrency(decision.actualCost)}</div>
+                        <div className="text-muted-foreground">Actual Cost</div>
+                        <div className="text-foreground">{formatCurrency(decision.actualCost)}</div>
                       </div>
                       <div>
-                        <div className="text-gray-400">Confidence</div>
-                        <div className="text-white">{decision.confidence.toFixed(1)}%</div>
+                        <div className="text-muted-foreground">Confidence</div>
+                        <div className="text-foreground">{decision.confidence.toFixed(1)}%</div>
                       </div>
                     </div>
                   </CardContent>
@@ -614,7 +614,7 @@ export default function DecisionCenter() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-muted-foreground">
               No decision history available
             </div>
           )}

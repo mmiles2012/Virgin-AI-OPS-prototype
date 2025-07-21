@@ -169,8 +169,8 @@ const HeathrowT3Dashboard: React.FC = () => {
           </h3>
           
           {status.connection_risks.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <Clock className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+            <div className="text-center py-8 text-foreground0">
+              <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
               <p>No tight connections detected</p>
               <p className="text-sm">All connections meet minimum time requirements</p>
             </div>
@@ -179,19 +179,19 @@ const HeathrowT3Dashboard: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                       Connection
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                       Connection Time
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                       Stands
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                       Predicted Delay
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                       Risk Level
                     </th>
                   </tr>
@@ -202,7 +202,7 @@ const HeathrowT3Dashboard: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col">
                           <span className="text-sm font-medium text-gray-900">{risk.inbound}</span>
-                          <span className="text-sm text-gray-500">→ {risk.outbound}</span>
+                          <span className="text-sm text-foreground0">→ {risk.outbound}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -211,7 +211,7 @@ const HeathrowT3Dashboard: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col">
                           <span className="text-sm text-gray-900">{risk.stand_in}</span>
-                          <span className="text-sm text-gray-500">→ {risk.stand_out}</span>
+                          <span className="text-sm text-foreground0">→ {risk.stand_out}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -238,8 +238,8 @@ const HeathrowT3Dashboard: React.FC = () => {
           </h3>
           
           {status.stand_allocations.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <BarChart3 className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+            <div className="text-center py-8 text-foreground0">
+              <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
               <p>No optimization recommendations</p>
               <p className="text-sm">Current stand allocations are optimal</p>
             </div>
@@ -248,19 +248,19 @@ const HeathrowT3Dashboard: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                       Flight
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                       Current Stand
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                       Recommended Stand
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                       Reason
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-foreground0 uppercase tracking-wider">
                       Confidence
                     </th>
                   </tr>
@@ -306,13 +306,13 @@ const HeathrowT3Dashboard: React.FC = () => {
     return (
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <UserCheck className="h-5 w-5 text-blue-600 mr-2" />
+          <UserCheck className="h-5 w-5 text-aero-blue-dark mr-2" />
           Passenger Connection Tracking
         </h3>
         
         {passengerData.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <UserCheck className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+          <div className="text-center py-8 text-foreground0">
+            <UserCheck className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
             <p>No passengers currently being tracked</p>
             <p className="text-sm">Connection monitoring system ready</p>
           </div>
@@ -323,8 +323,8 @@ const HeathrowT3Dashboard: React.FC = () => {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h4 className="text-lg font-medium text-gray-900">{passenger.name}</h4>
-                    <p className="text-sm text-gray-600">{passenger.route}</p>
-                    <p className="text-sm text-blue-600 font-medium">{passenger.alliance_status}</p>
+                    <p className="text-sm text-muted-foreground">{passenger.route}</p>
+                    <p className="text-sm text-aero-blue-dark font-medium">{passenger.alliance_status}</p>
                   </div>
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getConnectionRiskColor('low')}`}>
                     ACTIVE
@@ -378,8 +378,8 @@ const HeathrowT3Dashboard: React.FC = () => {
         </h3>
         
         {passengerAlerts.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <AlertTriangle className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+          <div className="text-center py-8 text-foreground0">
+            <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
             <p>No active alerts</p>
             <p className="text-sm">All passenger connections are on track</p>
           </div>
@@ -413,23 +413,23 @@ const HeathrowT3Dashboard: React.FC = () => {
                     </div>
                     <div className="mt-2 space-y-1">
                       {alert.arriving_flight && alert.departing_flight && (
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                           Connection: {alert.arriving_flight} → {alert.departing_flight}
                         </p>
                       )}
                       {alert.flight && alert.delay_minutes && (
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                           Flight {alert.flight} delayed by {alert.delay_minutes} minutes
                         </p>
                       )}
                       {alert.connection_time && (
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                           {alert.connection_time}
                         </p>
                       )}
                     </div>
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-foreground0">
                     {new Date(alert.timestamp).toLocaleTimeString()}
                   </div>
                 </div>
@@ -445,8 +445,8 @@ const HeathrowT3Dashboard: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-64 bg-white rounded-lg border">
         <div className="text-center">
-          <Activity className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-2" />
-          <p className="text-gray-600">Loading Heathrow T3 Connection Management...</p>
+          <Activity className="h-8 w-8 animate-spin text-aero-blue-dark mx-auto mb-2" />
+          <p className="text-muted-foreground">Loading Heathrow T3 Connection Management...</p>
         </div>
       </div>
     );
@@ -467,7 +467,7 @@ const HeathrowT3Dashboard: React.FC = () => {
   if (!status) {
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <p className="text-gray-600">No Heathrow T3 data available</p>
+        <p className="text-muted-foreground">No Heathrow T3 data available</p>
       </div>
     );
   }
@@ -478,10 +478,10 @@ const HeathrowT3Dashboard: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            <Plane className="h-6 w-6 text-blue-600 mr-3" />
+            <Plane className="h-6 w-6 text-aero-blue-dark mr-3" />
             <h2 className="text-xl font-bold text-gray-900">Heathrow T3 Connection Management</h2>
           </div>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-foreground0">
             Last updated: {status ? new Date(status.last_update).toLocaleTimeString() : 'Loading...'}
           </div>
         </div>
@@ -491,8 +491,8 @@ const HeathrowT3Dashboard: React.FC = () => {
           <button
             className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
               activeTab === 'connections'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-aero-blue-primary/30 text-aero-blue-dark'
+                : 'border-transparent text-foreground0 hover:text-gray-700'
             }`}
             onClick={() => setActiveTab('connections')}
           >
@@ -502,8 +502,8 @@ const HeathrowT3Dashboard: React.FC = () => {
           <button
             className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
               activeTab === 'passengers'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-aero-blue-primary/30 text-aero-blue-dark'
+                : 'border-transparent text-foreground0 hover:text-gray-700'
             }`}
             onClick={() => setActiveTab('passengers')}
           >
@@ -513,8 +513,8 @@ const HeathrowT3Dashboard: React.FC = () => {
           <button
             className={`px-4 py-2 font-medium text-sm border-b-2 transition-colors ${
               activeTab === 'alerts'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-aero-blue-primary/30 text-aero-blue-dark'
+                : 'border-transparent text-foreground0 hover:text-gray-700'
             }`}
             onClick={() => setActiveTab('alerts')}
           >
@@ -527,9 +527,9 @@ const HeathrowT3Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="bg-blue-50 rounded-lg p-4">
             <div className="flex items-center">
-              <Plane className="h-5 w-5 text-blue-600 mr-2" />
+              <Plane className="h-5 w-5 text-aero-blue-dark mr-2" />
               <div>
-                <p className="text-sm text-blue-600 font-medium">Active Flights</p>
+                <p className="text-sm text-aero-blue-dark font-medium">Active Flights</p>
                 <p className="text-2xl font-bold text-blue-900">{status ? status.active_flights : 0}</p>
               </div>
             </div>
@@ -571,10 +571,10 @@ const HeathrowT3Dashboard: React.FC = () => {
               <div>
                 <p className="text-sm text-purple-600 font-medium">ML Models</p>
                 <div className="flex space-x-1 mt-1">
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${status ? getModelStatusColor(status.model_status.delay_model) : 'text-gray-600 bg-gray-100'}`}>
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${status ? getModelStatusColor(status.model_status.delay_model) : 'text-muted-foreground bg-gray-100'}`}>
                     Delay
                   </span>
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${status ? getModelStatusColor(status.model_status.stand_model) : 'text-gray-600 bg-gray-100'}`}>
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${status ? getModelStatusColor(status.model_status.stand_model) : 'text-muted-foreground bg-gray-100'}`}>
                     Stand
                   </span>
                 </div>

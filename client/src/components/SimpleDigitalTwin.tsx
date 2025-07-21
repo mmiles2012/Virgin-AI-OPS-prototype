@@ -269,7 +269,7 @@ export default function SimpleDigitalTwin({
             </div>
           </div>
           
-          <div className="flex items-center space-x-4 text-gray-600">
+          <div className="flex items-center space-x-4 text-muted-foreground">
             <span>Aircraft: {currentAircraft.registration}</span>
             <span>•</span>
             <span>Type: {currentAircraft.aircraftType}</span>
@@ -290,23 +290,23 @@ export default function SimpleDigitalTwin({
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Aircraft Identity</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-600">Registration:</span>
+                <span className="text-muted-foreground">Registration:</span>
                 <span className="font-medium">{currentAircraft.registration}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Type:</span>
+                <span className="text-muted-foreground">Type:</span>
                 <span className="font-medium">{currentAircraft.aircraftType}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Delivered:</span>
+                <span className="text-muted-foreground">Delivered:</span>
                 <span className="font-medium">{new Date(currentAircraft.deliveryDate).toLocaleDateString()}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Age:</span>
+                <span className="text-muted-foreground">Age:</span>
                 <span className="font-medium">{aircraftData.age} years</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Status:</span>
+                <span className="text-muted-foreground">Status:</span>
                 <span className="font-medium text-green-600">Active</span>
               </div>
             </div>
@@ -317,19 +317,19 @@ export default function SimpleDigitalTwin({
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Current State</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-600">Location:</span>
+                <span className="text-muted-foreground">Location:</span>
                 <span className="font-medium">EGLL (Heathrow)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Status:</span>
+                <span className="text-muted-foreground">Status:</span>
                 <span className="font-medium">On Ground</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Fuel Capacity:</span>
+                <span className="text-muted-foreground">Fuel Capacity:</span>
                 <span className="font-medium">{aircraftData.fuel}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Engines:</span>
+                <span className="text-muted-foreground">Engines:</span>
                 <span className="font-medium">{aircraftData.engines}</span>
               </div>
             </div>
@@ -340,15 +340,15 @@ export default function SimpleDigitalTwin({
             <h3 className="text-lg font-semibold text-gray-900 mb-4">ML Predictions</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-600">Delay Risk:</span>
+                <span className="text-muted-foreground">Delay Risk:</span>
                 <span className="font-medium text-green-600">Low</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Confidence:</span>
+                <span className="text-muted-foreground">Confidence:</span>
                 <span className="font-medium">89%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">OTP Score:</span>
+                <span className="text-muted-foreground">OTP Score:</span>
                 <span className="font-medium">92%</span>
               </div>
             </div>
@@ -359,15 +359,15 @@ export default function SimpleDigitalTwin({
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Operations</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-600">Max Passengers:</span>
+                <span className="text-muted-foreground">Max Passengers:</span>
                 <span className="font-medium">{aircraftData.passengers}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Range:</span>
+                <span className="text-muted-foreground">Range:</span>
                 <span className="font-medium">{aircraftData.range}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Next Flight:</span>
+                <span className="text-muted-foreground">Next Flight:</span>
                 <span className="font-medium">{aircraftData.nextFlight}</span>
               </div>
             </div>
@@ -378,15 +378,15 @@ export default function SimpleDigitalTwin({
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Diversion</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-600">Max Range:</span>
+                <span className="text-muted-foreground">Max Range:</span>
                 <span className="font-medium">{aircraftData.range}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Alternates:</span>
+                <span className="text-muted-foreground">Alternates:</span>
                 <span className="font-medium">EGKK, EGGW</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Fuel Capacity:</span>
+                <span className="text-muted-foreground">Fuel Capacity:</span>
                 <span className="font-medium">{aircraftData.fuel}</span>
               </div>
             </div>
@@ -397,15 +397,15 @@ export default function SimpleDigitalTwin({
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Economics</h3>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-600">Cost/Hour:</span>
+                <span className="text-muted-foreground">Cost/Hour:</span>
                 <span className="font-medium">{aircraftData.costPerHour}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Fuel Efficiency:</span>
+                <span className="text-muted-foreground">Fuel Efficiency:</span>
                 <span className="font-medium">88%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Maintenance:</span>
+                <span className="text-muted-foreground">Maintenance:</span>
                 <span className={`font-medium ${aircraftData.maintenanceColor}`}>{aircraftData.maintenance}</span>
               </div>
             </div>
@@ -419,28 +419,28 @@ export default function SimpleDigitalTwin({
             <button
               onClick={() => handleGenerateScenario('technical')}
               disabled={scenarioLoading}
-              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-red-600 hover:bg-red-700'} text-white font-medium py-3 px-4 rounded-lg transition-colors`}
+              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-va-red-primary hover:bg-va-red-heritage'} text-foreground font-medium py-3 px-4 rounded-lg transition-colors`}
             >
               {scenarioLoading ? 'Loading...' : 'Technical Emergency'}
             </button>
             <button
               onClick={() => handleGenerateScenario('medical')}
               disabled={scenarioLoading}
-              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-orange-600 hover:bg-orange-700'} text-white font-medium py-3 px-4 rounded-lg transition-colors`}
+              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-orange-600 hover:bg-orange-700'} text-foreground font-medium py-3 px-4 rounded-lg transition-colors`}
             >
               {scenarioLoading ? 'Loading...' : 'Medical Emergency'}
             </button>
             <button
               onClick={() => handleGenerateScenario('weather')}
               disabled={scenarioLoading}
-              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-yellow-600 hover:bg-yellow-700'} text-white font-medium py-3 px-4 rounded-lg transition-colors`}
+              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-yellow-600 hover:bg-yellow-700'} text-foreground font-medium py-3 px-4 rounded-lg transition-colors`}
             >
               {scenarioLoading ? 'Loading...' : 'Weather Emergency'}
             </button>
             <button
               onClick={() => handleGenerateScenario('security')}
               disabled={scenarioLoading}
-              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-purple-600 hover:bg-purple-700'} text-white font-medium py-3 px-4 rounded-lg transition-colors`}
+              className={`${scenarioLoading ? 'bg-gray-400' : 'bg-purple-600 hover:bg-purple-700'} text-foreground font-medium py-3 px-4 rounded-lg transition-colors`}
             >
               {scenarioLoading ? 'Loading...' : 'Security Emergency'}
             </button>
@@ -496,19 +496,19 @@ export default function SimpleDigitalTwin({
                   <h5 className="font-medium text-gray-700 mb-2">Cost Impact Analysis</h5>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-600">Total Cost:</span>
+                      <span className="text-muted-foreground">Total Cost:</span>
                       <p className="font-medium">${Math.round(scenarioData.ml_recommendations.cost_impact.estimated_total_cost).toLocaleString()}</p>
                     </div>
                     <div>
-                      <span className="text-gray-600">Fuel Cost:</span>
+                      <span className="text-muted-foreground">Fuel Cost:</span>
                       <p className="font-medium">${Math.round(scenarioData.ml_recommendations.cost_impact.fuel_cost).toLocaleString()}</p>
                     </div>
                     <div>
-                      <span className="text-gray-600">Crew Cost:</span>
+                      <span className="text-muted-foreground">Crew Cost:</span>
                       <p className="font-medium">${Math.round(scenarioData.ml_recommendations.cost_impact.crew_cost).toLocaleString()}</p>
                     </div>
                     <div>
-                      <span className="text-gray-600">Compensation:</span>
+                      <span className="text-muted-foreground">Compensation:</span>
                       <p className="font-medium">${Math.round(scenarioData.ml_recommendations.cost_impact.passenger_compensation).toLocaleString()}</p>
                     </div>
                   </div>
@@ -519,13 +519,13 @@ export default function SimpleDigitalTwin({
                 <button
                   onClick={handleAnalyzeScenario}
                   disabled={scenarioLoading}
-                  className={`${scenarioLoading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'} text-white font-medium py-2 px-4 rounded transition-colors`}
+                  className={`${scenarioLoading ? 'bg-gray-400' : 'bg-aero-blue-primary hover:bg-aero-blue-light'} text-foreground font-medium py-2 px-4 rounded transition-colors`}
                 >
                   {scenarioLoading ? 'Analyzing...' : 'Analyze What-If Outcomes'}
                 </button>
                 <button
                   onClick={() => setScenarioData(null)}
-                  className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded transition-colors"
+                  className="bg-gray-600 hover:bg-muted text-foreground font-medium py-2 px-4 rounded transition-colors"
                 >
                   Clear Scenario
                 </button>
@@ -583,7 +583,7 @@ export default function SimpleDigitalTwin({
                           </div>
                           {scenarioData.analysis.what_if_outcomes.immediate_diversion.optimal_route && (
                             <div className="pt-2 border-t">
-                              <span className="text-xs text-gray-600">
+                              <span className="text-xs text-muted-foreground">
                                 Optimal: {scenarioData.analysis.what_if_outcomes.immediate_diversion.optimal_route.alternate.name}
                               </span>
                             </div>
@@ -632,7 +632,7 @@ export default function SimpleDigitalTwin({
                         <div>
                           <span className="font-medium text-gray-700">ML Recommendation:</span>
                           <p className="mt-1">{scenarioData.analysis.diversion_analysis.ml_recommendation}</p>
-                          <p className="text-xs text-gray-600">Confidence: {Math.round(scenarioData.analysis.diversion_analysis.confidence_score * 100)}%</p>
+                          <p className="text-xs text-muted-foreground">Confidence: {Math.round(scenarioData.analysis.diversion_analysis.confidence_score * 100)}%</p>
                         </div>
                       </div>
                       
@@ -645,7 +645,7 @@ export default function SimpleDigitalTwin({
                           {scenarioData.analysis.decision_support.backup_options && scenarioData.analysis.decision_support.backup_options.length > 0 && (
                             <div className="mt-2">
                               <span className="text-xs text-blue-700 font-medium">Backup Options: </span>
-                              <span className="text-xs text-blue-600">
+                              <span className="text-xs text-aero-blue-dark">
                                 {scenarioData.analysis.decision_support.backup_options.join(', ')}
                               </span>
                             </div>
@@ -683,9 +683,9 @@ export default function SimpleDigitalTwin({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-sm text-gray-600">Digital Twin Active</span>
+              <span className="text-sm text-muted-foreground">Digital Twin Active</span>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-foreground0">
               Last Update: {new Date().toLocaleTimeString()}
             </div>
           </div>

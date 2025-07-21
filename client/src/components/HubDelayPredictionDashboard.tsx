@@ -339,18 +339,18 @@ const HubDelayPredictionDashboard: React.FC = () => {
   }, [selectedHub]);
 
   const getRiskColor = (risk: number) => {
-    if (risk < 25) return 'text-green-400';
-    if (risk < 50) return 'text-yellow-400';
-    if (risk < 75) return 'text-orange-400';
-    return 'text-red-400';
+    if (risk < 25) return 'text-aero-green-safe';
+    if (risk < 50) return 'text-aero-amber-caution';
+    if (risk < 75) return 'text-aero-orange-alert';
+    return 'text-va-red-primary';
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'critical': return 'bg-red-600';
-      case 'high': return 'bg-orange-600';
-      case 'medium': return 'bg-yellow-600';
-      default: return 'bg-green-600';
+      case 'critical': return 'bg-va-red-primary';
+      case 'high': return 'bg-aero-orange-vibrant';
+      case 'medium': return 'bg-aero-amber-caution';
+      default: return 'bg-aero-green-safe';
     }
   };
 
@@ -377,28 +377,28 @@ const HubDelayPredictionDashboard: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <MapPin className="h-8 w-8 text-blue-400" />
+            <MapPin className="h-8 w-8 text-aero-blue-primary" />
             <div>
               <h1 className="text-3xl font-bold">Hub-Centric Delay Prediction</h1>
-              <p className="text-gray-400">Heathrow-prioritized analytics with major hub comparison</p>
+              <p className="text-muted-foreground">Heathrow-prioritized analytics with major hub comparison</p>
             </div>
           </div>
           
           <div className="flex items-center gap-4">
             <Select value={selectedHub} onValueChange={setSelectedHub}>
-              <SelectTrigger className="w-48 bg-gray-800 border-gray-700 text-white">
+              <SelectTrigger className="w-48 bg-card border-border text-foreground">
                 <SelectValue placeholder="Select Hub" />
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
+              <SelectContent className="bg-card border-border">
                 {majorHubs.map(hub => (
-                  <SelectItem key={hub.icao} value={hub.icao} className="text-white hover:bg-gray-700">
+                  <SelectItem key={hub.icao} value={hub.icao} className="text-foreground hover:bg-muted">
                     <div className="flex items-center gap-2">
-                      <Badge className={hub.type === 'primary' ? 'bg-blue-600' : 'bg-gray-600'}>
+                      <Badge className={hub.type === 'primary' ? 'bg-aero-blue-primary' : 'bg-gray-600'}>
                         {hub.iata}
                       </Badge>
                       <span>{hub.name}</span>
                       {hub.virginAtlanticOperations && (
-                        <Plane className="h-4 w-4 text-red-400" />
+                        <Plane className="h-4 w-4 text-va-red-primary" />
                       )}
                     </div>
                   </SelectItem>
@@ -407,13 +407,13 @@ const HubDelayPredictionDashboard: React.FC = () => {
             </Select>
             
             <Select value={timeRange} onValueChange={(value) => setTimeRange(value as any)}>
-              <SelectTrigger className="w-32 bg-gray-800 border-gray-700 text-white">
+              <SelectTrigger className="w-32 bg-card border-border text-foreground">
                 <SelectValue placeholder="Time Range" />
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
-                <SelectItem value="today" className="text-white hover:bg-gray-700">Today</SelectItem>
-                <SelectItem value="week" className="text-white hover:bg-gray-700">Week</SelectItem>
-                <SelectItem value="month" className="text-white hover:bg-gray-700">Month</SelectItem>
+              <SelectContent className="bg-card border-border">
+                <SelectItem value="today" className="text-foreground hover:bg-muted">Today</SelectItem>
+                <SelectItem value="week" className="text-foreground hover:bg-muted">Week</SelectItem>
+                <SelectItem value="month" className="text-foreground hover:bg-muted">Month</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -421,44 +421,44 @@ const HubDelayPredictionDashboard: React.FC = () => {
 
         {/* Hub Overview */}
         {currentHubData && (
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Globe className="h-5 w-5 text-blue-400" />
+                <Globe className="h-5 w-5 text-aero-blue-primary" />
                 {currentHubData.name} ({currentHubData.iata}) Overview
                 {currentHubData.type === 'primary' && (
-                  <Badge className="bg-blue-600">Primary Hub</Badge>
+                  <Badge className="bg-aero-blue-primary">Primary Hub</Badge>
                 )}
                 {currentHubData.virginAtlanticOperations && (
-                  <Badge className="bg-red-600">Virgin Atlantic</Badge>
+                  <Badge className="bg-va-red-primary">Virgin Atlantic</Badge>
                 )}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">
+                  <div className="text-2xl font-bold text-aero-green-safe">
                     {currentHubData.performance.onTimeRate}%
                   </div>
-                  <div className="text-sm text-gray-400">On-Time Performance</div>
+                  <div className="text-sm text-muted-foreground">On-Time Performance</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-yellow-400">
+                  <div className="text-2xl font-bold text-aero-amber-caution">
                     {currentHubData.performance.avgDelayMinutes}min
                   </div>
-                  <div className="text-sm text-gray-400">Average Delay</div>
+                  <div className="text-sm text-muted-foreground">Average Delay</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-400">
+                  <div className="text-2xl font-bold text-aero-orange-alert">
                     {currentHubData.performance.holdingFrequency}%
                   </div>
-                  <div className="text-sm text-gray-400">Holding Frequency</div>
+                  <div className="text-sm text-muted-foreground">Holding Frequency</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-400">
+                  <div className="text-2xl font-bold text-aero-blue-primary">
                     {currentHubData.capacity.hourly}/hr
                   </div>
-                  <div className="text-sm text-gray-400">Hourly Capacity</div>
+                  <div className="text-sm text-muted-foreground">Hourly Capacity</div>
                 </div>
               </div>
             </CardContent>
@@ -466,20 +466,20 @@ const HubDelayPredictionDashboard: React.FC = () => {
         )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-800">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600">Overview</TabsTrigger>
-            <TabsTrigger value="predictions" className="data-[state=active]:bg-blue-600">Predictions</TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-blue-600">Analytics</TabsTrigger>
-            <TabsTrigger value="comparison" className="data-[state=active]:bg-blue-600">Hub Comparison</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-card">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-aero-blue-primary">Overview</TabsTrigger>
+            <TabsTrigger value="predictions" className="data-[state=active]:bg-aero-blue-primary">Predictions</TabsTrigger>
+            <TabsTrigger value="analytics" className="data-[state=active]:bg-aero-blue-primary">Analytics</TabsTrigger>
+            <TabsTrigger value="comparison" className="data-[state=active]:bg-aero-blue-primary">Hub Comparison</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
             {/* Current Hub Factors */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Activity className="h-5 w-5 text-green-400" />
+                    <Activity className="h-5 w-5 text-aero-green-safe" />
                     Hub Operational Factors
                   </CardTitle>
                 </CardHeader>
@@ -509,10 +509,10 @@ const HubDelayPredictionDashboard: React.FC = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-blue-400" />
+                    <TrendingUp className="h-5 w-5 text-aero-blue-primary" />
                     Performance Trends
                   </CardTitle>
                 </CardHeader>
@@ -555,11 +555,11 @@ const HubDelayPredictionDashboard: React.FC = () => {
             {/* Flight Predictions */}
             <div className="space-y-4">
               {predictions.map((prediction, index) => (
-                <Card key={index} className="bg-gray-800 border-gray-700">
+                <Card key={index} className="bg-card border-border">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="flex items-center gap-2">
-                        <Plane className="h-5 w-5 text-blue-400" />
+                        <Plane className="h-5 w-5 text-aero-blue-primary" />
                         {prediction.flightNumber} - {prediction.route}
                       </CardTitle>
                       <div className="flex items-center gap-2">
@@ -578,33 +578,33 @@ const HubDelayPredictionDashboard: React.FC = () => {
                         <div className={`text-2xl font-bold ${getRiskColor(prediction.predictions.delayProbability)}`}>
                           {prediction.predictions.delayProbability.toFixed(1)}%
                         </div>
-                        <div className="text-sm text-gray-400">Delay Probability</div>
+                        <div className="text-sm text-muted-foreground">Delay Probability</div>
                       </div>
                       <div className="text-center">
                         <div className={`text-2xl font-bold ${getRiskColor(prediction.predictions.expectedDelayMinutes)}`}>
                           {prediction.predictions.expectedDelayMinutes.toFixed(0)}min
                         </div>
-                        <div className="text-sm text-gray-400">Expected Delay</div>
+                        <div className="text-sm text-muted-foreground">Expected Delay</div>
                       </div>
                       <div className="text-center">
                         <div className={`text-2xl font-bold ${getRiskColor(prediction.predictions.holdingProbability)}`}>
                           {prediction.predictions.holdingProbability.toFixed(1)}%
                         </div>
-                        <div className="text-sm text-gray-400">Holding Probability</div>
+                        <div className="text-sm text-muted-foreground">Holding Probability</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-green-400">
+                        <div className="text-2xl font-bold text-aero-green-safe">
                           {prediction.predictions.confidence.toFixed(1)}%
                         </div>
-                        <div className="text-sm text-gray-400">Confidence</div>
+                        <div className="text-sm text-muted-foreground">Confidence</div>
                       </div>
                     </div>
                     
                     <div className="space-y-2">
-                      <div className="text-sm font-medium text-gray-300">Recommendations:</div>
+                      <div className="text-sm font-medium text-muted-foreground">Recommendations:</div>
                       {prediction.recommendations.map((rec, i) => (
-                        <div key={i} className="text-sm text-gray-400 flex items-center gap-2">
-                          <Target className="h-4 w-4 text-blue-400 flex-shrink-0" />
+                        <div key={i} className="text-sm text-muted-foreground flex items-center gap-2">
+                          <Target className="h-4 w-4 text-aero-blue-primary flex-shrink-0" />
                           {rec}
                         </div>
                       ))}
@@ -617,7 +617,7 @@ const HubDelayPredictionDashboard: React.FC = () => {
 
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BarChart3 className="h-5 w-5 text-purple-400" />
@@ -652,10 +652,10 @@ const HubDelayPredictionDashboard: React.FC = () => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-green-400" />
+                    <Calendar className="h-5 w-5 text-aero-green-safe" />
                     Seasonal Impact
                   </CardTitle>
                 </CardHeader>
@@ -688,10 +688,10 @@ const HubDelayPredictionDashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="comparison" className="space-y-6">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Gauge className="h-5 w-5 text-yellow-400" />
+                  <Gauge className="h-5 w-5 text-aero-amber-caution" />
                   Hub Performance Comparison
                 </CardTitle>
               </CardHeader>
@@ -718,7 +718,7 @@ const HubDelayPredictionDashboard: React.FC = () => {
             </Card>
 
             {/* Hub Comparison Table */}
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle>Detailed Hub Metrics</CardTitle>
               </CardHeader>
@@ -726,7 +726,7 @@ const HubDelayPredictionDashboard: React.FC = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-gray-700">
+                      <tr className="border-b border-border">
                         <th className="text-left p-2">Hub</th>
                         <th className="text-left p-2">Type</th>
                         <th className="text-left p-2">On-Time Rate</th>
@@ -737,21 +737,21 @@ const HubDelayPredictionDashboard: React.FC = () => {
                     </thead>
                     <tbody>
                       {majorHubs.map((hub) => (
-                        <tr key={hub.icao} className={`border-b border-gray-700 ${hub.icao === selectedHub ? 'bg-blue-900/20' : ''}`}>
+                        <tr key={hub.icao} className={`border-b border-border ${hub.icao === selectedHub ? 'bg-aero-blue-primary/10' : ''}`}>
                           <td className="p-2 font-medium">{hub.iata} - {hub.name}</td>
                           <td className="p-2">
-                            <Badge className={hub.type === 'primary' ? 'bg-blue-600' : 'bg-gray-600'}>
+                            <Badge className={hub.type === 'primary' ? 'bg-aero-blue-primary' : 'bg-gray-600'}>
                               {hub.type}
                             </Badge>
                           </td>
-                          <td className="p-2 text-green-400">{hub.performance.onTimeRate}%</td>
-                          <td className="p-2 text-yellow-400">{hub.performance.avgDelayMinutes}min</td>
-                          <td className="p-2 text-blue-400">{hub.capacity.hourly}/hr</td>
+                          <td className="p-2 text-aero-green-safe">{hub.performance.onTimeRate}%</td>
+                          <td className="p-2 text-aero-amber-caution">{hub.performance.avgDelayMinutes}min</td>
+                          <td className="p-2 text-aero-blue-primary">{hub.capacity.hourly}/hr</td>
                           <td className="p-2">
                             {hub.virginAtlanticOperations ? (
-                              <Plane className="h-4 w-4 text-red-400" />
+                              <Plane className="h-4 w-4 text-va-red-primary" />
                             ) : (
-                              <span className="text-gray-500">—</span>
+                              <span className="text-foreground0">—</span>
                             )}
                           </td>
                         </tr>

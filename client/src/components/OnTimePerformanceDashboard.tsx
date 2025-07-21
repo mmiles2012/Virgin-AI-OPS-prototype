@@ -309,8 +309,8 @@ export default function OnTimePerformanceDashboard() {
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <div className="text-gray-600">Loading network performance data...</div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-va-red-primary/30 mx-auto mb-4"></div>
+          <div className="text-muted-foreground">Loading network performance data...</div>
         </div>
       </div>
     );
@@ -349,15 +349,15 @@ export default function OnTimePerformanceDashboard() {
       <div className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Plane className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-bold text-white">Virgin Atlantic Network Operations</h2>
+            <Plane className="w-6 h-6 text-foreground" />
+            <h2 className="text-xl font-bold text-foreground">Virgin Atlantic Network Operations</h2>
           </div>
-          <div className="flex items-center gap-4 text-white/80">
+          <div className="flex items-center gap-4 text-foreground/80">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setNetworkView('overview')}
                 className={`px-3 py-1 rounded text-sm ${
-                  networkView === 'overview' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'
+                  networkView === 'overview' ? 'bg-white/20 text-foreground' : 'text-foreground/70 hover:text-foreground'
                 }`}
               >
                 Network Overview
@@ -365,7 +365,7 @@ export default function OnTimePerformanceDashboard() {
               <button
                 onClick={() => setNetworkView('detailed')}
                 className={`px-3 py-1 rounded text-sm ${
-                  networkView === 'detailed' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'
+                  networkView === 'detailed' ? 'bg-white/20 text-foreground' : 'text-foreground/70 hover:text-foreground'
                 }`}
               >
                 Detailed View
@@ -390,8 +390,8 @@ export default function OnTimePerformanceDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900">{currentHub.iata}</h3>
-                  <p className="text-gray-600">{currentHub.name}</p>
-                  <p className="text-gray-500 text-sm">{currentHub.city}</p>
+                  <p className="text-muted-foreground">{currentHub.name}</p>
+                  <p className="text-foreground0 text-sm">{currentHub.city}</p>
                 </div>
                 <div className="text-right">
                 <div className="flex items-center gap-2">
@@ -403,7 +403,7 @@ export default function OnTimePerformanceDashboard() {
                     {currentHub.onTimeRate.toFixed(1)}%
                   </span>
                 </div>
-                <p className="text-gray-600 text-sm">OTP</p>
+                <p className="text-muted-foreground text-sm">OTP</p>
               </div>
             </div>
 
@@ -411,19 +411,19 @@ export default function OnTimePerformanceDashboard() {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                 <div className="text-2xl font-bold text-gray-900">{currentHub.totalFlights}</div>
-                <div className="text-gray-600 text-sm">Total Flights</div>
+                <div className="text-muted-foreground text-sm">Total Flights</div>
               </div>
               <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                 <div className="text-2xl font-bold text-yellow-600">{currentHub.avgDelayMinutes}m</div>
-                <div className="text-gray-600 text-sm">Avg Delay</div>
+                <div className="text-muted-foreground text-sm">Avg Delay</div>
               </div>
               <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                 <div className="text-2xl font-bold text-green-600">{currentHub.onTimeFlights}</div>
-                <div className="text-gray-600 text-sm">On Time</div>
+                <div className="text-muted-foreground text-sm">On Time</div>
               </div>
               <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                 <div className="text-2xl font-bold text-red-600">{currentHub.delayedFlights + currentHub.cancelledFlights}</div>
-                <div className="text-gray-600 text-sm">Disrupted</div>
+                <div className="text-muted-foreground text-sm">Disrupted</div>
               </div>
             </div>
           </div>
@@ -442,7 +442,7 @@ export default function OnTimePerformanceDashboard() {
                       }`}></div>
                       <div>
                         <div className="font-bold text-gray-900">{flight.flightNumber}</div>
-                        <div className="text-gray-600 text-sm">{flight.route}</div>
+                        <div className="text-muted-foreground text-sm">{flight.route}</div>
                       </div>
                     </div>
                     <div className="text-right">
@@ -451,17 +451,17 @@ export default function OnTimePerformanceDashboard() {
                          flight.status === 'cancelled' ? 'CANCELLED' :
                          `${flight.actualTime} (+${flight.delayMinutes}m)`}
                       </div>
-                      <div className="text-gray-500 text-xs">{flight.aircraft}</div>
+                      <div className="text-foreground0 text-xs">{flight.aircraft}</div>
                     </div>
                   </div>
                   <div className="flex items-center justify-between mt-2">
                     {flight.gate && (
-                      <div className="text-gray-500 text-xs">Gate {flight.gate}</div>
+                      <div className="text-foreground0 text-xs">Gate {flight.gate}</div>
                     )}
                     {flight.delayCode && flight.delayReason && (
                       <div className="text-right">
-                        <div className="text-yellow-400 text-xs font-mono">Code: {flight.delayCode}</div>
-                        <div className="text-gray-400 text-xs max-w-48 truncate" title={flight.delayReason}>
+                        <div className="text-aero-amber-caution text-xs font-mono">Code: {flight.delayCode}</div>
+                        <div className="text-muted-foreground text-xs max-w-48 truncate" title={flight.delayReason}>
                           {flight.delayReason}
                         </div>
                       </div>
@@ -490,12 +490,12 @@ export default function OnTimePerformanceDashboard() {
       )}
 
       {/* Network Summary Footer */}
-      <div className="bg-gray-800 px-6 py-3 border-t border-gray-700">
+      <div className="bg-card px-6 py-3 border-t border-border">
         <div className="flex items-center justify-between text-sm">
-          <div className="text-gray-400">
+          <div className="text-muted-foreground">
             Network Average: {(hubData.reduce((sum, hub) => sum + hub.onTimeRate, 0) / hubData.length).toFixed(1)}% OTP
           </div>
-          <div className="text-gray-400">
+          <div className="text-muted-foreground">
             {hubData.reduce((sum, hub) => sum + hub.totalFlights, 0)} flights across {hubData.length} stations
           </div>
         </div>

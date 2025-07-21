@@ -108,7 +108,7 @@ export default function CorrelationTile() {
             <div className="h-4 bg-gray-200 rounded w-1/2"></div>
           </div>
         </div>
-        <div className="text-center text-gray-500 mt-4">Loading correlation analysis...</div>
+        <div className="text-center text-foreground0 mt-4">Loading correlation analysis...</div>
       </div>
     );
   }
@@ -121,7 +121,7 @@ export default function CorrelationTile() {
           <h3 className="text-lg font-semibold">Correlation Analysis Error</h3>
         </div>
         <p className="text-red-600 text-sm">{error}</p>
-        <p className="text-gray-500 text-xs mt-2">Please check API connectivity and data availability.</p>
+        <p className="text-foreground0 text-xs mt-2">Please check API connectivity and data availability.</p>
       </div>
     );
   }
@@ -129,7 +129,7 @@ export default function CorrelationTile() {
   if (!data) {
     return (
       <div className="p-6 bg-white shadow-lg rounded-lg border border-gray-200">
-        <div className="text-center text-gray-500">No correlation data available</div>
+        <div className="text-center text-foreground0">No correlation data available</div>
       </div>
     );
   }
@@ -178,25 +178,25 @@ export default function CorrelationTile() {
           <div className="text-lg font-semibold text-purple-600">
             {data.statistics.avg_nm_dep_punctuality}%
           </div>
-          <div className="text-xs text-gray-500">Avg NM Dep Punctuality</div>
+          <div className="text-xs text-foreground0">Avg NM Dep Punctuality</div>
         </div>
         <div className="text-center">
           <div className="text-lg font-semibold text-purple-600">
             {data.statistics.avg_nm_arr_punctuality}%
           </div>
-          <div className="text-xs text-gray-500">Avg NM Arr Punctuality</div>
+          <div className="text-xs text-foreground0">Avg NM Arr Punctuality</div>
         </div>
         <div className="text-center">
           <div className="text-lg font-semibold text-orange-600">
             {data.statistics.avg_lhr_dep_delay}min
           </div>
-          <div className="text-xs text-gray-500">Avg LHR Dep Delay</div>
+          <div className="text-xs text-foreground0">Avg LHR Dep Delay</div>
         </div>
         <div className="text-center">
           <div className="text-lg font-semibold text-orange-600">
             {data.statistics.avg_lhr_arr_delay}min
           </div>
-          <div className="text-xs text-gray-500">Avg LHR Arr Delay</div>
+          <div className="text-xs text-foreground0">Avg LHR Arr Delay</div>
         </div>
       </div>
 
@@ -252,7 +252,7 @@ export default function CorrelationTile() {
 
       {/* Data Source Footer */}
       <div className="border-t pt-3 mt-4">
-        <div className="flex justify-between items-center text-xs text-gray-500">
+        <div className="flex justify-between items-center text-xs text-foreground0">
           <span>Based on {data.record_count.toLocaleString()} NM records</span>
           <span>Period: {data.date_range.start} → {data.date_range.end}</span>
         </div>

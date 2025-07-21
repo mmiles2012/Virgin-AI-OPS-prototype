@@ -18,7 +18,7 @@ const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
       <div
         ref={ref}
         className={cn(
-          'animate-pulse bg-slate-200 dark:bg-slate-800 rounded',
+          'animate-pulse bg-slate-200 dark:bg-card rounded',
           variantClasses[variant],
           className
         )}
@@ -47,7 +47,7 @@ export const TableSkeleton: React.FC<{ rows?: number; cols?: number }> = ({
 );
 
 export const CardSkeleton: React.FC = () => (
-  <div className="p-6 space-y-4 border rounded-lg bg-white dark:bg-slate-900">
+  <div className="p-6 space-y-4 border rounded-lg bg-white dark:bg-card">
     <Skeleton className="h-6 w-1/4" />
     <Skeleton className="h-4 w-full" />
     <Skeleton className="h-4 w-3/4" />
@@ -59,7 +59,7 @@ export const CardSkeleton: React.FC = () => (
 );
 
 export const ChartSkeleton: React.FC = () => (
-  <div className="p-6 space-y-4 border rounded-lg bg-white dark:bg-slate-900">
+  <div className="p-6 space-y-4 border rounded-lg bg-white dark:bg-card">
     <div className="flex justify-between items-center">
       <Skeleton className="h-6 w-32" />
       <Skeleton className="h-6 w-20" />
@@ -79,7 +79,7 @@ export const ChartSkeleton: React.FC = () => (
 );
 
 export const MapSkeleton: React.FC = () => (
-  <div className="relative w-full h-96 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
+  <div className="relative w-full h-96 bg-slate-100 dark:bg-card rounded-lg overflow-hidden">
     <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-blue-100 to-green-100 dark:from-slate-700 dark:to-slate-600" />
     <div className="absolute top-4 left-4">
       <Skeleton className="h-8 w-32" />
@@ -104,7 +104,7 @@ export const MapSkeleton: React.FC = () => (
 
 export const FlightTableSkeleton: React.FC = () => (
   <div className="space-y-3">
-    <div className="flex space-x-4 p-3 bg-slate-50 dark:bg-slate-800 rounded">
+    <div className="flex space-x-4 p-3 bg-slate-50 dark:bg-card rounded">
       <Skeleton className="h-4 w-16" />
       <Skeleton className="h-4 w-24" />
       <Skeleton className="h-4 w-20" />

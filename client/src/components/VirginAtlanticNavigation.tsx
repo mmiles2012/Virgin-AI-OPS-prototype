@@ -187,12 +187,12 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
   ];
 
   return (
-    <nav role="navigation" aria-label="Virgin Atlantic AINO Navigation" className="flex-shrink-0 p-4 bg-gray-50">
+    <nav role="navigation" aria-label="Virgin Atlantic AINO Navigation" className="flex-shrink-0 p-2 sm:p-4 bg-gray-50">
       <div 
         className={`
           bg-white shadow-lg border border-gray-200 rounded-lg
           transition-all duration-300 ease-in-out overflow-hidden flex flex-col
-          ${isNavigationCollapsed ? 'w-16' : 'w-72'}
+          ${isNavigationCollapsed ? 'w-12 sm:w-16' : 'w-60 sm:w-72'}
         `}
         role="complementary"
         aria-expanded={!isNavigationCollapsed}
@@ -208,7 +208,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                   e.stopPropagation();
                   setIsNavigationCollapsed(!isNavigationCollapsed);
                 }}
-                className="bg-va-red-primary text-white hover:bg-va-red-heritage w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer"
+                className="bg-va-red-primary text-foreground hover:bg-va-red-heritage w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer"
                 title="Expand Navigation"
                 type="button"
               >
@@ -220,7 +220,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-gradient-va-red rounded-lg flex items-center justify-center">
-                  <Plane className="w-5 h-5 text-white" />
+                  <Plane className="w-5 h-5 text-foreground" />
                 </div>
                 <div>
                   <VAHeading.H4 className="text-gray-900">AINO</VAHeading.H4>
@@ -235,7 +235,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                   e.stopPropagation();
                   setIsNavigationCollapsed(!isNavigationCollapsed);
                 }}
-                className="bg-va-red-primary text-white hover:bg-va-red-heritage flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer"
+                className="bg-va-red-primary text-foreground hover:bg-va-red-heritage flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer"
                 title="Collapse Navigation"
                 type="button"
               >
@@ -256,7 +256,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                 {/* Group Header */}
                 <div className="flex items-center gap-2 px-3 py-2 mb-2">
                   <group.icon className="w-4 h-4 text-va-red-primary" />
-                  <VAText.Label className="text-gray-600 text-xs uppercase tracking-wide">
+                  <VAText.Label className="text-muted-foreground text-xs uppercase tracking-wide">
                     {group.title}
                   </VAText.Label>
                 </div>
@@ -275,7 +275,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                           w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium
                           transition-all duration-200 group
                           ${isActive 
-                            ? 'bg-gradient-va-red text-white shadow-lg' 
+                            ? 'bg-gradient-va-red text-foreground shadow-lg' 
                             : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                           }
                         `}
@@ -285,7 +285,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                       >
                         <IconComponent className={`
                           w-4 h-4 transition-colors duration-200
-                          ${isActive ? 'text-white' : 'text-va-red-primary group-hover:text-va-red-heritage'}
+                          ${isActive ? 'text-foreground' : 'text-va-red-primary group-hover:text-va-red-heritage'}
                         `} />
                         
                         <span className="flex-1 text-left truncate">
@@ -313,7 +313,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
               <div className="space-y-3">
                 {/* Status Indicator */}
                 <div className="flex items-center justify-between">
-                  <VAText.Small className="text-gray-500">System Status</VAText.Small>
+                  <VAText.Small className="text-foreground0">System Status</VAText.Small>
                   <StatusBadge variant="safe" size="sm">
                     <Activity className="w-3 h-3 mr-1" />
                     Operational
@@ -361,8 +361,8 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                         w-12 h-12 flex items-center justify-center rounded-md
                         transition-all duration-200 relative
                         ${isActive 
-                          ? 'bg-gradient-va-red text-white shadow-lg' 
-                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                          ? 'bg-gradient-va-red text-foreground shadow-lg' 
+                          : 'text-muted-foreground hover:bg-gray-100 hover:text-gray-900'
                         }
                       `}
                       title={item.label}
@@ -375,10 +375,10 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                     </button>
                     
                     {/* Tooltip */}
-                    <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                    <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-card text-foreground text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                       {item.label}
                       {item.badge && (
-                        <span className="ml-1 text-gray-300">({item.badge})</span>
+                        <span className="ml-1 text-muted-foreground">({item.badge})</span>
                       )}
                     </div>
                   </div>

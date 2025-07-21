@@ -655,17 +655,17 @@ export default function EnhancedNetworkOTPDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'on-time': return 'text-green-400';
-      case 'delayed': return 'text-yellow-400';
-      case 'cancelled': return 'text-red-400';
-      default: return 'text-gray-400';
+      case 'on-time': return 'text-aero-green-safe';
+      case 'delayed': return 'text-aero-amber-caution';
+      case 'cancelled': return 'text-va-red-primary';
+      default: return 'text-muted-foreground';
     }
   };
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'improving': return <TrendingUp className="w-4 h-4 text-green-400" />;
-      case 'declining': return <TrendingDown className="w-4 h-4 text-red-400" />;
+      case 'improving': return <TrendingUp className="w-4 h-4 text-aero-green-safe" />;
+      case 'declining': return <TrendingDown className="w-4 h-4 text-va-red-primary" />;
       default: return <div className="w-4 h-4 bg-yellow-400 rounded-full"></div>;
     }
   };
@@ -689,7 +689,7 @@ export default function EnhancedNetworkOTPDashboard() {
       <div className="bg-white border border-gray-200 rounded-lg p-6">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mx-auto mb-4"></div>
-          <div className="text-gray-400">Loading enhanced network performance data...</div>
+          <div className="text-muted-foreground">Loading enhanced network performance data...</div>
         </div>
       </div>
     );

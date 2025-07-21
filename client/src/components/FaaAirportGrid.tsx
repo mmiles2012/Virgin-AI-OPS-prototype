@@ -61,7 +61,7 @@ export default function FaaAirportGrid() {
       case "Green": return "text-green-800";
       case "Amber": return "text-yellow-800";
       case "Red": return "text-red-800";
-      default: return "text-gray-600";
+      default: return "text-muted-foreground";
     }
   };
 
@@ -70,7 +70,7 @@ export default function FaaAirportGrid() {
       <div className="p-4">
         <h2 className="text-xl font-bold mb-4">Airport Delay Risk Overview</h2>
         <div className="flex items-center justify-center h-40">
-          <div className="text-gray-500">Loading airport data...</div>
+          <div className="text-foreground0">Loading airport data...</div>
         </div>
       </div>
     );
@@ -92,7 +92,7 @@ export default function FaaAirportGrid() {
     <div className="p-4">
       <div className="mb-6">
         <h2 className="text-xl font-bold mb-2">US Airport Delay Risk Overview</h2>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           Weather-enhanced delay predictions with OGIMET integration • 
           Click on any airport for detailed analysis
         </p>
@@ -117,7 +117,7 @@ export default function FaaAirportGrid() {
                 Risk: {ap.actual_risk}
               </p>
               {ap.weather_severity_score > 0 && (
-                <p className="text-xs text-blue-600">
+                <p className="text-xs text-aero-blue-dark">
                   Weather Score: {ap.weather_severity_score.toFixed(1)}
                 </p>
               )}

@@ -56,7 +56,7 @@ export function Interface() {
           <Card className="w-full max-w-md mx-4 shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center justify-center gap-2">
-                <Trophy className="text-yellow-500" />
+                <Trophy className="text-aero-amber-caution" />
                 Level Complete!
               </CardTitle>
             </CardHeader>

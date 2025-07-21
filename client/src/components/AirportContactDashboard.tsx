@@ -224,16 +224,16 @@ export default function AirportContactDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'critical': return 'text-red-400 bg-red-900/20 border-red-500';
-      case 'alert': return 'text-yellow-400 bg-yellow-900/20 border-yellow-500';
-      default: return 'text-green-400 bg-green-900/20 border-green-500';
+      case 'critical': return 'text-va-red-primary bg-va-red-primary/10 border-red-500';
+      case 'alert': return 'text-aero-amber-caution bg-aero-amber-caution/10 border-yellow-500';
+      default: return 'text-aero-green-safe bg-aero-green-safe/10 border-green-500';
     }
   };
 
   const getStatusBadgeColor = (status: string) => {
-    if (status.toLowerCase().includes('delay')) return 'bg-red-500/20 text-red-400 border-red-500';
-    if (status.toLowerCase().includes('cancel')) return 'bg-red-600/20 text-red-300 border-red-600';
-    return 'bg-green-500/20 text-green-400 border-green-500';
+    if (status.toLowerCase().includes('delay')) return 'bg-red-500/20 text-va-red-primary border-red-500';
+    if (status.toLowerCase().includes('cancel')) return 'bg-va-red-primary/20 text-red-300 border-va-red-primary/30';
+    return 'bg-green-500/20 text-aero-green-safe border-green-500';
   };
 
   const delayPercent = delayStats.total ? (delayStats.delayed / delayStats.total) * 100 : 0;
@@ -243,25 +243,25 @@ export default function AirportContactDashboard() {
 
   if (loading) {
     return (
-      <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
+      <div className="bg-card border border-border rounded-lg p-6">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <div className="text-gray-400">Loading network operational data and contacts...</div>
+          <div className="text-muted-foreground">Loading network operational data and contacts...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
+    <div className="bg-card border border-border rounded-lg overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Plane className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-bold text-white">Network OTP & Emergency Contacts</h2>
+            <Plane className="w-6 h-6 text-foreground" />
+            <h2 className="text-xl font-bold text-foreground">Network OTP & Emergency Contacts</h2>
           </div>
-          <div className="flex items-center gap-4 text-white/80">
+          <div className="flex items-center gap-4 text-foreground/80">
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
               <span className="text-xs">AUTHENTIC CONTACTS</span>
@@ -275,38 +275,38 @@ export default function AirportContactDashboard() {
       <div className="p-6 space-y-6">
         {/* Overall Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4">
-              <h3 className="text-lg font-semibold text-white mb-2">Network Delay Rate</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Network Delay Rate</h3>
               <Progress value={delayPercent} className="h-4 mb-2" />
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 {delayStats.delayed} of {delayStats.total} flights delayed ({delayPercent.toFixed(1)}%)
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4">
-              <h3 className="text-lg font-semibold text-white mb-2">Airports Monitored</h3>
-              <div className="text-2xl font-bold text-blue-400">{airportData.length}</div>
-              <p className="text-sm text-gray-400">With authentic contact information</p>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Airports Monitored</h3>
+              <div className="text-2xl font-bold text-aero-blue-primary">{airportData.length}</div>
+              <p className="text-sm text-muted-foreground">With authentic contact information</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4">
-              <h3 className="text-lg font-semibold text-white mb-2">Emergency Contacts</h3>
-              <div className="text-2xl font-bold text-green-400">{airportContacts.length}</div>
-              <p className="text-sm text-gray-400">Operations centers available</p>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Emergency Contacts</h3>
+              <div className="text-2xl font-bold text-aero-green-safe">{airportContacts.length}</div>
+              <p className="text-sm text-muted-foreground">Operations centers available</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Delay Reasons Chart */}
         {chartData.length > 0 && (
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="bg-card/50 border-border">
             <CardContent className="p-4">
-              <h3 className="text-xl font-bold text-white mb-4">Delay Reasons by Frequency</h3>
+              <h3 className="text-xl font-bold text-foreground mb-4">Delay Reasons by Frequency</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 100, bottom: 5 }}>
                   <XAxis type="number" allowDecimals={false} />
@@ -327,15 +327,15 @@ export default function AirportContactDashboard() {
               className={`cursor-pointer transition-all duration-200 border-2 ${
                 selectedAirport === airport.airport 
                   ? 'border-blue-500 bg-blue-500/10' 
-                  : `border-gray-700 hover:border-gray-600 ${getStatusColor(airport.operationalStatus)}`
+                  : `border-border hover:border-border ${getStatusColor(airport.operationalStatus)}`
               }`}
               onClick={() => setSelectedAirport(selectedAirport === airport.airport ? null : airport.airport)}
             >
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h3 className="text-lg font-bold text-white">{airport.airportName || airport.airport}</h3>
-                    <p className="text-sm text-gray-400">{airport.country} • {airport.iata || airport.icao}</p>
+                    <h3 className="text-lg font-bold text-foreground">{airport.airportName || airport.airport}</h3>
+                    <p className="text-sm text-muted-foreground">{airport.country} • {airport.iata || airport.icao}</p>
                   </div>
                   <Badge 
                     variant="outline" 
@@ -348,39 +348,39 @@ export default function AirportContactDashboard() {
                 {/* Operational Metrics */}
                 <div className="space-y-2 mb-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Total Flights:</span>
-                    <span className="text-white">{airport.totalFlights}</span>
+                    <span className="text-muted-foreground">Total Flights:</span>
+                    <span className="text-foreground">{airport.totalFlights}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Delay Rate:</span>
-                    <span className={airport.delayRate > 15 ? 'text-red-400' : 'text-green-400'}>
+                    <span className="text-muted-foreground">Delay Rate:</span>
+                    <span className={airport.delayRate > 15 ? 'text-va-red-primary' : 'text-aero-green-safe'}>
                       {airport.delayRate.toFixed(1)}%
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Avg Delay:</span>
-                    <span className="text-white">{airport.avgDelayMinutes}min</span>
+                    <span className="text-muted-foreground">Avg Delay:</span>
+                    <span className="text-foreground">{airport.avgDelayMinutes}min</span>
                   </div>
                 </div>
 
                 {/* Emergency Contact */}
                 {airport.contact && (
-                  <div className="bg-gray-700/50 rounded-lg p-3 border border-gray-600">
+                  <div className="bg-gray-700/50 rounded-lg p-3 border border-border">
                     <div className="flex items-center gap-2 mb-1">
-                      <Phone className="w-4 h-4 text-green-400" />
-                      <span className="text-sm font-semibold text-green-400">Emergency Contact</span>
+                      <Phone className="w-4 h-4 text-aero-green-safe" />
+                      <span className="text-sm font-semibold text-aero-green-safe">Emergency Contact</span>
                     </div>
-                    <div className="text-sm text-white">{airport.contact.operationsCenter}</div>
-                    <div className="text-sm text-blue-400 font-mono">{airport.contact.phone}</div>
+                    <div className="text-sm text-foreground">{airport.contact.operationsCenter}</div>
+                    <div className="text-sm text-aero-blue-primary font-mono">{airport.contact.phone}</div>
                   </div>
                 )}
 
                 {/* Recent Flights Preview */}
                 <ScrollArea className="h-32 mt-3">
                   {airport.flights.slice(0, 3).map((flight, idx) => (
-                    <div key={idx} className="mb-2 pb-1 border-b border-gray-700/50 last:border-b-0">
+                    <div key={idx} className="mb-2 pb-1 border-b border-border/50 last:border-b-0">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-white">{flight.Flight}</span>
+                        <span className="text-sm font-medium text-foreground">{flight.Flight}</span>
                         <Badge 
                           variant="outline" 
                           className={`text-xs ${getStatusBadgeColor(flight.Status)}`}
@@ -388,14 +388,14 @@ export default function AirportContactDashboard() {
                           {flight.Status}
                         </Badge>
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-muted-foreground">
                         {flight.Scheduled} → {flight.Estimated}
                         {flight.Gate && ` • Gate ${flight.Gate}`}
                       </div>
                     </div>
                   ))}
                   {airport.flights.length > 3 && (
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-xs text-foreground0 mt-1">
                       +{airport.flights.length - 3} more flights
                     </div>
                   )}
@@ -407,15 +407,15 @@ export default function AirportContactDashboard() {
 
         {/* Detailed Airport View */}
         {selectedAirportData && (
-          <Card className="bg-gray-800/50 border-blue-500">
+          <Card className="bg-card/50 border-blue-500">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-white">
+                <h3 className="text-xl font-bold text-foreground">
                   {selectedAirportData.airportName} - Detailed Operations
                 </h3>
                 <button
                   onClick={() => setSelectedAirport(null)}
-                  className="text-gray-400 hover:text-white"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   ✕
                 </button>
@@ -424,12 +424,12 @@ export default function AirportContactDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Flight List */}
                 <div>
-                  <h4 className="text-lg font-semibold text-white mb-3">All Flights</h4>
+                  <h4 className="text-lg font-semibold text-foreground mb-3">All Flights</h4>
                   <ScrollArea className="h-64">
                     {selectedAirportData.flights.map((flight, idx) => (
                       <div key={idx} className="mb-3 p-3 bg-gray-700/50 rounded-lg">
                         <div className="flex justify-between items-center mb-1">
-                          <span className="font-medium text-white">{flight.Flight}</span>
+                          <span className="font-medium text-foreground">{flight.Flight}</span>
                           <Badge 
                             variant="outline" 
                             className={getStatusBadgeColor(flight.Status)}
@@ -437,7 +437,7 @@ export default function AirportContactDashboard() {
                             {flight.Status}
                           </Badge>
                         </div>
-                        <div className="text-sm text-gray-400">
+                        <div className="text-sm text-muted-foreground">
                           Scheduled: {flight.Scheduled}<br />
                           Estimated: {flight.Estimated}
                           {flight.Gate && <><br />Gate: {flight.Gate}</>}
@@ -450,43 +450,43 @@ export default function AirportContactDashboard() {
 
                 {/* Contact Information */}
                 <div>
-                  <h4 className="text-lg font-semibold text-white mb-3">Emergency Coordination</h4>
+                  <h4 className="text-lg font-semibold text-foreground mb-3">Emergency Coordination</h4>
                   {selectedAirportData.contact ? (
-                    <div className="bg-green-900/20 border border-green-500 rounded-lg p-4">
+                    <div className="bg-aero-green-safe/10 border border-green-500 rounded-lg p-4">
                       <div className="flex items-center gap-2 mb-3">
-                        <Phone className="w-5 h-5 text-green-400" />
-                        <span className="font-semibold text-green-400">24/7 Operations Center</span>
+                        <Phone className="w-5 h-5 text-aero-green-safe" />
+                        <span className="font-semibold text-aero-green-safe">24/7 Operations Center</span>
                       </div>
                       <div className="space-y-2">
                         <div>
-                          <span className="text-sm text-gray-400">Center:</span>
-                          <div className="text-white font-medium">{selectedAirportData.contact.operationsCenter}</div>
+                          <span className="text-sm text-muted-foreground">Center:</span>
+                          <div className="text-foreground font-medium">{selectedAirportData.contact.operationsCenter}</div>
                         </div>
                         <div>
-                          <span className="text-sm text-gray-400">Phone:</span>
-                          <div className="text-blue-400 font-mono text-lg">{selectedAirportData.contact.phone}</div>
+                          <span className="text-sm text-muted-foreground">Phone:</span>
+                          <div className="text-aero-blue-primary font-mono text-lg">{selectedAirportData.contact.phone}</div>
                         </div>
                         <div>
-                          <span className="text-sm text-gray-400">Airport:</span>
-                          <div className="text-white">{selectedAirportData.contact.airportName}</div>
+                          <span className="text-sm text-muted-foreground">Airport:</span>
+                          <div className="text-foreground">{selectedAirportData.contact.airportName}</div>
                         </div>
                         <div>
-                          <span className="text-sm text-gray-400">Location:</span>
-                          <div className="text-white">{selectedAirportData.contact.country}</div>
+                          <span className="text-sm text-muted-foreground">Location:</span>
+                          <div className="text-foreground">{selectedAirportData.contact.country}</div>
                         </div>
                         <div>
-                          <span className="text-sm text-gray-400">Service Level:</span>
-                          <div className="text-white capitalize">{selectedAirportData.contact.serviceLevel}</div>
+                          <span className="text-sm text-muted-foreground">Service Level:</span>
+                          <div className="text-foreground capitalize">{selectedAirportData.contact.serviceLevel}</div>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-yellow-900/20 border border-yellow-500 rounded-lg p-4">
+                    <div className="bg-aero-amber-caution/10 border border-yellow-500 rounded-lg p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <AlertTriangle className="w-5 h-5 text-yellow-400" />
-                        <span className="font-semibold text-yellow-400">Contact Information Unavailable</span>
+                        <AlertTriangle className="w-5 h-5 text-aero-amber-caution" />
+                        <span className="font-semibold text-aero-amber-caution">Contact Information Unavailable</span>
                       </div>
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Emergency contact information for {selectedAirportData.airport} is not available in our database.
                       </p>
                     </div>

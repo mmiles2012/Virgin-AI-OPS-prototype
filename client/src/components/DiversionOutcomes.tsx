@@ -135,21 +135,21 @@ export default function DiversionOutcomes() {
 
   const getOutcomeColor = (outcome: string) => {
     switch (outcome) {
-      case 'excellent': return 'text-green-400 bg-green-900/20 border-green-500';
-      case 'good': return 'text-blue-400 bg-blue-900/20 border-blue-500';
-      case 'stable': return 'text-yellow-400 bg-yellow-900/20 border-yellow-500';
-      case 'critical': return 'text-red-400 bg-red-900/20 border-red-500';
-      default: return 'text-gray-400 bg-gray-900/20 border-gray-500';
+      case 'excellent': return 'text-aero-green-safe bg-aero-green-safe/10 border-green-500';
+      case 'good': return 'text-aero-blue-primary bg-aero-blue-primary/10 border-blue-500';
+      case 'stable': return 'text-aero-amber-caution bg-aero-amber-caution/10 border-yellow-500';
+      case 'critical': return 'text-va-red-primary bg-va-red-primary/10 border-red-500';
+      default: return 'text-muted-foreground bg-card/20 border-gray-500';
     }
   };
 
   const getWorkloadColor = (workload: string) => {
     switch (workload) {
-      case 'low': return 'text-green-400';
-      case 'moderate': return 'text-yellow-400';
-      case 'high': return 'text-orange-400';
-      case 'extreme': return 'text-red-400';
-      default: return 'text-gray-400';
+      case 'low': return 'text-aero-green-safe';
+      case 'moderate': return 'text-aero-amber-caution';
+      case 'high': return 'text-aero-orange-alert';
+      case 'extreme': return 'text-va-red-primary';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -174,12 +174,12 @@ export default function DiversionOutcomes() {
   return (
     <div className="h-full overflow-auto p-4 space-y-4">
       {/* Main Emergency Header */}
-      <div className="bg-red-600 text-white px-4 py-2 rounded-lg text-center font-bold text-lg border border-red-400">
+      <div className="bg-va-red-primary text-foreground px-4 py-2 rounded-lg text-center font-bold text-lg border border-red-400">
         ⚠ {headerText}
       </div>
       
       {/* Emergency Configuration */}
-      <Card className="border-orange-500 bg-orange-900/20">
+      <Card className="border-orange-500 bg-aero-orange-alert/10">
         <CardHeader className="pb-3">
           <CardTitle className="text-orange-300 flex items-center gap-2">
             {isTechnicalFailure ? (
@@ -202,7 +202,7 @@ export default function DiversionOutcomes() {
               <select
                 value={emergencyType}
                 onChange={(e) => setEmergencyType(e.target.value as any)}
-                className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
+                className="w-full bg-card border border-border rounded px-3 py-2 text-foreground"
               >
                 <optgroup label="Medical Emergencies">
                   <option value="cardiac">Cardiac Event</option>
@@ -226,7 +226,7 @@ export default function DiversionOutcomes() {
               <select
                 value={patientCondition}
                 onChange={(e) => setPatientCondition(e.target.value as any)}
-                className="w-full bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
+                className="w-full bg-card border border-border rounded px-3 py-2 text-foreground"
               >
                 {isTechnicalFailure ? (
                   <>
@@ -257,7 +257,7 @@ export default function DiversionOutcomes() {
       {scenarios.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Airport Options */}
-          <Card className="border-blue-500 bg-blue-900/20">
+          <Card className="border-blue-500 bg-aero-blue-primary/10">
             <CardHeader className="pb-3">
               <CardTitle className="text-blue-300 flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
@@ -272,15 +272,15 @@ export default function DiversionOutcomes() {
                   className={`p-3 border rounded cursor-pointer transition-all ${
                     selectedOutcome?.airportCode === scenario.airportCode
                       ? 'border-blue-400 bg-blue-900/40'
-                      : 'border-gray-600 hover:border-gray-500'
+                      : 'border-border hover:border-gray-500'
                   }`}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <div className="font-medium text-white">
+                      <div className="font-medium text-foreground">
                         #{index + 1} - {scenario.airportCode}
                       </div>
-                      <div className="text-gray-300 text-sm">
+                      <div className="text-muted-foreground text-sm">
                         {scenario.airportName}
                       </div>
                     </div>
@@ -292,15 +292,15 @@ export default function DiversionOutcomes() {
                   <div className="grid grid-cols-3 gap-2 text-xs">
                     <div className="text-center">
                       <div className="text-blue-300">Distance</div>
-                      <div className="text-white">{Math.round(scenario.distance)} nm</div>
+                      <div className="text-foreground">{Math.round(scenario.distance)} nm</div>
                     </div>
                     <div className="text-center">
                       <div className="text-blue-300">Time</div>
-                      <div className="text-white">{formatTime(scenario.flightTime)}</div>
+                      <div className="text-foreground">{formatTime(scenario.flightTime)}</div>
                     </div>
                     <div className="text-center">
                       <div className="text-blue-300">Cost</div>
-                      <div className="text-white">{formatCurrency(scenario.costs.total)}</div>
+                      <div className="text-foreground">{formatCurrency(scenario.costs.total)}</div>
                     </div>
                   </div>
                 </div>
@@ -310,7 +310,7 @@ export default function DiversionOutcomes() {
 
           {/* Detailed Outcome Analysis */}
           {selectedOutcome && (
-            <Card className="border-green-500 bg-green-900/20">
+            <Card className="border-green-500 bg-aero-green-safe/10">
               <CardHeader className="pb-3">
                 <CardTitle className="text-green-300 flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
@@ -346,18 +346,18 @@ export default function DiversionOutcomes() {
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-green-300">Response Time:</span>
-                        <span className="text-white">{formatTime(selectedOutcome.timeline.medicalResponse)}</span>
+                        <span className="text-foreground">{formatTime(selectedOutcome.timeline.medicalResponse)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-green-300">Time to Landing:</span>
-                        <span className="text-white">{formatTime(selectedOutcome.timeline.landingTime)}</span>
+                        <span className="text-foreground">{formatTime(selectedOutcome.timeline.landingTime)}</span>
                       </div>
                     </div>
 
                     {selectedOutcome.realWorldExample && (
-                      <div className="bg-gray-800/50 p-3 rounded border border-gray-600">
+                      <div className="bg-card/50 p-3 rounded border border-border">
                         <div className="text-green-300 text-sm font-medium mb-1">Real-World Reference:</div>
-                        <p className="text-gray-300 text-xs">{selectedOutcome.realWorldExample}</p>
+                        <p className="text-muted-foreground text-xs">{selectedOutcome.realWorldExample}</p>
                       </div>
                     )}
                   </TabsContent>
@@ -368,22 +368,22 @@ export default function DiversionOutcomes() {
                         <div className="text-green-300 text-sm font-medium">Flight Parameters</div>
                         <div className="space-y-1 text-xs">
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Distance:</span>
-                            <span className="text-white">{Math.round(selectedOutcome.distance)} nm</span>
+                            <span className="text-muted-foreground">Distance:</span>
+                            <span className="text-foreground">{Math.round(selectedOutcome.distance)} nm</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Flight Time:</span>
-                            <span className="text-white">{formatTime(selectedOutcome.flightTime)}</span>
+                            <span className="text-muted-foreground">Flight Time:</span>
+                            <span className="text-foreground">{formatTime(selectedOutcome.flightTime)}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Fuel Required:</span>
-                            <span className="text-white">{calculateFuelPercentage('A350-1000', 35)}%</span>
+                            <span className="text-muted-foreground">Fuel Required:</span>
+                            <span className="text-foreground">{calculateFuelPercentage('A350-1000', 35)}%</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Fuel Remaining:</span>
-                            <span className="text-green-400">
+                            <span className="text-muted-foreground">Fuel Remaining:</span>
+                            <span className="text-aero-green-safe">
                               {calculateFuelPercentage('A350-1000', 65)}%
-                              <span className="text-gray-400 text-xs ml-1">({getFuelOptimizationStrategy(65)})</span>
+                              <span className="text-muted-foreground text-xs ml-1">({getFuelOptimizationStrategy(65)})</span>
                             </span>
                           </div>
                         </div>
@@ -393,26 +393,26 @@ export default function DiversionOutcomes() {
                         <div className="text-green-300 text-sm font-medium">Conditions</div>
                         <div className="space-y-1 text-xs">
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Weather:</span>
+                            <span className="text-muted-foreground">Weather:</span>
                             <Badge variant="outline" className="text-xs">
                               {selectedOutcome.weatherConditions}
                             </Badge>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Approach:</span>
+                            <span className="text-muted-foreground">Approach:</span>
                             <Badge variant="outline" className="text-xs">
                               {selectedOutcome.approachDifficulty}
                             </Badge>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Crew Workload:</span>
+                            <span className="text-muted-foreground">Crew Workload:</span>
                             <span className={getWorkloadColor(selectedOutcome.consequences.crewWorkload)}>
                               {selectedOutcome.consequences.crewWorkload}
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400">Runway:</span>
-                            <span className="text-white">{(selectedOutcome.runwayLength / 1000).toFixed(1)}k ft</span>
+                            <span className="text-muted-foreground">Runway:</span>
+                            <span className="text-foreground">{(selectedOutcome.runwayLength / 1000).toFixed(1)}k ft</span>
                           </div>
                         </div>
                       </div>
@@ -420,7 +420,7 @@ export default function DiversionOutcomes() {
 
                     <div className="space-y-2">
                       <div className="text-green-300 text-sm font-medium">Impact Assessment</div>
-                      <p className="text-gray-300 text-xs">{selectedOutcome.consequences.passengerImpact}</p>
+                      <p className="text-muted-foreground text-xs">{selectedOutcome.consequences.passengerImpact}</p>
                     </div>
 
                     {selectedOutcome.riskFactors.length > 0 && (
@@ -463,30 +463,30 @@ export default function DiversionOutcomes() {
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className="flex justify-between">
                           <span className="text-green-300">Fuel Cost:</span>
-                          <span className="text-white">{formatCurrency(selectedOutcome.costs.fuel)}</span>
+                          <span className="text-foreground">{formatCurrency(selectedOutcome.costs.fuel)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-green-300">Delay Cost:</span>
-                          <span className="text-white">{formatCurrency(selectedOutcome.costs.delay)}</span>
+                          <span className="text-foreground">{formatCurrency(selectedOutcome.costs.delay)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-green-300">Passenger Care:</span>
-                          <span className="text-white">{formatCurrency(selectedOutcome.costs.passenger)}</span>
+                          <span className="text-foreground">{formatCurrency(selectedOutcome.costs.passenger)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-green-300">Crew Costs:</span>
-                          <span className="text-white">{formatCurrency(selectedOutcome.costs.crew)}</span>
+                          <span className="text-foreground">{formatCurrency(selectedOutcome.costs.crew)}</span>
                         </div>
                       </div>
 
                       <div className="border-t border-green-500 pt-2">
                         <div className="flex justify-between text-lg font-medium">
                           <span className="text-green-300">Total Cost:</span>
-                          <span className="text-yellow-400">{formatCurrency(selectedOutcome.costs.total)}</span>
+                          <span className="text-aero-amber-caution">{formatCurrency(selectedOutcome.costs.total)}</span>
                         </div>
                       </div>
 
-                      <div className="bg-gray-800/50 p-3 rounded">
+                      <div className="bg-card/50 p-3 rounded">
                         <div className="text-green-300 text-sm font-medium mb-2">Cost Breakdown Analysis</div>
                         <div className="space-y-1">
                           <div className="flex justify-between text-xs">
@@ -504,7 +504,7 @@ export default function DiversionOutcomes() {
                         </div>
                       </div>
 
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-muted-foreground">
                         * Costs include fuel consumption, passenger compensation, crew overtime, ground handling, and delay-related expenses.
                       </div>
                     </div>
@@ -515,32 +515,32 @@ export default function DiversionOutcomes() {
                       <div className="text-green-300 text-sm font-medium">Critical Timeline</div>
                       
                       <div className="space-y-2">
-                        <div className="flex items-center gap-3 p-2 bg-red-900/20 border border-red-500 rounded">
-                          <Clock className="h-4 w-4 text-red-400" />
+                        <div className="flex items-center gap-3 p-2 bg-va-red-primary/10 border border-red-500 rounded">
+                          <Clock className="h-4 w-4 text-va-red-primary" />
                           <div className="flex-1">
                             <div className="text-red-300 text-sm">Decision Required</div>
                             <div className="text-red-200 text-xs">Captain must decide within {formatTime(selectedOutcome.timeline.decisionTime)}</div>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-3 p-2 bg-yellow-900/20 border border-yellow-500 rounded">
-                          <Plane className="h-4 w-4 text-yellow-400" />
+                        <div className="flex items-center gap-3 p-2 bg-aero-amber-caution/10 border border-yellow-500 rounded">
+                          <Plane className="h-4 w-4 text-aero-amber-caution" />
                           <div className="flex-1">
                             <div className="text-yellow-300 text-sm">Begin Approach</div>
                             <div className="text-yellow-200 text-xs">Start approach in {formatTime(selectedOutcome.timeline.approachTime)}</div>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-3 p-2 bg-blue-900/20 border border-blue-500 rounded">
-                          <MapPin className="h-4 w-4 text-blue-400" />
+                        <div className="flex items-center gap-3 p-2 bg-aero-blue-primary/10 border border-blue-500 rounded">
+                          <MapPin className="h-4 w-4 text-aero-blue-primary" />
                           <div className="flex-1">
                             <div className="text-blue-300 text-sm">Landing</div>
                             <div className="text-blue-200 text-xs">Expected landing in {formatTime(selectedOutcome.timeline.landingTime)}</div>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-3 p-2 bg-green-900/20 border border-green-500 rounded">
-                          <Stethoscope className="h-4 w-4 text-green-400" />
+                        <div className="flex items-center gap-3 p-2 bg-aero-green-safe/10 border border-green-500 rounded">
+                          <Stethoscope className="h-4 w-4 text-aero-green-safe" />
                           <div className="flex-1">
                             <div className="text-green-300 text-sm">Medical Response</div>
                             <div className="text-green-200 text-xs">Medical team available in {formatTime(selectedOutcome.timeline.medicalResponse)}</div>
@@ -549,7 +549,7 @@ export default function DiversionOutcomes() {
                       </div>
 
                       {selectedOutcome.consequences.regulatoryIssues.length > 0 && (
-                        <div className="bg-orange-900/20 border border-orange-500 rounded p-3">
+                        <div className="bg-aero-orange-alert/10 border border-orange-500 rounded p-3">
                           <div className="text-orange-300 text-sm font-medium mb-2">Regulatory Considerations</div>
                           <ul className="space-y-1">
                             {selectedOutcome.consequences.regulatoryIssues.map((issue, index) => (

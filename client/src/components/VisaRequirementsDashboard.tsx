@@ -298,40 +298,40 @@ const VisaRequirementsDashboard: React.FC = () => {
   const getVisaStatusIcon = (requirement: string) => {
     const req = requirement.toLowerCase();
     if (req.includes('visa not required') || req.includes('visa free')) {
-      return <CheckCircle className="h-4 w-4 text-green-500" />;
+      return <CheckCircle className="h-4 w-4 text-aero-green-safe" />;
     } else if (req.includes('visa on arrival')) {
-      return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+      return <AlertCircle className="h-4 w-4 text-aero-amber-caution" />;
     } else if (req.includes('visa required')) {
-      return <XCircle className="h-4 w-4 text-red-500" />;
+      return <XCircle className="h-4 w-4 text-va-red-primary" />;
     }
-    return <AlertCircle className="h-4 w-4 text-gray-500" />;
+    return <AlertCircle className="h-4 w-4 text-foreground0" />;
   };
 
   const getVisaStatusBadge = (requirement: string) => {
     const req = requirement.toLowerCase();
     if (req.includes('visa not required') || req.includes('visa free')) {
-      return <Badge variant="secondary" className="bg-green-500 text-white">Visa Free</Badge>;
+      return <Badge variant="secondary" className="bg-aero-green-safe text-white">Visa Free</Badge>;
     } else if (req.includes('visa on arrival')) {
-      return <Badge variant="secondary" className="bg-yellow-500 text-white">Visa on Arrival</Badge>;
+      return <Badge variant="secondary" className="bg-aero-amber-caution text-white">Visa on Arrival</Badge>;
     } else if (req.includes('visa required')) {
-      return <Badge variant="secondary" className="bg-red-500 text-white">Visa Required</Badge>;
+      return <Badge variant="secondary" className="bg-va-red-primary text-white">Visa Required</Badge>;
     }
     return <Badge variant="secondary" className="bg-gray-500 text-white">Unknown</Badge>;
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 text-gray-900 overflow-y-auto">
+    <div className="min-h-screen w-full bg-va-cloud-white text-va-midnight overflow-y-auto">
       <div className="max-w-7xl mx-auto p-6">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Visa Requirements Intelligence</h1>
-          <p className="text-gray-400">Virgin Atlantic passenger visa requirements for three main nationalities</p>
+          <p className="text-muted-foreground">Virgin Atlantic passenger visa requirements for three main nationalities</p>
         </div>
 
         {/* Service Status */}
         <div className="mb-6">
-          <Card className="bg-gray-800 border-gray-700">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="_midnight flex items-center gap-2">
                 <Globe className="h-5 w-5" />
                 Service Status
               </CardTitle>
@@ -339,26 +339,26 @@ const VisaRequirementsDashboard: React.FC = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-400">
+                  <div className="text-2xl font-bold text-aero-blue-primary">
                     {serviceStatus?.supported_nationalities?.length || 0}
                   </div>
-                  <div className="text-sm text-gray-400">Supported Nationalities</div>
+                  <div className="text-sm text-muted-foreground">Supported Nationalities</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400">
+                  <div className="text-2xl font-bold text-aero-green-safe">
                     {serviceStatus?.virgin_atlantic_destinations || 0}
                   </div>
-                  <div className="text-sm text-gray-400">Virgin Atlantic Destinations</div>
+                  <div className="text-sm text-muted-foreground">Virgin Atlantic Destinations</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-400">
                     {serviceStatus?.service_running ? 'Active' : 'Inactive'}
                   </div>
-                  <div className="text-sm text-gray-400">Service Status</div>
+                  <div className="text-sm text-muted-foreground">Service Status</div>
                 </div>
               </div>
               <div className="mt-4 flex justify-center">
-                <Button onClick={refreshVisaCache} disabled={loading} className="bg-blue-600 hover:bg-blue-700">
+                <Button onClick={refreshVisaCache} disabled={loading} className="bg-aero-blue-primary hover:bg-aero-blue-light">
                   {loading ? 'Refreshing...' : 'Refresh Cache'}
                 </Button>
               </div>
@@ -367,14 +367,14 @@ const VisaRequirementsDashboard: React.FC = () => {
         </div>
 
         {error && (
-          <Alert className="mb-6 bg-red-900 border-red-700">
+          <Alert className="mb-6 bg-va-red-primary/10 border-va-red-primary/30">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
         <Tabs defaultValue="lookup" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-5 bg-card">
             <TabsTrigger value="lookup">Visa Lookup</TabsTrigger>
             <TabsTrigger value="flight">Flight Check</TabsTrigger>
             <TabsTrigger value="nationality">Nationality Analysis</TabsTrigger>
@@ -383,24 +383,24 @@ const VisaRequirementsDashboard: React.FC = () => {
           </TabsList>
 
           <TabsContent value="lookup">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white">Passenger Visa Requirements</CardTitle>
+                <CardTitle className="text-va-midnight">Passenger Visa Requirements</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-white">Nationality</label>
+                    <label className="block text-sm font-medium mb-2 text-va-midnight">Nationality</label>
                     <Select value={selectedNationality} onValueChange={setSelectedNationality}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
+                      <SelectTrigger className="bg-va-white border-va-midnight text-va-midnight hover:bg-va-cloud-white">
                         <SelectValue placeholder="Select nationality" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectContent className="bg-va-white border-va-midnight">
                         {nationalities.map((nationality) => (
                           <SelectItem 
                             key={nationality} 
                             value={nationality}
-                            className="text-white hover:bg-gray-600 focus:bg-gray-600 cursor-pointer"
+                            className="text-va-midnight hover:bg-va-cloud-white focus:bg-va-cloud-white cursor-pointer"
                           >
                             {nationality}
                           </SelectItem>
@@ -409,17 +409,17 @@ const VisaRequirementsDashboard: React.FC = () => {
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-white">Destination</label>
+                    <label className="block text-sm font-medium mb-2 text-va-midnight">Destination</label>
                     <Select value={selectedDestination} onValueChange={setSelectedDestination}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
+                      <SelectTrigger className="bg-va-white border-va-midnight text-va-midnight hover:bg-va-cloud-white">
                         <SelectValue placeholder="Select destination" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600 max-h-60 overflow-y-auto">
+                      <SelectContent className="bg-va-white border-va-midnight max-h-60 overflow-y-auto">
                         {popularDestinations.map((destination) => (
                           <SelectItem 
                             key={destination} 
                             value={destination}
-                            className="text-white hover:bg-gray-600 focus:bg-gray-600 cursor-pointer py-2"
+                            className="text-va-midnight hover:bg-va-cloud-white focus:bg-va-cloud-white cursor-pointer py-2"
                           >
                             {destination}
                           </SelectItem>
@@ -428,32 +428,32 @@ const VisaRequirementsDashboard: React.FC = () => {
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-white">Flight Number (Optional)</label>
+                    <label className="block text-sm font-medium mb-2 text-va-midnight">Flight Number (Optional)</label>
                     <Input
                       value={selectedFlightNumber}
                       onChange={(e) => setSelectedFlightNumber(e.target.value)}
                       placeholder="e.g., VS355"
-                      className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                      className="bg-va-white border-va-midnight text-va-midnight placeholder-muted-foreground"
                     />
                   </div>
                 </div>
                 <Button
                   onClick={lookupVisaRequirement}
                   disabled={loading || !selectedNationality || !selectedDestination}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600"
+                  className="w-full bg-va-red-primary hover:bg-va-red-heritage disabled:bg-muted"
                 >
                   {loading ? 'Looking up...' : 'Check Visa Requirements'}
                 </Button>
 
                 {lookupResult && (
-                  <Card className="mt-6 bg-gray-700 border-gray-600">
+                  <Card className="mt-6 bg-va-white border-va-midnight">
                     <CardContent className="pt-6">
                       <div className="flex items-center gap-2 mb-4">
                         {getVisaStatusIcon(lookupResult.visa_requirements?.visa_requirement || '')}
-                        <span className="font-medium text-white">{lookupResult.destination}</span>
+                        <span className="font-medium text-va-midnight">{lookupResult.destination}</span>
                         {getVisaStatusBadge(lookupResult.visa_requirements?.visa_requirement || '')}
                       </div>
-                      <div className="space-y-2 text-white">
+                      <div className="space-y-2 text-va-midnight">
                         <div>
                           <span className="font-medium">Requirement:</span> {lookupResult.visa_requirements?.visa_requirement}
                         </div>
@@ -463,9 +463,9 @@ const VisaRequirementsDashboard: React.FC = () => {
                           </div>
                         )}
                         {lookupResult.pre_departure_checklist && (
-                          <div className="mt-4 p-4 bg-gray-600 rounded-lg">
-                            <h4 className="font-medium mb-2 text-white">Pre-Departure Checklist</h4>
-                            <ul className="space-y-1 text-sm text-white">
+                          <div className="mt-4 p-4 bg-va-cloud-white rounded-lg border border-va-midnight">
+                            <h4 className="font-medium mb-2 text-va-midnight">Pre-Departure Checklist</h4>
+                            <ul className="space-y-1 text-sm text-va-midnight">
                               {lookupResult.pre_departure_checklist.documents_required?.map((doc: string, index: number) => (
                                 <li key={index} className="flex items-center gap-2">
                                   <FileText className="h-3 w-3" />
@@ -484,9 +484,9 @@ const VisaRequirementsDashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="flight">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="_midnight flex items-center gap-2">
                   <Plane className="h-5 w-5" />
                   Flight-Specific Visa Check
                 </CardTitle>
@@ -494,17 +494,17 @@ const VisaRequirementsDashboard: React.FC = () => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-white">Nationality</label>
+                    <label className="block text-sm font-medium mb-2 text-va-midnight">Nationality</label>
                     <Select value={selectedNationality} onValueChange={setSelectedNationality}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
+                      <SelectTrigger className="bg-va-white border-va-midnight text-va-midnight hover:bg-va-cloud-white">
                         <SelectValue placeholder="Select nationality" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectContent className="bg-va-white border-va-midnight">
                         {nationalities.map((nationality) => (
                           <SelectItem 
                             key={nationality} 
                             value={nationality}
-                            className="text-white hover:bg-gray-600 focus:bg-gray-600 cursor-pointer"
+                            className="text-va-midnight hover:bg-va-cloud-white focus:bg-va-cloud-white cursor-pointer"
                           >
                             {nationality}
                           </SelectItem>
@@ -513,17 +513,17 @@ const VisaRequirementsDashboard: React.FC = () => {
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-white">Virgin Atlantic Flight</label>
+                    <label className="block text-sm font-medium mb-2 text-va-midnight">Virgin Atlantic Flight</label>
                     <Select value={selectedFlightNumber} onValueChange={setSelectedFlightNumber}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
+                      <SelectTrigger className="bg-va-white border-va-midnight text-va-midnight hover:bg-va-cloud-white">
                         <SelectValue placeholder="Select flight" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectContent className="bg-va-white border-va-midnight">
                         {virginAtlanticFlights.map((flight) => (
                           <SelectItem 
                             key={flight.code} 
                             value={flight.code}
-                            className="text-white hover:bg-gray-600 focus:bg-gray-600 cursor-pointer"
+                            className="text-va-midnight hover:bg-va-cloud-white focus:bg-va-cloud-white cursor-pointer"
                           >
                             {flight.code} - {flight.route}
                           </SelectItem>
@@ -535,7 +535,7 @@ const VisaRequirementsDashboard: React.FC = () => {
                 <Button
                   onClick={() => lookupFlightVisa(selectedFlightNumber)}
                   disabled={loading || !selectedNationality || !selectedFlightNumber}
-                  className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600"
+                  className="w-full bg-aero-green-safe hover:bg-aero-green-dark disabled:bg-muted"
                 >
                   {loading ? 'Checking...' : 'Check Flight Visa Requirements'}
                 </Button>
@@ -544,26 +544,26 @@ const VisaRequirementsDashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="nationality">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="_midnight flex items-center gap-2">
                   <Users className="h-5 w-5" />
                   Nationality Analysis
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2 text-white">Select Nationality</label>
+                  <label className="block text-sm font-medium mb-2 text-va-midnight">Select Nationality</label>
                   <Select value={selectedNationality} onValueChange={setSelectedNationality}>
-                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
+                    <SelectTrigger className="bg-va-white border-va-midnight text-va-midnight hover:bg-va-cloud-white">
                       <SelectValue placeholder="Select nationality" />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-700 border-gray-600">
+                    <SelectContent className="bg-va-white border-va-midnight">
                       {nationalities.map((nationality) => (
                         <SelectItem 
                           key={nationality} 
                           value={nationality}
-                          className="text-white hover:bg-gray-600 focus:bg-gray-600 cursor-pointer"
+                          className="text-va-midnight hover:bg-va-cloud-white focus:bg-va-cloud-white cursor-pointer"
                         >
                           {nationality}
                         </SelectItem>
@@ -574,25 +574,25 @@ const VisaRequirementsDashboard: React.FC = () => {
                 <Button
                   onClick={() => fetchNationalityData(selectedNationality)}
                   disabled={loading}
-                  className="w-full bg-purple-600 hover:bg-purple-700 mb-4 disabled:bg-gray-600"
+                  className="w-full bg-aero-blue-primary hover:bg-aero-blue-dark mb-4 disabled:bg-muted"
                 >
                   {loading ? 'Analyzing...' : 'Analyze Nationality'}
                 </Button>
 
                 {visaData.length > 0 && (
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium text-white">Visa Requirements for {selectedNationality} Nationals</h3>
+                    <h3 className="text-lg font-medium text-va-midnight">Visa Requirements for {selectedNationality} Nationals</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {visaData.map((requirement, index) => (
-                        <Card key={index} className="bg-gray-700 border-gray-600">
+                        <Card key={index} className="bg-va-white border-va-midnight">
                           <CardContent className="pt-4">
                             <div className="flex items-center gap-2 mb-2">
                               {getVisaStatusIcon(requirement.visa_requirement)}
-                              <span className="font-medium text-white">{requirement.destination}</span>
+                              <span className="font-medium text-va-midnight">{requirement.destination}</span>
                             </div>
                             {getVisaStatusBadge(requirement.visa_requirement)}
                             {requirement.notes && (
-                              <p className="text-sm text-gray-300 mt-2">{requirement.notes}</p>
+                              <p className="text-sm text-muted-foreground mt-2">{requirement.notes}</p>
                             )}
                           </CardContent>
                         </Card>
@@ -605,9 +605,9 @@ const VisaRequirementsDashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="analytics">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className="_midnight flex items-center gap-2">
                   <Clock className="h-5 w-5" />
                   Visa Analytics
                 </CardTitle>
@@ -617,25 +617,25 @@ const VisaRequirementsDashboard: React.FC = () => {
                   <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {Object.entries(analytics.destination_analysis).map(([nationality, data]) => (
-                        <Card key={nationality} className="bg-gray-700 border-gray-600">
+                        <Card key={nationality} className="bg-va-white border-va-midnight">
                           <CardHeader>
-                            <CardTitle className="text-white text-lg">{nationality}</CardTitle>
+                            <CardTitle className="text-foreground text-lg">{nationality}</CardTitle>
                           </CardHeader>
                           <CardContent>
-                            <div className="space-y-2 text-white">
+                            <div className="space-y-2 text-va-midnight">
                               <div className="flex justify-between">
-                                <span className="text-green-400">Visa Free:</span>
+                                <span className="text-aero-green-safe">Visa Free:</span>
                                 <span>{data.visa_free}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-yellow-400">Visa on Arrival:</span>
+                                <span className="text-aero-amber-caution">Visa on Arrival:</span>
                                 <span>{data.visa_on_arrival}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-red-400">Visa Required:</span>
+                                <span className="text-va-red-primary">Visa Required:</span>
                                 <span>{data.visa_required}</span>
                               </div>
-                              <div className="flex justify-between border-t border-gray-600 pt-2">
+                              <div className="flex justify-between border-t border-border pt-2">
                                 <span className="font-medium">Total:</span>
                                 <span>{data.total_destinations}</span>
                               </div>
@@ -646,14 +646,14 @@ const VisaRequirementsDashboard: React.FC = () => {
                     </div>
 
                     {analytics.operational_insights && (
-                      <Card className="bg-gray-700 border-gray-600">
+                      <Card className="bg-va-white border-va-midnight">
                         <CardHeader>
-                          <CardTitle className="text-white">Operational Insights</CardTitle>
+                          <CardTitle className="text-va-midnight">Operational Insights</CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-4">
                             <div>
-                              <span className="font-medium text-red-400">High Visa Complexity:</span>
+                              <span className="font-medium text-va-red-primary">High Visa Complexity:</span>
                               <div className="mt-1">
                                 {analytics.operational_insights.high_visa_complexity.length > 0 ? (
                                   analytics.operational_insights.high_visa_complexity.map((nationality, index) => (
@@ -662,7 +662,7 @@ const VisaRequirementsDashboard: React.FC = () => {
                                     </Badge>
                                   ))
                                 ) : (
-                                  <span className="text-gray-400">None</span>
+                                  <span className="text-muted-foreground">None</span>
                                 )}
                               </div>
                             </div>
@@ -677,24 +677,24 @@ const VisaRequirementsDashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="entry-risk">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-card border-border">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <AlertCircle className="h-5 w-5 text-orange-400" />
+                <CardTitle className="_midnight flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5 text-aero-orange-alert" />
                   Entry Risk Analysis for Aircraft Diversions
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-white">Virgin Atlantic Flight</label>
+                    <label className="block text-sm font-medium mb-2 text-va-midnight">Virgin Atlantic Flight</label>
                     <Select value={selectedRiskFlight} onValueChange={setSelectedRiskFlight}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
+                      <SelectTrigger className="bg-va-white border-va-midnight text-va-midnight hover:bg-va-cloud-white">
                         <SelectValue placeholder="Select flight" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectContent className="bg-va-white border-va-midnight">
                         {virginAtlanticFlights.map((flight) => (
-                          <SelectItem key={flight.code} value={flight.code} className="text-white hover:bg-gray-600 focus:bg-gray-600">
+                          <SelectItem key={flight.code} value={flight.code} className="text-va-midnight hover:bg-va-cloud-white focus:bg-va-cloud-white">
                             {flight.code} ({flight.route}) - {flight.aircraft} - {flight.passengers} pax
                           </SelectItem>
                         ))}
@@ -702,14 +702,14 @@ const VisaRequirementsDashboard: React.FC = () => {
                     </Select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-white">Diversion Airport</label>
+                    <label className="block text-sm font-medium mb-2 text-va-midnight">Diversion Airport</label>
                     <Select value={selectedDiversionAirport} onValueChange={setSelectedDiversionAirport}>
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600">
+                      <SelectTrigger className="bg-va-white border-va-midnight text-va-midnight hover:bg-va-cloud-white">
                         <SelectValue placeholder="Select diversion airport" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectContent className="bg-va-white border-va-midnight">
                         {diversionAirports.map((airport) => (
-                          <SelectItem key={airport.code} value={airport.code} className="text-white hover:bg-gray-600 focus:bg-gray-600">
+                          <SelectItem key={airport.code} value={airport.code} className="text-va-midnight hover:bg-va-cloud-white focus:bg-va-cloud-white">
                             {airport.code} - {airport.name}
                           </SelectItem>
                         ))}
@@ -722,7 +722,7 @@ const VisaRequirementsDashboard: React.FC = () => {
                   <Button 
                     onClick={performEntryRiskAnalysis} 
                     disabled={riskAnalysisLoading || !selectedRiskFlight || !selectedDiversionAirport}
-                    className="bg-orange-600 hover:bg-orange-700"
+                    className="bg-aero-orange-vibrant hover:bg-aero-orange-alert"
                   >
                     {riskAnalysisLoading ? 'Analyzing Entry Risks...' : 'Analyze Entry Risk'}
                   </Button>
@@ -731,9 +731,9 @@ const VisaRequirementsDashboard: React.FC = () => {
                 {entryRiskAnalysis && (
                   <div className="space-y-6">
                     {/* Risk Overview */}
-                    <Card className="bg-gray-700 border-gray-600">
+                    <Card className="bg-va-white border-va-midnight">
                       <CardHeader>
-                        <CardTitle className="text-white flex items-center gap-2">
+                        <CardTitle className="_midnight flex items-center gap-2">
                           <AlertCircle className="h-5 w-5" />
                           Risk Assessment Summary
                         </CardTitle>
@@ -742,46 +742,46 @@ const VisaRequirementsDashboard: React.FC = () => {
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                           <div className="text-center">
                             <div className={`text-2xl font-bold ${
-                              entryRiskAnalysis.risk_analysis.risk_level === 'LOW' ? 'text-green-400' :
-                              entryRiskAnalysis.risk_analysis.risk_level === 'MEDIUM' ? 'text-yellow-400' :
-                              entryRiskAnalysis.risk_analysis.risk_level === 'HIGH' ? 'text-orange-400' :
-                              'text-red-400'
+                              entryRiskAnalysis.risk_analysis.risk_level === 'LOW' ? 'text-aero-green-safe' :
+                              entryRiskAnalysis.risk_analysis.risk_level === 'MEDIUM' ? 'text-aero-amber-caution' :
+                              entryRiskAnalysis.risk_analysis.risk_level === 'HIGH' ? 'text-aero-orange-alert' :
+                              'text-va-red-primary'
                             }`}>
                               {entryRiskAnalysis.risk_analysis.risk_level}
                             </div>
-                            <div className="text-sm text-gray-400">Risk Level</div>
+                            <div className="text-sm text-muted-foreground">Risk Level</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-2xl font-bold text-blue-400">
+                            <div className="text-2xl font-bold text-aero-blue-primary">
                               {(entryRiskAnalysis.risk_analysis.entry_risk_score * 100).toFixed(1)}%
                             </div>
-                            <div className="text-sm text-gray-400">Risk Score</div>
+                            <div className="text-sm text-muted-foreground">Risk Score</div>
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-purple-400">
                               {entryRiskAnalysis.risk_analysis.flagged_passengers}
                             </div>
-                            <div className="text-sm text-gray-400">Affected Passengers</div>
+                            <div className="text-sm text-muted-foreground">Affected Passengers</div>
                           </div>
                           <div className="text-center">
                             <div className={`text-2xl font-bold ${
-                              entryRiskAnalysis.alert_notification.priority === 'INFO' ? 'text-blue-400' :
-                              entryRiskAnalysis.alert_notification.priority === 'WARNING' ? 'text-yellow-400' :
-                              entryRiskAnalysis.alert_notification.priority === 'ALERT' ? 'text-orange-400' :
-                              'text-red-400'
+                              entryRiskAnalysis.alert_notification.priority === 'INFO' ? 'text-aero-blue-primary' :
+                              entryRiskAnalysis.alert_notification.priority === 'WARNING' ? 'text-aero-amber-caution' :
+                              entryRiskAnalysis.alert_notification.priority === 'ALERT' ? 'text-aero-orange-alert' :
+                              'text-va-red-primary'
                             }`}>
                               {entryRiskAnalysis.alert_notification.priority}
                             </div>
-                            <div className="text-sm text-gray-400">Alert Priority</div>
+                            <div className="text-sm text-muted-foreground">Alert Priority</div>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
 
                     {/* Passenger Manifest Analysis */}
-                    <Card className="bg-gray-700 border-gray-600">
+                    <Card className="bg-va-white border-va-midnight">
                       <CardHeader>
-                        <CardTitle className="text-white flex items-center gap-2">
+                        <CardTitle className="_midnight flex items-center gap-2">
                           <Users className="h-5 w-5" />
                           Passenger Manifest Analysis
                         </CardTitle>
@@ -790,8 +790,8 @@ const VisaRequirementsDashboard: React.FC = () => {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {Object.entries(entryRiskAnalysis.manifest_analysis.nationality_breakdown).map(([nationality, count]) => (
                             <div key={nationality} className="text-center">
-                              <div className="text-xl font-bold text-blue-400">{count}</div>
-                              <div className="text-sm text-gray-400">{nationality}</div>
+                              <div className="text-xl font-bold text-aero-blue-primary">{count}</div>
+                              <div className="text-sm text-muted-foreground">{nationality}</div>
                             </div>
                           ))}
                         </div>
@@ -800,22 +800,22 @@ const VisaRequirementsDashboard: React.FC = () => {
 
                     {/* Flagged Nationalities */}
                     {entryRiskAnalysis.risk_analysis.flagged_nationalities.length > 0 && (
-                      <Card className="bg-gray-700 border-gray-600">
+                      <Card className="bg-va-white border-va-midnight">
                         <CardHeader>
-                          <CardTitle className="text-white flex items-center gap-2">
-                            <XCircle className="h-5 w-5 text-red-400" />
+                          <CardTitle className="_midnight flex items-center gap-2">
+                            <XCircle className="h-5 w-5 text-va-red-primary" />
                             Visa Issues Detected
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-3">
                             {entryRiskAnalysis.risk_analysis.flagged_nationalities.map((nationality, index) => (
-                              <div key={index} className="flex items-center justify-between p-3 bg-red-900/20 border border-red-800 rounded">
+                              <div key={index} className="flex items-center justify-between p-3 bg-va-red-primary/10 border border-red-800 rounded">
                                 <div className="flex items-center gap-2">
                                   <Badge className="bg-red-800 text-red-200">{nationality}</Badge>
-                                  <span className="text-white">nationals require visa for {entryRiskAnalysis.diversion_airport}</span>
+                                  <span className="text-va-midnight">nationals require visa for {entryRiskAnalysis.diversion_airport}</span>
                                 </div>
-                                <span className="text-red-400 font-medium">
+                                <span className="text-va-red-primary font-medium">
                                   {entryRiskAnalysis.risk_analysis.risk_details[nationality] || 'Visa Required'}
                                 </span>
                               </div>
@@ -826,32 +826,32 @@ const VisaRequirementsDashboard: React.FC = () => {
                     )}
 
                     {/* Operational Recommendations */}
-                    <Card className="bg-gray-700 border-gray-600">
+                    <Card className="bg-va-white border-va-midnight">
                       <CardHeader>
-                        <CardTitle className="text-white flex items-center gap-2">
-                          <FileText className="h-5 w-5 text-green-400" />
+                        <CardTitle className="_midnight flex items-center gap-2">
+                          <FileText className="h-5 w-5 text-aero-green-safe" />
                           Operational Recommendations
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-4">
-                          <div className="p-4 bg-blue-900/20 border border-blue-800 rounded">
-                            <div className="font-medium text-blue-400 mb-2">Alert ID: {entryRiskAnalysis.alert_notification.alert_id}</div>
-                            <div className="text-white">{entryRiskAnalysis.alert_notification.operational_recommendation}</div>
+                          <div className="p-4 bg-aero-blue-primary/10 border border-blue-800 rounded">
+                            <div className="font-medium text-aero-blue-primary mb-2">Alert ID: {entryRiskAnalysis.alert_notification.alert_id}</div>
+                            <div className="text-va-midnight">{entryRiskAnalysis.alert_notification.operational_recommendation}</div>
                           </div>
                           
                           <div className="flex items-center gap-2">
-                            <span className="text-gray-400">Action Required:</span>
+                            <span className="text-muted-foreground">Action Required:</span>
                             <Badge className={entryRiskAnalysis.alert_notification.requires_action ? 'bg-orange-800 text-orange-200' : 'bg-green-800 text-green-200'}>
                               {entryRiskAnalysis.alert_notification.requires_action ? 'YES' : 'NO'}
                             </Badge>
                           </div>
 
                           <div>
-                            <span className="text-gray-400">Notification Channels:</span>
+                            <span className="text-muted-foreground">Notification Channels:</span>
                             <div className="mt-1 flex gap-2">
                               {entryRiskAnalysis.alert_notification.notification_channels.map((channel, index) => (
-                                <Badge key={index} className="bg-gray-800 text-gray-200">{channel}</Badge>
+                                <Badge key={index} className="bg-card text-muted-foreground">{channel}</Badge>
                               ))}
                             </div>
                           </div>

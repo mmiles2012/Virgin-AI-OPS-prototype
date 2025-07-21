@@ -208,9 +208,9 @@ export default function IntelligenceDashboard() {
 
   const getAlertIcon = (level: string) => {
     switch (level) {
-      case 'high': return <AlertTriangle className="h-4 w-4 text-red-400" />;
-      case 'medium': return <Shield className="h-4 w-4 text-yellow-400" />;
-      default: return <Activity className="h-4 w-4 text-blue-400" />;
+      case 'high': return <AlertTriangle className="h-4 w-4 text-va-red-primary" />;
+      case 'medium': return <Shield className="h-4 w-4 text-aero-amber-caution" />;
+      default: return <Activity className="h-4 w-4 text-aero-blue-primary" />;
     }
   };
 
@@ -218,7 +218,7 @@ export default function IntelligenceDashboard() {
     switch (level) {
       case 'high': return <Badge variant="destructive">High Priority</Badge>;
       case 'medium': return <Badge variant="secondary">Medium Priority</Badge>;
-      default: return <Badge className="bg-blue-600">Information</Badge>;
+      default: return <Badge className="bg-aero-blue-primary">Information</Badge>;
     }
   };
 
@@ -246,8 +246,8 @@ export default function IntelligenceDashboard() {
     return (
       <Card className="aviation-panel">
         <CardContent className="flex items-center justify-center py-8">
-          <Brain className="h-8 w-8 animate-pulse text-blue-400" />
-          <span className="ml-2 text-white">Loading Intelligence Dashboard...</span>
+          <Brain className="h-8 w-8 animate-pulse text-aero-blue-primary" />
+          <span className="ml-2 text-foreground">Loading Intelligence Dashboard...</span>
         </CardContent>
       </Card>
     );
@@ -257,11 +257,11 @@ export default function IntelligenceDashboard() {
     return (
       <Card className="aviation-panel">
         <CardContent className="flex flex-col items-center justify-center py-8">
-          <AlertTriangle className="h-8 w-8 text-red-400 mb-2" />
-          <span className="text-red-400 text-center">{error}</span>
+          <AlertTriangle className="h-8 w-8 text-va-red-primary mb-2" />
+          <span className="text-va-red-primary text-center">{error}</span>
           <button 
             onClick={() => window.location.reload()} 
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="mt-4 px-4 py-2 bg-aero-blue-primary text-foreground rounded hover:bg-aero-blue-light"
           >
             Retry
           </button>
@@ -271,14 +271,14 @@ export default function IntelligenceDashboard() {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-900 overflow-hidden">
+    <div className="fixed inset-0 bg-card overflow-hidden">
       <div className="h-full flex flex-col p-6 space-y-6">
         <div className="flex-shrink-0">
           <div className="flex items-center gap-3 mb-6">
-            <Brain className="h-8 w-8 text-blue-400" />
+            <Brain className="h-8 w-8 text-aero-blue-primary" />
             <div>
-              <h1 className="text-3xl font-bold text-white">Intelligence Center</h1>
-              <p className="text-gray-400">Real-time geopolitical risk assessment powered by comprehensive news intelligence</p>
+              <h1 className="text-3xl font-bold text-foreground">Intelligence Center</h1>
+              <p className="text-muted-foreground">Real-time geopolitical risk assessment powered by comprehensive news intelligence</p>
             </div>
           </div>
         </div>
@@ -286,7 +286,7 @@ export default function IntelligenceDashboard() {
         <div className="flex-1 overflow-hidden">
           <Card className="aviation-panel h-full">
         <CardHeader>
-          <CardTitle className="text-white flex items-center justify-between">
+          <CardTitle className="text-foreground flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Brain className="h-5 w-5" />
               Aviation Intelligence Dashboard
@@ -305,7 +305,7 @@ export default function IntelligenceDashboard() {
         </CardHeader>
         <CardContent className="h-full flex flex-col overflow-hidden">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col h-full">
-            <TabsList className="grid w-full grid-cols-4 bg-gray-800/50 flex-shrink-0 mb-4">
+            <TabsList className="grid w-full grid-cols-4 bg-card/50 flex-shrink-0 mb-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="news">Intelligence Feed</TabsTrigger>
               <TabsTrigger value="alerts">Operational Alerts</TabsTrigger>
@@ -315,78 +315,78 @@ export default function IntelligenceDashboard() {
             <TabsContent value="overview" className="flex-1 overflow-y-auto space-y-4">
               {summaryData && (
                 <>
-                  <div className="bg-gray-800/50 rounded p-4 mb-4">
-                    <h3 className="text-white font-medium mb-2">Executive Summary</h3>
-                    <p className="text-gray-300 text-sm leading-relaxed">
+                  <div className="bg-card/50 rounded p-4 mb-4">
+                    <h3 className="text-foreground font-medium mb-2">Executive Summary</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
                       {summaryData.executive_summary}
                     </p>
                   </div>
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    <div className="bg-gray-800/50 rounded p-3">
+                    <div className="bg-card/50 rounded p-3">
                       <div className="text-blue-300 text-sm">Articles Analyzed</div>
-                      <div className="text-2xl font-bold text-white">{summaryData.key_metrics.articles_analyzed}</div>
+                      <div className="text-2xl font-bold text-foreground">{summaryData.key_metrics.articles_analyzed}</div>
                     </div>
-                    <div className="bg-gray-800/50 rounded p-3">
+                    <div className="bg-card/50 rounded p-3">
                       <div className="text-blue-300 text-sm">High Priority Items</div>
-                      <div className="text-2xl font-bold text-red-400">{summaryData.key_metrics.high_priority_items}</div>
+                      <div className="text-2xl font-bold text-va-red-primary">{summaryData.key_metrics.high_priority_items}</div>
                     </div>
-                    <div className="bg-gray-800/50 rounded p-3">
+                    <div className="bg-card/50 rounded p-3">
                       <div className="text-blue-300 text-sm">Active Alerts</div>
-                      <div className="text-2xl font-bold text-yellow-400">{summaryData.key_metrics.operational_alerts}</div>
+                      <div className="text-2xl font-bold text-aero-amber-caution">{summaryData.key_metrics.operational_alerts}</div>
                     </div>
-                    <div className="bg-gray-800/50 rounded p-3">
+                    <div className="bg-card/50 rounded p-3">
                       <div className="text-blue-300 text-sm">Regulatory Updates</div>
-                      <div className="text-2xl font-bold text-blue-400">{summaryData.key_metrics.regulatory_updates}</div>
+                      <div className="text-2xl font-bold text-aero-blue-primary">{summaryData.key_metrics.regulatory_updates}</div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card className="bg-gray-800/30">
+                    <Card className="bg-card/30">
                       <CardContent className="pt-4">
-                        <h4 className="text-white font-medium mb-3 flex items-center gap-2">
-                          <Target className="h-4 w-4 text-blue-400" />
+                        <h4 className="text-foreground font-medium mb-3 flex items-center gap-2">
+                          <Target className="h-4 w-4 text-aero-blue-primary" />
                           Priority Actions
                         </h4>
                         <div className="space-y-2">
                           {summaryData.priority_actions.map((action, index) => (
-                            <div key={index} className="border-l-2 border-blue-600 pl-3">
+                            <div key={index} className="border-l-2 border-aero-blue-primary/30 pl-3">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-white text-sm font-medium">{action.action}</span>
+                                <span className="text-foreground text-sm font-medium">{action.action}</span>
                                 <Badge variant={action.priority === 'high' ? 'destructive' : action.priority === 'medium' ? 'secondary' : 'default'}>
                                   {action.priority}
                                 </Badge>
                               </div>
-                              <div className="text-gray-400 text-xs">Timeline: {action.timeline}</div>
-                              <div className="text-gray-400 text-xs">Impact: {action.impact}</div>
+                              <div className="text-muted-foreground text-xs">Timeline: {action.timeline}</div>
+                              <div className="text-muted-foreground text-xs">Impact: {action.impact}</div>
                             </div>
                           ))}
                         </div>
                       </CardContent>
                     </Card>
 
-                    <Card className="bg-gray-800/30">
+                    <Card className="bg-card/30">
                       <CardContent className="pt-4">
-                        <h4 className="text-white font-medium mb-3 flex items-center gap-2">
-                          <BarChart3 className="h-4 w-4 text-green-400" />
+                        <h4 className="text-foreground font-medium mb-3 flex items-center gap-2">
+                          <BarChart3 className="h-4 w-4 text-aero-green-safe" />
                           Market Outlook
                         </h4>
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Fuel Costs:</span>
-                            <span className="text-red-400 text-sm">{summaryData.market_outlook.fuel_costs}</span>
+                            <span className="text-muted-foreground text-sm">Fuel Costs:</span>
+                            <span className="text-va-red-primary text-sm">{summaryData.market_outlook.fuel_costs}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Regulations:</span>
-                            <span className="text-yellow-400 text-sm">{summaryData.market_outlook.regulations}</span>
+                            <span className="text-muted-foreground text-sm">Regulations:</span>
+                            <span className="text-aero-amber-caution text-sm">{summaryData.market_outlook.regulations}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Technology:</span>
-                            <span className="text-green-400 text-sm">{summaryData.market_outlook.technology}</span>
+                            <span className="text-muted-foreground text-sm">Technology:</span>
+                            <span className="text-aero-green-safe text-sm">{summaryData.market_outlook.technology}</span>
                           </div>
-                          <div className="mt-3 pt-2 border-t border-gray-600">
+                          <div className="mt-3 pt-2 border-t border-border">
                             <span className="text-blue-300 text-sm font-medium">Overall Trend:</span>
-                            <p className="text-white text-sm mt-1">{summaryData.market_outlook.overall_trend}</p>
+                            <p className="text-foreground text-sm mt-1">{summaryData.market_outlook.overall_trend}</p>
                           </div>
                         </div>
                       </CardContent>
@@ -400,15 +400,15 @@ export default function IntelligenceDashboard() {
               {intelligenceData && (
                 <>
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-white font-medium">Live Intelligence Feed</h3>
+                    <h3 className="text-foreground font-medium">Live Intelligence Feed</h3>
                     <div className="flex items-center gap-2">
                       {intelligenceData && (
                         <div className="flex items-center gap-1">
                           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                          <span className="text-green-400 text-xs">LIVE DATA</span>
+                          <span className="text-aero-green-safe text-xs">LIVE DATA</span>
                         </div>
                       )}
-                      <Badge className="bg-blue-600">
+                      <Badge className="bg-aero-blue-primary">
                         {intelligenceData.analytics.total_articles_today} articles processed
                       </Badge>
                     </div>
@@ -416,16 +416,16 @@ export default function IntelligenceDashboard() {
                   
                   <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2">
                     {intelligenceData.articles.map(article => (
-                      <Card key={article.id} className="bg-gray-800/30">
+                      <Card key={article.id} className="bg-card/30">
                         <CardContent className="pt-3 pb-3">
                           <div className="flex justify-between items-start mb-2">
-                            <h4 className="text-white font-medium text-sm leading-tight flex-1 mr-2">{article.title}</h4>
+                            <h4 className="text-foreground font-medium text-sm leading-tight flex-1 mr-2">{article.title}</h4>
                             <div className="flex items-center gap-1 shrink-0">
                               <Badge variant={article.impact_level === 'high' ? 'destructive' : 'secondary'} className="text-xs">
                                 {article.relevance_score}%
                               </Badge>
                               {(article as any).ml_enhanced && (
-                                <Badge variant="outline" className="text-xs border-green-600 text-green-400">
+                                <Badge variant="outline" className="text-xs border-aero-green-safe/30 text-aero-green-safe">
                                   ML
                                 </Badge>
                               )}
@@ -436,24 +436,24 @@ export default function IntelligenceDashboard() {
                               )}
                             </div>
                           </div>
-                          <p className="text-gray-300 text-xs mb-2 leading-relaxed line-clamp-2">{article.content}</p>
+                          <p className="text-muted-foreground text-xs mb-2 leading-relaxed line-clamp-2">{article.content}</p>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span className="text-blue-300 text-xs truncate max-w-[120px]">{article.source}</span>
-                              <span className="text-gray-400 text-xs">•</span>
-                              <span className="text-gray-400 text-xs">{formatTimeAgo(article.published_at)}</span>
+                              <span className="text-muted-foreground text-xs">•</span>
+                              <span className="text-muted-foreground text-xs">{formatTimeAgo(article.published_at)}</span>
                             </div>
                             <div className="flex items-center gap-1">
                               {article.categories.slice(0, 2).map(category => (
                                 <div key={category} className="flex items-center gap-1 bg-gray-700/50 px-1.5 py-0.5 rounded text-xs">
                                   {getCategoryIcon(category)}
-                                  <span className="text-gray-300 hidden sm:inline">{category.replace('_', ' ')}</span>
+                                  <span className="text-muted-foreground hidden sm:inline">{category.replace('_', ' ')}</span>
                                 </div>
                               ))}
                             </div>
                           </div>
                           {article.operational_significance && (
-                            <div className="mt-2 p-1.5 bg-blue-900/30 rounded border-l-2 border-blue-600">
+                            <div className="mt-2 p-1.5 bg-blue-900/30 rounded border-l-2 border-aero-blue-primary/30">
                               <span className="text-blue-300 text-xs font-medium">Impact: </span>
                               <span className="text-blue-200 text-xs">{article.operational_significance}</span>
                             </div>
@@ -470,48 +470,48 @@ export default function IntelligenceDashboard() {
               {alertsData && (
                 <>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    <div className="bg-gray-800/50 rounded p-3">
+                    <div className="bg-card/50 rounded p-3">
                       <div className="text-blue-300 text-sm">Total Alerts</div>
-                      <div className="text-2xl font-bold text-white">{alertsData.summary.total_alerts}</div>
+                      <div className="text-2xl font-bold text-foreground">{alertsData.summary.total_alerts}</div>
                     </div>
-                    <div className="bg-gray-800/50 rounded p-3">
+                    <div className="bg-card/50 rounded p-3">
                       <div className="text-blue-300 text-sm">High Priority</div>
-                      <div className="text-2xl font-bold text-red-400">{alertsData.summary.high_priority}</div>
+                      <div className="text-2xl font-bold text-va-red-primary">{alertsData.summary.high_priority}</div>
                     </div>
-                    <div className="bg-gray-800/50 rounded p-3">
+                    <div className="bg-card/50 rounded p-3">
                       <div className="text-blue-300 text-sm">Medium Priority</div>
-                      <div className="text-2xl font-bold text-yellow-400">{alertsData.summary.medium_priority}</div>
+                      <div className="text-2xl font-bold text-aero-amber-caution">{alertsData.summary.medium_priority}</div>
                     </div>
-                    <div className="bg-gray-800/50 rounded p-3">
+                    <div className="bg-card/50 rounded p-3">
                       <div className="text-blue-300 text-sm">Action Required</div>
-                      <div className="text-2xl font-bold text-orange-400">{alertsData.summary.action_required_count}</div>
+                      <div className="text-2xl font-bold text-aero-orange-alert">{alertsData.summary.action_required_count}</div>
                     </div>
                   </div>
 
                   <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2">
                     {alertsData.alerts.map(alert => (
                       <Alert key={alert.id} className={`border-l-4 ${
-                        alert.level === 'high' ? 'border-red-600 bg-red-900/20' :
-                        alert.level === 'medium' ? 'border-yellow-600 bg-yellow-900/20' :
-                        'border-blue-600 bg-blue-900/20'
+                        alert.level === 'high' ? 'border-va-red-primary/30 bg-va-red-primary/10' :
+                        alert.level === 'medium' ? 'border-aero-amber-caution/30 bg-aero-amber-caution/10' :
+                        'border-aero-blue-primary/30 bg-aero-blue-primary/10'
                       }`}>
                         <div className="flex items-start justify-between">
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             {getAlertIcon(alert.level)}
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                <span className="text-white font-medium text-sm">{alert.title}</span>
+                                <span className="text-foreground font-medium text-sm">{alert.title}</span>
                                 {getAlertBadge(alert.level)}
                                 {alert.action_required && (
-                                  <Badge variant="outline" className="border-orange-600 text-orange-400 text-xs">
+                                  <Badge variant="outline" className="border-aero-orange-alert/30 text-aero-orange-alert text-xs">
                                     Action Required
                                   </Badge>
                                 )}
                               </div>
-                              <AlertDescription className="text-gray-300 text-xs mb-2 line-clamp-2">
+                              <AlertDescription className="text-muted-foreground text-xs mb-2 line-clamp-2">
                                 {alert.summary}
                               </AlertDescription>
-                              <div className="flex items-center gap-3 text-xs text-gray-400 flex-wrap">
+                              <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                                 <span className="truncate max-w-[120px]">Source: {alert.source}</span>
                                 <span>Score: {alert.relevance_score}%</span>
                                 <span className="truncate max-w-[120px]">Timeline: {alert.timeline}</span>
@@ -533,36 +533,36 @@ export default function IntelligenceDashboard() {
               {intelligenceData && (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card className="bg-gray-800/30">
+                    <Card className="bg-card/30">
                       <CardContent className="pt-4">
-                        <h4 className="text-white font-medium mb-3 flex items-center gap-2">
-                          <BarChart3 className="h-4 w-4 text-blue-400" />
+                        <h4 className="text-foreground font-medium mb-3 flex items-center gap-2">
+                          <BarChart3 className="h-4 w-4 text-aero-blue-primary" />
                           Intelligence Metrics
                         </h4>
                         <div className="space-y-3">
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Articles Today:</span>
-                            <span className="text-white">{intelligenceData.analytics.total_articles_today}</span>
+                            <span className="text-muted-foreground text-sm">Articles Today:</span>
+                            <span className="text-foreground">{intelligenceData.analytics.total_articles_today}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">High Relevance:</span>
-                            <span className="text-green-400">{intelligenceData.analytics.high_relevance_articles}</span>
+                            <span className="text-muted-foreground text-sm">High Relevance:</span>
+                            <span className="text-aero-green-safe">{intelligenceData.analytics.high_relevance_articles}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Avg Relevance Score:</span>
-                            <span className="text-blue-400">{intelligenceData.analytics.average_relevance_score}%</span>
+                            <span className="text-muted-foreground text-sm">Avg Relevance Score:</span>
+                            <span className="text-aero-blue-primary">{intelligenceData.analytics.average_relevance_score}%</span>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
 
-                    <Card className="bg-gray-800/30">
+                    <Card className="bg-card/30">
                       <CardContent className="pt-4">
-                        <h4 className="text-white font-medium mb-3 flex items-center gap-2">
-                          <TrendingUp className="h-4 w-4 text-green-400" />
+                        <h4 className="text-foreground font-medium mb-3 flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4 text-aero-green-safe" />
                           Trend Analysis
                         </h4>
-                        <p className="text-gray-300 text-sm leading-relaxed">
+                        <p className="text-muted-foreground text-sm leading-relaxed">
                           {intelligenceData.analytics.trend_analysis}
                         </p>
                         <div className="mt-3">

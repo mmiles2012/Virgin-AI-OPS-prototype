@@ -58,7 +58,7 @@ const Simple3DGlobe: React.FC = () => {
         <OrbitControls enableZoom enablePan enableRotate />
       </Canvas>
       
-      <div className="absolute top-4 left-4 bg-black/80 text-white p-4 rounded">
+      <div className="absolute top-4 left-4 bg-black/80 text-foreground p-4 rounded">
         <h3 className="text-lg font-bold">3D Globe Network</h3>
         <p className="text-sm">Virgin Atlantic Global Network</p>
       </div>
