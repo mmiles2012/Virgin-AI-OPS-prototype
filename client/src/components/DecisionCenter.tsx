@@ -240,9 +240,9 @@ export default function DecisionCenter() {
 
   if (!decisionContext && !analysis) {
     return (
-      <div className="p-6 text-center">
-        <div className="text-blue-300 mb-2">Decision Engine</div>
-        <div className="text-blue-200 text-sm">
+      <div className="va-theme bg-background text-foreground p-6 text-center">
+        <div className="text-va-blue mb-2">Decision Engine</div>
+        <div className="text-muted-foreground text-sm">
           No active decision contexts. Monitoring flight for decision points...
         </div>
       </div>
@@ -250,9 +250,9 @@ export default function DecisionCenter() {
   }
 
   return (
-    <div className="h-full overflow-auto">
+    <div className="va-theme bg-background text-foreground h-full overflow-auto">
       <Tabs defaultValue="active" className="h-full">
-        <TabsList className="grid w-full grid-cols-5 mb-4">
+        <TabsList className="grid w-full grid-cols-5 mb-4 bg-muted">
           <TabsTrigger value="active">Active Decisions</TabsTrigger>
           <TabsTrigger value="scenarios">Diversion Scenarios</TabsTrigger>
           <TabsTrigger value="analysis">Situation Analysis</TabsTrigger>
@@ -265,14 +265,14 @@ export default function DecisionCenter() {
           {decisionContext ? (
             <>
               {/* Decision Timer */}
-              <Card className="border-orange-500 bg-orange-900/20">
+              <Card className="va-card bg-card border-va-amber">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Timer className="h-5 w-5 text-orange-400" />
-                      <span className="text-orange-300 font-medium">Decision Required</span>
+                      <Timer className="h-5 w-5 text-va-amber" />
+                      <span className="text-va-amber font-medium">Decision Required</span>
                     </div>
-                    <div className="text-2xl font-mono text-orange-400">
+                    <div className="text-2xl font-mono text-va-amber">
                       {formatTime(decisionTimer)}
                     </div>
                   </div>
@@ -285,28 +285,28 @@ export default function DecisionCenter() {
 
               {/* AI Recommendation */}
               {aiRecommendation && (
-                <Card className="border-blue-500 bg-blue-900/20">
+                <Card className="va-card bg-card border-va-blue">
                   <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-blue-300">
+                    <CardTitle className="flex items-center gap-2 text-va-blue">
                       <Brain className="h-5 w-5" />
                       AI Recommendation
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="font-medium text-white mb-2">
+                    <div className="font-medium text-card-foreground mb-2">
                       {aiRecommendation.title}
                     </div>
-                    <div className="text-blue-200 text-sm mb-3">
+                    <div className="text-muted-foreground text-sm mb-3">
                       {aiRecommendation.description}
                     </div>
                     <div className="flex gap-2">
-                      <Badge variant="outline" className="text-blue-300">
+                      <Badge variant="outline" className="text-va-blue border-va-blue">
                         Safety: {aiRecommendation.safetyScore}%
                       </Badge>
-                      <Badge variant="outline" className="text-blue-300">
+                      <Badge variant="outline" className="text-va-blue border-va-blue">
                         Cost: {formatCurrency(aiRecommendation.costImpact)}
                       </Badge>
-                      <Badge variant="outline" className="text-blue-300">
+                      <Badge variant="outline" className="text-va-blue border-va-blue">
                         Time: {aiRecommendation.timeImpact}min
                       </Badge>
                     </div>
