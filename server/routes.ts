@@ -53,9 +53,10 @@ import { virginAtlanticFlightTracker } from "./routeMatcher";
 import { emergencyCoordinator } from "./core/EmergencyResponseCoordinator";
 import mlOtpRoutes from "./mlOtpRoutes";
 import visaRoutes from "./visaRoutes";
-import FlightPlanService from './flightPlanService.js';
+import flightPlanRoutes from './flightPlanRoutes';
 import fuelOptimizationRoutes from "./fuelOptimizationRoutes";
 import FAAStatusService from "./faaStatusService.js";
+import FlightPlanService from './flightPlanService.js';
 
 // Initialize FAA Status Service
 const faaStatusService = new FAAStatusService();
@@ -5821,6 +5822,7 @@ print(json.dumps(weather))
 
   // Intelligent Operations Agent routes
   app.use('/api/intelligent-ops', intelligentOpsRoutes);
+  app.use('/api/flight-plans', flightPlanRoutes);
 
   // FAA Total Risk Intelligence routes
   app.use('/api/faa-intelligence', faaRiskIntelligenceRoutes);

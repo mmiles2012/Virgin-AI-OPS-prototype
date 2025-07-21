@@ -129,6 +129,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
   const [selectedFlightPlan, setSelectedFlightPlan] = useState<any>(null);
   const [diversionAnalysis, setDiversionAnalysis] = useState<any>(null);
   const [uploadLoading, setUploadLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [flightPlanContent, setFlightPlanContent] = useState('');
   const [flightPlanFilename, setFlightPlanFilename] = useState('');
 
@@ -153,29 +154,61 @@ const IntelligentDecisionDashboard: React.FC = () => {
     }
   };
 
-  const uploadFlightPlan = async () => {
-    if (!flightPlanContent.trim() || !flightPlanFilename.trim()) {
-      alert('Please provide both filename and flight plan content');
-      return;
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      // Auto-populate filename if using text input
+      if (!flightPlanFilename) {
+        setFlightPlanFilename(file.name);
+      }
     }
+  };
 
+  const uploadFlightPlan = async () => {
     setUploadLoading(true);
     try {
-      const response = await fetch('/api/flight-plans/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          filename: flightPlanFilename,
-          content: flightPlanContent,
-          format: 'auto'
-        })
-      });
+      let response;
+
+      if (selectedFile) {
+        // File upload
+        const formData = new FormData();
+        formData.append('flightPlan', selectedFile);
+        
+        response = await fetch('/api/flight-plans/upload', {
+          method: 'POST',
+          body: formData
+        });
+      } else if (flightPlanContent.trim() && flightPlanFilename.trim()) {
+        // Text upload
+        response = await fetch('/api/flight-plans/upload-text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filename: flightPlanFilename,
+            content: flightPlanContent,
+            format: 'auto'
+          })
+        });
+      } else {
+        alert('Please select a file or enter text content');
+        setUploadLoading(false);
+        return;
+      }
 
       const data = await response.json();
       if (data.success) {
         console.log('✈️ Flight plan uploaded successfully:', data.flightPlan.callsign);
+        
+        // Clear form
         setFlightPlanContent('');
         setFlightPlanFilename('');
+        setSelectedFile(null);
+        
+        // Reset file input
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+        
         fetchUploadedFlightPlans(); // Refresh list
         alert(`Flight plan uploaded successfully for ${data.flightPlan.callsign}`);
       } else {
@@ -615,6 +648,23 @@ const IntelligentDecisionDashboard: React.FC = () => {
                 <div>
                   <h4 className="font-medium text-orange-300 mb-3">Upload Flight Plan</h4>
                   <div className="space-y-3">
+                    {/* File Upload Option */}
+                    <div>
+                      <label className="block text-sm font-medium mb-1 text-gray-300">Upload PDF or Text File</label>
+                      <input
+                        type="file"
+                        accept=".pdf,.txt,.json,.xml"
+                        onChange={handleFileUpload}
+                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:font-medium file:bg-orange-600 file:text-white hover:file:bg-orange-700"
+                      />
+                      <p className="text-xs text-gray-400 mt-1">Supports PDF, TXT, JSON, and XML flight plans</p>
+                    </div>
+                    
+                    {/* Text Input Option */}
+                    <div className="text-center text-gray-400 text-sm">
+                      <span>OR</span>
+                    </div>
+                    
                     <div>
                       <label className="block text-sm font-medium mb-1 text-gray-300">Filename</label>
                       <input
@@ -637,10 +687,10 @@ const IntelligentDecisionDashboard: React.FC = () => {
                     </div>
                     <button
                       onClick={uploadFlightPlan}
-                      disabled={uploadLoading || !flightPlanContent.trim() || !flightPlanFilename.trim()}
+                      disabled={uploadLoading || (!flightPlanContent.trim() && !selectedFile) || (!flightPlanFilename.trim() && !selectedFile)}
                       className="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
                     >
-                      {uploadLoading ? 'Uploading...' : 'Upload Flight Plan'}
+                      {uploadLoading ? 'Uploading...' : selectedFile ? `Upload ${selectedFile.name}` : 'Upload Flight Plan'}
                     </button>
                   </div>
                 </div>

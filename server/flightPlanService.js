@@ -15,15 +15,17 @@ class FlightPlanService {
     }
   }
 
-  // Parse various flight plan formats
-  parseFlightPlan(fileContent, filename, format = 'auto') {
+  // Parse various flight plan formats including PDF
+  async parseFlightPlan(fileContent, filename, format = 'auto') {
     try {
       let parsedPlan = null;
       const fileExt = path.extname(filename).toLowerCase();
       
       // Auto-detect format based on content and extension
       if (format === 'auto') {
-        if (fileExt === '.json' || this.isJSON(fileContent)) {
+        if (fileExt === '.pdf') {
+          format = 'pdf';
+        } else if (fileExt === '.json' || this.isJSON(fileContent)) {
           format = 'json';
         } else if (fileExt === '.xml' || fileContent.includes('<?xml')) {
           format = 'xml';
@@ -35,6 +37,11 @@ class FlightPlanService {
       }
 
       switch (format) {
+        case 'pdf':
+          // Import PDF parsing dynamically to avoid initialization issues
+          const pdfParse = (await import('pdf-parse')).default;
+          parsedPlan = await this.parsePDFFlightPlan(fileContent, pdfParse);
+          break;
         case 'json':
           parsedPlan = this.parseJSONFlightPlan(fileContent);
           break;
@@ -66,6 +73,77 @@ class FlightPlanService {
       console.error('Flight plan parsing error:', error);
       throw new Error(`Failed to parse flight plan: ${error.message}`);
     }
+  }
+
+  // Parse PDF flight plan documents
+  async parsePDFFlightPlan(pdfBuffer, pdfParse) {
+    try {
+      const data = await pdfParse(pdfBuffer);
+      const text = data.text;
+      
+      console.log('📄 Extracting flight plan data from PDF...');
+      
+      // Extract key flight plan information from PDF text
+      const flightPlan = {
+        callsign: this.extractFromPDF(text, /(?:FLIGHT|CALLSIGN|ACID)[:\s]*([A-Z0-9]{3,7})/i),
+        aircraft: this.extractFromPDF(text, /(?:AIRCRAFT|ACFT|TYPE)[:\s]*([A-Z0-9]{3,4})/i),
+        departure: this.extractFromPDF(text, /(?:FROM|DEPT?|ADEP)[:\s]*([A-Z]{4})/i),
+        destination: this.extractFromPDF(text, /(?:TO|DEST|ADES)[:\s]*([A-Z]{4})/i),
+        route: this.extractRouteFromPDF(text),
+        waypoints: [],
+        alternates: this.extractAlternatesFromPDF(text),
+        originalPDFText: text
+      };
+      
+      // Extract waypoints from route
+      if (flightPlan.route) {
+        flightPlan.waypoints = this.extractWaypoints(flightPlan.route);
+        flightPlan.routeSegments = this.createRouteSegments(flightPlan.waypoints);
+        flightPlan.coordinates = this.estimateCoordinates(flightPlan.waypoints);
+      }
+      
+      flightPlan.flightNumber = flightPlan.callsign;
+      
+      console.log(`✈️ PDF flight plan extracted: ${flightPlan.callsign || 'Unknown'}`);
+      return flightPlan;
+    } catch (error) {
+      console.error('PDF parsing error:', error);
+      throw new Error(`Failed to parse PDF flight plan: ${error.message}`);
+    }
+  }
+
+  // Extract specific data from PDF text using regex
+  extractFromPDF(text, regex) {
+    const match = text.match(regex);
+    return match ? match[1].trim() : null;
+  }
+
+  // Extract route information from PDF
+  extractRouteFromPDF(text) {
+    // Look for route patterns in the PDF
+    const routePatterns = [
+      /ROUTE[:\s]*([A-Z0-9\s\/\-]+?)(?:\n|$)/i,
+      /FPL[:\s]*[A-Z0-9]+-[A-Z0-9]+-([A-Z0-9\s\/\-]+?)-/i,
+      /([A-Z]{4}\s+[A-Z0-9\s\/\-]*[A-Z]{4})/
+    ];
+    
+    for (const pattern of routePatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        return match[1].trim();
+      }
+    }
+    
+    return null;
+  }
+
+  // Extract alternate airports from PDF
+  extractAlternatesFromPDF(text) {
+    const alternateMatch = text.match(/(?:ALT|ALTN|ALTERNATE)[:\s]*([A-Z]{4}(?:\s+[A-Z]{4})*)/i);
+    if (alternateMatch) {
+      return alternateMatch[1].split(/\s+/).filter(Boolean);
+    }
+    return [];
   }
 
   // Parse JSON format flight plans
@@ -393,6 +471,126 @@ class FlightPlanService {
     if (emergencyType === 'decompression') multiplier = 1.4;
     
     return distance * baseRate * multiplier + 2000; // + reserve
+  }
+
+  // Parse PDF flight plans
+  async parsePDFFlightPlan(pdfBuffer, pdfParse) {
+    try {
+      const data = await pdfParse(pdfBuffer);
+      const textContent = data.text;
+      
+      console.log('📄 PDF parsed successfully, extracting flight plan data...');
+      
+      // Extract key flight plan information from PDF text
+      const flightPlan = {
+        waypoints: [],
+        coordinates: [],
+        altitudes: [],
+        alternates: []
+      };
+
+      // Extract callsign/flight number (e.g., VIR3N)
+      const callsignMatch = textContent.match(/([A-Z]{3}[0-9]+[A-Z]?)/);
+      if (callsignMatch) {
+        flightPlan.callsign = callsignMatch[1];
+        flightPlan.flightNumber = callsignMatch[1];
+      }
+
+      // Extract aircraft type (e.g., A330-900, B787-9)
+      const aircraftMatch = textContent.match(/AIRCRAFT[:\s]+([A-Z0-9-]+)|TYPE[:\s]+([A-Z0-9-]+)/i);
+      if (aircraftMatch) {
+        flightPlan.aircraftType = aircraftMatch[1] || aircraftMatch[2];
+      }
+
+      // Extract route (looking for waypoint sequences)
+      const routeMatch = textContent.match(/ROUTE[:\s]+(.*?)(?:\n|WAYPOINTS|ALTERNATES)/i);
+      if (routeMatch) {
+        const routeString = routeMatch[1];
+        flightPlan.route = routeString.trim();
+        flightPlan.waypoints = this.extractWaypoints(routeString);
+      }
+
+      // Extract departure and destination airports
+      const airportMatch = textContent.match(/([A-Z]{4})[\/\-]([A-Z]{4})/);
+      if (airportMatch) {
+        flightPlan.departure = airportMatch[1];
+        flightPlan.destination = airportMatch[2];
+      }
+
+      // Extract alternates
+      const alternateMatch = textContent.match(/ALTERNATES?[:\s]+(.*?)(?:\n|FUEL)/i);
+      if (alternateMatch) {
+        const alternatesString = alternateMatch[1];
+        flightPlan.alternates = alternatesString.match(/[A-Z]{4}/g) || [];
+      }
+
+      // Extract fuel information
+      const fuelMatch = textContent.match(/FUEL[:\s]+(\d+)\s*KG/i);
+      if (fuelMatch) {
+        flightPlan.fuel = parseInt(fuelMatch[1]);
+      }
+
+      // Extract flight time
+      const timeMatch = textContent.match(/(\d+)H?\s*(\d+)M?|(\d+)\.(\d+)/);
+      if (timeMatch) {
+        const hours = parseInt(timeMatch[1] || timeMatch[3] || 0);
+        const minutes = parseInt(timeMatch[2] || timeMatch[4] || 0);
+        flightPlan.flightTime = `${hours}H ${minutes}M`;
+      }
+
+      // Extract waypoint coordinates if available
+      flightPlan.coordinates = this.extractCoordinatesFromPDF(textContent);
+      
+      // Calculate waypoint count
+      flightPlan.waypointCount = flightPlan.waypoints.length;
+
+      console.log(`✈️ PDF flight plan extracted: ${flightPlan.callsign} (${flightPlan.waypointCount} waypoints)`);
+      
+      return {
+        ...flightPlan,
+        routeSegments: this.createRouteSegments(flightPlan.waypoints),
+        originalContent: textContent.substring(0, 2000) // First 2000 chars for reference
+      };
+
+    } catch (error) {
+      console.error('PDF parsing error:', error);
+      throw new Error(`Failed to parse PDF flight plan: ${error.message}`);
+    }
+  }
+
+  // Extract coordinates from PDF text content
+  extractCoordinatesFromPDF(textContent) {
+    const coordinates = [];
+    
+    // Look for coordinate patterns like "51.4706N, 0.4619W" or "5230.7N 00651.0W"
+    const coordPatterns = [
+      /(\d{2}\.?\d*)[N]\s*[,\s]*(\d{2,3}\.?\d*)[W]/g,
+      /(\d{2})(\d{2}\.?\d*)[N]\s*(\d{3})(\d{2}\.?\d*)[W]/g,
+      /N(\d{2}\d{2}\.\d+)\s*W(\d{3}\d{2}\.\d+)/g
+    ];
+
+    for (const pattern of coordPatterns) {
+      let match;
+      while ((match = pattern.exec(textContent)) !== null) {
+        let lat, lon;
+        
+        if (match.length === 3) {
+          // Format: 51.4706N, 0.4619W
+          lat = parseFloat(match[1]);
+          lon = -parseFloat(match[2]); // West is negative
+        } else if (match.length === 5) {
+          // Format: 5230.7N 00651.0W (degrees + decimal minutes)
+          lat = parseInt(match[1]) + parseFloat(match[2]) / 60;
+          lon = -(parseInt(match[3]) + parseFloat(match[4]) / 60);
+        }
+
+        if (lat && lon && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+          coordinates.push({ lat, lon });
+        }
+      }
+    }
+
+    return coordinates;
   }
 
   getEmergencyProcedures(emergencyType, alternate) {
