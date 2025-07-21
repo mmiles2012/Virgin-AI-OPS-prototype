@@ -120,8 +120,11 @@ export default function OnTimePerformanceDashboard() {
       return [];
     }
 
+    // Virgin Atlantic primary hubs
+    const primaryHubs = ['LHR', 'MAN', 'JFK', 'LAX', 'BOS'];
+
     // Group flights by airport hubs
-    const hubFlights = new Map<string, any[]>();
+    const hubFlights = new window.Map<string, any[]>();
     
     // Process all authentic Virgin Atlantic flights
     virginAtlanticFlights.forEach(flight => {

@@ -251,23 +251,23 @@ export default function EnhancedLiveFlightTracker() {
       case 'ON_GROUND':
       case 'BOARDING':
       case 'PUSHBACK':
-      case 'TAXI': return 'bg-blue-500';
+      case 'TAXI': return 'bg-cyan-400';
       case 'DEPARTED':
       case 'TAKEOFF':
-      case 'CLIMBING': return 'bg-blue-600';
+      case 'CLIMBING': return 'bg-blue-400';
       case 'EN_ROUTE':
       case 'EN_ROUTE_ADS_B':
-      case 'CRUISE': return 'bg-green-600';
+      case 'CRUISE': return 'bg-emerald-400';
       case 'APPROACHING':
       case 'DESCENDING':
-      case 'FINAL_APPROACH': return 'bg-yellow-600';
+      case 'FINAL_APPROACH': return 'bg-amber-400';
       case 'LANDED':
       case 'ARRIVED':
-      case 'AT_GATE': return 'bg-gray-600';
-      case 'DELAYED': return 'bg-red-600';
-      case 'CANCELLED': return 'bg-red-800';
-      case 'SCHEDULED': return 'bg-purple-600';
-      default: return 'bg-blue-600';
+      case 'AT_GATE': return 'bg-slate-400';
+      case 'DELAYED': return 'bg-red-400';
+      case 'CANCELLED': return 'bg-red-600';
+      case 'SCHEDULED': return 'bg-violet-400';
+      default: return 'bg-blue-400';
     }
   };
 
@@ -382,9 +382,8 @@ export default function EnhancedLiveFlightTracker() {
                     </div>
                     <div className="text-center">
                       <div className="text-gray-400">Speed</div>
-                      <div className={`font-mono ${flight.velocity_estimated ? 'text-orange-400' : 'text-white'}`}>
+                      <div className={`font-mono text-white`}>
                         {flight.velocity != null ? Math.round(flight.velocity) : 'N/A'} kts
-                        {flight.velocity_estimated && <span className="text-orange-300 text-xs ml-1">est</span>}
                       </div>
                     </div>
                     <div className="text-center">
