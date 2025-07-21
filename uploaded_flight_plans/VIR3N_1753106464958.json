@@ -1,0 +1,257 @@
+{
+  "callsign": "VIR3N",
+  "flightNumber": "VIR3N",
+  "aircraft": "A330-900",
+  "departure": "EGLL",
+  "destination": "KJFK",
+  "route": "EGLL CPT5J CPT L9 BUCGO DCT FELCA DCT NICXI DCT BAKUR DCT DOGAL DCT 55N020W DCT 5630N03000W DCT 56N040W DCT 54N050W DCT NEEKO DCT DANOL DCT ENE PARCH4 KJFK",
+  "waypoints": [
+    "EGLL",
+    "CPT",
+    "BUCGO",
+    "FELCA",
+    "NICXI",
+    "BAKUR",
+    "DOGAL",
+    "55N020W",
+    "5630N03000W",
+    "56N040W",
+    "54N050W",
+    "NEEKO",
+    "DANOL",
+    "ENE",
+    "KJFK"
+  ],
+  "alternates": [
+    "KSWF",
+    "KEWR",
+    "KBOS"
+  ],
+  "routeSegments": [
+    {
+      "from": "EGLL",
+      "to": "CPT",
+      "distance": 549.0534197096545,
+      "bearing": 15.876889647829735,
+      "segmentIndex": 0
+    },
+    {
+      "from": "CPT",
+      "to": "BUCGO",
+      "distance": 531.538772378907,
+      "bearing": 6.919490954340546,
+      "segmentIndex": 1
+    },
+    {
+      "from": "BUCGO",
+      "to": "FELCA",
+      "distance": 123.66655041206079,
+      "bearing": 347.20071283306874,
+      "segmentIndex": 2
+    },
+    {
+      "from": "FELCA",
+      "to": "NICXI",
+      "distance": 262.71630900519176,
+      "bearing": 157.71602872710213,
+      "segmentIndex": 3
+    },
+    {
+      "from": "NICXI",
+      "to": "BAKUR",
+      "distance": 324.7336098157857,
+      "bearing": 92.11380646494612,
+      "segmentIndex": 4
+    },
+    {
+      "from": "BAKUR",
+      "to": "DOGAL",
+      "distance": 191.15440310718714,
+      "bearing": 222.80281775083233,
+      "segmentIndex": 5
+    },
+    {
+      "from": "DOGAL",
+      "to": "55N020W",
+      "distance": 393.1466192937998,
+      "bearing": 177.60298325830257,
+      "segmentIndex": 6
+    },
+    {
+      "from": "55N020W",
+      "to": "5630N03000W",
+      "distance": 491.61784222109765,
+      "bearing": 281.28538350203684,
+      "segmentIndex": 7
+    },
+    {
+      "from": "5630N03000W",
+      "to": "56N040W",
+      "distance": 106.90746378422624,
+      "bearing": 56.85184007472876,
+      "segmentIndex": 8
+    },
+    {
+      "from": "56N040W",
+      "to": "54N050W",
+      "distance": 547.2488647090515,
+      "bearing": 253.16952342823856,
+      "segmentIndex": 9
+    },
+    {
+      "from": "54N050W",
+      "to": "NEEKO",
+      "distance": 481.53633933440324,
+      "bearing": 133.97630409797296,
+      "segmentIndex": 10
+    },
+    {
+      "from": "NEEKO",
+      "to": "DANOL",
+      "distance": 442.7831054687723,
+      "bearing": 300.73022511014574,
+      "segmentIndex": 11
+    },
+    {
+      "from": "DANOL",
+      "to": "ENE",
+      "distance": 364.4382112769562,
+      "bearing": 187.47588916495044,
+      "segmentIndex": 12
+    },
+    {
+      "from": "ENE",
+      "to": "KJFK",
+      "distance": 439.8963613893933,
+      "bearing": 51.41286681438767,
+      "segmentIndex": 13
+    }
+  ],
+  "coordinates": [
+    {
+      "waypoint": "EGLL",
+      "coordinates": {
+        "lat": 51.47,
+        "lon": -0.4543
+      }
+    },
+    {
+      "waypoint": "CPT",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "BUCGO",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "FELCA",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "NICXI",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "BAKUR",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "DOGAL",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "55N020W",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "5630N03000W",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "56N040W",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "54N050W",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "NEEKO",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "DANOL",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "ENE",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "KJFK",
+      "coordinates": {
+        "lat": 40.6413,
+        "lon": -73.7781
+      }
+    }
+  ],
+  "pdfProcessed": true,
+  "pdfSize": 3435957,
+  "originalFilename": "CAE eFM_1753102473018.pdf",
+  "processingMethod": "OCR_READY",
+  "uploadedAt": "2025-07-21T14:01:04.958Z",
+  "filename": "CAE eFM_1753102473018.pdf",
+  "format": "pdf"
+}
