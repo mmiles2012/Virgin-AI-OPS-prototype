@@ -537,57 +537,65 @@ export default function OnTimePerformanceDashboard() {
       {/* Network Overview */}
       {networkView === 'network-overview' && networkMetrics && (
         <div className="p-6">
+          {/* Network Overview Description */}
+          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 className="text-lg font-bold text-blue-900 mb-2">Virgin Atlantic Global Network Performance</h3>
+            <p className="text-blue-700 text-sm">
+              Comprehensive overview of Virgin Atlantic's operational performance across all network destinations including Europe, North America, Asia, Caribbean, and Africa. Displays real-time metrics from {virginAtlanticFlights?.length || 0} active flights.
+            </p>
+          </div>
+
           {/* Global Network Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-white rounded-lg p-6 border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm">Global OTP</p>
+                  <p className="text-gray-600 text-sm font-medium">Network-Wide OTP</p>
                   <p className="text-3xl font-bold text-gray-900">{networkMetrics.globalOTP.toFixed(1)}%</p>
                 </div>
                 <Globe className="w-8 h-8 text-red-600" />
               </div>
               <div className="mt-2">
-                <p className="text-gray-500 text-xs">Network-wide on-time performance</p>
+                <p className="text-gray-500 text-xs">Overall On-Time Performance across all Virgin Atlantic destinations</p>
               </div>
             </div>
             
             <div className="bg-white rounded-lg p-6 border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm">Total Flights</p>
+                  <p className="text-gray-600 text-sm font-medium">Active Fleet Operations</p>
                   <p className="text-3xl font-bold text-gray-900">{networkMetrics.totalFlights}</p>
                 </div>
                 <Plane className="w-8 h-8 text-blue-600" />
               </div>
               <div className="mt-2">
-                <p className="text-gray-500 text-xs">Active across all hubs</p>
+                <p className="text-gray-500 text-xs">Current Virgin Atlantic flights across all network hubs</p>
               </div>
             </div>
             
             <div className="bg-white rounded-lg p-6 border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm">Avg Delay</p>
+                  <p className="text-gray-600 text-sm font-medium">Network Delay Average</p>
                   <p className="text-3xl font-bold text-gray-900">{networkMetrics.averageDelayPerFlight.toFixed(1)}<span className="text-lg font-normal text-gray-500">min</span></p>
                 </div>
                 <Clock className="w-8 h-8 text-amber-600" />
               </div>
               <div className="mt-2">
-                <p className="text-gray-500 text-xs">Per flight average</p>
+                <p className="text-gray-500 text-xs">Average delay time per flight across entire network</p>
               </div>
             </div>
             
             <div className="bg-white rounded-lg p-6 border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600 text-sm">Weather Impact</p>
+                  <p className="text-gray-600 text-sm font-medium">Weather-Affected Operations</p>
                   <p className="text-3xl font-bold text-gray-900">{networkMetrics.weatherImpactedFlights}</p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-orange-600" />
               </div>
               <div className="mt-2">
-                <p className="text-gray-500 text-xs">Weather-related delays</p>
+                <p className="text-gray-500 text-xs">Flights experiencing weather-related operational delays</p>
               </div>
             </div>
           </div>
@@ -612,23 +620,23 @@ export default function OnTimePerformanceDashboard() {
                 
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <p className="text-gray-500 text-xs">Flights</p>
+                    <p className="text-gray-500 text-xs font-medium">Total Operations</p>
                     <p className="text-lg font-semibold text-gray-900">{hub.totalFlights}</p>
                   </div>
                   <div>
-                    <p className="text-gray-500 text-xs">On Time</p>
+                    <p className="text-gray-500 text-xs font-medium">On-Time Arrivals</p>
                     <p className="text-lg font-semibold text-green-600">{hub.onTimeFlights}</p>
                   </div>
                   <div>
-                    <p className="text-gray-500 text-xs">Delayed</p>
+                    <p className="text-gray-500 text-xs font-medium">Delayed Operations</p>
                     <p className="text-lg font-semibold text-amber-600">{hub.delayedFlights}</p>
                   </div>
                 </div>
                 
                 {hub.avgDelayMinutes > 0 && (
                   <div className="mt-4 pt-4 border-t border-gray-100">
-                    <p className="text-gray-500 text-xs">Average Delay</p>
-                    <p className="text-sm font-medium text-gray-900">{hub.avgDelayMinutes} minutes</p>
+                    <p className="text-gray-500 text-xs font-medium">Hub Average Delay Time</p>
+                    <p className="text-sm font-medium text-gray-900">{hub.avgDelayMinutes} minutes per delayed flight</p>
                   </div>
                 )}
               </div>
@@ -668,6 +676,14 @@ export default function OnTimePerformanceDashboard() {
       {/* Regional Analysis */}
       {networkView === 'regional-analysis' && (
         <div className="p-6">
+          {/* Regional Analysis Description */}
+          <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+            <h3 className="text-lg font-bold text-green-900 mb-2">Virgin Atlantic Regional Network Analysis</h3>
+            <p className="text-green-700 text-sm">
+              Detailed breakdown of operational performance by geographic region. Filter by Europe, North America, Asia, Caribbean, or Africa to analyze hub-specific performance metrics and regional patterns.
+            </p>
+          </div>
+
           <div className="mb-6">
             <div className="flex items-center gap-4 mb-4">
               <h3 className="text-lg font-bold text-gray-900">Regional Performance Analysis</h3>
@@ -712,16 +728,16 @@ export default function OnTimePerformanceDashboard() {
                   
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-gray-500 text-sm">Total Flights:</span>
+                      <span className="text-gray-500 text-sm font-medium">Total Hub Operations:</span>
                       <span className="font-medium text-gray-900">{hub.totalFlights}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 text-sm">On Time:</span>
-                      <span className="font-medium text-green-600">{hub.onTimeFlights}</span>
+                      <span className="text-gray-500 text-sm font-medium">On-Time Performance:</span>
+                      <span className="font-medium text-green-600">{hub.onTimeFlights} flights</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500 text-sm">Delayed:</span>
-                      <span className="font-medium text-amber-600">{hub.delayedFlights}</span>
+                      <span className="text-gray-500 text-sm font-medium">Delayed Operations:</span>
+                      <span className="font-medium text-amber-600">{hub.delayedFlights} flights</span>
                     </div>
                     {hub.avgDelayMinutes > 0 && (
                       <div className="flex justify-between">
@@ -739,7 +755,15 @@ export default function OnTimePerformanceDashboard() {
       {/* Route Performance */}
       {networkView === 'route-performance' && (
         <div className="p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-6">Route Performance Analysis</h3>
+          {/* Route Performance Description */}
+          <div className="mb-6 bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <h3 className="text-lg font-bold text-purple-900 mb-2">Virgin Atlantic Route Performance Analysis</h3>
+            <p className="text-purple-700 text-sm">
+              Comprehensive route-by-route performance analysis showing on-time performance, delay patterns, and operational trends across Virgin Atlantic's global network. Displays top 10 route analytics with city-pair specific metrics.
+            </p>
+          </div>
+
+          <h3 className="text-lg font-bold text-gray-900 mb-6">Top 10 Route Performance Analysis</h3>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {routePerformance.slice(0, 10).map((route, index) => (
@@ -759,13 +783,19 @@ export default function OnTimePerformanceDashboard() {
                 
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-500 text-sm">Flights:</span>
-                    <span className="font-medium text-gray-900">{route.flightCount}</span>
+                    <span className="text-gray-500 text-sm font-medium">Route Operations:</span>
+                    <span className="font-medium text-gray-900">{route.flightCount} flights</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500 text-sm font-medium">On-Time Performance:</span>
+                    <span className={`font-medium ${route.onTimeRate >= 85 ? 'text-green-600' : route.onTimeRate >= 70 ? 'text-amber-600' : 'text-red-600'}`}>
+                      {route.onTimeRate.toFixed(1)}%
+                    </span>
                   </div>
                   {route.avgDelayMinutes > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-gray-500 text-sm">Avg Delay:</span>
-                      <span className="font-medium text-gray-900">{route.avgDelayMinutes.toFixed(1)} min</span>
+                      <span className="text-gray-500 text-sm font-medium">Route Delay Average:</span>
+                      <span className="font-medium text-gray-900">{route.avgDelayMinutes.toFixed(1)} minutes</span>
                     </div>
                   )}
                 </div>
@@ -778,6 +808,14 @@ export default function OnTimePerformanceDashboard() {
       {/* Live Monitoring */}
       {networkView === 'live-monitoring' && currentHub && (
         <div className="p-6">
+          {/* Live Monitoring Description */}
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+            <h3 className="text-lg font-bold text-red-900 mb-2">Live Hub Operations Monitoring</h3>
+            <p className="text-red-700 text-sm">
+              Real-time operational status for individual Virgin Atlantic hubs. Auto-rotates through network destinations every 10 seconds with live flight activity, operational metrics, and recent flight performance data.
+            </p>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Hub Summary */}
             <div className="space-y-4">
@@ -802,36 +840,41 @@ export default function OnTimePerformanceDashboard() {
                 <div className="bg-white rounded-lg p-4 border border-gray-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-sm">Total Flights</p>
+                      <p className="text-gray-600 text-sm font-medium">Hub Flight Operations</p>
                       <p className="text-2xl font-bold text-gray-900">{currentHub.totalFlights}</p>
                     </div>
                     <Plane className="w-6 h-6 text-blue-600" />
                   </div>
+                  <p className="text-gray-500 text-xs mt-1">Active arrivals & departures</p>
                 </div>
                 
                 <div className="bg-white rounded-lg p-4 border border-gray-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-sm">Avg Delay</p>
+                      <p className="text-gray-600 text-sm font-medium">Hub Delay Average</p>
                       <p className="text-2xl font-bold text-gray-900">{currentHub.avgDelayMinutes}<span className="text-sm font-normal text-gray-500">min</span></p>
                     </div>
                     <Clock className="w-6 h-6 text-amber-600" />
                   </div>
+                  <p className="text-gray-500 text-xs mt-1">Per delayed operation</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
-                  <p className="text-sm text-gray-500">On Time</p>
+                  <p className="text-sm text-gray-500 font-medium">On-Time Flights</p>
                   <p className="text-xl font-bold text-green-600">{currentHub.onTimeFlights}</p>
+                  <p className="text-xs text-gray-400">Within 15min schedule</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-sm text-gray-500">Delayed</p>
+                  <p className="text-sm text-gray-500 font-medium">Delayed Operations</p>
                   <p className="text-xl font-bold text-amber-600">{currentHub.delayedFlights}</p>
+                  <p className="text-xs text-gray-400">Beyond schedule window</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-sm text-gray-500">Cancelled</p>
+                  <p className="text-sm text-gray-500 font-medium">Cancelled Flights</p>
                   <p className="text-xl font-bold text-red-600">{currentHub.cancelledFlights}</p>
+                  <p className="text-xs text-gray-400">Service interruptions</p>
                 </div>
               </div>
             </div>
