@@ -122,7 +122,7 @@ const PassengerImpactModelingComponent: React.FC = () => {
       case 'high': return 'bg-va-red-primary/10 text-va-red-primary border-va-red-primary/30';
       case 'medium': return 'bg-aero-amber-caution/10 text-aero-amber-dark border-aero-amber-caution/30';
       case 'low': return 'bg-aero-green-safe/10 text-aero-green-dark border-aero-green-safe/30';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-muted text-muted-foreground border-border';
     }
   };
 
