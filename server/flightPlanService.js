@@ -7,11 +7,41 @@ class FlightPlanService {
     this.flightPlans = new Map();
     this.uploadDirectory = './uploaded_flight_plans';
     this.ensureUploadDirectory();
+    this.loadExistingFlightPlans();
   }
 
   ensureUploadDirectory() {
     if (!fs.existsSync(this.uploadDirectory)) {
       fs.mkdirSync(this.uploadDirectory, { recursive: true });
+    }
+  }
+
+  // Load existing flight plans from disk on startup
+  loadExistingFlightPlans() {
+    try {
+      const files = fs.readdirSync(this.uploadDirectory);
+      let loadedCount = 0;
+      
+      for (const file of files) {
+        if (file.endsWith('.json')) {
+          try {
+            const filepath = path.join(this.uploadDirectory, file);
+            const content = fs.readFileSync(filepath, 'utf8');
+            const flightPlan = JSON.parse(content);
+            
+            if (flightPlan.callsign || flightPlan.flightNumber) {
+              this.flightPlans.set(flightPlan.callsign || flightPlan.flightNumber, flightPlan);
+              loadedCount++;
+            }
+          } catch (error) {
+            console.warn(`⚠️ Failed to load flight plan from ${file}:`, error.message);
+          }
+        }
+      }
+      
+      console.log(`✈️ Loaded ${loadedCount} existing flight plans from disk`);
+    } catch (error) {
+      console.warn('⚠️ Failed to load existing flight plans:', error.message);
     }
   }
 
