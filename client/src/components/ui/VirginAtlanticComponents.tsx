@@ -40,10 +40,8 @@ const buttonVariants = cva(
         
         // Muted/Disabled look
         muted: 'bg-surface-secondary text-muted-foreground hover:bg-surface-tertiary',
-        muted: 'bg-va-gray/10 text-va-gray hover:bg-va-gray/20',
         
         // Emergency/Alert - Animated
-        emergency: 'bg-gradient-to-r from-va-red-primary to-va-red-rebel text-white animate-pulse-emergency shadow-va-glow',
         emergency: 'bg-gradient-va-red text-va-cloud-white animate-pulse-emergency shadow-va-glow',
       },
       size: {

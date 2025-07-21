@@ -38,9 +38,9 @@ export default function ADSBSubscriptionStatus() {
 
   if (isLoading) {
     return (
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className="va-card">
         <CardContent className="p-4">
-          <div className="flex items-center gap-2 text-slate-300">
+          <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="w-4 h-4 animate-spin" />
             <span>Checking ADS-B Exchange subscription status...</span>
           </div>
@@ -52,38 +52,38 @@ export default function ADSBSubscriptionStatus() {
   if (!status) return null;
 
   return (
-    <Card className="bg-slate-800 border-slate-700">
+    <Card className="va-card">
       <CardContent className="p-4">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             {status.subscription_active ? (
-              <CheckCircle className="w-5 h-5 text-green-400" />
+              <CheckCircle className="w-5 h-5 text-aero-green-safe" />
             ) : (
-              <AlertTriangle className="w-5 h-5 text-orange-400" />
+              <AlertTriangle className="w-5 h-5 text-aero-amber-caution" />
             )}
-            <h3 className="text-white font-semibold">
+            <h3 className="text-foreground font-semibold">
               ADS-B Exchange Status
             </h3>
           </div>
           
           <p className={`text-sm ${
-            status.subscription_active ? 'text-green-300' : 'text-orange-300'
+            status.subscription_active ? 'text-aero-green-safe' : 'text-aero-amber-caution'
           }`}>
             {status.message}
           </p>
           
           {status.subscription_active && (
-            <div className="text-xs text-green-400 mt-1">
+            <div className="text-xs text-aero-green-safe mt-1">
               ✓ Subscription confirmed working - authentic flight data integration active
             </div>
           )}
 
           {!status.subscription_active && (
-            <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-3">
-              <p className="text-green-200 text-sm mb-3">
+            <div className="aero-status-safe rounded-lg p-3">
+              <p className="text-aero-green-safe text-sm mb-3">
                 ADS-B Exchange Integration Status:
               </p>
-              <ul className="text-green-200 text-xs space-y-1 mb-3">
+              <ul className="text-aero-green-safe text-xs space-y-1 mb-3">
                 <li>• Subscription confirmed working via direct testing</li>
                 <li>• API key updated in environment variables</li>
                 <li>• Cache clearing in progress for fresh data</li>
@@ -93,7 +93,7 @@ export default function ADSBSubscriptionStatus() {
                 href="https://rapidapi.com/adsbx/api/adsbexchange-com1"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-orange-300 hover:text-orange-200 text-xs underline"
+                className="inline-flex items-center gap-1 text-aero-blue-primary hover:text-aero-blue-light text-xs underline"
               >
                 <ExternalLink className="w-3 h-3" />
                 Subscribe to ADS-B Exchange API

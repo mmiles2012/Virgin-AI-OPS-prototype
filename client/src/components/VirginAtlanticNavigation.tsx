@@ -196,9 +196,9 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
   };
 
   return (
-    <nav role="navigation" aria-label="Virgin Atlantic AINO Navigation" className="flex-shrink-0 h-screen p-4 bg-gray-50">
+    <nav role="navigation" aria-label="Virgin Atlantic AINO Navigation" className="va-theme flex-shrink-0 h-screen p-4 bg-background">
       <div className={`
-        bg-white shadow-lg border border-gray-200 rounded-lg
+        bg-card shadow-va-md border border-border rounded-lg
         transition-all duration-300 ease-in-out overflow-hidden h-full flex flex-col
         ${isNavigationCollapsed ? 'w-16' : 'w-72'}
       `}
@@ -206,23 +206,25 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
       aria-expanded={!isNavigationCollapsed}
       >
         {/* Header */}
-        <div className="p-2 border-b border-gray-200 flex-shrink-0">
+        <div className="p-2 border-b border-border flex-shrink-0">
           {isNavigationCollapsed ? (
             /* Collapsed Header */
             <div className="flex justify-center">
-              <button
+              <VirginAtlanticButton
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   console.log('Toggle button clicked (collapsed), current state:', isNavigationCollapsed);
                   setIsNavigationCollapsed(!isNavigationCollapsed);
                 }}
-                className="navigation-toggle bg-va-red-primary text-white hover:bg-va-red-heritage w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer"
+                variant="virgin-primary"
+                size="icon"
                 title="Expand Navigation"
-                type="button"
+                className="navigation-toggle"
+                aria-label="Expand navigation menu"
               >
                 <ChevronRight className="w-4 h-4" />
-              </button>
+              </VirginAtlanticButton>
             </div>
           ) : (
             /* Expanded Header */
@@ -232,25 +234,27 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                   <Plane className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <VAHeading.H4 className="text-gray-900">AINO</VAHeading.H4>
+                  <VAHeading.H4 className="text-foreground">AINO</VAHeading.H4>
                   <VAText.Caption className="text-va-red-primary">
                     Virgin Atlantic Operations
                   </VAText.Caption>
                 </div>
               </div>
-              <button
+              <VirginAtlanticButton
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   console.log('Toggle button clicked (expanded), current state:', isNavigationCollapsed);
                   setIsNavigationCollapsed(!isNavigationCollapsed);
                 }}
-                className="navigation-toggle bg-va-red-primary text-white hover:bg-va-red-heritage flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-md transition-all duration-200 cursor-pointer"
+                variant="virgin-primary"
+                size="icon"
                 title="Collapse Navigation"
-                type="button"
+                className="navigation-toggle"
+                aria-label="Collapse navigation menu"
               >
                 <ChevronLeft className="w-4 h-4" />
-              </button>
+              </VirginAtlanticButton>
             </div>
           )}
         </div>
@@ -266,7 +270,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                 {/* Group Header */}
                 <div className="flex items-center gap-2 px-3 py-2 mb-2">
                   <group.icon className="w-4 h-4 text-va-red-primary" />
-                  <VAText.Label className="text-gray-600 text-xs uppercase tracking-wide">
+                  <VAText.Label className="text-muted-foreground text-xs uppercase tracking-wide">
                     {group.title}
                   </VAText.Label>
                 </div>
@@ -283,10 +287,10 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                         onClick={() => navigateToView(item.id)}
                         className={`
                           w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium
-                          transition-all duration-200 group
+                          transition-all duration-200 group min-h-[44px]
                           ${isActive 
-                            ? 'bg-gradient-va-red text-white shadow-lg' 
-                            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                            ? 'bg-gradient-va-red text-white shadow-va-md' 
+                            : 'text-foreground hover:bg-muted hover:text-foreground'
                           }
                         `}
                         aria-current={isActive ? 'page' : undefined}
@@ -320,11 +324,11 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-4 border-t border-border">
             <div className="space-y-3">
               {/* Status Indicator */}
               <div className="flex items-center justify-between">
-                <VAText.Small className="text-gray-500">System Status</VAText.Small>
+                <VAText.Small className="text-muted-foreground">System Status</VAText.Small>
                 <StatusBadge variant="safe" size="sm">
                   <Activity className="w-3 h-3 mr-1" />
                   Operational
@@ -369,10 +373,10 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                       onClick={() => navigateToView(item.id)}
                       className={`
                         w-12 h-12 flex items-center justify-center rounded-md
-                        transition-all duration-200 relative
+                        transition-all duration-200 relative min-h-[44px] min-w-[44px]
                         ${isActive 
-                          ? 'bg-gradient-va-red text-white shadow-lg' 
-                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                          ? 'bg-gradient-va-red text-white shadow-va-md' 
+                          : 'text-foreground hover:bg-muted hover:text-foreground'
                         }
                       `}
                       title={item.label}
@@ -385,7 +389,7 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
                     </button>
                     
                     {/* Tooltip */}
-                    <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                    <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-2 py-1 bg-surface-primary text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                       {item.label}
                       {item.badge && (
                         <span className="ml-1 text-gray-300">({item.badge})</span>

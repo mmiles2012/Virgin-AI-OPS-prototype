@@ -39,7 +39,7 @@ export const AppRouter: React.FC<AppRouterProps> = ({
 }) => {
   return (
     <BrowserRouter>
-      <div className="va-theme min-h-screen bg-gray-50 text-gray-900 flex">
+      <div className="va-theme min-h-screen bg-background text-foreground flex">
         <VirginAtlanticNavigation
           isNavigationCollapsed={isNavigationCollapsed}
           setIsNavigationCollapsed={setIsNavigationCollapsed}
