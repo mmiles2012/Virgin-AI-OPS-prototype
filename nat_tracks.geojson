@@ -1,7 +1,7 @@
 {
   "type": "FeatureCollection",
   "properties": {
-    "generated_at": "2025-07-20T10:41:43.092271",
+    "generated_at": "2025-07-21T08:30:59.733050",
     "source": "FAA NOTAM",
     "total_tracks": 6
   },
@@ -12,10 +12,10 @@
         "track_id": "A",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-20T10:41:43.091532",
+        "timestamp": "2025-07-21T08:30:59.732551",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
-        "raw_text": "BALIX 61/20 62/30 63/40 62/50 PIDSO\nEAST LVLS NIL\nWEST LVLS 340 350 360 370\nEUR RTS WEST NIL\nNAR NIL-"
+        "raw_text": "BALIX 61/20 63/30 63/40 63/50 MAXAR\nEAST LVLS NIL\nWEST LVLS 340 350 360 370\nEUR RTS WEST NINEX\nNAR NIL-"
       },
       "geometry": {
         "type": "LineString",
@@ -26,7 +26,7 @@
           ],
           [
             -30.0,
-            62.0
+            63.0
           ],
           [
             -40.0,
@@ -34,7 +34,7 @@
           ],
           [
             -50.0,
-            62.0
+            63.0
           ]
         ]
       }
@@ -45,10 +45,10 @@
         "track_id": "B",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-20T10:41:43.091702",
+        "timestamp": "2025-07-21T08:30:59.732689",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
-        "raw_text": "ERAKA 60/20 61/30 62/40 61/50 SAVRY\nEAST LVLS NIL\nWEST LVLS 340 350 360 370\nEUR RTS WEST NIL\nNAR N918B-"
+        "raw_text": "ERAKA 60/20 62/30 62/40 62/50 PIDSO\nEAST LVLS NIL\nWEST LVLS 340 350 360 370\nEUR RTS WEST ETSOM\nNAR NIL-"
       },
       "geometry": {
         "type": "LineString",
@@ -59,7 +59,7 @@
           ],
           [
             -30.0,
-            61.0
+            62.0
           ],
           [
             -40.0,
@@ -67,7 +67,7 @@
           ],
           [
             -50.0,
-            61.0
+            62.0
           ]
         ]
       }
@@ -78,10 +78,10 @@
         "track_id": "C",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-20T10:41:43.091828",
+        "timestamp": "2025-07-21T08:30:59.732777",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
-        "raw_text": "GOMUP 59/20 60/30 61/40 60/50 URTAK\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N884A N890B-"
+        "raw_text": "GOMUP 59/20 61/30 61/40 61/50 SAVRY\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST GINGA\nNAR NIL-"
       },
       "geometry": {
         "type": "LineString",
@@ -92,7 +92,7 @@
           ],
           [
             -30.0,
-            60.0
+            61.0
           ],
           [
             -40.0,
@@ -100,7 +100,7 @@
           ],
           [
             -50.0,
-            60.0
+            61.0
           ]
         ]
       }
@@ -111,10 +111,10 @@
         "track_id": "D",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-20T10:41:43.091975",
+        "timestamp": "2025-07-21T08:30:59.732872",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
-        "raw_text": "SUNOT 58/20 59/30 60/40 59/50 AVUTI\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N842C N850C-"
+        "raw_text": "SUNOT 58/20 60/30 60/40 60/50 URTAK\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N884A N890B-"
       },
       "geometry": {
         "type": "LineString",
@@ -125,7 +125,7 @@
           ],
           [
             -30.0,
-            59.0
+            60.0
           ],
           [
             -40.0,
@@ -133,7 +133,7 @@
           ],
           [
             -50.0,
-            59.0
+            60.0
           ]
         ]
       }
@@ -144,10 +144,10 @@
         "track_id": "E",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-20T10:41:43.092075",
+        "timestamp": "2025-07-21T08:30:59.732944",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
-        "raw_text": "PIKIL 57/20 58/30 59/40 58/50 DORYY\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N790A N788A-"
+        "raw_text": "PIKIL 57/20 59/30 59/40 59/50 AVUTI\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N842C N850C-"
       },
       "geometry": {
         "type": "LineString",
@@ -158,7 +158,7 @@
           ],
           [
             -30.0,
-            58.0
+            59.0
           ],
           [
             -40.0,
@@ -166,7 +166,7 @@
           ],
           [
             -50.0,
-            58.0
+            59.0
           ]
         ]
       }
@@ -177,10 +177,10 @@
         "track_id": "F",
         "direction": "Westbound",
         "color": "#9333EA",
-        "timestamp": "2025-07-20T10:41:43.092205",
+        "timestamp": "2025-07-21T08:30:59.733018",
         "source": "FAA NOTAM",
         "waypoint_count": 4,
-        "raw_text": "RESNO 56/20 57/30 58/40 57/50 HOIST\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N756C N746B-"
+        "raw_text": "RESNO 56/20 58/30 58/40 58/50 CUDDY\nEAST LVLS NIL\nWEST LVLS 340 350 360 370 380 390\nEUR RTS WEST NIL\nNAR N808C N802C-"
       },
       "geometry": {
         "type": "LineString",
@@ -191,7 +191,7 @@
           ],
           [
             -30.0,
-            57.0
+            58.0
           ],
           [
             -40.0,
@@ -199,7 +199,7 @@
           ],
           [
             -50.0,
-            57.0
+            58.0
           ]
         ]
       }

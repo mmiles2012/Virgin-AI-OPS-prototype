@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plane, Clock, TrendingUp, TrendingDown, AlertTriangle, Globe, BarChart3, Map, Layers, Activity, Users } from 'lucide-react';
+import { Plane, Clock, TrendingUp, TrendingDown, AlertTriangle, Globe, BarChart3, Map as MapIcon, Layers, Activity, Users } from 'lucide-react';
 
 interface FlightPerformance {
   flightNumber: string;
@@ -363,7 +363,7 @@ export default function OnTimePerformanceDashboard() {
           averageDelayPerFlight,
           topPerformingHub,
           worstPerformingHub,
-          criticalRoutes: [...new Set(criticalRoutes)].slice(0, 5),
+          criticalRoutes: Array.from(new Set(criticalRoutes)).slice(0, 5),
           weatherImpactedFlights
         });
       };
@@ -394,7 +394,7 @@ export default function OnTimePerformanceDashboard() {
           const flightCount = data.flights.length;
           const onTimeRate = flightCount > 0 ? (data.onTime / flightCount) * 100 : 0;
           const avgDelayMinutes = data.delayed > 0 ? data.totalDelay / data.delayed : 0;
-          const trend = onTimeRate > 85 ? 'improving' : onTimeRate < 70 ? 'declining' : 'stable';
+          const trend: 'improving' | 'declining' | 'stable' = onTimeRate > 85 ? 'improving' : onTimeRate < 70 ? 'declining' : 'stable';
           
           return {
             route,
@@ -499,7 +499,7 @@ export default function OnTimePerformanceDashboard() {
                   networkView === 'regional-analysis' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'
                 }`}
               >
-                <Map className="w-4 h-4 inline mr-1" />
+                <MapIcon className="w-4 h-4 inline mr-1" />
                 Regional Analysis
               </button>
               <button
