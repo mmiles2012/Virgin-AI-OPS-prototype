@@ -132,6 +132,11 @@ const IntelligentDecisionDashboard: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [flightPlanContent, setFlightPlanContent] = useState('');
   const [flightPlanFilename, setFlightPlanFilename] = useState('');
+  
+  // Waypoint selection for diversion scenarios
+  const [selectedWaypoint, setSelectedWaypoint] = useState<any>(null);
+  const [availableWaypoints, setAvailableWaypoints] = useState<any[]>([]);
+  const [waypointSearchTerm, setWaypointSearchTerm] = useState('');
 
   useEffect(() => {
     fetchInsights();
@@ -140,6 +145,24 @@ const IntelligentDecisionDashboard: React.FC = () => {
     loadSampleLocations();
     fetchUploadedFlightPlans();
   }, []);
+
+  // Load available waypoints when flight plan is selected
+  useEffect(() => {
+    if (selectedFlightPlan && selectedFlightPlan.waypoints) {
+      // Process waypoints into selectable format
+      const waypoints = selectedFlightPlan.waypoints.map((waypoint: string, index: number) => ({
+        name: waypoint,
+        index: index,
+        routeProgress: Math.round((index / selectedFlightPlan.waypoints.length) * 100),
+        segment: selectedFlightPlan.routeSegments?.[index]
+      }));
+      setAvailableWaypoints(waypoints);
+      console.log(`📍 Loaded ${waypoints.length} waypoints from flight plan ${selectedFlightPlan.callsign}`);
+    } else {
+      setAvailableWaypoints([]);
+      setSelectedWaypoint(null);
+    }
+  }, [selectedFlightPlan]);
 
   const fetchUploadedFlightPlans = async () => {
     try {
@@ -224,28 +247,44 @@ const IntelligentDecisionDashboard: React.FC = () => {
   };
 
   const performDiversionAnalysis = async () => {
-    if (!selectedFlightPlan || !selectedFlight) {
-      alert('Please select both a flight plan and current flight position');
+    if (!selectedFlightPlan || !selectedWaypoint) {
+      alert('Please select both a flight plan and a waypoint for the diversion scenario');
       return;
     }
 
     try {
+      // Get waypoint coordinates from flight plan
+      const waypointCoords = selectedFlightPlan.coordinates?.find(
+        (coord: any) => coord.waypoint === selectedWaypoint.name
+      );
+      
+      let diversionPosition;
+      if (waypointCoords && waypointCoords.coordinates.lat !== 0) {
+        diversionPosition = waypointCoords.coordinates;
+      } else {
+        // Use current flight position if waypoint coordinates not available
+        diversionPosition = selectedFlight ? {
+          lat: selectedFlight.latitude,
+          lon: selectedFlight.longitude
+        } : { lat: 51.47, lon: -0.4543 }; // Default to LHR
+      }
+
       const response = await fetch(`/api/flight-plans/${selectedFlightPlan.callsign}/diversion-analysis`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          currentPosition: {
-            lat: selectedFlight.latitude,
-            lon: selectedFlight.longitude
-          },
-          emergencyType: 'engine_failure'
+          currentPosition: diversionPosition,
+          emergencyType: 'engine_failure',
+          waypointName: selectedWaypoint.name,
+          waypointIndex: selectedWaypoint.index,
+          routeProgress: selectedWaypoint.routeProgress
         })
       });
 
       const data = await response.json();
       if (data.success) {
         setDiversionAnalysis(data.diversionAnalysis);
-        console.log('🛠️ Diversion analysis completed for', selectedFlightPlan.callsign);
+        console.log('🛠️ Diversion analysis completed from waypoint', selectedWaypoint.name);
       } else {
         alert(`Analysis failed: ${data.error}`);
       }
@@ -732,14 +771,93 @@ const IntelligentDecisionDashboard: React.FC = () => {
                 </div>
               </div>
 
+              {/* Waypoint Selection for Diversion Scenarios */}
+              {selectedFlightPlan && selectedFlightPlan.waypoints && (
+                <div className="mt-6 p-4 bg-blue-900/20 border border-blue-700 rounded-lg">
+                  <h4 className="font-medium text-blue-300 mb-3">Select Diversion Waypoint</h4>
+                  <p className="text-sm text-gray-400 mb-4">
+                    Choose a waypoint from {selectedFlightPlan.callsign} route for scenario-based diversion analysis
+                  </p>
+                  
+                  {/* Waypoint Search */}
+                  <div className="mb-4">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Search waypoints..."
+                        value={waypointSearchTerm}
+                        onChange={(e) => setWaypointSearchTerm(e.target.value)}
+                        className="w-full bg-gray-700 border border-gray-600 rounded-lg pl-10 pr-3 py-2 text-white placeholder-gray-400"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Waypoint Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto">
+                    {selectedFlightPlan.waypoints
+                      .filter((waypoint: string) => 
+                        !waypointSearchTerm || 
+                        waypoint.toLowerCase().includes(waypointSearchTerm.toLowerCase())
+                      )
+                      .map((waypoint: string, index: number) => {
+                        const routeProgress = Math.round((index / selectedFlightPlan.waypoints.length) * 100);
+                        const isSelected = selectedWaypoint?.name === waypoint;
+                        
+                        return (
+                          <button
+                            key={`${waypoint}-${index}`}
+                            onClick={() => setSelectedWaypoint({
+                              name: waypoint,
+                              index: index,
+                              routeProgress: routeProgress,
+                              segment: selectedFlightPlan.routeSegments?.[index]
+                            })}
+                            className={`p-2 rounded-lg border text-left transition-colors ${
+                              isSelected
+                                ? 'bg-blue-900/50 border-blue-500 text-blue-300'
+                                : 'bg-gray-700 border-gray-600 hover:bg-gray-600 text-gray-300'
+                            }`}
+                          >
+                            <div className="font-medium text-sm">{waypoint}</div>
+                            <div className="text-xs text-gray-400">{routeProgress}% complete</div>
+                          </button>
+                        );
+                      })}
+                  </div>
+
+                  {/* Selected Waypoint Info */}
+                  {selectedWaypoint && (
+                    <div className="mt-4 p-3 bg-gray-700 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-medium text-white">{selectedWaypoint.name}</div>
+                          <div className="text-sm text-gray-400">
+                            Waypoint {selectedWaypoint.index + 1} of {selectedFlightPlan.waypoints.length} • {selectedWaypoint.routeProgress}% route complete
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-blue-300">Selected for Analysis</div>
+                          {selectedWaypoint.segment && (
+                            <div className="text-xs text-gray-400">
+                              {selectedWaypoint.segment.distance?.toFixed(0)}nm segment
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Diversion Analysis Trigger */}
-              {selectedFlightPlan && selectedFlight && (
+              {selectedFlightPlan && selectedWaypoint && (
                 <div className="mt-6 p-4 bg-orange-900/20 border border-orange-700 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-medium text-orange-300">Ready for Enroute Diversion Analysis</h4>
                       <p className="text-sm text-gray-400">
-                        Flight Plan: {selectedFlightPlan.callsign} • Current Flight: {selectedFlight.callsign}
+                        Flight Plan: {selectedFlightPlan.callsign} • Diversion Point: {selectedWaypoint.name}
                       </p>
                     </div>
                     <button

@@ -1,0 +1,148 @@
+{
+  "waypoints": [
+    "EGLL",
+    "BUCGO",
+    "FELCA",
+    "NICXI",
+    "BAKUR",
+    "DOGAL",
+    "NEEKO",
+    "DANOL",
+    "KJFK"
+  ],
+  "coordinates": [
+    {
+      "waypoint": "EGLL",
+      "coordinates": {
+        "lat": 51.47,
+        "lon": -0.4543
+      }
+    },
+    {
+      "waypoint": "BUCGO",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "FELCA",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "NICXI",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "BAKUR",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "DOGAL",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "NEEKO",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "DANOL",
+      "coordinates": {
+        "lat": 0,
+        "lon": 0,
+        "estimated": true
+      }
+    },
+    {
+      "waypoint": "KJFK",
+      "coordinates": {
+        "lat": 40.6413,
+        "lon": -73.7781
+      }
+    }
+  ],
+  "altitudes": [],
+  "routeSegments": [
+    {
+      "from": "EGLL",
+      "to": "BUCGO",
+      "distance": 549.0139362279917,
+      "bearing": 318.2692264718438,
+      "segmentIndex": 0
+    },
+    {
+      "from": "BUCGO",
+      "to": "FELCA",
+      "distance": 101.35928555770626,
+      "bearing": 167.86682731824723,
+      "segmentIndex": 1
+    },
+    {
+      "from": "FELCA",
+      "to": "NICXI",
+      "distance": 262.34446432278736,
+      "bearing": 103.00667214089054,
+      "segmentIndex": 2
+    },
+    {
+      "from": "NICXI",
+      "to": "BAKUR",
+      "distance": 477.5845680973622,
+      "bearing": 201.07542624938174,
+      "segmentIndex": 3
+    },
+    {
+      "from": "BAKUR",
+      "to": "DOGAL",
+      "distance": 356.1510681484471,
+      "bearing": 166.55593084128694,
+      "segmentIndex": 4
+    },
+    {
+      "from": "DOGAL",
+      "to": "NEEKO",
+      "distance": 343.00214863257986,
+      "bearing": 114.04707050209886,
+      "segmentIndex": 5
+    },
+    {
+      "from": "NEEKO",
+      "to": "DANOL",
+      "distance": 582.9035909609186,
+      "bearing": 160.66461309071414,
+      "segmentIndex": 6
+    },
+    {
+      "from": "DANOL",
+      "to": "KJFK",
+      "distance": 200.74279991019284,
+      "bearing": 350.8584189047223,
+      "segmentIndex": 7
+    }
+  ],
+  "originalContent": "EGLL CPT5J CPT L9 BUCGO DCT FELCA DCT NICXI DCT BAKUR DCT DOGAL DCT 55N020W DCT\n5630N03000W DCT 56N040W DCT 54N050W DCT NEEKO DCT DANOL DCT ENE PARCH4 KJFK",
+  "uploadedAt": "2025-07-21T14:17:16.453Z",
+  "filename": "vir3n",
+  "format": "text"
+}

@@ -342,10 +342,13 @@ class FlightPlanService {
   }
 
   // Calculate enroute diversion options
-  calculateEnrouteDiversions(flightPlan, currentPosition, emergencyType = 'engine_failure') {
+  calculateEnrouteDiversions(flightPlan, currentPosition, emergencyType = 'engine_failure', waypointContext = null) {
     if (!flightPlan || !currentPosition) {
       throw new Error('Flight plan and current position required for diversion analysis');
     }
+
+    const contextInfo = waypointContext ? ` from waypoint ${waypointContext.waypointName} (${waypointContext.routeProgress}% complete)` : '';
+    console.log(`🛣️ Calculating enroute diversions for ${flightPlan.callsign} at ${currentPosition.lat}, ${currentPosition.lon}${contextInfo}`);
 
     const diversions = [];
     const currentSegment = this.findCurrentSegment(flightPlan, currentPosition);
@@ -359,7 +362,8 @@ class FlightPlanService {
         currentPosition,
         currentSegment,
         alternate,
-        emergencyType
+        emergencyType,
+        waypointContext
       );
       
       if (diversion.feasible) {
@@ -367,15 +371,31 @@ class FlightPlanService {
       }
     }
 
+    console.log(`🛣️ Found ${diversions.length} feasible diversion options${contextInfo}, best: ${diversions[0]?.airport.name || 'none'}`);
+    
     // Sort by suitability score
     return diversions.sort((a, b) => b.suitabilityScore - a.suitabilityScore);
   }
 
   // Analyze specific diversion option
-  analyzeDiversionOption(flightPlan, currentPos, currentSegment, alternate, emergencyType) {
+  analyzeDiversionOption(flightPlan, currentPos, currentSegment, alternate, emergencyType, waypointContext = null) {
     const distance = this.calculateDistance(currentPos, alternate.coordinates);
     const bearing = this.calculateBearing(currentPos, alternate.coordinates);
     const fuelRequired = this.estimateFuelRequired(distance, flightPlan.aircraft, emergencyType);
+    
+    // Enhanced suitability scoring with waypoint context
+    let suitabilityScore = this.calculateSuitabilityScore(alternate, distance, emergencyType);
+    
+    // Adjust scoring based on waypoint context
+    if (waypointContext) {
+      // If we're further along the route, adjust scoring for continuing vs turning back
+      if (waypointContext.routeProgress > 50 && alternate.icao === 'EINN') {
+        suitabilityScore += 10; // Shannon better for later route positions
+      }
+      if (waypointContext.routeProgress < 30 && alternate.icao === 'CYQX') {
+        suitabilityScore -= 10; // Gander less suitable for early route positions
+      }
+    }
     
     return {
       airport: alternate,
@@ -384,7 +404,11 @@ class FlightPlanService {
       estimatedFlightTime: Math.round(distance / 400 * 60), // minutes at 400kt
       fuelRequired: Math.round(fuelRequired),
       feasible: fuelRequired < (flightPlan.fuel || 20000),
-      suitabilityScore: this.calculateSuitabilityScore(alternate, distance, emergencyType),
+      suitabilityScore: Math.max(0, Math.min(100, suitabilityScore)),
+      waypointContext: waypointContext ? {
+        fromWaypoint: waypointContext.waypointName,
+        routeProgress: waypointContext.routeProgress
+      } : null,
       diversionRoute: this.generateDiversionRoute(currentPos, currentSegment, alternate),
       emergencyProcedures: this.getEmergencyProcedures(emergencyType, alternate),
       weatherConsiderations: this.getWeatherConsiderations(alternate),

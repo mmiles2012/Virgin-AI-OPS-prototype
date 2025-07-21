@@ -199,7 +199,7 @@ router.get('/:callsign', async (req, res) => {
 router.post('/:callsign/diversion-analysis', async (req, res) => {
   try {
     const { callsign } = req.params;
-    const { currentPosition, emergencyType = 'engine_failure' } = req.body;
+    const { currentPosition, emergencyType = 'engine_failure', waypointName, waypointIndex, routeProgress } = req.body;
     
     if (!currentPosition || !currentPosition.lat || !currentPosition.lon) {
       return res.status(400).json({
@@ -207,6 +207,8 @@ router.post('/:callsign/diversion-analysis', async (req, res) => {
         error: 'Current position (lat, lon) is required'
       });
     }
+
+    console.log(`🛠️ Starting diversion analysis for ${callsign} ${waypointName ? `from waypoint ${waypointName}` : 'from current position'} at ${currentPosition.lat}, ${currentPosition.lon}`);
 
     const service = await getFlightPlanService();
     const flightPlan = service.getFlightPlan(callsign);
@@ -218,8 +220,12 @@ router.post('/:callsign/diversion-analysis', async (req, res) => {
       });
     }
 
-    // Perform diversion analysis
-    const diversionOptions = service.calculateEnrouteDiversions(flightPlan, currentPosition, emergencyType);
+    // Perform diversion analysis with waypoint context
+    const diversionOptions = service.calculateEnrouteDiversions(flightPlan, currentPosition, emergencyType, {
+      waypointName,
+      waypointIndex,
+      routeProgress
+    });
     
     const analysis = {
       flightPlan: {
@@ -230,6 +236,11 @@ router.post('/:callsign/diversion-analysis', async (req, res) => {
       },
       currentPosition,
       emergencyType,
+      waypointContext: waypointName ? {
+        waypoint: waypointName,
+        index: waypointIndex,
+        routeProgress: routeProgress
+      } : null,
       diversionOptions,
       summary: {
         totalOptions: diversionOptions.length,
@@ -242,14 +253,14 @@ router.post('/:callsign/diversion-analysis', async (req, res) => {
 
     res.json({
       success: true,
-      analysis
+      diversionAnalysis: analysis
     });
 
   } catch (error) {
     console.error('Diversion analysis error:', error);
     res.status(500).json({
       success: false,
-      error: error.message || 'Failed to perform diversion analysis'
+      error: (error as any).message || 'Failed to perform diversion analysis'
     });
   }
 });
