@@ -682,14 +682,14 @@ export default function OnTimePerformanceDashboard() {
                   </div>
                   <div className="text-right">
                     <p className="text-gray-500 text-xs font-medium mb-1">On-Time Performance</p>
-                    <div className="flex items-baseline gap-1 justify-end">
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-gray-600 mb-1">On-Time Performance</p>
                       <div className={`text-2xl font-bold ${hub.onTimeRate >= 85 ? 'text-green-600' : hub.onTimeRate >= 70 ? 'text-amber-600' : 'text-red-600'}`}>
                         {hub.onTimeRate.toFixed(1)}%
                       </div>
-                      <span className="text-sm font-medium text-gray-600">OTP</span>
-                    </div>
-                    <div className="flex items-center justify-end mt-1 text-xs text-gray-400">
-                      <span>Flights within 15min schedule</span>
+                      <div className="flex items-center justify-end mt-1 text-xs text-gray-400">
+                        <span>Flights within 15min schedule</span>
+                      </div>
                     </div>
                     {getTrendIcon(hub.trend)}
                   </div>
@@ -697,25 +697,18 @@ export default function OnTimePerformanceDashboard() {
                 
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <p className="text-gray-500 text-xs font-medium">Total Operations</p>
-                    <div className="text-center">
-                      <p className="text-xs font-medium text-gray-600 mb-1">Total Flights</p>
-                      <p className="text-lg font-semibold text-gray-900">{hub.totalFlights}</p>
-                      <p className="text-gray-400 text-xs">All arrivals & departures</p>
-                    </div>
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Total Flights</p>
+                    <p className="text-lg font-bold text-gray-900">{hub.totalFlights}</p>
+                    <p className="text-gray-400 text-xs mt-1">All arrivals & departures</p>
                   </div>
                   <div>
-                    <div className="text-center">
-                      <p className="text-xs font-medium text-gray-600 mb-1">On-Time Flights</p>
-                      <p className="text-lg font-semibold text-green-600">{hub.onTimeFlights}</p>
-                      <p className="text-gray-400 text-xs">Within schedule window</p>
-                    </div>
+                    <p className="text-sm font-semibold text-gray-700 mb-2">On-Time Flights</p>
+                    <p className="text-lg font-bold text-green-600">{hub.onTimeFlights}</p>
+                    <p className="text-gray-400 text-xs mt-1">Within schedule window</p>
                   </div>
                   <div>
-                    <div className="text-center">
-                      <p className="text-xs font-medium text-gray-600 mb-1">Delayed Flights</p>
-                      <p className="text-lg font-semibold text-amber-600">{hub.delayedFlights}</p>
-                    </div>
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Delayed Flights</p>
+                    <p className="text-lg font-bold text-amber-600">{hub.delayedFlights}</p>
                     <p className="text-gray-400 text-xs">Beyond 15min threshold</p>
                   </div>
                 </div>
