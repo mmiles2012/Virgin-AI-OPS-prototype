@@ -144,6 +144,8 @@ temp/
 /flights/*.json
 /flights/*.geojson
 *.geojson
+nat_tracks.geojson
 
 # Local CoPilot Configurations, Instructions, and Settings
 .github/instructions/comprehensive-best-practices-guide_Version2.instructions.md
+
