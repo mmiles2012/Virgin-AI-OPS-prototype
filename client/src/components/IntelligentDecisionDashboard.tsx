@@ -148,6 +148,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
       if (data.success) {
         setUploadedFlightPlans(data.flightPlans || []);
         console.log('📋 Loaded', data.flightPlans?.length || 0, 'uploaded flight plans');
+        console.log('📋 Flight plans data:', data.flightPlans);
       }
     } catch (error) {
       console.error('Failed to fetch flight plans:', error);
@@ -181,13 +182,13 @@ const IntelligentDecisionDashboard: React.FC = () => {
         });
       } else if (flightPlanContent.trim() && flightPlanFilename.trim()) {
         // Text upload
-        response = await fetch('/api/flight-plans/upload-text', {
+        response = await fetch('/api/flight-plans/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             filename: flightPlanFilename,
             content: flightPlanContent,
-            format: 'auto'
+            format: 'text'
           })
         });
       } else {
@@ -714,7 +715,7 @@ const IntelligentDecisionDashboard: React.FC = () => {
                             <div className="font-medium text-white">{plan.callsign || plan.flightNumber}</div>
                             <div className="text-sm text-gray-400">{plan.route || `${plan.departure}-${plan.destination}`}</div>
                             <div className="text-xs text-gray-500">
-                              {plan.waypointCount} waypoints • {plan.format} format • {new Date(plan.uploadedAt).toLocaleDateString()}
+                              {plan.waypoints?.length || 0} waypoints • {plan.format} format • {new Date(plan.uploadedAt).toLocaleDateString()}
                             </div>
                           </div>
                         </div>
