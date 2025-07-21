@@ -243,76 +243,80 @@ export default function AirportContactDashboard() {
 
   if (loading) {
     return (
-      <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <div className="text-gray-400">Loading network operational data and contacts...</div>
+      <div className="va-theme bg-background text-foreground">
+        <div className="va-card bg-card border-border rounded-lg p-6">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-va-blue mx-auto mb-4"></div>
+            <div className="text-muted-foreground">Loading network operational data and contacts...</div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Plane className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-bold text-white">Network OTP & Emergency Contacts</h2>
-          </div>
-          <div className="flex items-center gap-4 text-white/80">
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-xs">AUTHENTIC CONTACTS</span>
+    <div className="va-theme bg-background text-foreground">
+      <div className="va-card bg-card border-border rounded-lg overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-va-red px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Plane className="w-6 h-6 text-primary-foreground" />
+              <h2 className="text-xl font-bold text-primary-foreground">Network OTP & Emergency Contacts</h2>
             </div>
-            <Clock className="w-4 h-4" />
-            <span className="text-sm">Updated: {new Date().toLocaleTimeString('en-GB')}</span>
+            <div className="flex items-center gap-4 text-primary-foreground/80">
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-xs">AUTHENTIC CONTACTS</span>
+              </div>
+              <Clock className="w-4 h-4" />
+              <span className="text-sm">Updated: {new Date().toLocaleTimeString('en-GB')}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="p-6 space-y-6">
-        {/* Overall Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <h3 className="text-lg font-semibold text-white mb-2">Network Delay Rate</h3>
+        <div className="p-6 space-y-6">
+          {/* Overall Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="va-card bg-card border-border">
+              <CardContent className="p-4">
+                <h3 className="text-lg font-semibold text-card-foreground mb-2">Network Delay Rate</h3>
               <Progress value={delayPercent} className="h-4 mb-2" />
-              <p className="text-sm text-gray-400">
+              <div className="text-2xl font-bold text-va-red">{delayPercent.toFixed(1)}%</div>
+              <p className="text-sm text-muted-foreground">
                 {delayStats.delayed} of {delayStats.total} flights delayed ({delayPercent.toFixed(1)}%)
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="va-card bg-card border-border">
             <CardContent className="p-4">
-              <h3 className="text-lg font-semibold text-white mb-2">Airports Monitored</h3>
-              <div className="text-2xl font-bold text-blue-400">{airportData.length}</div>
-              <p className="text-sm text-gray-400">With authentic contact information</p>
+              <h3 className="text-lg font-semibold text-card-foreground mb-2">Airports Monitored</h3>
+              <div className="text-2xl font-bold text-va-blue">{airportData.length}</div>
+              <p className="text-sm text-muted-foreground">With authentic contact information</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="va-card bg-card border-border">
             <CardContent className="p-4">
-              <h3 className="text-lg font-semibold text-white mb-2">Emergency Contacts</h3>
-              <div className="text-2xl font-bold text-green-400">{airportContacts.length}</div>
-              <p className="text-sm text-gray-400">Operations centers available</p>
+              <h3 className="text-lg font-semibold text-card-foreground mb-2">Emergency Contacts</h3>
+              <div className="text-2xl font-bold text-va-green">{airportContacts.length}</div>
+              <p className="text-sm text-muted-foreground">Operations centers available</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Delay Reasons Chart */}
         {chartData.length > 0 && (
-          <Card className="bg-gray-800/50 border-gray-700">
+          <Card className="va-card bg-card border-border">
             <CardContent className="p-4">
-              <h3 className="text-xl font-bold text-white mb-4">Delay Reasons by Frequency</h3>
+              <h3 className="text-xl font-bold text-card-foreground mb-4">Delay Reasons by Frequency</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 100, bottom: 5 }}>
                   <XAxis type="number" allowDecimals={false} />
                   <YAxis dataKey="reason" type="category" width={150} />
                   <Tooltip />
-                  <Bar dataKey="count" fill="#3b82f6" />
+                  <Bar dataKey="count" fill="hsl(var(--va-blue))" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
