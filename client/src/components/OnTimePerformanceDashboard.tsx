@@ -562,7 +562,10 @@ export default function OnTimePerformanceDashboard() {
                       )}
                     </div>
                   </div>
-                  <p className="text-3xl font-bold text-gray-900">{networkMetrics.globalOTP.toFixed(1)}% <span className="text-sm font-normal text-gray-600">On-Time Rate</span></p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-3xl font-bold text-gray-900">{networkMetrics.globalOTP.toFixed(1)}%</p>
+                    <span className="text-lg font-medium text-gray-600">On-Time Rate</span>
+                  </div>
                   <p className="text-gray-400 text-xs mt-1">Flights departing within 15 minutes of scheduled time</p>
                 </div>
                 <Globe className="w-8 h-8 text-red-600" />
@@ -588,7 +591,10 @@ export default function OnTimePerformanceDashboard() {
                       )}
                     </div>
                   </div>
-                  <p className="text-3xl font-bold text-gray-900">{networkMetrics.totalFlights} <span className="text-sm font-normal text-gray-600">Active Flights</span></p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-3xl font-bold text-gray-900">{networkMetrics.totalFlights}</p>
+                    <span className="text-lg font-medium text-gray-600">Active Flights</span>
+                  </div>
                   <p className="text-gray-400 text-xs mt-1">Live tracked aircraft via ADS-B Exchange</p>
                 </div>
                 <Plane className="w-8 h-8 text-blue-600" />
@@ -616,7 +622,10 @@ export default function OnTimePerformanceDashboard() {
                       )}
                     </div>
                   </div>
-                  <p className="text-3xl font-bold text-gray-900">{networkMetrics.averageDelayPerFlight.toFixed(1)}<span className="text-lg font-normal text-gray-500">min</span> <span className="text-sm font-normal text-gray-600">Average Delay</span></p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-3xl font-bold text-gray-900">{networkMetrics.averageDelayPerFlight.toFixed(1)}<span className="text-lg font-normal text-gray-500">min</span></p>
+                    <span className="text-lg font-medium text-gray-600">Average Delay</span>
+                  </div>
                   <p className="text-gray-400 text-xs mt-1">Beyond 15-minute on-time threshold</p>
                 </div>
                 <Clock className="w-8 h-8 text-amber-600" />
@@ -644,7 +653,10 @@ export default function OnTimePerformanceDashboard() {
                       )}
                     </div>
                   </div>
-                  <p className="text-3xl font-bold text-gray-900">{networkMetrics.weatherImpactedFlights} <span className="text-sm font-normal text-gray-600">Weather Delays</span></p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-3xl font-bold text-gray-900">{networkMetrics.weatherImpactedFlights}</p>
+                    <span className="text-lg font-medium text-gray-600">Weather Delays</span>
+                  </div>
                   <p className="text-gray-400 text-xs mt-1">Real-time weather impact monitoring</p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-orange-600" />
@@ -670,8 +682,11 @@ export default function OnTimePerformanceDashboard() {
                   </div>
                   <div className="text-right">
                     <p className="text-gray-500 text-xs font-medium mb-1">On-Time Performance</p>
-                    <div className={`text-2xl font-bold ${hub.onTimeRate >= 85 ? 'text-green-600' : hub.onTimeRate >= 70 ? 'text-amber-600' : 'text-red-600'}`}>
-                      {hub.onTimeRate.toFixed(1)}%
+                    <div className="flex items-baseline gap-1 justify-end">
+                      <div className={`text-2xl font-bold ${hub.onTimeRate >= 85 ? 'text-green-600' : hub.onTimeRate >= 70 ? 'text-amber-600' : 'text-red-600'}`}>
+                        {hub.onTimeRate.toFixed(1)}%
+                      </div>
+                      <span className="text-sm font-medium text-gray-600">OTP</span>
                     </div>
                     <div className="flex items-center justify-end mt-1 text-xs text-gray-400">
                       <span>Flights within 15min schedule</span>
@@ -683,17 +698,26 @@ export default function OnTimePerformanceDashboard() {
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <p className="text-gray-500 text-xs font-medium">Total Operations</p>
-                    <p className="text-lg font-semibold text-gray-900">{hub.totalFlights} <span className="text-xs font-normal text-gray-500">Total</span></p>
+                    <div className="flex items-baseline justify-center gap-1">
+                      <p className="text-lg font-semibold text-gray-900">{hub.totalFlights}</p>
+                      <span className="text-xs font-medium text-gray-600">Total</span>
+                    </div>
                     <p className="text-gray-400 text-xs">All arrivals & departures</p>
                   </div>
                   <div>
                     <p className="text-gray-500 text-xs font-medium">On-Time Arrivals</p>
-                    <p className="text-lg font-semibold text-green-600">{hub.onTimeFlights} <span className="text-xs font-normal text-gray-500">On-Time</span></p>
+                    <div className="flex items-baseline justify-center gap-1">
+                      <p className="text-lg font-semibold text-green-600">{hub.onTimeFlights}</p>
+                      <span className="text-xs font-medium text-gray-600">On-Time</span>
+                    </div>
                     <p className="text-gray-400 text-xs">Within schedule window</p>
                   </div>
                   <div>
                     <p className="text-gray-500 text-xs font-medium">Delayed Operations</p>
-                    <p className="text-lg font-semibold text-amber-600">{hub.delayedFlights} <span className="text-xs font-normal text-gray-500">Delayed</span></p>
+                    <div className="flex items-baseline justify-center gap-1">
+                      <p className="text-lg font-semibold text-amber-600">{hub.delayedFlights}</p>
+                      <span className="text-xs font-medium text-gray-600">Delayed</span>
+                    </div>
                     <p className="text-gray-400 text-xs">Beyond 15min threshold</p>
                   </div>
                 </div>
@@ -915,7 +939,10 @@ export default function OnTimePerformanceDashboard() {
                           )}
                         </div>
                       </div>
-                      <p className="text-2xl font-bold text-gray-900">{currentHub.totalFlights} <span className="text-sm font-normal text-gray-600">Flights</span></p>
+                      <div className="flex items-baseline gap-1">
+                        <p className="text-2xl font-bold text-gray-900">{currentHub.totalFlights}</p>
+                        <span className="text-sm font-medium text-gray-600">Flights</span>
+                      </div>
                     </div>
                     <Plane className="w-6 h-6 text-blue-600" />
                   </div>
@@ -937,7 +964,10 @@ export default function OnTimePerformanceDashboard() {
                           )}
                         </div>
                       </div>
-                      <p className="text-2xl font-bold text-gray-900">{currentHub.avgDelayMinutes}<span className="text-sm font-normal text-gray-500">min</span> <span className="text-sm font-normal text-gray-600">Delay Avg</span></p>
+                      <div className="flex items-baseline gap-1">
+                        <p className="text-2xl font-bold text-gray-900">{currentHub.avgDelayMinutes}<span className="text-sm font-normal text-gray-500">min</span></p>
+                        <span className="text-sm font-medium text-gray-600">Avg Delay</span>
+                      </div>
                     </div>
                     <Clock className="w-6 h-6 text-amber-600" />
                   </div>
@@ -955,7 +985,10 @@ export default function OnTimePerformanceDashboard() {
                       <span className="w-3 h-3 inline-block text-gray-400">—</span>
                     )}
                   </div>
-                  <p className="text-xl font-bold text-green-600">{currentHub.onTimeFlights} <span className="text-sm font-normal text-gray-600">On-Time</span></p>
+                  <div className="flex items-baseline justify-center gap-1">
+                    <p className="text-xl font-bold text-green-600">{currentHub.onTimeFlights}</p>
+                    <span className="text-sm font-medium text-gray-600">On-Time</span>
+                  </div>
                   <p className="text-xs text-gray-400">Within 15min schedule</p>
                 </div>
                 <div className="text-center">
@@ -967,7 +1000,10 @@ export default function OnTimePerformanceDashboard() {
                       <TrendingUp className="w-3 h-3 text-amber-500" />
                     )}
                   </div>
-                  <p className="text-xl font-bold text-amber-600">{currentHub.delayedFlights} <span className="text-sm font-normal text-gray-600">Delayed</span></p>
+                  <div className="flex items-baseline justify-center gap-1">
+                    <p className="text-xl font-bold text-amber-600">{currentHub.delayedFlights}</p>
+                    <span className="text-sm font-medium text-gray-600">Delayed</span>
+                  </div>
                   <p className="text-xs text-gray-400">Beyond schedule window</p>
                 </div>
                 <div className="text-center">
@@ -979,7 +1015,10 @@ export default function OnTimePerformanceDashboard() {
                       <TrendingUp className="w-3 h-3 text-red-500" />
                     )}
                   </div>
-                  <p className="text-xl font-bold text-red-600">{currentHub.cancelledFlights} <span className="text-sm font-normal text-gray-600">Cancelled</span></p>
+                  <div className="flex items-baseline justify-center gap-1">
+                    <p className="text-xl font-bold text-red-600">{currentHub.cancelledFlights}</p>
+                    <span className="text-sm font-medium text-gray-600">Cancelled</span>
+                  </div>
                   <p className="text-xs text-gray-400">Service interruptions</p>
                 </div>
               </div>
