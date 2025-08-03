@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import VirginAtlanticNavigation from './VirginAtlanticNavigation';
 import MissionControlDashboard from './MissionControlDashboard';
+import NotamDetailPage from './NotamDetailPage';
+import CrewResourcingPage from './CrewResourcingPage';
 import AIOpsDashboard from "./AIOpsDashboard";
 import AIOperationsCenter from './AIOperationsCenter';
 import EnhancedFlightDashboard from './EnhancedFlightDashboard';
@@ -53,13 +55,13 @@ export const AppRouter: React.FC<AppRouterProps> = ({
             <Route path="/flight/:flightNumber" element={<EnhancedFlightDashboard />} />
             
             {/* Detail Pages */}
-            <Route path="/notams" element={<FlightAwareNotamDashboard />} />
+            <Route path="/notams" element={<NotamDetailPage />} />
             <Route path="/weather" element={<FAAStatusDashboard />} />
             <Route path="/hub-status" element={<SkyGateAirportDashboard />} />
             
             {/* New Feature Pages */}
             <Route path="/diversion-planner" element={<DiversionSupportDashboard />} />
-            <Route path="/crew-resourcing" element={<AIOperationsCenter />} />
+            <Route path="/crew-resourcing" element={<CrewResourcingPage />} />
             <Route path="/active-diversions" element={<DiversionSupportDashboard />} />
             
             {/* Intelligence & Analysis */}
