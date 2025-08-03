@@ -290,14 +290,6 @@ class FuelSupplierService {
     if (largeAirports.includes(icao)) return 5000;
     return 2000;
   }
-
-  public getAllSuppliers(): FuelSupplier[] {
-    return this.suppliers;
-  }
-
-  public getAirportCoverage(): string[] {
-    return [...new Set(this.suppliers.map(s => s.icao))];
-  }
 }
 
 export default new FuelSupplierService();

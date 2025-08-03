@@ -3,7 +3,7 @@
  * Provides comprehensive analysis for delays, airspace restrictions, rerouting, and alerts
  */
 
-import { flightAwareService } from './flightAwareService.js';
+import FlightAwareService from './flightAwareService.js';
 import { faaNotamService } from './faaNotamService.js';
 
 interface AviationAlert {
@@ -45,6 +45,11 @@ interface RouteAnalysis {
 class AviationIntelligenceService {
   private cache: Map<string, { data: any; timestamp: number }> = new Map();
   private readonly cacheTimeout = 60000; // 1 minute
+  private flightAwareService: FlightAwareService;
+
+  constructor() {
+    this.flightAwareService = new FlightAwareService();
+  }
 
   /**
    * Generate comprehensive aviation alerts by analyzing FlightAware and NOTAM data
@@ -54,7 +59,7 @@ class AviationIntelligenceService {
 
     try {
       // Get FlightAware data for Virgin Atlantic flights
-      const virginAtlanticFlights = await flightAwareService.getVirginAtlanticFlights();
+      const virginAtlanticFlights = await this.flightAwareService.getVirginAtlanticFlights();
       
       // Get critical NOTAMs
       const criticalNotams = await faaNotamService.getCriticalNotams();
@@ -106,7 +111,7 @@ class AviationIntelligenceService {
     const routes: RouteAnalysis[] = [];
 
     try {
-      const flights = await flightAwareService.getVirginAtlanticFlights();
+      const flights = await this.flightAwareService.getVirginAtlanticFlights();
       const routeNotams = await faaNotamService.getVirginAtlanticRouteNotams();
 
       // Group flights by route
