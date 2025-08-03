@@ -45,7 +45,7 @@
     "@react-three/fiber": "^8.18.0",
     "@react-three/postprocessing": "^2.19.1",
     "@tanstack/react-query": "^5.60.5",
-    "@tensorflow/tfjs-node": "^4.22.0",
+
     "@types/leaflet": "^1.9.18",
     "@types/papaparse": "^5.3.16",
     "@types/react-router-dom": "^5.3.3",
