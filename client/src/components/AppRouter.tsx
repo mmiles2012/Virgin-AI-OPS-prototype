@@ -1,14 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import VirginAtlanticNavigation from './VirginAtlanticNavigation';
+import MissionControlDashboard from './MissionControlDashboard';
 import AIOpsDashboard from "./AIOpsDashboard";
 import AIOperationsCenter from './AIOperationsCenter';
-import VirginAtlanticDesignShowcase from './VirginAtlanticDesignShowcase';
-import HeathrowHoldingDashboard from './HeathrowHoldingDashboard';
 import EnhancedFlightDashboard from './EnhancedFlightDashboard';
 import RealTimeOperationsCenter from './RealTimeOperationsCenter';
-import PassengerImpactModelingComponent from './PassengerImpactModelingComponent';
-import HeathrowHoldingMonitor from './HeathrowHoldingMonitor';
 import OnTimePerformanceDashboard from './OnTimePerformanceDashboard';
 import IntelligentDecisionDashboard from './IntelligentDecisionDashboard';
 import SkyGateAirportDashboard from './SkyGateAirportDashboard';
@@ -22,10 +19,6 @@ import DelayPredictionDashboard from './DelayPredictionDashboard';
 import DiversionSupportDashboard from './DiversionSupportDashboard';
 import Boeing787DigitalTwin from './Boeing787DigitalTwin';
 import AirbusDigitalTwins from './AirbusDigitalTwins';
-import AirbusOperationsCenter from './AirbusOperationsCenter';
-import FinancialAnalyticsDashboard from './FinancialAnalyticsDashboard';
-import FleetSubstitutionCalculator from './FleetSubstitutionCalculator';
-import SlotRiskDashboard from './SlotRiskDashboard';
 import VirginAtlanticFleetMonitor from './VirginAtlanticFleetMonitor';
 
 interface AppRouterProps {
@@ -47,52 +40,52 @@ export const AppRouter: React.FC<AppRouterProps> = ({
         
         <div className="flex-1 transition-all duration-300 overflow-y-auto">
           <Routes>
-            {/* Default route - show AI Ops Dashboard */}
-            <Route path="/" element={<AIOpsDashboard />} />
+            {/* Default route - show Mission Control Dashboard */}
+            <Route path="/" element={<MissionControlDashboard />} />
             
             {/* Core Operations */}
-            <Route path="/overview" element={<AIOpsDashboard />} />
-            <Route path="/realtime" element={<RealTimeOperationsCenter />} />
-            <Route path="/operations" element={<VirginAtlanticFleetMonitor />} />
-            <Route path="/otp-dashboard" element={<OnTimePerformanceDashboard />} />
+            <Route path="/mission-control" element={<MissionControlDashboard />} />
+            <Route path="/fleet-operations" element={<VirginAtlanticFleetMonitor />} />
+            <Route path="/realtime-ops" element={<RealTimeOperationsCenter />} />
+            <Route path="/network-performance" element={<OnTimePerformanceDashboard />} />
+            
+            {/* Flight Detail Pages */}
+            <Route path="/flight/:flightNumber" element={<EnhancedFlightDashboard />} />
+            
+            {/* Detail Pages */}
+            <Route path="/notams" element={<FlightAwareNotamDashboard />} />
+            <Route path="/weather" element={<FAAStatusDashboard />} />
+            <Route path="/hub-status" element={<SkyGateAirportDashboard />} />
+            
+            {/* New Feature Pages */}
+            <Route path="/diversion-planner" element={<DiversionSupportDashboard />} />
+            <Route path="/crew-resourcing" element={<AIOperationsCenter />} />
+            <Route path="/active-diversions" element={<DiversionSupportDashboard />} />
             
             {/* Intelligence & Analysis */}
-            <Route path="/intelligence-dashboard" element={<IntelligentDecisionDashboard />} />
-            <Route path="/enhanced-facilities" element={<SkyGateAirportDashboard />} />
-            <Route path="/geopolitical" element={<GeopoliticalRiskCenter />} />
+            <Route path="/intelligence" element={<IntelligentDecisionDashboard />} />
+            <Route path="/risk-assessment" element={<GeopoliticalRiskCenter />} />
             <Route path="/visa-requirements" element={<VisaRequirementsDashboard />} />
-            
-            {/* Safety & Alerts */}
-            <Route path="/airspace" element={<FlightAwareNotamDashboard />} />
-            <Route path="/faa-status" element={<FAAStatusDashboard />} />
-            <Route path="/emergency-testing" element={<EmergencyCommDashboard />} />
             
             {/* AI & Analytics */}
             <Route path="/ai-operations" element={<AIOperationsCenter />} />
             <Route path="/scenario-engine" element={<WhatIfScenarioEngine />} />
             <Route path="/delay-prediction" element={<DelayPredictionDashboard />} />
-            <Route path="/diversion-support" element={<DiversionSupportDashboard />} />
             
             {/* Digital Twins */}
-            <Route path="/boeing-twin" element={<Boeing787DigitalTwin />} />
-            <Route path="/airbus-twins" element={<AirbusDigitalTwins />} />
-            <Route path="/airbus-operations" element={<AirbusOperationsCenter />} />
+            <Route path="/digital-twins/boeing" element={<Boeing787DigitalTwin />} />
+            <Route path="/digital-twins/airbus" element={<AirbusDigitalTwins />} />
             
-            {/* Financial & Planning */}
-            <Route path="/financial-analytics" element={<FinancialAnalyticsDashboard />} />
-            <Route path="/fleet-substitution" element={<FleetSubstitutionCalculator />} />
-            <Route path="/slot-risk" element={<SlotRiskDashboard />} />
+            {/* Emergency Response */}
+            <Route path="/emergency" element={<EmergencyCommDashboard />} />
             
-            {/* Legacy Routes */}
-            <Route path="/operations-center" element={<RealTimeOperationsCenter />} />
-            <Route path="/enhanced-flight" element={<EnhancedFlightDashboard />} />
-            <Route path="/heathrow-holding" element={<HeathrowHoldingDashboard />} />
-            <Route path="/heathrow-monitor" element={<HeathrowHoldingMonitor />} />
-            <Route path="/passenger-impact" element={<PassengerImpactModelingComponent />} />
-            <Route path="/design-showcase" element={<VirginAtlanticDesignShowcase />} />
+            {/* Legacy routes - redirect to new structure */}
+            <Route path="/overview" element={<Navigate to="/mission-control" replace />} />
+            <Route path="/operations" element={<Navigate to="/fleet-operations" replace />} />
+            <Route path="/ai-ops-dashboard" element={<AIOpsDashboard />} />
             
-            {/* Fallback - redirect to AI Operations */}
-            {/*<Route path="*" element={<Navigate to="/ai-operations" replace />} /> */}
+            {/* Fallback - redirect to Mission Control */}
+            <Route path="*" element={<Navigate to="/mission-control" replace />} />
           </Routes>
         </div>
       </div>
