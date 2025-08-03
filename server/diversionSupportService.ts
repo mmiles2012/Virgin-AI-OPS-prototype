@@ -637,7 +637,7 @@ class DiversionSupportService {
 
     const passengerRooms = Math.ceil(requirements.passengerCount / 2);
     const crewRooms = requirements.crewCount;
-    const roomRate = hotel.ratesPer Night[requirements.budgetCategory];
+    const roomRate = hotel.ratesPerNight[requirements.budgetCategory];
     const nights = Math.ceil((new Date(requirements.checkOutDate).getTime() - new Date(requirements.checkInDate).getTime()) / (24 * 60 * 60 * 1000));
     const totalCost = (passengerRooms + crewRooms) * roomRate * nights;
 
