@@ -473,11 +473,12 @@ const Network3DGlobe: React.FC = () => {
         gl={{ antialias: true, alpha: false }}
         style={{ background: '#000011' }}
       >
-        <color attach="background" args={['#000011']} />
-        
-        <ambientLight intensity={0.4} />
-        <directionalLight position={[10, 10, 5]} intensity={1.0} />
-        <pointLight position={[0, 0, 8]} intensity={0.6} />
+        <Suspense fallback={null}>
+          <color attach="background" args={['#000011']} />
+          
+          <ambientLight intensity={0.4} />
+          <directionalLight position={[10, 10, 5]} intensity={1.0} />
+          <pointLight position={[0, 0, 8]} intensity={0.6} />
           
         {/* Earth Globe */}
         <EarthGlobe />
