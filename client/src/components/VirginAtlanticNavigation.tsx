@@ -58,35 +58,29 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
   // Map URLs to navigation IDs
   const getViewModeFromPath = (pathname: string): string => {
     const pathMap: { [key: string]: string } = {
-      '/ai-operations': 'ai-operations',
-      '/operations-center': 'operations-center',
-      '/enhanced-flight': 'enhanced-flight',
-      '/heathrow-holding': 'heathrow-holding',
-      '/heathrow-monitor': 'heathrow-monitor',
-      '/passenger-impact': 'passenger-impact',
-      '/design-showcase': 'design-showcase',
-      '/overview': 'overview',
-      '/realtime': 'realtime',
-      '/operations': 'operations',
-      '/otp-dashboard': 'otp-dashboard',
-      '/intelligence-dashboard': 'intelligence-dashboard',
-      '/enhanced-facilities': 'enhanced-facilities',
-      '/geopolitical': 'geopolitical',
+      '/': 'mission-control',
+      '/mission-control': 'mission-control',
+      '/fleet-operations': 'fleet-operations',
+      '/realtime-ops': 'realtime-ops',
+      '/network-performance': 'network-performance',
+      '/flight': 'flight-details',
+      '/notams': 'notams',
+      '/weather': 'weather',
+      '/hub-status': 'hub-status',
+      '/diversion-planner': 'diversion-planner',
+      '/crew-resourcing': 'crew-resourcing',
+      '/active-diversions': 'active-diversions',
+      '/intelligence': 'intelligence',
+      '/risk-assessment': 'risk-assessment',
       '/visa-requirements': 'visa-requirements',
-      '/airspace': 'airspace',
-      '/faa-status': 'faa-status',
-      '/emergency-testing': 'emergency-testing',
+      '/ai-operations': 'ai-operations',
       '/scenario-engine': 'scenario-engine',
       '/delay-prediction': 'delay-prediction',
-      '/diversion-support': 'diversion-support',
-      '/boeing-twin': 'boeing-twin',
-      '/airbus-twins': 'airbus-twins',
-      '/airbus-operations': 'airbus-operations',
-      '/financial-analytics': 'financial-analytics',
-      '/fleet-substitution': 'fleet-substitution',
-      '/slot-risk': 'slot-risk',
+      '/digital-twins/boeing': 'digital-twins-boeing',
+      '/digital-twins/airbus': 'digital-twins-airbus',
+      '/emergency': 'emergency',
     };
-    return pathMap[pathname] || 'ai-operations';
+    return pathMap[pathname] || 'mission-control';
   };
   
   const viewMode = getViewModeFromPath(location.pathname);
@@ -94,94 +88,90 @@ const VirginAtlanticNavigation: React.FC<VirginAtlanticNavigationProps> = ({
   // Navigation function that uses React Router
   const navigateToView = (viewId: string) => {
     const routeMap: { [key: string]: string } = {
-      'ai-operations': '/ai-operations',
-      'operations-center': '/operations-center', 
-      'enhanced-flight': '/enhanced-flight',
-      'heathrow-holding': '/heathrow-holding',
-      'heathrow-monitor': '/heathrow-monitor',
-      'passenger-impact': '/passenger-impact',
-      'design-showcase': '/design-showcase',
-      'overview': '/overview',
-      'realtime': '/realtime',
-      'operations': '/operations',
-      'otp-dashboard': '/otp-dashboard',
-      'intelligence-dashboard': '/intelligence-dashboard',
-      'enhanced-facilities': '/enhanced-facilities',
-      'geopolitical': '/geopolitical',
+      'mission-control': '/mission-control',
+      'fleet-operations': '/fleet-operations',
+      'realtime-ops': '/realtime-ops',
+      'network-performance': '/network-performance',
+      'flight-details': '/flight',
+      'notams': '/notams',
+      'weather': '/weather',
+      'hub-status': '/hub-status',
+      'diversion-planner': '/diversion-planner',
+      'crew-resourcing': '/crew-resourcing',
+      'active-diversions': '/active-diversions',
+      'intelligence': '/intelligence',
+      'risk-assessment': '/risk-assessment',
       'visa-requirements': '/visa-requirements',
-      'airspace': '/airspace',
-      'faa-status': '/faa-status',
-      'emergency-testing': '/emergency-testing',
+      'ai-operations': '/ai-operations',
       'scenario-engine': '/scenario-engine',
       'delay-prediction': '/delay-prediction',
-      'diversion-support': '/diversion-support',
-      'boeing-twin': '/boeing-twin',
-      'airbus-twins': '/airbus-twins',
-      'airbus-operations': '/airbus-operations',
-      'financial-analytics': '/financial-analytics',
-      'fleet-substitution': '/fleet-substitution',
-      'slot-risk': '/slot-risk',
+      'digital-twins-boeing': '/digital-twins/boeing',
+      'digital-twins-airbus': '/digital-twins/airbus',
+      'emergency': '/emergency',
     };
-    const route = routeMap[viewId] || '/ai-operations';
-    navigate(route);
+    
+    const route = routeMap[viewId];
+    if (route) {
+      navigate(route);
+    } else {
+      console.warn(`No route found for view: ${viewId}`);
+    }
   };
+  
   const navigationGroups: NavigationGroup[] = [
     {
-      title: 'Core Operations',
-      icon: Activity,
+      title: 'Mission Control',
+      icon: Navigation,
       items: [
-        { id: 'overview', label: 'Operations Overview', icon: Gauge, variant: 'virgin-primary' },
-        { id: 'realtime', label: 'Live Flight Operations', icon: Plane, variant: 'secondary', badge: 'LIVE', badgeVariant: 'info' },
-        { id: 'operations', label: 'Fleet Operations', icon: Users, variant: 'secondary' },
-        { id: 'otp-dashboard', label: 'Network OTP', icon: TrendingUp, variant: 'success' },
+        { id: 'mission-control', label: 'Main Dashboard', icon: Gauge, variant: 'virgin-primary' },
+        { id: 'fleet-operations', label: 'Fleet Operations', icon: Plane, variant: 'secondary' },
+        { id: 'realtime-ops', label: 'Real-Time Ops', icon: Activity, variant: 'secondary', badge: 'LIVE', badgeVariant: 'caution' },
+        { id: 'network-performance', label: 'Network Performance', icon: TrendingUp, variant: 'secondary' },
       ],
     },
     {
-      title: 'Intelligence & Analysis',
+      title: 'Detail Pages',
+      icon: FileText,
+      items: [
+        { id: 'notams', label: 'NOTAMs', icon: AlertTriangle, variant: 'warning' },
+        { id: 'weather', label: 'Weather Systems', icon: Database, variant: 'secondary' },
+        { id: 'hub-status', label: 'Hub Status', icon: Building, variant: 'secondary' },
+      ],
+    },
+    {
+      title: 'Operations Management',
       icon: Target,
       items: [
-        { id: 'intelligence-dashboard', label: 'Intelligence Centre', icon: FileText, variant: 'secondary' },
-        { id: 'enhanced-facilities', label: 'Airport Database', icon: Building, variant: 'secondary' },
-        { id: 'geopolitical', label: 'Risk Assessment', icon: Shield, variant: 'warning' },
-        { id: 'visa-requirements', label: 'Visa Requirements', icon: Globe, variant: 'secondary' },
+        { id: 'diversion-planner', label: 'Diversion Planner', icon: Navigation, variant: 'secondary' },
+        { id: 'crew-resourcing', label: 'Crew Resourcing', icon: Users, variant: 'secondary' },
+        { id: 'active-diversions', label: 'Active Diversions', icon: Phone, variant: 'warning' },
       ],
     },
     {
-      title: 'Safety & Alerts',
-      icon: AlertTriangle,
-      items: [
-        { id: 'airspace', label: 'Airspace Alerts', icon: Navigation, variant: 'warning', badge: 'ACTIVE', badgeVariant: 'caution' },
-        { id: 'faa-status', label: 'FAA NAS Status', icon: Database, variant: 'warning' },
-        { id: 'emergency-testing', label: 'Emergency Response', icon: Phone, variant: 'destructive' },
-        { id: 'enhanced-facilities', label: 'Facility Monitoring', icon: Building, variant: 'secondary' },
-      ],
-    },
-    {
-      title: 'AI & Analytics',
+      title: 'Intelligence & Analytics',
       icon: Zap,
       items: [
-        { id: 'ai-operations', label: 'AI Operations Center', icon: Zap, variant: 'premium', badge: 'AI', badgeVariant: 'premium' },
+        { id: 'ai-operations', label: 'AI Operations', icon: Zap, variant: 'premium', badge: 'AI', badgeVariant: 'premium' },
         { id: 'scenario-engine', label: 'What-If Scenarios', icon: Target, variant: 'premium' },
         { id: 'delay-prediction', label: 'Delay Prediction', icon: Clock, variant: 'secondary' },
-        { id: 'diversion-support', label: 'Diversion Support', icon: Navigation, variant: 'secondary' },
+        { id: 'intelligence', label: 'Intelligence Center', icon: Shield, variant: 'secondary' },
       ],
     },
     {
       title: 'Digital Twins',
       icon: Settings,
       items: [
-        { id: 'boeing-twin', label: 'Boeing 787', icon: Plane, variant: 'secondary' },
-        { id: 'airbus-twins', label: 'Airbus Fleet', icon: Plane, variant: 'secondary' },
-        { id: 'airbus-operations', label: 'Airbus Operations', icon: Activity, variant: 'secondary' },
+        { id: 'digital-twins-boeing', label: 'Boeing 787', icon: Plane, variant: 'secondary' },
+        { id: 'digital-twins-airbus', label: 'Airbus Fleet', icon: Plane, variant: 'secondary' },
       ],
     },
     {
-      title: 'Financial & Planning',
-      icon: Briefcase,
+      title: 'Emergency & Risk',
+      icon: AlertTriangle,
       items: [
-        { id: 'financial-analytics', label: 'Financial Analytics', icon: TrendingUp, variant: 'success' },
-        { id: 'fleet-substitution', label: 'Fleet Substitution', icon: Users, variant: 'secondary' },
-        { id: 'slot-risk', label: 'Slot Risk Analysis', icon: Clock, variant: 'warning' },
+        { id: 'emergency', label: 'Emergency Response', icon: Phone, variant: 'destructive' },
+        { id: 'risk-assessment', label: 'Risk Assessment', icon: Shield, variant: 'warning' },
+        { id: 'visa-requirements', label: 'Visa Requirements', icon: Globe, variant: 'secondary' },
       ],
     },
   ];
